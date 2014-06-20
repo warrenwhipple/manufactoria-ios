@@ -7,13 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2D15929A19514B4900A96BCC /* GridNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D15929919514B4900A96BCC /* GridNode.swift */; };
+		2D15929C19514B5400A96BCC /* CellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D15929B19514B5400A96BCC /* CellNode.swift */; };
+		2D336E8919534044008E55A9 /* RandHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D336E8819534044008E55A9 /* RandHelpers.swift */; };
 		2DC49131194F45B800053237 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC49130194F45B800053237 /* AppDelegate.swift */; };
-		2DC49133194F45B800053237 /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 2DC49132194F45B800053237 /* GameScene.sks */; };
 		2DC49135194F45B800053237 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC49134194F45B800053237 /* GameScene.swift */; };
 		2DC49137194F45B800053237 /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC49136194F45B800053237 /* GameViewController.swift */; };
 		2DC4913A194F45B800053237 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2DC49138194F45B800053237 /* Main.storyboard */; };
 		2DC4913C194F45B800053237 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2DC4913B194F45B800053237 /* Images.xcassets */; };
 		2DC49148194F45B800053237 /* ManufactoriaSwiftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC49147194F45B800053237 /* ManufactoriaSwiftTests.swift */; };
+		2DC4915D194F621A00053237 /* Grid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC4915C194F621A00053237 /* Grid.swift */; };
+		2DC4915F194F671F00053237 /* Cell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC4915E194F671F00053237 /* Cell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -27,10 +31,12 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2D15929919514B4900A96BCC /* GridNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridNode.swift; sourceTree = "<group>"; };
+		2D15929B19514B5400A96BCC /* CellNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CellNode.swift; sourceTree = "<group>"; };
+		2D336E8819534044008E55A9 /* RandHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RandHelpers.swift; sourceTree = "<group>"; };
 		2DC4912B194F45B800053237 /* ManufactoriaSwift.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ManufactoriaSwift.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2DC4912F194F45B800053237 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2DC49130194F45B800053237 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		2DC49132194F45B800053237 /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
 		2DC49134194F45B800053237 /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
 		2DC49136194F45B800053237 /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
 		2DC49139194F45B800053237 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -38,6 +44,8 @@
 		2DC49141194F45B800053237 /* ManufactoriaSwiftTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ManufactoriaSwiftTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2DC49146194F45B800053237 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2DC49147194F45B800053237 /* ManufactoriaSwiftTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManufactoriaSwiftTests.swift; sourceTree = "<group>"; };
+		2DC4915C194F621A00053237 /* Grid.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Grid.swift; sourceTree = "<group>"; };
+		2DC4915E194F671F00053237 /* Cell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -80,10 +88,10 @@
 			isa = PBXGroup;
 			children = (
 				2DC49130194F45B800053237 /* AppDelegate.swift */,
-				2DC49132194F45B800053237 /* GameScene.sks */,
-				2DC49134194F45B800053237 /* GameScene.swift */,
 				2DC49136194F45B800053237 /* GameViewController.swift */,
 				2DC49138194F45B800053237 /* Main.storyboard */,
+				2D336E8819534044008E55A9 /* RandHelpers.swift */,
+				2DC49151194F4BEB00053237 /* GameScene */,
 				2DC4913B194F45B800053237 /* Images.xcassets */,
 				2DC4912E194F45B800053237 /* Supporting Files */,
 			);
@@ -113,6 +121,18 @@
 				2DC49146194F45B800053237 /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		2DC49151194F4BEB00053237 /* GameScene */ = {
+			isa = PBXGroup;
+			children = (
+				2DC49134194F45B800053237 /* GameScene.swift */,
+				2DC4915C194F621A00053237 /* Grid.swift */,
+				2D15929919514B4900A96BCC /* GridNode.swift */,
+				2DC4915E194F671F00053237 /* Cell.swift */,
+				2D15929B19514B5400A96BCC /* CellNode.swift */,
+			);
+			name = GameScene;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -164,6 +184,7 @@
 				TargetAttributes = {
 					2DC4912A194F45B800053237 = {
 						CreatedOnToolsVersion = 6.0;
+						DevelopmentTeam = J627TVEKXG;
 					};
 					2DC49140194F45B800053237 = {
 						CreatedOnToolsVersion = 6.0;
@@ -196,7 +217,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				2DC4913C194F45B800053237 /* Images.xcassets in Resources */,
-				2DC49133194F45B800053237 /* GameScene.sks in Resources */,
 				2DC4913A194F45B800053237 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -216,8 +236,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				2DC49135194F45B800053237 /* GameScene.swift in Sources */,
+				2D336E8919534044008E55A9 /* RandHelpers.swift in Sources */,
+				2D15929A19514B4900A96BCC /* GridNode.swift in Sources */,
 				2DC49137194F45B800053237 /* GameViewController.swift in Sources */,
+				2D15929C19514B5400A96BCC /* CellNode.swift in Sources */,
+				2DC4915F194F671F00053237 /* Cell.swift in Sources */,
 				2DC49131194F45B800053237 /* AppDelegate.swift in Sources */,
+				2DC4915D194F621A00053237 /* Grid.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -335,9 +360,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = ManufactoriaSwift/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -346,9 +375,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = ManufactoriaSwift/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};
@@ -407,6 +440,7 @@
 				2DC4914D194F45B800053237 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		2DC4914E194F45B800053237 /* Build configuration list for PBXNativeTarget "ManufactoriaSwiftTests" */ = {
 			isa = XCConfigurationList;
@@ -415,6 +449,7 @@
 				2DC49150194F45B800053237 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
