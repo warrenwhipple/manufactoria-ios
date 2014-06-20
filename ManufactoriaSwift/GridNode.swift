@@ -13,14 +13,15 @@ class GridNode: SKNode {
     let rect: CGRect
     let wrapper: SKNode
     let cellNodes: CellNode[]
+    var touchCoord: GridCoord?
     
     subscript(i:Int, j:Int) -> CellNode {
         get {
-            assert(grid.indexIsValidFor(i, j: j), "Index out of range.")
+            assert(grid.indexIsValidFor(i, j), "Index out of range.")
             return cellNodes[grid.size.columns * j + i]
         }
         set {
-            assert(grid.indexIsValidFor(i, j: j), "Index out of range.")
+            assert(grid.indexIsValidFor(i, j), "Index out of range.")
             cellNodes[grid.size.columns * j + i] = newValue
         }
     }
@@ -52,19 +53,11 @@ class GridNode: SKNode {
         wrapper.position = CGPoint(x: (rect.size.width - gridSize.width) * 0.5, y: (rect.size.height - gridSize.height) * 0.5)
         wrapper.setScale(cellSize)
         
-        // position and size cell nodes
-        var flip = false
+        // position cell nodes
         for i in 0..columns {
             for j in 0..rows {
                 var cellNode = self[i,j]
                 cellNode.position = CGPoint(x: CGFloat(i) + 0.5, y: CGFloat(j) + 0.5)
-                cellNode.size = CGSize(width: 1.0, height: 1.0)
-                if flip {
-                    cellNode.color = UIColor(white: 0.0, alpha: 1.0)
-                } else {
-                    cellNode.color = UIColor(white: 0.2, alpha: 1.0)
-                }
-                flip = !flip
                 wrapper.addChild(cellNode)
             }
         }
@@ -72,4 +65,28 @@ class GridNode: SKNode {
         self.addChild(wrapper)
     }
     
+    func coordForTouch(touch: UITouch) -> GridCoord {
+        let position = touch.locationInNode(wrapper)
+        return GridCoord(floor(position.x), floor(position.y))
+    }
+    
+    override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
+        if touchCoord {return}
+        for object: AnyObject in touches {
+            let touch = object as UITouch
+            let coord = coordForTouch(touch)
+        }
+    }
+    
+    override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
+        
+    }
+    
+    override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
+        
+    }
+    
+    override func touchesCancelled(touches: NSSet, withEvent event: UIEvent) {
+        
+    }
 }

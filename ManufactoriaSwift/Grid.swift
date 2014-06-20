@@ -9,28 +9,38 @@
 struct GridCoord {
     var i = 0
     var j = 0
+    
+    init(_ i: Int, _ j: Int) {
+        self.i = i
+        self.j = j
+    }
 }
 
 struct GridSize {
     var columns = 0
     var rows = 0
+    
+    init(_ columns: Int, _ rows: Int) {
+        self.columns = columns
+        self.rows = rows
+    }
 }
 
 class Grid {
     let size: GridSize
     let cells: Cell[]
     
-    func indexIsValidFor(i: Int, j: Int) -> Bool {
+    func indexIsValidFor(i: Int, _ j: Int) -> Bool {
         return i>=0 && j>=0 && i<size.columns && j<size.rows
     }
     
     subscript(i:Int, j:Int) -> Cell {
         get {
-            assert(indexIsValidFor(i, j: j), "Index out of range.")
+            assert(indexIsValidFor(i, j), "Index out of range.")
             return cells[size.columns * j + i]
         }
         set {
-            assert(indexIsValidFor(i, j: j), "Index out of range.")
+            assert(indexIsValidFor(i, j), "Index out of range.")
             cells[size.columns * j + i] = newValue
         }
     }

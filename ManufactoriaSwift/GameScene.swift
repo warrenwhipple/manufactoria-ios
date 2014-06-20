@@ -13,7 +13,7 @@ class GameScene: SKScene {
     let gridNode: GridNode
     
     init(size: CGSize) {
-        grid = Grid(size: GridSize(columns: 11, rows: 11))
+        grid = Grid(size: GridSize(11, 11))
         gridNode = GridNode(grid: grid, rect: CGRect(origin: CGPointZero, size: size))
         super.init(size: size)
         self.backgroundColor = UIColor.blackColor()
@@ -32,24 +32,19 @@ class GameScene: SKScene {
     }
     
     override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
-        
-        /*
-        for touch: AnyObject in touches {
-            let location = touch.locationInNode(self)
-            
-            let sprite = SKSpriteNode(imageNamed:"Spaceship")
-            
-            sprite.xScale = 0.5
-            sprite.yScale = 0.5
-            sprite.position = location
-            
-            let action = SKAction.rotateByAngle(CGFloat(M_PI), duration:1)
-            
-            sprite.runAction(SKAction.repeatActionForever(action))
-            
-            self.addChild(sprite)
-        }
-        */
+        gridNode.touchesBegan(touches, withEvent: event)
+    }
+    
+    override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
+        gridNode.touchesMoved(touches, withEvent: event)
+    }
+    
+    override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
+        gridNode.touchesEnded(touches, withEvent: event)
+    }
+    
+    override func touchesCancelled(touches: NSSet, withEvent event: UIEvent) {
+        gridNode.touchesCancelled(touches, withEvent: event)
     }
    
     override func update(currentTime: CFTimeInterval) {

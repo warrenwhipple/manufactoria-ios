@@ -43,3 +43,11 @@ func randFloat(x: Float, y: Float) -> Float {
 func randBool() -> Bool {
     return arc4random_uniform(2) == 1
 }
+
+func floor(x: Float) -> Int {
+    if x < 0 {
+        return Int(x) - 1
+    } else {
+        return Int(x)
+    }
+}

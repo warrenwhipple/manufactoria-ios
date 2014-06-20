@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		2D15929A19514B4900A96BCC /* GridNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D15929919514B4900A96BCC /* GridNode.swift */; };
 		2D15929C19514B5400A96BCC /* CellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D15929B19514B5400A96BCC /* CellNode.swift */; };
-		2D336E8919534044008E55A9 /* RandHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D336E8819534044008E55A9 /* RandHelpers.swift */; };
+		2D336E8919534044008E55A9 /* HelperFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D336E8819534044008E55A9 /* HelperFunctions.swift */; };
 		2DC49131194F45B800053237 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC49130194F45B800053237 /* AppDelegate.swift */; };
 		2DC49135194F45B800053237 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC49134194F45B800053237 /* GameScene.swift */; };
 		2DC49137194F45B800053237 /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC49136194F45B800053237 /* GameViewController.swift */; };
@@ -33,7 +33,7 @@
 /* Begin PBXFileReference section */
 		2D15929919514B4900A96BCC /* GridNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridNode.swift; sourceTree = "<group>"; };
 		2D15929B19514B5400A96BCC /* CellNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CellNode.swift; sourceTree = "<group>"; };
-		2D336E8819534044008E55A9 /* RandHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RandHelpers.swift; sourceTree = "<group>"; };
+		2D336E8819534044008E55A9 /* HelperFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HelperFunctions.swift; sourceTree = "<group>"; };
 		2DC4912B194F45B800053237 /* ManufactoriaSwift.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ManufactoriaSwift.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2DC4912F194F45B800053237 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2DC49130194F45B800053237 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -90,7 +90,7 @@
 				2DC49130194F45B800053237 /* AppDelegate.swift */,
 				2DC49136194F45B800053237 /* GameViewController.swift */,
 				2DC49138194F45B800053237 /* Main.storyboard */,
-				2D336E8819534044008E55A9 /* RandHelpers.swift */,
+				2D336E8819534044008E55A9 /* HelperFunctions.swift */,
 				2DC49151194F4BEB00053237 /* GameScene */,
 				2DC4913B194F45B800053237 /* Images.xcassets */,
 				2DC4912E194F45B800053237 /* Supporting Files */,
@@ -236,7 +236,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2DC49135194F45B800053237 /* GameScene.swift in Sources */,
-				2D336E8919534044008E55A9 /* RandHelpers.swift in Sources */,
+				2D336E8919534044008E55A9 /* HelperFunctions.swift in Sources */,
 				2D15929A19514B4900A96BCC /* GridNode.swift in Sources */,
 				2DC49137194F45B800053237 /* GameViewController.swift in Sources */,
 				2D15929C19514B5400A96BCC /* CellNode.swift in Sources */,
