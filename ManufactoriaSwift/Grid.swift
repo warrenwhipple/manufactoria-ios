@@ -16,6 +16,10 @@ struct GridCoord {
     }
 }
 
+@infix func == (left: GridCoord, right: GridCoord) -> Bool {
+    return left.i == right.i && left.j == right.j
+}
+
 struct GridSize {
     var columns = 0
     var rows = 0
@@ -26,22 +30,26 @@ struct GridSize {
     }
 }
 
+@infix func == (left: GridSize, right: GridSize) -> Bool {
+    return left.columns == right.columns && left.rows == right.rows
+}
+
 class Grid {
     let size: GridSize
     let cells: Cell[]
     
-    func indexIsValidFor(i: Int, _ j: Int) -> Bool {
-        return i>=0 && j>=0 && i<size.columns && j<size.rows
+    func indexIsValidFor(coord: GridCoord) -> Bool {
+        return coord.i>=0 && coord.j>=0 && coord.i<size.columns && coord.j<size.rows
     }
     
-    subscript(i:Int, j:Int) -> Cell {
+    subscript(coord: GridCoord) -> Cell {
         get {
-            assert(indexIsValidFor(i, j), "Index out of range.")
-            return cells[size.columns * j + i]
+            assert(indexIsValidFor(coord), "Index out of range.")
+            return cells[size.columns * coord.j + coord.i]
         }
         set {
-            assert(indexIsValidFor(i, j), "Index out of range.")
-            cells[size.columns * j + i] = newValue
+            assert(indexIsValidFor(coord), "Index out of range.")
+            cells[size.columns * coord.j + coord.i] = newValue
         }
     }
     

@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 func randInt(x: Int) -> Int {
     if x >= 0 {
@@ -44,7 +45,7 @@ func randBool() -> Bool {
     return arc4random_uniform(2) == 1
 }
 
-func floor(x: Float) -> Int {
+func floor(x: CGFloat) -> Int {
     if x < 0 {
         return Int(x) - 1
     } else {

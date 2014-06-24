@@ -10,6 +10,8 @@
 		2D15929A19514B4900A96BCC /* GridNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D15929919514B4900A96BCC /* GridNode.swift */; };
 		2D15929C19514B5400A96BCC /* CellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D15929B19514B5400A96BCC /* CellNode.swift */; };
 		2D336E8919534044008E55A9 /* HelperFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D336E8819534044008E55A9 /* HelperFunctions.swift */; };
+		2D9A0979195643590007F6A4 /* belt.png in Resources */ = {isa = PBXBuildFile; fileRef = 2D9A0978195643590007F6A4 /* belt.png */; };
+		2DBB6EDC1958B19F00C15B53 /* gameScene.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 2DBB6EDB1958B19F00C15B53 /* gameScene.atlas */; };
 		2DC49131194F45B800053237 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC49130194F45B800053237 /* AppDelegate.swift */; };
 		2DC49135194F45B800053237 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC49134194F45B800053237 /* GameScene.swift */; };
 		2DC49137194F45B800053237 /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC49136194F45B800053237 /* GameViewController.swift */; };
@@ -34,6 +36,8 @@
 		2D15929919514B4900A96BCC /* GridNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridNode.swift; sourceTree = "<group>"; };
 		2D15929B19514B5400A96BCC /* CellNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CellNode.swift; sourceTree = "<group>"; };
 		2D336E8819534044008E55A9 /* HelperFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HelperFunctions.swift; sourceTree = "<group>"; };
+		2D9A0978195643590007F6A4 /* belt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = belt.png; path = ../../../Documents/ManufactoriaSpriteKit/gameScene/belt.png; sourceTree = "<group>"; };
+		2DBB6EDB1958B19F00C15B53 /* gameScene.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; name = gameScene.atlas; path = ../../../Documents/ManufactoriaSpriteKit/gameScene/gameScene.atlas; sourceTree = "<group>"; };
 		2DC4912B194F45B800053237 /* ManufactoriaSwift.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ManufactoriaSwift.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2DC4912F194F45B800053237 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2DC49130194F45B800053237 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -66,6 +70,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2D9A097A195643680007F6A4 /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				2D9A0978195643590007F6A4 /* belt.png */,
+				2DBB6EDB1958B19F00C15B53 /* gameScene.atlas */,
+			);
+			name = Images;
+			sourceTree = "<group>";
+		};
 		2DC49122194F45B800053237 = {
 			isa = PBXGroup;
 			children = (
@@ -92,6 +105,7 @@
 				2DC49138194F45B800053237 /* Main.storyboard */,
 				2D336E8819534044008E55A9 /* HelperFunctions.swift */,
 				2DC49151194F4BEB00053237 /* GameScene */,
+				2D9A097A195643680007F6A4 /* Images */,
 				2DC4913B194F45B800053237 /* Images.xcassets */,
 				2DC4912E194F45B800053237 /* Supporting Files */,
 			);
@@ -218,6 +232,8 @@
 			files = (
 				2DC4913C194F45B800053237 /* Images.xcassets in Resources */,
 				2DC4913A194F45B800053237 /* Main.storyboard in Resources */,
+				2DBB6EDC1958B19F00C15B53 /* gameScene.atlas in Resources */,
+				2D9A0979195643590007F6A4 /* belt.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
