@@ -15,10 +15,8 @@ struct GridCoord {
         self.j = j
     }
 }
-
-@infix func == (left: GridCoord, right: GridCoord) -> Bool {
-    return left.i == right.i && left.j == right.j
-}
+@infix func == (left: GridCoord, right: GridCoord) -> Bool {return left.i == right.i && left.j == right.j}
+@infix func != (left: GridCoord, right: GridCoord) -> Bool {return left.i != right.i || left.j != right.j}
 
 struct GridSize {
     var columns = 0
@@ -29,10 +27,8 @@ struct GridSize {
         self.rows = rows
     }
 }
-
-@infix func == (left: GridSize, right: GridSize) -> Bool {
-    return left.columns == right.columns && left.rows == right.rows
-}
+@infix func == (left: GridSize, right: GridSize) -> Bool {return left.columns == right.columns && left.rows == right.rows}
+@infix func != (left: GridSize, right: GridSize) -> Bool {return left.columns != right.columns || left.rows != right.rows}
 
 class Grid {
     let size: GridSize

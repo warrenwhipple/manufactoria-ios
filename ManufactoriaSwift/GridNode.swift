@@ -12,21 +12,20 @@ enum GridNodeState {
     case Editing, Thinking, Testing
 }
 
-enum EditMode {
-    case Blank, Belt, Bridge, PusherB, PusherR, PusherG, PusherY, PullerBR, PullerRB, PullerGY, PullerYG
-}
-
 class GridNode: SKNode {
     var state = GridNodeState.Editing
     unowned let grid: Grid
     let rect: CGRect
     let wrapper: SKNode
     let cellNodes: CellNode[]
+    let entranceCellNode = CellNode()
+    let exitCellNode = CellNode()
     var beltShift:Float = 0.0
     let beltTexture = SKTexture(imageNamed: "belt.png")
     var clippedBeltTexture = SKTexture()
     var editTouch: UITouch?
-    var editTouchCoord = GridCoord(0, 0)
+    var editCoord = GridCoord(0, 0)
+    var editMode = CellType.Belt
     
     subscript(coord: GridCoord) -> CellNode {
         get {
@@ -49,6 +48,8 @@ class GridNode: SKNode {
         for i in 0..(columns * rows) {
             tempCellNodes += CellNode()
         }
+        tempCellNodes += entranceCellNode
+        tempCellNodes += exitCellNode
         cellNodes = tempCellNodes
         
         super.init()
@@ -61,31 +62,45 @@ class GridNode: SKNode {
         let maxCellSize: CGFloat = 64.0
         let cellSize = min(maxCellWidth, maxCellHeight, maxCellSize)
         
-        // position and scale wrapper
+        // initialize wrapper
         let gridSize = CGSize(width: cellSize * CGFloat(columns), height: cellSize * CGFloat(rows))
         wrapper.position = CGPoint(x: (rect.size.width - gridSize.width) * 0.5, y: (rect.size.height - gridSize.height) * 0.5)
         wrapper.setScale(cellSize)
+        self.addChild(wrapper)
         
-        // position cell nodes
+        // initialize cell nodes
         for i in 0..columns {
             for j in 0..rows {
                 var cellNode = self[GridCoord(i,j)]
                 cellNode.position = CGPoint(x: CGFloat(i) + 0.5, y: CGFloat(j) + 0.5)
+                cellNode.shimmer()
                 wrapper.addChild(cellNode)
             }
         }
-        
-        self.addChild(wrapper)
+        entranceCellNode.position = CGPoint(x: CGFloat(columns / 2) + 0.5, y: -0.5)
+        entranceCellNode.nextCell.type = CellType.Belt
+        wrapper.addChild(entranceCellNode)
+        exitCellNode.position = CGPoint(x: CGFloat(columns / 2) + 0.5, y: CGFloat(rows) + 0.5)
+        exitCellNode.nextCell.type = CellType.Belt
+        wrapper.addChild(exitCellNode)
     }
     
     func update(dt: NSTimeInterval, tickPercent: Float) {
         clippedBeltTexture = SKTexture(rect:CGRect(x: 0, y: (1.0 - tickPercent) * 0.25, width: 1, height: 0.5), inTexture: beltTexture)
         for cellNode in cellNodes {
-            cellNode.update(clippedBeltTexture)
+            cellNode.update(dt, clippedBeltTexture: clippedBeltTexture)
         }
         
         //_entranceCellBelt.texture = _clippedBeltTexture;
         //_exitCellBelt.texture = _clippedBeltTexture;
+    }
+    
+    func changeToCell(cell: Cell) {
+        
+    }
+    
+    func addBridgeDirection(direction: Direction) {
+        
     }
     
     func cancelAllEdits() {
@@ -101,15 +116,28 @@ class GridNode: SKNode {
         if state != GridNodeState.Editing {return}
         if let touchPhase = editTouch?.phase {
             switch touchPhase {
-            case UITouchPhase.Began, UITouchPhase.Moved, UITouchPhase.Stationary: return
-            case UITouchPhase.Ended, UITouchPhase.Cancelled: self.cancelAllEdits()
+            case .Began, UITouchPhase.Moved, UITouchPhase.Stationary: return
+            case .Ended, UITouchPhase.Cancelled: self.cancelAllEdits()
             }
         }
-        
         editTouch = touches.anyObject() as? UITouch
-        editTouchCoord = coordForTouch(editTouch!)
-        if grid.indexIsValidFor(editTouchCoord) {
-            self[editTouchCoord].isSelected = true
+        editCoord = coordForTouch(editTouch!)
+        if grid.indexIsValidFor(editCoord) {
+            self[editCoord].isSelected = true
+            var cell = grid[editCoord]
+            if editMode == cell.type {
+                cell.direction = cell.direction.cw()
+            } else if editMode == CellType.Bridge {
+                if cell.type == CellType.Belt {
+                    cell.type = .Bridge
+                } else {
+                    cell.type = .Belt
+                }
+            } else {
+                cell.type = editMode
+            }
+            grid[editCoord] = cell
+            self[editCoord].nextCell = cell
         }
     }
     
@@ -117,21 +145,21 @@ class GridNode: SKNode {
         if !editTouch {return}
         if !touches.containsObject(editTouch!) {return}
         let newTouchCoord = coordForTouch(editTouch!)
-        if newTouchCoord == editTouchCoord {return}
-        if grid.indexIsValidFor(editTouchCoord) {
-            self[editTouchCoord].isSelected = false
+        if newTouchCoord == editCoord {return}
+        if grid.indexIsValidFor(editCoord) {
+            self[editCoord].isSelected = false
         }
         if grid.indexIsValidFor(newTouchCoord) {
             self[newTouchCoord].isSelected = true
         }
-        editTouchCoord = newTouchCoord
+        editCoord = newTouchCoord
     }
     
     override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
         if !editTouch {return}
         if !touches.containsObject(editTouch!) {return}
-        if grid.indexIsValidFor(editTouchCoord) {
-            self[editTouchCoord].isSelected = false
+        if grid.indexIsValidFor(editCoord) {
+            self[editCoord].isSelected = false
         }
         editTouch = nil
     }
