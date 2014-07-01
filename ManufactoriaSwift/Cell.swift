@@ -8,6 +8,22 @@
 
 enum CellType {
     case Blank, Belt, Bridge, PusherB, PusherR, PusherG, PusherY, PullerBR, PullerRB, PullerGY, PullerYG
+    func editMode() -> EditMode {
+        switch self {
+        case .Blank: return EditMode.Blank
+        case .Belt: return EditMode.Belt
+        case .Bridge: return EditMode.Bridge
+        case .PusherB: return EditMode.PusherB
+        case .PusherR: return EditMode.PusherR
+        case .PusherG: return EditMode.PusherG
+        case .PusherY: return EditMode.PusherY
+        case .PullerBR: return EditMode.PullerBR
+        case .PullerRB: return EditMode.PullerRB
+        case .PullerGY: return EditMode.PullerGY
+        case .PullerYG: return EditMode.PullerYG
+        }
+    }
+
 }
 
 enum Direction {

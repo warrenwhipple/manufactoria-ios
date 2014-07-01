@@ -8,31 +8,32 @@
 
 import SpriteKit
 
-class GameScene: SKScene {
+class GameScene: SKScene, ToolbarNodeDelegate {
     let grid: Grid
     let gridNode: GridNode
+    let toolbarNode: ToolbarNode
     var lastUpdateTime: NSTimeInterval = 0.0
     var gameSpeed: Float = 1.0
     var targetGameSpeed: Float = 1.0
     var tickPercent: Float = 0.0
     
     init(size: CGSize) {
-        grid = Grid(size: GridSize(7, 7))
+        grid = Grid(space: GridSpace(11, 11))
         gridNode = GridNode(grid: grid, rect: CGRect(origin: CGPointZero, size: size))
+        toolbarNode = ToolbarNode(rect: CGRect(origin: CGPointZero, size: CGSize(width: size.width, height: size.width / 8.0)))
         super.init(size: size)
         self.backgroundColor = UIColor.blackColor()
         self.addChild(gridNode)
+        toolbarNode.delegate = self
+        self.addChild(toolbarNode)
+    }
+    
+    func changeEditMode(editMode: EditMode) {
+        gridNode.editMode = editMode
     }
     
     override func didMoveToView(view: SKView) {
         
-        /*
-        let myLabel = SKLabelNode(fontNamed:"Chalkduster")
-        myLabel.text = "Hello, World!";
-        myLabel.fontSize = 65;
-        myLabel.position = CGPoint(x:CGRectGetMidX(self.frame), y:CGRectGetMidY(self.frame));
-        self.addChild(myLabel)
-        */
     }
     
     override func update(currentTime: NSTimeInterval) {
@@ -54,7 +55,7 @@ class GameScene: SKScene {
             /*
             MFTickTestResult testResult = [self testNextTick];
             if (testResult >= MFTickTestResultAccept) {
-                [self transitionToState:MFGameSceneStateEditing];
+                [self transitionToState: MFGameSceneStateEditing];
                 break;
             }
             */

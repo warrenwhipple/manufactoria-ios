@@ -18,7 +18,7 @@ struct GridCoord {
 @infix func == (left: GridCoord, right: GridCoord) -> Bool {return left.i == right.i && left.j == right.j}
 @infix func != (left: GridCoord, right: GridCoord) -> Bool {return left.i != right.i || left.j != right.j}
 
-struct GridSize {
+struct GridSpace {
     var columns = 0
     var rows = 0
     
@@ -27,30 +27,30 @@ struct GridSize {
         self.rows = rows
     }
 }
-@infix func == (left: GridSize, right: GridSize) -> Bool {return left.columns == right.columns && left.rows == right.rows}
-@infix func != (left: GridSize, right: GridSize) -> Bool {return left.columns != right.columns || left.rows != right.rows}
+@infix func == (left: GridSpace, right: GridSpace) -> Bool {return left.columns == right.columns && left.rows == right.rows}
+@infix func != (left: GridSpace, right: GridSpace) -> Bool {return left.columns != right.columns || left.rows != right.rows}
 
 class Grid {
-    let size: GridSize
+    let space: GridSpace
     let cells: Cell[]
     
     func indexIsValidFor(coord: GridCoord) -> Bool {
-        return coord.i>=0 && coord.j>=0 && coord.i<size.columns && coord.j<size.rows
+        return coord.i>=0 && coord.j>=0 && coord.i<space.columns && coord.j<space.rows
     }
     
     subscript(coord: GridCoord) -> Cell {
         get {
             assert(indexIsValidFor(coord), "Index out of range.")
-            return cells[size.columns * coord.j + coord.i]
+            return cells[space.columns * coord.j + coord.i]
         }
         set {
             assert(indexIsValidFor(coord), "Index out of range.")
-            cells[size.columns * coord.j + coord.i] = newValue
+            cells[space.columns * coord.j + coord.i] = newValue
         }
     }
     
-    init(size: GridSize) {
-        self.size = size
-        self.cells = Cell[](count: size.columns * size.rows, repeatedValue:Cell())
+    init(space: GridSpace) {
+        self.space = space
+        self.cells = Cell[](count: space.columns * space.rows, repeatedValue: Cell())
     }
 }
