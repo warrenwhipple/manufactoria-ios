@@ -46,6 +46,7 @@ class GridNode: SKNode {
     var editTouch: UITouch?
     var editCoord = GridCoord(0, 0)
     var editMode = EditMode.Belt
+    var bridgeEditMemory: Cell? = nil
     
     subscript(coord: GridCoord) -> CellNode {
         get {
@@ -146,6 +147,9 @@ class GridNode: SKNode {
         if grid.indexIsValidFor(editCoord) {
             self[editCoord].isSelected = true
             var cell = grid[editCoord]
+            if editMode == .Bridge {
+                bridgeEditMemory = cell
+            }
             if editMode.cellType() == cell.type {
                 cell.direction = cell.direction.cw()
             } else if editMode.cellType() == CellType.Bridge {
@@ -167,15 +171,136 @@ class GridNode: SKNode {
     override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
         if !editTouch {return}
         if !touches.containsObject(editTouch!) {return}
-        let newTouchCoord = coordForTouch(editTouch!)
-        if newTouchCoord == editCoord {return}
+        let touchCoord = coordForTouch(editTouch!)
+        if touchCoord == editCoord {return}
+        
+        var isEditCell = false
+        var isTouchCell = false
+        var editCell: Cell = Cell()
+        var touchCell: Cell = Cell()
         if grid.indexIsValidFor(editCoord) {
             self[editCoord].isSelected = false
+            editCell = grid[editCoord]
+            isEditCell = true
         }
-        if grid.indexIsValidFor(newTouchCoord) {
-            self[newTouchCoord].isSelected = true
+        if grid.indexIsValidFor(touchCoord) {
+            self[touchCoord].isSelected = true
+            touchCell = grid[touchCoord]
+            isTouchCell = true
         }
-        editCoord = newTouchCoord
+        
+        switch editMode {
+        case .Blank:
+            if isTouchCell {
+                touchCell.type = .Blank
+            }
+        case .Bridge:
+            if isEditCell {
+                if bridgeEditMemory {
+                    editCell = bridgeEditMemory!
+                }
+                var newBridgeDirection = Direction.North
+                if touchCoord.j > editCoord.j {
+                    newBridgeDirection = .North
+                } else if touchCoord.j < editCoord.j {
+                    newBridgeDirection = .South
+                } else if touchCoord.i > editCoord.i {
+                    newBridgeDirection = .East
+                } else if touchCoord.i < editCoord.i {
+                    newBridgeDirection = .West
+                }
+                switch editCell.type {
+                case .Blank:
+                    editCell.type = .Belt
+                    editCell.direction = newBridgeDirection
+                case .Bridge:
+                    if editCell.direction.flip() == newBridgeDirection {
+                        editCell.direction = editCell.direction.cw()
+                    } else if editCell.direction.ccw() == newBridgeDirection {
+                        editCell.direction = newBridgeDirection
+                    }
+                default:
+                    if editCell.direction == newBridgeDirection {
+                        editCell.type = .Belt
+                    } else if editCell.direction.flip() == newBridgeDirection {
+                        editCell.type = .Belt
+                        editCell.direction = newBridgeDirection
+                    } else if editCell.direction.cw() == newBridgeDirection {
+                        editCell.type = .Bridge
+                    } else if editCell.direction.ccw() == newBridgeDirection {
+                        editCell.type = .Bridge
+                        editCell.direction = newBridgeDirection
+                    }
+                }
+            }
+        default:
+            if isEditCell {
+                if let cellType = editMode.cellType() {
+                    editCell.type = cellType
+                }
+                if touchCoord.j > editCoord.j {
+                    editCell.direction = .North
+                } else if touchCoord.j < editCoord.j {
+                    editCell.direction = .South
+                } else if touchCoord.i > editCoord.i {
+                    editCell.direction = .East
+                } else if touchCoord.i < editCoord.i {
+                    editCell.direction = .West
+                }
+            }
+        }
+        
+        if isEditCell {
+            grid[editCoord] = editCell
+            self[editCoord].nextCell = editCell
+        }
+        if isTouchCell {
+            grid[touchCoord] = touchCell
+            self[touchCoord].nextCell = touchCell
+        }
+        editCoord = touchCoord
+        bridgeEditMemory = nil
+        
+        /*
+        case MFEditModeBridge: {
+            if (MFGridSizeContainsCoord(_gridSize, _editCoord)) {
+                MFCell *cell = &_grid.cells[_editCoord.i][_editCoord.j];
+                if (!(*cell).fixed || _canEditFixed) {
+                    if (_useBridgeEditMemory) {
+                        [self changeToCell:_bridgeEditMemory];
+                        if (touchCoord.j > _editCoord.j) [self addBridgeDirection:MFDirectionN];
+                        else if (touchCoord.i < _editCoord.i) [self addBridgeDirection:MFDirectionW];
+                        else if (touchCoord.i > _editCoord.i) [self addBridgeDirection:MFDirectionE];
+                        else [self addBridgeDirection:MFDirectionS];
+                    }
+                    else {
+                        if (touchCoord.j > _editCoord.j) {
+                            if (_bridgeEditDirection == MFDirectionN) [self addBridgeDirection:MFDirectionN];
+                            else [self changeToCell:MFCellMake(MFCellTypeBelt, MFDirectionN, _addFixed)];
+                        }
+                        else if (touchCoord.i < _editCoord.i) {
+                            if (_bridgeEditDirection == MFDirectionW) [self addBridgeDirection:MFDirectionW];
+                            else [self changeToCell:MFCellMake(MFCellTypeBelt, MFDirectionW, _addFixed)];
+                        }
+                        else if (touchCoord.i > _editCoord.i) {
+                            if (_bridgeEditDirection == MFDirectionE) [self addBridgeDirection:MFDirectionE];
+                            else [self changeToCell:MFCellMake(MFCellTypeBelt, MFDirectionE, _addFixed)];
+                        }
+                        else {
+                            if (_bridgeEditDirection == MFDirectionS) [self addBridgeDirection:MFDirectionS];
+                            else [self changeToCell:MFCellMake(MFCellTypeBelt, MFDirectionS, _addFixed)];
+                        }
+                    }
+                }
+            }
+            if (touchCoord.j > _editCoord.j) _bridgeEditDirection = MFDirectionN;
+            else if (touchCoord.i < _editCoord.i) _bridgeEditDirection = MFDirectionW;
+            else if (touchCoord.i > _editCoord.i) _bridgeEditDirection = MFDirectionE;
+            else _bridgeEditDirection = MFDirectionS;
+            _editCoord = touchCoord;
+            _useBridgeEditMemory = NO;
+        } break;
+        */
     }
     
     override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
@@ -185,6 +310,7 @@ class GridNode: SKNode {
             self[editCoord].isSelected = false
         }
         editTouch = nil
+        bridgeEditMemory = nil
     }
     
     override func touchesCancelled(touches: NSSet, withEvent event: UIEvent) {

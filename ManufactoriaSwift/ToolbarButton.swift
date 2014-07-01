@@ -39,7 +39,7 @@ class ToolbarButton: SKSpriteNode {
             var node: SKSpriteNode?
             switch editMode {
             case .Blank:
-                node = SKSpriteNode(color: UIColor.darkGrayColor(), size: CGSize(width:0.7, height:0.7))
+                node = SKSpriteNode(color: UIColor.grayColor(), size: CGSize(width:0.7, height:0.7))
             case .Belt:
                 node = SKSpriteNode(texture: SKTexture(imageNamed: "beltButton.png"), size: CGSize(width: 0.3, height: 1))
             case .Bridge:

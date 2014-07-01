@@ -8,7 +8,12 @@
 
 import SpriteKit
 
+enum GameSceneState {
+    case Editing, Thinking
+}
+
 class GameScene: SKScene, ToolbarNodeDelegate {
+    var state: GameSceneState = .Editing
     let grid: Grid
     let gridNode: GridNode
     let toolbarNode: ToolbarNode
@@ -26,6 +31,10 @@ class GameScene: SKScene, ToolbarNodeDelegate {
         self.addChild(gridNode)
         toolbarNode.delegate = self
         self.addChild(toolbarNode)
+    }
+    
+    func transitionToState(newState: GameSceneState) {
+        state = newState
     }
     
     func changeEditMode(editMode: EditMode) {
