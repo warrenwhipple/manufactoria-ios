@@ -13,7 +13,7 @@ protocol ToolbarButtonDelegate {
 }
 
 class ToolbarButton: SKSpriteNode {
-    var delegate: ToolbarButtonDelegate? // needs to be weak?
+    var delegate: ToolbarButtonDelegate?
     let editModes: EditMode[]
     let displayNodes: SKNode?[]
     var mode = 0
@@ -165,6 +165,6 @@ class ToolbarButton: SKSpriteNode {
     }
     
     override func touchesCancelled(touches: NSSet, withEvent event: UIEvent) {
-        self.touchesEnded(touches, withEvent: event)
+        touchesEnded(touches, withEvent: event)
     }
 }

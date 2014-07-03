@@ -30,6 +30,10 @@ struct GridSpace {
 @infix func == (left: GridSpace, right: GridSpace) -> Bool {return left.columns == right.columns && left.rows == right.rows}
 @infix func != (left: GridSpace, right: GridSpace) -> Bool {return left.columns != right.columns || left.rows != right.rows}
 
+enum TickTestResult {
+    case North, East, South, West, Accept, Reject
+}
+
 class Grid {
     let space: GridSpace
     let cells: Cell[]
@@ -51,6 +55,89 @@ class Grid {
     
     init(space: GridSpace) {
         self.space = space
-        self.cells = Cell[](count: space.columns * space.rows, repeatedValue: Cell())
+        cells = Cell[](count: space.columns * space.rows, repeatedValue: Cell())
+    }
+    
+    func testCoord(coord: GridCoord, lastCoord: GridCoord, tape: TapeProtocol) -> TickTestResult {
+        if coord.i == space.columns / 2 && coord.j == space.rows + 1 {
+            return TickTestResult.Accept
+        }
+        if coord.i == space.columns / 2 && (coord.j == space.rows || coord.j < 0) {
+            return TickTestResult.North
+        }
+        if !indexIsValidFor(coord) {
+            return TickTestResult.Reject
+        }
+        
+        let cell = self[coord]
+        switch cell.type {
+        case .Blank:
+            return TickTestResult.Reject
+        case .Belt:
+            return cell.direction.tickTestResult()
+        case .Bridge:
+            switch cell.direction {
+            case .North, .South:
+                if coord.i == lastCoord.i {
+                    return cell.direction.tickTestResult()
+                } else {
+                    return cell.direction.cw().tickTestResult()
+                }
+            case .East, .West:
+                if coord.j == lastCoord.j {
+                    return cell.direction.tickTestResult()
+                } else {
+                    return cell.direction.cw().tickTestResult()
+                }
+            }
+        case .PusherB:
+            tape.writeColor(Color.Blue)
+            return cell.direction.tickTestResult()
+        case .PusherR:
+            tape.writeColor(Color.Red)
+            return cell.direction.tickTestResult()
+        case .PusherG:
+            tape.writeColor(Color.Green)
+            return cell.direction.tickTestResult()
+        case .PusherY:
+            tape.writeColor(Color.Yellow)
+            return cell.direction.tickTestResult()
+        case .PullerBR:
+            if let color = tape.color() {
+                if color == Color.Blue {
+                    return cell.direction.ccw().tickTestResult()
+                } else if color == Color.Red {
+                    return cell.direction.cw().tickTestResult()
+                }
+            }
+            return cell.direction.tickTestResult()
+        case .PullerRB:
+            if let color = tape.color() {
+                if color == Color.Red {
+                    return cell.direction.ccw().tickTestResult()
+                } else if color == Color.Blue {
+                    return cell.direction.cw().tickTestResult()
+                }
+            }
+            return cell.direction.tickTestResult()
+        case .PullerGY:
+            if let color = tape.color() {
+                if color == Color.Green {
+                    return cell.direction.ccw().tickTestResult()
+                } else if color == Color.Yellow {
+                    return cell.direction.cw().tickTestResult()
+                }
+            }
+            return cell.direction.tickTestResult()
+        case .PullerYG:
+            if let color = tape.color() {
+                if color == Color.Yellow {
+                    return cell.direction.ccw().tickTestResult()
+                } else if color == Color.Green {
+                    return cell.direction.cw().tickTestResult()
+                }
+            }
+            return cell.direction.tickTestResult()
+        }
     }
 }

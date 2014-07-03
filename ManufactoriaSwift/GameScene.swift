@@ -9,7 +9,7 @@
 import SpriteKit
 
 enum GameSceneState {
-    case Editing, Thinking
+    case Editing, Testing
 }
 
 class GameScene: SKScene, ToolbarNodeDelegate {
@@ -17,24 +17,58 @@ class GameScene: SKScene, ToolbarNodeDelegate {
     let grid: Grid
     let gridNode: GridNode
     let toolbarNode: ToolbarNode
+    let testButton: Button
+    
     var lastUpdateTime: NSTimeInterval = 0.0
     var gameSpeed: Float = 1.0
     var targetGameSpeed: Float = 1.0
     var tickPercent: Float = 0.0
     
+    override var size: CGSize {didSet{fitToSize()}}
+    
     init(size: CGSize) {
         grid = Grid(space: GridSpace(11, 11))
-        gridNode = GridNode(grid: grid, rect: CGRect(origin: CGPointZero, size: size))
-        toolbarNode = ToolbarNode(rect: CGRect(origin: CGPointZero, size: CGSize(width: size.width, height: size.width / 8.0)))
+        gridNode = GridNode(grid: grid)
+        toolbarNode = ToolbarNode()
+        testButton = Button()
+        
         super.init(size: size)
-        self.backgroundColor = UIColor.blackColor()
-        self.addChild(gridNode)
+        backgroundColor = UIColor.blackColor()
+        
+        addChild(gridNode)
+        
         toolbarNode.delegate = self
-        self.addChild(toolbarNode)
+        addChild(toolbarNode)
+        
+        testButton.changeText("Test")
+        testButton.userInteractionEnabled = true
+        testButton.position = CGPoint(x: size.width * 0.75, y: size.height - (size.height - size.width) * 0.25)
+        testButton.closureTouchUpInside = {[weak self] in self!.transitionToState(.Testing)}
+        addChild(testButton)
+        
+        fitToSize()
     }
     
     func transitionToState(newState: GameSceneState) {
+        if state == newState {return}
+        switch newState {
+        case .Editing:
+            gridNode.transitionToState(.Editing)
+            toolbarNode.transitionToState(.Enabled)
+            testButton.changeText("Test")
+            testButton.closureTouchUpInside = {[weak self] in self!.transitionToState(.Testing)}
+        case .Testing:
+            gridNode.transitionToState(.Testing)
+            toolbarNode.transitionToState(.Disabled)
+            testButton.changeText("Cancel")
+            testButton.closureTouchUpInside = {[weak self] in self!.transitionToState(.Editing)}
+        }
         state = newState
+    }
+    
+    func fitToSize() {
+        gridNode.rect = CGRect(origin: CGPointZero, size: size)
+        toolbarNode.rect = CGRect(origin: CGPointZero, size: CGSize(width: size.width, height: size.width / 8.0))
     }
     
     func changeEditMode(editMode: EditMode) {

@@ -8,6 +8,10 @@
 
 import SpriteKit
 
+enum ToolbarNodeState {
+    case Enabled, Disabled
+}
+
 protocol ToolbarNodeDelegate {
     func changeEditMode(editMode: EditMode)
 }
@@ -20,11 +24,11 @@ class ToolbarNode: SKNode, ToolbarButtonDelegate {
         }
     }
     }
+    var state: ToolbarNodeState = .Enabled
     let buttons: ToolbarButton[]
-    var rect: CGRect {didSet {fitToRect()}}
+    var rect: CGRect = CGRectZero {didSet{fitToRect()}}
     
-    init(rect: CGRect) {
-        self.rect = rect
+    init() {
         var tempButtons: ToolbarButton[] = []
         tempButtons += ToolbarButton(editModes: [EditMode.Blank])
         tempButtons += ToolbarButton(editModes: [EditMode.Belt, EditMode.Bridge])
@@ -38,12 +42,12 @@ class ToolbarNode: SKNode, ToolbarButtonDelegate {
         super.init()
         for button in buttons {
             button.delegate = self
-            self.addChild(button)
+            addChild(button)
         }
-        fitToRect()
     }
     
     func fitToRect() {
+        if rect == CGRectZero {return}
         if buttons.count == 0 {return}
         let buttonSize = min(rect.size.height, rect.size.width / CGFloat(buttons.count))
         var xShift = (rect.size.width - buttonSize * CGFloat(buttons.count - 1)) / 2.0
@@ -53,6 +57,23 @@ class ToolbarNode: SKNode, ToolbarButtonDelegate {
             button.position = CGPoint(x: xShift, y: yShift)
             xShift += buttonSize
         }
+    }
+    
+    func transitionToState(newState: ToolbarNodeState) {
+        if state == newState {return}
+        switch newState {
+        case .Enabled:
+            for button in buttons {
+                button.userInteractionEnabled = true
+            }
+        case .Disabled:
+            for button in buttons {
+                button.userInteractionEnabled = false
+                button.touch = nil
+                button.isPressed = false
+            }
+        }
+        state = newState
     }
     
     func changeEditMode(editMode: EditMode, fromButton: ToolbarButton) {

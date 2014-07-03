@@ -52,6 +52,14 @@ enum Direction {
         case .West: return .East
         }
     }
+    func tickTestResult() -> TickTestResult {
+        switch self {
+        case .North: return .North
+        case .East: return .East
+        case .South: return .South
+        case .West: return .West
+        }
+    }
 }
 
 struct Cell {

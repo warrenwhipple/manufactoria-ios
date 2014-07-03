@@ -54,7 +54,7 @@ class CellNode: SKSpriteNode {
         
         glowMask.zPosition = 10
         glowMask.alpha = 0.0
-        self.addChild(glowMask)
+        addChild(glowMask)
     }
     
     func update(dt: NSTimeInterval, clippedBeltTexture: SKTexture) {
@@ -75,52 +75,52 @@ class CellNode: SKSpriteNode {
                 puller.removeFromParent()
                 switch nextCell.type {
                 case .Blank: break
-                case .Belt: self.addChild(belt)
+                case .Belt: addChild(belt)
                 case .Bridge: 
-                    self.addChild(belt)
-                    self.addChild(bridge)
+                    addChild(belt)
+                    addChild(bridge)
                 case .PusherB: 
-                    self.addChild(belt)
-                    self.addChild(pusher)
+                    addChild(belt)
+                    addChild(pusher)
                     pusherFill.color = ColorBlue
                 case .PusherR: 
-                    self.addChild(belt)
-                    self.addChild(pusher)
+                    addChild(belt)
+                    addChild(pusher)
                     pusherFill.color = ColorRed
                 case .PusherG: 
-                    self.addChild(belt)
-                    self.addChild(pusher)
+                    addChild(belt)
+                    addChild(pusher)
                     pusherFill.color = ColorGreen
                 case .PusherY: 
-                    self.addChild(belt)
-                    self.addChild(pusher)
+                    addChild(belt)
+                    addChild(pusher)
                     pusherFill.color = ColorYellow
                 case .PullerBR: 
-                    self.addChild(belt)
-                    self.addChild(puller)
+                    addChild(belt)
+                    addChild(puller)
                     pullerFill1.color = ColorBlue
                     pullerFill2.color = ColorRed
                 case .PullerRB: 
-                    self.addChild(belt)
-                    self.addChild(puller)
+                    addChild(belt)
+                    addChild(puller)
                     pullerFill1.color = ColorRed
                     pullerFill2.color = ColorBlue
                 case .PullerGY: 
-                    self.addChild(belt)
-                    self.addChild(puller)
+                    addChild(belt)
+                    addChild(puller)
                     pullerFill1.color = ColorGreen
                     pullerFill2.color = ColorYellow
                 case .PullerYG: 
-                    self.addChild(belt)
-                    self.addChild(puller)
+                    addChild(belt)
+                    addChild(puller)
                     pullerFill1.color = ColorYellow
                     pullerFill2.color = ColorGreen
                 }
                 switch nextCell.direction {
-                case .North: self.zRotation = 0.0
-                case .East: self.zRotation = CGFloat(-M_PI_2)
-                case .South: self.zRotation = CGFloat(M_PI)
-                case .West: self.zRotation = CGFloat(M_PI_2)
+                case .North: zRotation = 0.0
+                case .East: zRotation = CGFloat(-M_PI_2)
+                case .South: zRotation = CGFloat(M_PI)
+                case .West: zRotation = CGFloat(M_PI_2)
                 }
                 cell = nextCell
             }
@@ -142,7 +142,7 @@ class CellNode: SKSpriteNode {
     func shimmer() {
         if !shimmerActionSequence {
             shimmerActionSequence = SKAction.waitForDuration(NSTimeInterval(randFloat(5.0)))
-            self.runAction(shimmerActionSequence, completion: {[weak self] in self!.shimmer()})
+            runAction(shimmerActionSequence, completion: {[weak self] in self!.shimmer()})
         } else {
             let brightness = CGFloat(randFloat(0.1))
             let color = UIColor(white: brightness, alpha: 1.0)
@@ -150,7 +150,7 @@ class CellNode: SKSpriteNode {
             let glowAction = SKAction.colorizeWithColor(color, colorBlendFactor: 1.0, duration: duration)
             let dimAction = SKAction.colorizeWithColor(UIColor.blackColor(), colorBlendFactor: 1.0, duration: duration)
             shimmerActionSequence = SKAction.sequence([glowAction, dimAction])
-            self.runAction(shimmerActionSequence, completion: {[weak self] in self!.shimmer()})
+            runAction(shimmerActionSequence, completion: {[weak self] in self!.shimmer()})
         }
     }
     
