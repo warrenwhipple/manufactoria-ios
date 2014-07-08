@@ -14,8 +14,8 @@ protocol ToolbarButtonDelegate {
 
 class ToolbarButton: SKSpriteNode {
     var delegate: ToolbarButtonDelegate?
-    let editModes: EditMode[]
-    let displayNodes: SKNode?[]
+    let editModes: [EditMode]
+    let displayNodes: [SKNode?]
     var mode = 0
     var isFocused:Bool = false {
     didSet {
@@ -31,10 +31,10 @@ class ToolbarButton: SKSpriteNode {
     var isPressed = false
     var touch: UITouch?
     
-    init(editModes: EditMode[]) {
+    init(editModes: [EditMode]) {
         self.editModes = editModes
         
-        var tempDisplayNodes: SKNode?[] = []
+        var tempDisplayNodes: [SKNode?] = []
         for editMode in editModes {
             var node: SKSpriteNode?
             switch editMode {

@@ -36,7 +36,7 @@ enum TickTestResult {
 
 class Grid {
     let space: GridSpace
-    let cells: Cell[]
+    var cells: [Cell]
     
     func indexIsValidFor(coord: GridCoord) -> Bool {
         return coord.i>=0 && coord.j>=0 && coord.i<space.columns && coord.j<space.rows
@@ -55,7 +55,7 @@ class Grid {
     
     init(space: GridSpace) {
         self.space = space
-        cells = Cell[](count: space.columns * space.rows, repeatedValue: Cell())
+        cells = [Cell](count: space.columns * space.rows, repeatedValue: Cell())
     }
     
     func testCoord(coord: GridCoord, lastCoord: GridCoord, tape: TapeProtocol) -> TickTestResult {

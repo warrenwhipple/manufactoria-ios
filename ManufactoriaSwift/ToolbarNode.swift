@@ -25,11 +25,11 @@ class ToolbarNode: SKNode, ToolbarButtonDelegate {
     }
     }
     var state: ToolbarNodeState = .Enabled
-    let buttons: ToolbarButton[]
+    let buttons: [ToolbarButton]
     var rect: CGRect = CGRectZero {didSet{fitToRect()}}
     
     init() {
-        var tempButtons: ToolbarButton[] = []
+        var tempButtons: [ToolbarButton] = []
         tempButtons += ToolbarButton(editModes: [EditMode.Blank])
         tempButtons += ToolbarButton(editModes: [EditMode.Belt, EditMode.Bridge])
         tempButtons += ToolbarButton(editModes: [EditMode.PusherB])

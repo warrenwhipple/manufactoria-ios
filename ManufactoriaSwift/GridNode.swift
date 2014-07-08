@@ -36,8 +36,8 @@ class GridNode: SKNode {
     var state = GridNodeState.Editing
     unowned let grid: Grid
     var rect: CGRect = CGRectZero {didSet{fitToRect()}}
-    let wrapper: SKNode
-    let cellNodes: CellNode[]
+    let wrapper = SKNode()
+    var cellNodes: [CellNode] = []
     let entranceCellNode = CellNode()
     let exitCellNode = CellNode()
     var beltShift: Float = 0.0
@@ -47,6 +47,8 @@ class GridNode: SKNode {
     var editCoord = GridCoord(0, 0)
     var editMode = EditMode.Belt
     var bridgeEditMemory: Cell? = nil
+    let robot = SKSpriteNode(texture: SKTexture(imageNamed: "robut.png"), color: UIColor.whiteColor(), size: CGSizeUnit)
+    var robotCoord = GridCoord(0, 0)
     
     subscript(coord: GridCoord) -> CellNode {
         get {
@@ -63,18 +65,13 @@ class GridNode: SKNode {
         self.grid = grid
         let columns = grid.space.columns
         let rows = grid.space.rows
-        wrapper = SKNode()
-        var tempCellNodes: CellNode[] = []
-        for i in 0..(columns * rows) {
-            tempCellNodes += CellNode()
+        for i in 0..<(columns * rows) {
+            cellNodes += CellNode()
         }
-        tempCellNodes += entranceCellNode
-        tempCellNodes += exitCellNode
-        cellNodes = tempCellNodes
         super.init()
         position = rect.origin
-        for i in 0..columns {
-            for j in 0..rows {
+        for i in 0..<columns {
+            for j in 0..<rows {
                 var cellNode = self[GridCoord(i,j)]
                 cellNode.position = CGPoint(x: CGFloat(i) + 0.5, y: CGFloat(j) + 0.5)
                 cellNode.shimmer()
@@ -87,6 +84,9 @@ class GridNode: SKNode {
         exitCellNode.position = CGPoint(x: CGFloat(columns / 2) + 0.5, y: CGFloat(rows) + 0.5)
         exitCellNode.nextCell.type = CellType.Belt
         wrapper.addChild(exitCellNode)
+        robot.zPosition = 3
+        robot.alpha = 0
+        wrapper.addChild(robot)
         fitToRect()
         addChild(wrapper)
     }
@@ -106,9 +106,11 @@ class GridNode: SKNode {
         if state == newState {return}
         switch newState {
         case .Editing:
-            break
+            robot.alpha = 0
         case .Testing:
-            break
+            robot.alpha = 1
+            robotCoord = GridCoord(grid.space.columns / 2, -2)
+            robot.position = CGPoint(x: CGFloat(robotCoord.i) + 0.5, y:CGFloat(robotCoord.j) + 0.5)
         }
         state = newState
     }
