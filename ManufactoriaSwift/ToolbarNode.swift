@@ -86,5 +86,4 @@ class ToolbarNode: SKNode, ToolbarButtonDelegate {
             delegate!.changeEditMode(editMode)
         }
     }
-    
 }

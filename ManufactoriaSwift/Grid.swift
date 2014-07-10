@@ -58,7 +58,7 @@ class Grid {
         cells = [Cell](count: space.columns * space.rows, repeatedValue: Cell())
     }
     
-    func testCoord(coord: GridCoord, lastCoord: GridCoord, tape: TapeProtocol) -> TickTestResult {
+    func testCoord(coord: GridCoord, lastCoord: GridCoord, tape: Tape) -> TickTestResult {
         if coord.i == space.columns / 2 && coord.j == space.rows + 1 {
             return TickTestResult.Accept
         }
@@ -105,8 +105,10 @@ class Grid {
         case .PullerBR:
             if let color = tape.color() {
                 if color == Color.Blue {
+                    tape.deleteColor()
                     return cell.direction.ccw().tickTestResult()
                 } else if color == Color.Red {
+                    tape.deleteColor()
                     return cell.direction.cw().tickTestResult()
                 }
             }
@@ -114,8 +116,10 @@ class Grid {
         case .PullerRB:
             if let color = tape.color() {
                 if color == Color.Red {
+                    tape.deleteColor()
                     return cell.direction.ccw().tickTestResult()
                 } else if color == Color.Blue {
+                    tape.deleteColor()
                     return cell.direction.cw().tickTestResult()
                 }
             }
@@ -123,8 +127,10 @@ class Grid {
         case .PullerGY:
             if let color = tape.color() {
                 if color == Color.Green {
+                    tape.deleteColor()
                     return cell.direction.ccw().tickTestResult()
                 } else if color == Color.Yellow {
+                    tape.deleteColor()
                     return cell.direction.cw().tickTestResult()
                 }
             }
@@ -132,8 +138,10 @@ class Grid {
         case .PullerYG:
             if let color = tape.color() {
                 if color == Color.Yellow {
+                    tape.deleteColor()
                     return cell.direction.ccw().tickTestResult()
                 } else if color == Color.Green {
+                    tape.deleteColor()
                     return cell.direction.cw().tickTestResult()
                 }
             }

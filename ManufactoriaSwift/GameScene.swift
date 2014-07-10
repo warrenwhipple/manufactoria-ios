@@ -15,10 +15,15 @@ enum GameSceneState {
 class GameScene: SKScene, ToolbarNodeDelegate {
     var state: GameSceneState = .Editing
     let grid: Grid
+    let tape = Tape()
     let gridNode: GridNode
-    let toolbarNode: ToolbarNode
-    let testButton: Button
-    
+    let tapeNode = TapeNode()
+    let toolbarNode = ToolbarNode()
+    let testButton = Button()
+    let robotNode = SKSpriteNode(texture: SKTexture(imageNamed: "robut.png"), color: UIColor.whiteColor(), size: CGSizeUnit)
+
+    var robotCoord = GridCoord(0, 0)
+    var lastRobotCoord = GridCoord(0,0)
     var lastUpdateTime: NSTimeInterval = 0.0
     var gameSpeed: Float = 1.0
     var targetGameSpeed: Float = 1.0
@@ -29,20 +34,24 @@ class GameScene: SKScene, ToolbarNodeDelegate {
     init(size: CGSize) {
         grid = Grid(space: GridSpace(11, 11))
         gridNode = GridNode(grid: grid)
-        toolbarNode = ToolbarNode()
-        testButton = Button()
         
         super.init(size: size)
         backgroundColor = UIColor.blackColor()
         
         addChild(gridNode)
         
+        robotNode.zPosition = 3
+        robotNode.alpha = 0
+        gridNode.wrapper.addChild(robotNode)
+        
+        tape.delegate = tapeNode
+        addChild(tapeNode)
+        
         toolbarNode.delegate = self
         addChild(toolbarNode)
         
         testButton.changeText("Test")
         testButton.userInteractionEnabled = true
-        testButton.position = CGPoint(x: size.width * 0.75, y: size.height - (size.height - size.width) * 0.25)
         testButton.closureTouchUpInside = {[weak self] in self!.transitionToState(.Testing)}
         addChild(testButton)
         
@@ -54,11 +63,18 @@ class GameScene: SKScene, ToolbarNodeDelegate {
         switch newState {
         case .Editing:
             gridNode.transitionToState(.Editing)
+            robotNode.alpha = 0
             toolbarNode.transitionToState(.Enabled)
             testButton.changeText("Test")
             testButton.closureTouchUpInside = {[weak self] in self!.transitionToState(.Testing)}
         case .Testing:
             gridNode.transitionToState(.Testing)
+            robotNode.alpha = 1
+            robotCoord = GridCoord(grid.space.columns / 2, -2)
+            lastRobotCoord = GridCoord(robotCoord.i, robotCoord.j - 1)
+            robotNode.position = CGPoint(x: CGFloat(robotCoord.i) + 0.5, y:CGFloat(robotCoord.j) + 0.5)
+            tape.string = ""
+            tapeNode.loadTape(tape, maxLength: 16)
             toolbarNode.transitionToState(.Disabled)
             testButton.changeText("Cancel")
             testButton.closureTouchUpInside = {[weak self] in self!.transitionToState(.Editing)}
@@ -67,8 +83,12 @@ class GameScene: SKScene, ToolbarNodeDelegate {
     }
     
     func fitToSize() {
+        let topGap = (size.height - size.width) * 0.5
+        let bottomGap = size.height - topGap - size.width
         gridNode.rect = CGRect(origin: CGPointZero, size: size)
-        toolbarNode.rect = CGRect(origin: CGPointZero, size: CGSize(width: size.width, height: size.width / 8.0))
+        tapeNode.rect = CGRect(x: 0, y: size.height - topGap, width: size.width, height: topGap)
+        toolbarNode.rect = CGRect(x: 0, y: 0, width: size.width, height: bottomGap * 0.5)
+        testButton.position = CGPoint(x: size.width * 0.75, y: bottomGap * 0.7)
     }
     
     func changeEditMode(editMode: EditMode) {
@@ -93,17 +113,27 @@ class GameScene: SKScene, ToolbarNodeDelegate {
         
         // calculate tick percent
         tickPercent += Float(dt) * gameSpeed
+        
+        // execute ellapsed ticks
         while tickPercent >= 1.0 {
             tickPercent -= 1.0
-            /*
-            MFTickTestResult testResult = [self testNextTick];
-            if (testResult >= MFTickTestResultAccept) {
-                [self transitionToState: MFGameSceneStateEditing];
-                break;
+            let testResult = grid.testCoord(robotCoord, lastCoord: lastRobotCoord, tape: tape)
+            lastRobotCoord = robotCoord
+            switch testResult {
+            case .Accept: transitionToState(GameSceneState.Editing)
+            case .Reject: transitionToState(GameSceneState.Editing)
+            case .North: robotCoord.j++
+            case .East: robotCoord.i++
+            case .South: robotCoord.j--
+            case .West: robotCoord.i--
             }
-            */
         }
-        //_robotNode.position = CGPointMake(_lastTestCoord.i+_tickPercent*(_testCoord.i-_lastTestCoord.i)+0.5f, _lastTestCoord.j+_tickPercent*(_testCoord.j-_lastTestCoord.j)+0.5f);
+        
+        // move robot
+        robotNode.position = CGPoint(
+            x: CGFloat(lastRobotCoord.i) + CGFloat(tickPercent) * CGFloat(robotCoord.i - lastRobotCoord.i) + 0.5,
+            y: CGFloat(lastRobotCoord.j) + CGFloat(tickPercent) * CGFloat(robotCoord.j - lastRobotCoord.j) + 0.5
+        )
         
         // update child nodes
         gridNode.update(dt, tickPercent: tickPercent)

@@ -153,5 +153,4 @@ class CellNode: SKSpriteNode {
             runAction(shimmerActionSequence, completion: {[weak self] in self!.shimmer()})
         }
     }
-    
 }

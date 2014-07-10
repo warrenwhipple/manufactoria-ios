@@ -37,7 +37,7 @@ class GridNode: SKNode {
     unowned let grid: Grid
     var rect: CGRect = CGRectZero {didSet{fitToRect()}}
     let wrapper = SKNode()
-    var cellNodes: [CellNode] = []
+    let cellNodes: [CellNode]
     let entranceCellNode = CellNode()
     let exitCellNode = CellNode()
     var beltShift: Float = 0.0
@@ -47,46 +47,39 @@ class GridNode: SKNode {
     var editCoord = GridCoord(0, 0)
     var editMode = EditMode.Belt
     var bridgeEditMemory: Cell? = nil
-    let robot = SKSpriteNode(texture: SKTexture(imageNamed: "robut.png"), color: UIColor.whiteColor(), size: CGSizeUnit)
-    var robotCoord = GridCoord(0, 0)
     
     subscript(coord: GridCoord) -> CellNode {
         get {
             assert(grid.indexIsValidFor(coord), "Index out of range.")
             return cellNodes[grid.space.columns * coord.j + coord.i]
         }
-        set {
-            assert(grid.indexIsValidFor(coord), "Index out of range.")
-            cellNodes[grid.space.columns * coord.j + coord.i] = newValue
-        }
     }
     
     init(grid: Grid) {
         self.grid = grid
-        let columns = grid.space.columns
-        let rows = grid.space.rows
-        for i in 0..<(columns * rows) {
-            cellNodes += CellNode()
+        var tempCellNodes: [CellNode] = []
+        for i in 0..<(grid.space.columns * grid.space.rows) {
+            tempCellNodes += CellNode()
         }
+        tempCellNodes += entranceCellNode
+        tempCellNodes += exitCellNode
+        cellNodes = tempCellNodes
         super.init()
         position = rect.origin
-        for i in 0..<columns {
-            for j in 0..<rows {
+        for i in 0..<grid.space.columns {
+            for j in 0..<grid.space.rows {
                 var cellNode = self[GridCoord(i,j)]
                 cellNode.position = CGPoint(x: CGFloat(i) + 0.5, y: CGFloat(j) + 0.5)
                 cellNode.shimmer()
                 wrapper.addChild(cellNode)
             }
         }
-        entranceCellNode.position = CGPoint(x: CGFloat(columns / 2) + 0.5, y: -0.5)
+        entranceCellNode.position = CGPoint(x: CGFloat(grid.space.columns / 2) + 0.5, y: -0.5)
         entranceCellNode.nextCell.type = CellType.Belt
         wrapper.addChild(entranceCellNode)
-        exitCellNode.position = CGPoint(x: CGFloat(columns / 2) + 0.5, y: CGFloat(rows) + 0.5)
+        exitCellNode.position = CGPoint(x: CGFloat(grid.space.columns / 2) + 0.5, y: CGFloat(grid.space.rows) + 0.5)
         exitCellNode.nextCell.type = CellType.Belt
         wrapper.addChild(exitCellNode)
-        robot.zPosition = 3
-        robot.alpha = 0
-        wrapper.addChild(robot)
         fitToRect()
         addChild(wrapper)
     }
@@ -106,11 +99,9 @@ class GridNode: SKNode {
         if state == newState {return}
         switch newState {
         case .Editing:
-            robot.alpha = 0
+            break
         case .Testing:
-            robot.alpha = 1
-            robotCoord = GridCoord(grid.space.columns / 2, -2)
-            robot.position = CGPoint(x: CGFloat(robotCoord.i) + 0.5, y:CGFloat(robotCoord.j) + 0.5)
+            break
         }
         state = newState
     }
@@ -261,48 +252,7 @@ class GridNode: SKNode {
             self[touchCoord].nextCell = touchCell
         }
         editCoord = touchCoord
-        bridgeEditMemory = nil
-        
-        /*
-        case MFEditModeBridge: {
-            if (MFGridSizeContainsCoord(_gridSize, _editCoord)) {
-                MFCell *cell = &_grid.cells[_editCoord.i][_editCoord.j];
-                if (!(*cell).fixed || _canEditFixed) {
-                    if (_useBridgeEditMemory) {
-                        [self changeToCell:_bridgeEditMemory];
-                        if (touchCoord.j > _editCoord.j) [self addBridgeDirection:MFDirectionN];
-                        else if (touchCoord.i < _editCoord.i) [self addBridgeDirection:MFDirectionW];
-                        else if (touchCoord.i > _editCoord.i) [self addBridgeDirection:MFDirectionE];
-                        else [self addBridgeDirection:MFDirectionS];
-                    }
-                    else {
-                        if (touchCoord.j > _editCoord.j) {
-                            if (_bridgeEditDirection == MFDirectionN) [self addBridgeDirection:MFDirectionN];
-                            else [self changeToCell:MFCellMake(MFCellTypeBelt, MFDirectionN, _addFixed)];
-                        }
-                        else if (touchCoord.i < _editCoord.i) {
-                            if (_bridgeEditDirection == MFDirectionW) [self addBridgeDirection:MFDirectionW];
-                            else [self changeToCell:MFCellMake(MFCellTypeBelt, MFDirectionW, _addFixed)];
-                        }
-                        else if (touchCoord.i > _editCoord.i) {
-                            if (_bridgeEditDirection == MFDirectionE) [self addBridgeDirection:MFDirectionE];
-                            else [self changeToCell:MFCellMake(MFCellTypeBelt, MFDirectionE, _addFixed)];
-                        }
-                        else {
-                            if (_bridgeEditDirection == MFDirectionS) [self addBridgeDirection:MFDirectionS];
-                            else [self changeToCell:MFCellMake(MFCellTypeBelt, MFDirectionS, _addFixed)];
-                        }
-                    }
-                }
-            }
-            if (touchCoord.j > _editCoord.j) _bridgeEditDirection = MFDirectionN;
-            else if (touchCoord.i < _editCoord.i) _bridgeEditDirection = MFDirectionW;
-            else if (touchCoord.i > _editCoord.i) _bridgeEditDirection = MFDirectionE;
-            else _bridgeEditDirection = MFDirectionS;
-            _editCoord = touchCoord;
-            _useBridgeEditMemory = NO;
-        } break;
-        */
+        bridgeEditMemory = nil        
     }
     
     override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
