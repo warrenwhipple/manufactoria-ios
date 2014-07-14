@@ -19,7 +19,7 @@ class GameViewController: UIViewController {
         skView.showsNodeCount = false
         skView.ignoresSiblingOrder = true
         
-        let scene = GameScene(size: skView.bounds.size)
+        let scene = MenuScene(size: skView.bounds.size)
         scene.scaleMode = .AspectFill
         
         skView.presentScene(scene)
@@ -41,5 +41,4 @@ class GameViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Release any cached data, images, etc that aren't in use.
     }
-    
 }

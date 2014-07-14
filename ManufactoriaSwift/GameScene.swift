@@ -31,7 +31,7 @@ class GameScene: SKScene, ToolbarNodeDelegate {
     
     override var size: CGSize {didSet{fitToSize()}}
     
-    init(size: CGSize) {
+    init(size: CGSize, levelData: LevelData) {
         grid = Grid(space: GridSpace(11, 11))
         gridNode = GridNode(grid: grid)
         
