@@ -37,6 +37,11 @@ enum TickTestResult {
 class Grid {
   let space: GridSpace
   var cells: [Cell]
+  var centerColumn: Int {return space.columns / 2}
+  var startCoord: GridCoord {return GridCoord(space.columns / 2, -1)}
+  var startCoordPlusOne: GridCoord {return GridCoord(space.columns / 2, 0)}
+  var endCoord: GridCoord {return GridCoord(space.columns / 2, space.rows)}
+  //var endCoordPlusOne: GridCoord {return GridCoord(space.columns / 2, space.rows + 1)}
   
   func indexIsValidFor(coord: GridCoord) -> Bool {
     return coord.i>=0 && coord.j>=0 && coord.i<space.columns && coord.j<space.rows
@@ -59,15 +64,10 @@ class Grid {
   }
   
   func testCoord(coord: GridCoord, lastCoord: GridCoord, tape: Tape) -> TickTestResult {
-    if coord.i == space.columns / 2 && coord.j == space.rows + 1 {
-      return TickTestResult.Accept
-    }
-    if coord.i == space.columns / 2 && (coord.j == space.rows || coord.j < 0) {
-      return TickTestResult.North
-    }
-    if !indexIsValidFor(coord) {
-      return TickTestResult.Reject
-    }
+    if coord == startCoord {return .North}
+    if coord == endCoord {return .Accept}
+    //if coord == endCoordPlusOne {return .Accept}
+    if !indexIsValidFor(coord) {return TickTestResult.Reject}
     
     let cell = self[coord]
     switch cell.type {

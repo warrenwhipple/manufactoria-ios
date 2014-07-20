@@ -136,8 +136,8 @@ class TapeTestOp: NSOperation {
   
   override func main() {
     autoreleasepool {
-      var coord = GridCoord(self.grid.space.columns / 2, 0)
-      var lastcoord = GridCoord(self.grid.space.columns / 2, -1)
+      var coord = self.grid.startCoordPlusOne
+      var lastcoord = self.grid.startCoord
       while !self.cancelled {
         let tickResult = self.grid.testCoord(coord, lastCoord: lastcoord, tape: self.tape)
         self.tickCount++

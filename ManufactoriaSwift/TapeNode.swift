@@ -15,12 +15,21 @@ class TapeNode: SKNode, TapeDelegate {
   let dotTexture = SKTexture(imageNamed: "dot.png")
   let dotSpacing: CGFloat
   let printer = SKSpriteNode(imageNamed: "printer.png")
+  let eraser = SKSpriteNode(imageNamed: "eraser.png")
+  let fader: SKSpriteNode
   
   init() {
     dotSpacing = dotTexture.size().width * 1.5
+    fader = SKSpriteNode(color: UIColor.blackColor(), size: CGSize(width: dotSpacing, height: dotSpacing))
     super.init()
-    printer.zPosition = 1
+    printer.zPosition = 2
     addChild(printer)
+    eraser.zPosition = 2
+    eraser.position.x = dotSpacing * -0.5
+    addChild(eraser)
+    fader.zPosition = 1
+    fader.position.x = -dotSpacing
+    addChild(fader)
   }
   
   func fitToRect() {
@@ -91,10 +100,10 @@ class TapeNode: SKNode, TapeDelegate {
     // animate deleting dot
     let deleteDot = SKAction.moveByX(-dotSpacing, y: 0, duration: 1)
     deleteDot.timingMode = .EaseInEaseOut
-    dots[0].runAction(SKAction.sequence([
-      SKAction.group([deleteDot, SKAction.fadeOutWithDuration(1)]),
-      SKAction.removeFromParent()]))
+    dots[0].runAction(SKAction.sequence([deleteDot,SKAction.removeFromParent()]))
     dots.removeAtIndex(0)
+    fader.alpha = 0
+    fader.runAction(SKAction.fadeInWithDuration(1))
     
     // move remaining dots
     var i = 0

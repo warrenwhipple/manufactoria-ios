@@ -12,7 +12,7 @@ enum GameSceneState {
   case Editing, Thinking, Testing
 }
 
-class GameScene: SKScene, ToolbarNodeDelegate, EngineDelegate {
+class GameScene: SKScene, ToolbarNodeDelegate, EngineDelegate, MenuTriangleDelegate {
   // model objects
   let grid: Grid
   let tape = Tape()
@@ -22,7 +22,7 @@ class GameScene: SKScene, ToolbarNodeDelegate, EngineDelegate {
   let gridNode: GridNode
   let tapeNode = TapeNode()
   let toolbarNode = ToolbarNode()
-  let menuButton = Button()
+  let menuTriangle = MenuTriangle()
   let testButton = Button()
   let robotNode = SKSpriteNode(texture: SKTexture(imageNamed: "robut.png"), color: UIColor.whiteColor(), size: CGSizeUnit)
   
@@ -34,6 +34,7 @@ class GameScene: SKScene, ToolbarNodeDelegate, EngineDelegate {
   var gameSpeed: Float = 1.0
   var targetGameSpeed: Float = 1.0
   var tickPercent: Float = 0.0
+  var beltPercent: Float = 0.0
   
   override var size: CGSize {didSet{fitToSize()}}
   
@@ -59,15 +60,8 @@ class GameScene: SKScene, ToolbarNodeDelegate, EngineDelegate {
     toolbarNode.delegate = self
     addChild(toolbarNode)
     
-    menuButton.changeText("Menu")
-    menuButton.userInteractionEnabled = true
-    menuButton.closureTouchUpInside = {
-      [weak self] in
-      self!.view.presentScene(
-        MenuScene(size: size),
-        transition: SKTransition.crossFadeWithDuration(0.5))
-    }
-    addChild(menuButton)
+    menuTriangle.delegate = self
+    self.addChild(menuTriangle)
     
     testButton.changeText("Test")
     testButton.userInteractionEnabled = true
@@ -83,23 +77,21 @@ class GameScene: SKScene, ToolbarNodeDelegate, EngineDelegate {
     case .Editing:
       engine.cancelAllTests()
       gridNode.transitionToState(.Editing)
-      robotNode.alpha = 0
+      robotNode.runAction(SKAction.fadeOutWithDuration(0.5))
       toolbarNode.transitionToState(.Enabled)
       testButton.changeText("Test")
       testButton.closureTouchUpInside = {[weak self] in self!.transitionToState(.Thinking)}
     case .Thinking:
       gridNode.transitionToState(.Waiting)
-      robotNode.alpha = 0
       toolbarNode.transitionToState(.Disabled)
       testButton.changeText("Cancel")
       testButton.closureTouchUpInside = {[weak self] in self!.transitionToState(.Editing)}
       engine.queueTestWithGrid(grid)
     case .Testing:
       gridNode.transitionToState(.Waiting)
-      robotNode.alpha = 1
-      robotCoord = GridCoord(grid.space.columns / 2, -2)
-      lastRobotCoord = GridCoord(robotCoord.i, robotCoord.j - 1)
-      robotNode.position = CGPoint(x: CGFloat(robotCoord.i) + 0.5, y:CGFloat(robotCoord.j) + 0.5)
+      tickPercent = 0
+      robotCoord = grid.startCoordPlusOne
+      lastRobotCoord = grid.startCoord
       tapeNode.loadTape(tape, maxLength: 16)
       toolbarNode.transitionToState(.Disabled)
       testButton.changeText("Cancel")
@@ -114,7 +106,7 @@ class GameScene: SKScene, ToolbarNodeDelegate, EngineDelegate {
     gridNode.rect = CGRect(origin: CGPointZero, size: size)
     tapeNode.rect = CGRect(x: 0, y: size.height - topGap, width: size.width, height: topGap)
     toolbarNode.rect = CGRect(x: 0, y: 0, width: size.width, height: bottomGap * 0.5)
-    menuButton.position = CGPoint(x: size.width * 0.25, y: bottomGap * 0.7)
+    menuTriangle.position = CGPoint(x: size.width - menuTriangle.size.width / 2, y: size.height - menuTriangle.size.height / 2)
     testButton.position = CGPoint(x: size.width * 0.75, y: bottomGap * 0.7)
   }
   
@@ -135,16 +127,21 @@ class GameScene: SKScene, ToolbarNodeDelegate, EngineDelegate {
       dt = 1.0/60.0
     }
     
+    // calculate belt percent
+    beltPercent += Float(dt)
+    while beltPercent >= 1.0 {
+      beltPercent -= 1.0
+    }
+    
     // adjust game speed
     gameSpeed = (gameSpeed + targetGameSpeed) * 0.5
     
-    // calculate tick percent
-    tickPercent += Float(dt) * gameSpeed
-    
-    // execute ellapsed ticks
-    while tickPercent >= 1.0 {
-      tickPercent -= 1.0
-      if state == .Testing {
+    if state == .Testing {
+
+      // execute ellapsed ticks
+      tickPercent += Float(dt) * gameSpeed
+      while tickPercent >= 1.0 {
+        tickPercent -= 1.0
         let testResult = grid.testCoord(robotCoord, lastCoord: lastRobotCoord, tape: tape)
         lastRobotCoord = robotCoord
         switch testResult {
@@ -156,18 +153,25 @@ class GameScene: SKScene, ToolbarNodeDelegate, EngineDelegate {
         case .West: robotCoord.i--
         }
       }
-    }
-    
-    // move robot
-    if state == .Testing {
+      
+      // update robot
       robotNode.position = CGPoint(
         x: CGFloat(lastRobotCoord.i) + CGFloat(tickPercent) * CGFloat(robotCoord.i - lastRobotCoord.i) + 0.5,
         y: CGFloat(lastRobotCoord.j) + CGFloat(tickPercent) * CGFloat(robotCoord.j - lastRobotCoord.j) + 0.5
       )
+      if lastRobotCoord == grid.startCoord {
+        robotNode.alpha = CGFloat(tickPercent)
+      } else if lastRobotCoord == grid.endCoord {
+        robotNode.alpha = 0
+      } else if robotCoord == grid.startCoord || robotCoord == grid.endCoord {
+        robotNode.alpha = CGFloat(1.0 - tickPercent)
+      } else {
+        robotNode.alpha = 1
+      }
     }
     
     // update child nodes
-    gridNode.update(dt, tickPercent: tickPercent)
+    gridNode.update(dt, beltPercent: beltPercent)
   }
   
   func gridTestDidPass() {
@@ -185,6 +189,9 @@ class GameScene: SKScene, ToolbarNodeDelegate, EngineDelegate {
     self.transitionToState(.Testing)
   }
   
+  func menuTrianglePressed() {
+    view.presentScene(MenuScene(size: size), transition: SKTransition.crossFadeWithDuration(0.5))
+  }
   
   override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
     gridNode.touchesBegan(touches, withEvent: event)

@@ -50,8 +50,8 @@ class ToolbarNode: SKNode, ToolbarButtonDelegate {
     if rect == CGRectZero {return}
     if buttons.count == 0 {return}
     let buttonSize = min(rect.size.height, rect.size.width / CGFloat(buttons.count))
-    var xShift = (rect.size.width - buttonSize * CGFloat(buttons.count - 1)) / 2.0
-    let yShift = rect.size.height / 2.0
+    var xShift = (rect.size.width - buttonSize * CGFloat(buttons.count - 1)) * 0.5
+    let yShift = rect.size.height * 0.5
     for button in buttons {
       button.setScale(buttonSize)
       button.position = CGPoint(x: xShift, y: yShift)

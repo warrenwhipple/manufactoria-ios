@@ -74,12 +74,22 @@ class GridNode: SKNode {
         wrapper.addChild(cellNode)
       }
     }
-    entranceCellNode.position = CGPoint(x: CGFloat(grid.space.columns / 2) + 0.5, y: -0.5)
+    
+    let entranceCellNodeFade = SKSpriteNode(texture: SKTexture(imageNamed: "beltFadeMask.png"), color: UIColor.blackColor(), size: CGSize(width: 1, height: 1))
+    entranceCellNodeFade.colorBlendFactor = 1
+    entranceCellNodeFade.zPosition = 2
+    let exitCellNodeFade = entranceCellNodeFade.copy() as SKSpriteNode
+    entranceCellNodeFade.yScale = -1
+
+    entranceCellNode.position = CGPoint(x: CGFloat(grid.centerColumn) + 0.5, y: -0.5)
     entranceCellNode.nextCell.type = CellType.Belt
+    entranceCellNode.addChild(entranceCellNodeFade)
     wrapper.addChild(entranceCellNode)
-    exitCellNode.position = CGPoint(x: CGFloat(grid.space.columns / 2) + 0.5, y: CGFloat(grid.space.rows) + 0.5)
+    exitCellNode.position = CGPoint(x: CGFloat(grid.centerColumn) + 0.5, y: CGFloat(grid.space.rows) + 0.5)
     exitCellNode.nextCell.type = CellType.Belt
+    exitCellNode.addChild(exitCellNodeFade)
     wrapper.addChild(exitCellNode)
+    
     fitToRect()
     addChild(wrapper)
   }
@@ -88,7 +98,7 @@ class GridNode: SKNode {
     if rect == CGRectZero {return}
     let maxCellWidth = rect.size.width / CGFloat(grid.space.columns)
     let maxCellHeight = rect.size.height / CGFloat(grid.space.rows)
-    let maxCellSize: CGFloat = 64.0
+    let maxCellSize: CGFloat = 40.0
     let cellSize = min(maxCellWidth, maxCellHeight, maxCellSize)
     let gridSize = CGSize(width: cellSize * CGFloat(grid.space.columns), height: cellSize * CGFloat(grid.space.rows))
     wrapper.position = CGPoint(x: (rect.size.width - gridSize.width) * 0.5, y: (rect.size.height - gridSize.height) * 0.5)
@@ -106,8 +116,8 @@ class GridNode: SKNode {
     state = newState
   }
   
-  func update(dt: NSTimeInterval, tickPercent: Float) {
-    clippedBeltTexture = SKTexture(rect: CGRect(x: 0, y: CGFloat(1.0 - tickPercent) * 0.25, width: 1, height: 0.5), inTexture: beltTexture)
+  func update(dt: NSTimeInterval, beltPercent: Float) {
+    clippedBeltTexture = SKTexture(rect: CGRect(x: 0, y: CGFloat(1.0 - beltPercent) * 0.25, width: 1, height: 0.5), inTexture: beltTexture)
     for cellNode in cellNodes {
       cellNode.update(dt, clippedBeltTexture: clippedBeltTexture)
     }
