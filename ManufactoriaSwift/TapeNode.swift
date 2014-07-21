@@ -37,7 +37,7 @@ class TapeNode: SKNode, TapeDelegate {
     position = CGPoint(x: dotSpacing * 2.0, y: rect.origin.y + rect.size.height * 0.5)
   }
   
-  func loadTape(tape: Tape, maxLength: Int) {
+  func loadString(string: String, maxLength: Int) {
     self.maxLength = maxLength
     
     // remove old dots
@@ -46,7 +46,7 @@ class TapeNode: SKNode, TapeDelegate {
     
     // add new dots
     var i = 0
-    for character in tape.string {
+    for character in string {
       let dot = SKSpriteNode(texture: dotTexture)
       switch character {
       case "b": dot.color = ColorBlue

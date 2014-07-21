@@ -9,7 +9,7 @@
 import Foundation
 
 @objc protocol EngineDelegate {
-  func gridTestDidPass()
+  func gridTestDidPassWithExemplars(exemplars: [String], maxLengths: [Int])
   func gridTestDidFailWithTapeTest(tapeTest: TapeTestOp)
   func gridTestDidLoopWithTapeTest(tapeTest: TapeTestOp)
 }
@@ -30,9 +30,11 @@ class Engine: TapeTestQueueOpDelegate, TapeTestOpDelegate {
   let queue = NSOperationQueue()
   var queuedTapeTestCount = 0
   var passedTapeTestCount = 0
+  var exemplarMaxLengths: [Int]
   
   init(levelData: LevelData) {
     self.levelData = levelData
+    exemplarMaxLengths = [Int](count: levelData.exemplars.count, repeatedValue: 0)
   }
   
   func queueTestWithGrid(grid: Grid) {
@@ -57,6 +59,8 @@ class Engine: TapeTestQueueOpDelegate, TapeTestOpDelegate {
   
   func tapeTestDidFinish(tapeTestOp: TapeTestOp) {
     if !isTesting {return}
+    
+    // check for tape test failure
     if let passFunction = levelData.passFunction {
       if passFunction(tapeTestOp.input) == !tapeTestOp.output {
         cancelAllTests()
@@ -73,8 +77,18 @@ class Engine: TapeTestQueueOpDelegate, TapeTestOpDelegate {
       assert(!levelData.passFunction && !levelData.transformFunction)
     }
     if !isTesting {return}
+    
+    // record max length if one of exemplars
+    var i = 0
+    for exemplar in levelData.exemplars {
+      if exemplar == tapeTestOp.input {
+        exemplarMaxLengths[i++] = tapeTestOp.maxTapeLength
+      }
+    }
+    
+    // check if all tape tests are complete
     if ++passedTapeTestCount == queuedTapeTestCount {
-      delegate?.gridTestDidPass()
+      delegate?.gridTestDidPassWithExemplars(levelData.exemplars, maxLengths: exemplarMaxLengths)
     }
   }
   

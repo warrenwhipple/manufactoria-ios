@@ -18,30 +18,27 @@ protocol TapeDelegate {
 }
 
 class Tape {
-  var string: String
   var delegate: TapeDelegate?
+  var string = ""
   
-  init() {
-    string = ""
-  }
+  init() {}
   
   init(_ string: String) {
-    self.string = string
-    clean()
+    loadString(string)
   }
   
-  func clean() {
-    var newString = ""
+  func loadString(string: String) {
+    var cleanedString = ""
     for c in string {
       switch c {
-      case "b", "B", "1": newString += "b"
-      case "r", "R", "0": newString += "r"
-      case "g", "G": newString += "g"
-      case "y", "Y": newString += "y"
+      case "b", "B", "1": cleanedString += "b"
+      case "r", "R", "0": cleanedString += "r"
+      case "g", "G": cleanedString += "g"
+      case "y", "Y": cleanedString += "y"
       default: break
       }
     }
-    if string != newString {string = newString}
+    self.string = cleanedString
   }
   
   func color() -> Color? {

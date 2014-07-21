@@ -15,6 +15,7 @@ enum GameSceneState {
 class GameScene: SKScene, ToolbarNodeDelegate, EngineDelegate, MenuTriangleDelegate {
   // model objects
   let grid: Grid
+  var stringQueue: [(String, Int)] = []
   let tape = Tape()
   let engine: Engine
   
@@ -88,11 +89,11 @@ class GameScene: SKScene, ToolbarNodeDelegate, EngineDelegate, MenuTriangleDeleg
       testButton.closureTouchUpInside = {[weak self] in self!.transitionToState(.Editing)}
       engine.queueTestWithGrid(grid)
     case .Testing:
+      if !loadNextTape() {
+        stringQueue = [("", 8)]
+        loadNextTape()
+      }
       gridNode.transitionToState(.Waiting)
-      tickPercent = 0
-      robotCoord = grid.startCoordPlusOne
-      lastRobotCoord = grid.startCoord
-      tapeNode.loadTape(tape, maxLength: 16)
       toolbarNode.transitionToState(.Disabled)
       testButton.changeText("Cancel")
       testButton.closureTouchUpInside = {[weak self] in self!.transitionToState(.Editing)}
@@ -145,8 +146,7 @@ class GameScene: SKScene, ToolbarNodeDelegate, EngineDelegate, MenuTriangleDeleg
         let testResult = grid.testCoord(robotCoord, lastCoord: lastRobotCoord, tape: tape)
         lastRobotCoord = robotCoord
         switch testResult {
-        case .Accept: transitionToState(GameSceneState.Editing)
-        case .Reject: transitionToState(GameSceneState.Editing)
+        case .Accept, .Reject: if !loadNextTape() {transitionToState(GameSceneState.Editing)}
         case .North: robotCoord.j++
         case .East: robotCoord.i++
         case .South: robotCoord.j--
@@ -174,18 +174,39 @@ class GameScene: SKScene, ToolbarNodeDelegate, EngineDelegate, MenuTriangleDeleg
     gridNode.update(dt, beltPercent: beltPercent)
   }
   
-  func gridTestDidPass() {
+  func loadNextTape() -> Bool {
+    if stringQueue.count > 0 {
+      tickPercent = 0
+      robotCoord = grid.startCoordPlusOne
+      lastRobotCoord = grid.startCoord
+      tape.loadString(stringQueue[0].0)
+      tapeNode.loadString(stringQueue[0].0, maxLength: stringQueue[0].1)
+      stringQueue.removeAtIndex(0)
+      return true
+    }
+    return false
+  }
+  
+  func gridTestDidPassWithExemplars(exemplars: [String], maxLengths: [Int])  {
+    assert(exemplars.count == maxLengths.count)
     println("Grid test passed.")
+    stringQueue = []
+    var i = 0
+    for exemplar in exemplars {
+      stringQueue += (exemplar, maxLengths[i++])
+    }
     self.transitionToState(.Testing)
   }
   
   func gridTestDidFailWithTapeTest(tapeTest: TapeTestOp) {
-    println("Grid test failed.")
+    println("Grid test failed with input: \(tapeTest.input).")
+    stringQueue = [(tapeTest.input, tapeTest.maxTapeLength)]
     self.transitionToState(.Testing)
   }
   
   func gridTestDidLoopWithTapeTest(tapeTest: TapeTestOp) {
     println("Grid test looped.")
+    stringQueue = [(tapeTest.input, tapeTest.maxTapeLength)]
     self.transitionToState(.Testing)
   }
   
