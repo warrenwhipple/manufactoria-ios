@@ -20,54 +20,144 @@ struct LevelData {
   let generationFunction: GenerationFunction
   let passFunction: PassFunction?
   let transformFunction: TransformFunction?
+  
+  init(tag: String, description: String, space: GridSpace, exemplars: [String],
+    generationFunction: GenerationFunction, passFunction: PassFunction) {
+      self.tag = tag
+      self.description = description
+      self.space = space
+      self.exemplars = exemplars
+      self.generationFunction = generationFunction
+      self.passFunction = passFunction
+      self.transformFunction = nil
+  }
+  
+  init(tag: String, description: String, space: GridSpace, exemplars: [String],
+    generationFunction: GenerationFunction, transformFunction: TransformFunction) {
+      self.tag = tag
+      self.description = description
+      self.space = space
+      self.exemplars = exemplars
+      self.generationFunction = generationFunction
+      self.passFunction = nil
+      self.transformFunction = transformFunction
+  }
+}
+
+// Helper functions for generating string inputs
+
+func generate(characters: String, count: Int, filter: ((String) -> (Bool))) -> [String] {
+  var list: [String] = [""]
+  if characters == "" {return list}
+  var lastLevel = [""]
+  var nextLevel: [String] = []
+  while true {
+    for string in lastLevel {
+      for character in characters {
+        let newString = string + character
+        if filter(newString) {list += newString}
+        if list.count >= count {return list}
+        nextLevel += newString
+      }
+    }
+    lastLevel = nextLevel
+    nextLevel = []
+  }
+}
+
+func generate(characters: String, count: Int) -> [String] {
+  return generate(characters, count, {s in return true})
+}
+
+func toInt(s: String) -> Int {
+  var n = 0
+  var i = 1
+  for c in s {
+    if c == "b" {n += i}
+    i *= 2
+  }
+  return n
+}
+
+func toStr(var n: Int) -> String {
+  if n == 0 {return "r"}
+  var s = ""
+  var i = 1
+  while n > 0 {
+    if n % (2 * i) > 0 {
+      n -= i
+      s += "b"
+    } else {
+      s += "r"
+    }
+    i *= 2
+  }
+  return s
 }
 
 class LevelLibrary {
   class var sharedInstace: LevelLibrary {struct Static {static let instance = LevelLibrary()}; return Static.instance}
   subscript(i: Int) -> LevelData {get {return library[i]}}
   
-  
-  
   let library: [LevelData] = [
     
     LevelData(
-      tag: "move", // ↑
+      tag: "move",
       description: "Transport across\n the factory floor.",
-      space: GridSpace(5, 5),
-      exemplars: ["br", "rb"],
-      generationFunction: {i in return [""]},
-      passFunction: {i in return true},
-      transformFunction: nil
+      space: GridSpace(3, 3),
+      exemplars: [""],
+      generationFunction: {n in return [""]},
+      passFunction: {string in return true}
     ),
     
     LevelData(
-      tag: "sort", // ↖↗
+      tag: "B",
       description: "Accept: Blue. Transport across.\nReject: Red. Dump on the floor.",
-      space: GridSpace(9, 9),
-      exemplars: ["br", "rb"],
-      generationFunction: {i in return ["B", "R"]},
-      passFunction: {i in return true},
-      transformFunction: nil
+      space: GridSpace(3, 3),
+      exemplars: ["b", "r"],
+      generationFunction: {n in return ["b", "r"]},
+      passFunction: {string in return string == "b"}
     ),
     
     LevelData(
-      tag: "rbr…", // …
-      description: "Accept: Strings that begin red, blue, red.",
-      space: GridSpace(9, 9),
-      exemplars: ["br", "rb"],
-      generationFunction: {i in return ["", "RBR", "BRB"]},
-      passFunction: {i in return true},
-      transformFunction: nil
+      tag: "BRB...",
+      description: "Accept: Strings that begin blue, red, blue.",
+      space: GridSpace(5, 5),
+      exemplars: ["brbr", "rbrb"],
+      generationFunction: {n in return generate("br", n)},
+      passFunction: {
+        s in
+        if s.utf16count < 3 {return false}
+        return s[0...2] == "brb"
+      }
     ),
     
     LevelData(
-      tag: "≥3b", // ≥
+      tag: ">=3B",
       description: "Accept: Strings with three or more blues.",
-      space: GridSpace(9, 9),
-      exemplars: ["br", "rb"],
-      generationFunction: {i in return [""]},
-      passFunction: {i in return true},
-      transformFunction: nil
+      space: GridSpace(5, 5),
+      exemplars: ["brbrb", "rbrbr"],
+      generationFunction: {n in return generate("br", n)},
+      passFunction: {
+        s in
+        var k = 0
+        for c in s {if c == "b" {if ++k >= 3 {return true}}}
+        return false
+      }
+    ),
+    
+    LevelData(
+      tag: "noR",
+      description: "Reject: Strings that contain any red.",
+      space: GridSpace(5, 5),
+      exemplars: ["bbbb", "bbrb"],
+      generationFunction: {n in return generate("br", n)},
+      passFunction: {
+        s in
+        var k = 0
+        for c in s {if c == "r" {return false}}
+        return true
+      }
     ),
   ]
 }

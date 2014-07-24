@@ -187,13 +187,12 @@ class GameScene: SKScene, ToolbarNodeDelegate, EngineDelegate, MenuTriangleDeleg
     return false
   }
   
-  func gridTestDidPassWithExemplars(exemplars: [String], maxLengths: [Int])  {
-    assert(exemplars.count == maxLengths.count)
+  func gridTestDidPassWithExemplarTapeTests(exemplarTapeTests: [TapeTestOp]) {
     println("Grid test passed.")
     stringQueue = []
     var i = 0
-    for exemplar in exemplars {
-      stringQueue += (exemplar, maxLengths[i++])
+    for exemplarTapeTest in exemplarTapeTests {
+      stringQueue += (exemplarTapeTest.input, exemplarTapeTest.maxTapeLength)
     }
     self.transitionToState(.Testing)
   }
