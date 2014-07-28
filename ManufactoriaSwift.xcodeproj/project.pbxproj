@@ -28,6 +28,10 @@
 		2DC49148194F45B800053237 /* ManufactoriaSwiftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC49147194F45B800053237 /* ManufactoriaSwiftTests.swift */; };
 		2DC4915D194F621A00053237 /* Grid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC4915C194F621A00053237 /* Grid.swift */; };
 		2DC4915F194F671F00053237 /* Cell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC4915E194F671F00053237 /* Cell.swift */; };
+		2DCA18A31985741100DF3118 /* LevelButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCA18A21985741100DF3118 /* LevelButton.swift */; };
+		2DCA18A51985849B00DF3118 /* SpriteKitExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCA18A41985849B00DF3118 /* SpriteKitExtensions.swift */; };
+		2DCA18A71985AA0200DF3118 /* ResetScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCA18A61985AA0200DF3118 /* ResetScene.swift */; };
+		2DCA18A91985B01C00DF3118 /* TestButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCA18A81985B01C00DF3118 /* TestButton.swift */; };
 		2DD23D6C196DB17C00838E96 /* TapeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD23D6B196DB17C00838E96 /* TapeNode.swift */; };
 		2DD23D6E196F0BF900838E96 /* LevelLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD23D6D196F0BF900838E96 /* LevelLibrary.swift */; };
 		2DD23D71196F223E00838E96 /* MenuScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD23D70196F223E00838E96 /* MenuScene.swift */; };
@@ -70,6 +74,10 @@
 		2DC49147194F45B800053237 /* ManufactoriaSwiftTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManufactoriaSwiftTests.swift; sourceTree = "<group>"; };
 		2DC4915C194F621A00053237 /* Grid.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Grid.swift; sourceTree = "<group>"; };
 		2DC4915E194F671F00053237 /* Cell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cell.swift; sourceTree = "<group>"; };
+		2DCA18A21985741100DF3118 /* LevelButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LevelButton.swift; path = ../LevelButton.swift; sourceTree = "<group>"; };
+		2DCA18A41985849B00DF3118 /* SpriteKitExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpriteKitExtensions.swift; sourceTree = "<group>"; };
+		2DCA18A61985AA0200DF3118 /* ResetScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResetScene.swift; sourceTree = "<group>"; };
+		2DCA18A81985B01C00DF3118 /* TestButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestButton.swift; sourceTree = "<group>"; };
 		2DD23D6B196DB17C00838E96 /* TapeNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TapeNode.swift; sourceTree = "<group>"; };
 		2DD23D6D196F0BF900838E96 /* LevelLibrary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LevelLibrary.swift; sourceTree = "<group>"; };
 		2DD23D70196F223E00838E96 /* MenuScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuScene.swift; sourceTree = "<group>"; };
@@ -136,8 +144,11 @@
 				2DC49136194F45B800053237 /* GameViewController.swift */,
 				2DC49138194F45B800053237 /* Main.storyboard */,
 				2D336E8819534044008E55A9 /* HelperFunctions.swift */,
+				2DCA18A41985849B00DF3118 /* SpriteKitExtensions.swift */,
 				2D03B939197EB89700715176 /* StringExtension.swift */,
 				2D60F5C8198156250032860B /* GameData.swift */,
+				2DD23D6D196F0BF900838E96 /* LevelLibrary.swift */,
+				2DC47A26196342F2006882ED /* Button.swift */,
 				2D60F5C5198041A70032860B /* TitleScene */,
 				2DD23D6F196F205100838E96 /* MenuScene */,
 				2DC49151194F4BEB00053237 /* GameScene */,
@@ -177,7 +188,6 @@
 			isa = PBXGroup;
 			children = (
 				2DC49134194F45B800053237 /* GameScene.swift */,
-				2DD23D6D196F0BF900838E96 /* LevelLibrary.swift */,
 				2DC4915C194F621A00053237 /* Grid.swift */,
 				2D15929919514B4900A96BCC /* GridNode.swift */,
 				2DC4915E194F671F00053237 /* Cell.swift */,
@@ -185,6 +195,7 @@
 				2D52D375196C82AC00C647AD /* Tape.swift */,
 				2DD23D6B196DB17C00838E96 /* TapeNode.swift */,
 				2DD23D721974730F00838E96 /* Engine.swift */,
+				2DCA18A81985B01C00DF3118 /* TestButton.swift */,
 				2D7F922B195C61FA00F04F63 /* ToolbarNode.swift */,
 				2D7F922D195C621600F04F63 /* ToolbarButton.swift */,
 				2D03B937197AAD8700715176 /* MenuTriangle.swift */,
@@ -196,7 +207,8 @@
 			isa = PBXGroup;
 			children = (
 				2DD23D70196F223E00838E96 /* MenuScene.swift */,
-				2DC47A26196342F2006882ED /* Button.swift */,
+				2DCA18A21985741100DF3118 /* LevelButton.swift */,
+				2DCA18A61985AA0200DF3118 /* ResetScene.swift */,
 			);
 			name = MenuScene;
 			sourceTree = "<group>";
@@ -304,8 +316,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				2DC49135194F45B800053237 /* GameScene.swift in Sources */,
+				2DCA18A31985741100DF3118 /* LevelButton.swift in Sources */,
 				2D60F5C9198156250032860B /* GameData.swift in Sources */,
 				2D7F922E195C621600F04F63 /* ToolbarButton.swift in Sources */,
+				2DCA18A51985849B00DF3118 /* SpriteKitExtensions.swift in Sources */,
 				2D336E8919534044008E55A9 /* HelperFunctions.swift in Sources */,
 				2D15929A19514B4900A96BCC /* GridNode.swift in Sources */,
 				2DD23D6C196DB17C00838E96 /* TapeNode.swift in Sources */,
@@ -321,8 +335,10 @@
 				2DD23D71196F223E00838E96 /* MenuScene.swift in Sources */,
 				2D03B93A197EB89700715176 /* StringExtension.swift in Sources */,
 				2DD23D731974730F00838E96 /* Engine.swift in Sources */,
+				2DCA18A71985AA0200DF3118 /* ResetScene.swift in Sources */,
 				2DC49131194F45B800053237 /* AppDelegate.swift in Sources */,
 				2DC4915D194F621A00053237 /* Grid.swift in Sources */,
+				2DCA18A91985B01C00DF3118 /* TestButton.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

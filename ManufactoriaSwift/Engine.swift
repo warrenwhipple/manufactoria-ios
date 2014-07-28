@@ -25,16 +25,16 @@ import Foundation
 
 class Engine: TapeTestQueueOpDelegate, TapeTestOpDelegate {
   var delegate: EngineDelegate?
-  let levelData: LevelData
+  let levelSetup: LevelSetup
   var isTesting = false
   let queue = NSOperationQueue()
   var queuedTapeTestCount = 0
   var passedTapeTestCount = 0
   var exemplarTapeTests: [String : TapeTestOp?] = [:]
   
-  init(levelData: LevelData) {
-    self.levelData = levelData
-    for string in levelData.exemplars {exemplarTapeTests[string] = nil}
+  init(levelSetup: LevelSetup) {
+    self.levelSetup = levelSetup
+    for string in levelSetup.exemplars {exemplarTapeTests[string] = nil}
   }
   
   func queueTestWithGrid(grid: Grid) {
@@ -42,7 +42,7 @@ class Engine: TapeTestQueueOpDelegate, TapeTestOpDelegate {
     queuedTapeTestCount = 0
     passedTapeTestCount = 0
     for key in exemplarTapeTests.keys {exemplarTapeTests[key] = nil}
-    queue.addOperation(TapeTestQueueOp(queue: queue, grid: grid, levelData: levelData, delegate: self))
+    queue.addOperation(TapeTestQueueOp(queue: queue, grid: grid, levelSetup: levelSetup, delegate: self))
   }
   
   func cancelAllTests() {
@@ -62,20 +62,20 @@ class Engine: TapeTestQueueOpDelegate, TapeTestOpDelegate {
     if !isTesting {return}
     
     // check for tape test failure
-    if levelData.passFunction {
-      if levelData.passFunction!(tapeTestOp.input) == !tapeTestOp.output {
+    if levelSetup.passFunction {
+      if levelSetup.passFunction!(tapeTestOp.input) == !tapeTestOp.output {
         cancelAllTests()
         delegate?.gridTestDidFailWithTapeTest(tapeTestOp)
         return
       }
-    } else if let transformFunction = levelData.transformFunction {
+    } else if let transformFunction = levelSetup.transformFunction {
       if !tapeTestOp.output || (transformFunction(tapeTestOp.input) != tapeTestOp.output!) {
         cancelAllTests()
         delegate?.gridTestDidFailWithTapeTest(tapeTestOp)
         return
       }
     } else {
-      assert(!levelData.passFunction && !levelData.transformFunction)
+      assert(!levelSetup.passFunction && !levelSetup.transformFunction)
     }
     if !isTesting {return}
     
@@ -108,21 +108,21 @@ class Engine: TapeTestQueueOpDelegate, TapeTestOpDelegate {
 class TapeTestQueueOp: NSOperation {
   let queue: NSOperationQueue
   let grid: Grid
-  let levelData: LevelData
+  let levelSetup: LevelSetup
   let delegate: protocol<TapeTestQueueOpDelegate, TapeTestOpDelegate>
   var queuedTapeTestCount = 0
   
-  init(queue: NSOperationQueue, grid: Grid, levelData: LevelData, delegate: protocol<TapeTestQueueOpDelegate, TapeTestOpDelegate>) {
+  init(queue: NSOperationQueue, grid: Grid, levelSetup: LevelSetup, delegate: protocol<TapeTestQueueOpDelegate, TapeTestOpDelegate>) {
     self.queue = queue
     self.grid = grid
-    self.levelData = levelData
+    self.levelSetup = levelSetup
     self.delegate = delegate
   }
   
   override func main() {
     autoreleasepool {
       if self.cancelled {return}
-      let strings = self.levelData.generationFunction(8)
+      let strings = self.levelSetup.generationFunction(8)
       for string in strings {
         if self.cancelled {
           self.queue.cancelAllOperations()
@@ -151,7 +151,7 @@ class TapeTestOp: NSOperation {
     self.tape = tape
     self.delegate = delegate
     input = tape.string
-    maxTapeLength = input.utf16count
+    maxTapeLength = input.utf16Count
   }
   
   override func main() {
@@ -161,7 +161,7 @@ class TapeTestOp: NSOperation {
       while !self.cancelled {
         let tickResult = self.grid.testCoord(coord, lastCoord: lastcoord, tape: self.tape)
         self.tickCount++
-        self.maxTapeLength = max(self.maxTapeLength, self.tape.string.utf16count)
+        self.maxTapeLength = max(self.maxTapeLength, self.tape.string.utf16Count)
         lastcoord = coord
         switch tickResult {
         case .North: coord.j++

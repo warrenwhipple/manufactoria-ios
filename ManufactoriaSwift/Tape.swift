@@ -42,7 +42,7 @@ class Tape {
   }
   
   func color() -> Color? {
-    if countElements(string) == 0 {return nil}
+    if string.utf16Count == 0 {return nil}
     switch Array(string)[0] {
     case "b": return Color.Blue
     case "r": return Color.Red
@@ -63,8 +63,8 @@ class Tape {
   }
   
   func deleteColor() {
-    if countElements(string) != 0 {
-      string = string.substringFromIndex(1)
+    if string.utf16Count > 0 {
+      string = string.substringFromIndex(advance(string.startIndex, 1))
       delegate?.deleteColor()
     }
   }

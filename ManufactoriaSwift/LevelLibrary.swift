@@ -12,19 +12,19 @@ typealias GenerationFunction = (Int) -> ([String])
 typealias PassFunction = (String) -> (Bool)
 typealias TransformFunction = (String) -> (String)
 
-struct LevelData {
+struct LevelSetup {
   let tag: String
-  let description: String
+  let instructions: String
   let space: GridSpace
   let exemplars: [String]
   let generationFunction: GenerationFunction
   let passFunction: PassFunction?
   let transformFunction: TransformFunction?
   
-  init(tag: String, description: String, space: GridSpace, exemplars: [String],
+  init(tag: String, instructions: String, space: GridSpace, exemplars: [String],
     generationFunction: GenerationFunction, passFunction: PassFunction) {
       self.tag = tag
-      self.description = description
+      self.instructions = instructions
       self.space = space
       self.exemplars = exemplars
       self.generationFunction = generationFunction
@@ -32,10 +32,10 @@ struct LevelData {
       self.transformFunction = nil
   }
   
-  init(tag: String, description: String, space: GridSpace, exemplars: [String],
+  init(tag: String, instructions: String, space: GridSpace, exemplars: [String],
     generationFunction: GenerationFunction, transformFunction: TransformFunction) {
       self.tag = tag
-      self.description = description
+      self.instructions = instructions
       self.space = space
       self.exemplars = exemplars
       self.generationFunction = generationFunction
@@ -46,7 +46,7 @@ struct LevelData {
 
 // Helper functions for generating string inputs
 
-func generate(characters: String, count: Int, filter: ((String) -> (Bool))) -> [String] {
+private func generate(characters: String, count: Int, filter: ((String) -> (Bool))) -> [String] {
   var list: [String] = [""]
   if characters == "" {return list}
   var lastLevel = [""]
@@ -65,11 +65,11 @@ func generate(characters: String, count: Int, filter: ((String) -> (Bool))) -> [
   }
 }
 
-func generate(characters: String, count: Int) -> [String] {
+private func generate(characters: String, count: Int) -> [String] {
   return generate(characters, count, {s in return true})
 }
 
-func toInt(s: String) -> Int {
+private func toInt(s: String) -> Int {
   var n = 0
   var i = 1
   for c in s {
@@ -79,7 +79,7 @@ func toInt(s: String) -> Int {
   return n
 }
 
-func toStr(var n: Int) -> String {
+private func toStr(var n: Int) -> String {
   if n == 0 {return "r"}
   var s = ""
   var i = 1
@@ -95,69 +95,64 @@ func toStr(var n: Int) -> String {
   return s
 }
 
-class LevelLibrary {
-  class var sharedInstace: LevelLibrary {struct Static {static let instance = LevelLibrary()}; return Static.instance}
-  subscript(i: Int) -> LevelData {get {return library[i]}}
+let LevelLibrary: [LevelSetup] = [
   
-  let library: [LevelData] = [
-    
-    LevelData(
-      tag: "move",
-      description: "Transport across\n the factory floor.",
-      space: GridSpace(3, 3),
-      exemplars: [""],
-      generationFunction: {n in return [""]},
-      passFunction: {string in return true}
-    ),
-    
-    LevelData(
-      tag: "B",
-      description: "Accept: Blue. Transport across.\nReject: Red. Dump on the floor.",
-      space: GridSpace(3, 3),
-      exemplars: ["b", "r"],
-      generationFunction: {n in return ["b", "r"]},
-      passFunction: {string in return string == "b"}
-    ),
-    
-    LevelData(
-      tag: "BRB...",
-      description: "Accept: Strings that begin blue, red, blue.",
-      space: GridSpace(5, 5),
-      exemplars: ["brbr", "rbrb"],
-      generationFunction: {n in return generate("br", n)},
-      passFunction: {
-        s in
-        if s.utf16count < 3 {return false}
-        return s[0...2] == "brb"
-      }
-    ),
-    
-    LevelData(
-      tag: ">=3B",
-      description: "Accept: Strings with three or more blues.",
-      space: GridSpace(5, 5),
-      exemplars: ["brbrb", "rbrbr"],
-      generationFunction: {n in return generate("br", n)},
-      passFunction: {
-        s in
-        var k = 0
-        for c in s {if c == "b" {if ++k >= 3 {return true}}}
-        return false
-      }
-    ),
-    
-    LevelData(
-      tag: "noR",
-      description: "Reject: Strings that contain any red.",
-      space: GridSpace(5, 5),
-      exemplars: ["bbbb", "bbrb"],
-      generationFunction: {n in return generate("br", n)},
-      passFunction: {
-        s in
-        var k = 0
-        for c in s {if c == "r" {return false}}
-        return true
-      }
-    ),
-  ]
-}
+  LevelSetup(
+    tag: "move",
+    instructions: "Transport across\n the factory floor.",
+    space: GridSpace(3, 3),
+    exemplars: [""],
+    generationFunction: {n in return [""]},
+    passFunction: {string in return true}
+  ),
+  
+  LevelSetup(
+    tag: "B",
+    instructions: "Accept: Blue. Transport across.\nReject: Red. Dump on the floor.",
+    space: GridSpace(3, 3),
+    exemplars: ["b", "r"],
+    generationFunction: {n in return ["b", "r"]},
+    passFunction: {string in return string == "b"}
+  ),
+  
+  LevelSetup(
+    tag: "BRB...",
+    instructions: "Accept: Strings that begin blue, red, blue.",
+    space: GridSpace(5, 5),
+    exemplars: ["brbr", "rbrb"],
+    generationFunction: {n in return generate("br", n)},
+    passFunction: {
+      s in
+      if s.utf16Count < 3 {return false}
+      return s[0...2] == "brb"
+    }
+  ),
+  
+  LevelSetup(
+    tag: ">= 3B",
+    instructions: "Accept: Strings with three or more blues.",
+    space: GridSpace(5, 5),
+    exemplars: ["brbrb", "rbrbr"],
+    generationFunction: {n in return generate("br", n)},
+    passFunction: {
+      s in
+      var k = 0
+      for c in s {if c == "b" {if ++k >= 3 {return true}}}
+      return false
+    }
+  ),
+  
+  LevelSetup(
+    tag: "no R",
+    instructions: "Reject: Strings that contain any red.",
+    space: GridSpace(5, 5),
+    exemplars: ["bbbb", "bbrb"],
+    generationFunction: {n in return generate("br", n)},
+    passFunction: {
+      s in
+      var k = 0
+      for c in s {if c == "r" {return false}}
+      return true
+    }
+  ),
+]

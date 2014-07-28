@@ -130,7 +130,7 @@ class ToolbarButton: SKSpriteNode {
     isFocused = true
   }
   
-  override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
+  override func touchesBegan(touches: NSSet!, withEvent event: UIEvent!) {
     if touch {
       switch touch!.phase {
       case .Began, .Moved, .Stationary: return
@@ -148,7 +148,7 @@ class ToolbarButton: SKSpriteNode {
     }
   }
   
-  override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
+  override func touchesMoved(touches: NSSet!, withEvent event: UIEvent!) {
     if !touch {return}
     if !isPressed {return}
     if !touches.containsObject(touch!) {return}
@@ -157,14 +157,14 @@ class ToolbarButton: SKSpriteNode {
     }
   }
   
-  override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
+  override func touchesEnded(touches: NSSet!, withEvent event: UIEvent!) {
     if !touch {return}
     if !isPressed {return}
     if !touches.containsObject(touch!) {return}
     isPressed = false
   }
   
-  override func touchesCancelled(touches: NSSet, withEvent event: UIEvent) {
+  override func touchesCancelled(touches: NSSet!, withEvent event: UIEvent!) {
     touchesEnded(touches, withEvent: event)
   }
 }

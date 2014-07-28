@@ -9,47 +9,38 @@
 import SpriteKit
 
 class MenuScene: SKScene {
-  let buttons: [Button]
-  let levelLibrary = LevelLibrary.sharedInstace
+  let wrapper = SKNode()
+  let levelButtons: [LevelButton]
   
   init(size: CGSize) {
-    var newButtons: [Button] = []
-    for i in 0..<levelLibrary.library.count {newButtons += Button()}
-    buttons = newButtons
+    var tempLevelButtons: [LevelButton] = []
+    let gameData = GameData.sharedInstance
+    for i in 0 ..< LevelLibrary.count {
+      let levelSetup = LevelLibrary[i]
+      tempLevelButtons += LevelButton(levelNumber: i, text: levelSetup.tag, isEnabled: i <= gameData.levelsComplete)
+    }
+    tempLevelButtons += ResetButton(levelNumber: LevelLibrary.count)
+    levelButtons = tempLevelButtons
     
     super.init(size: size)
     
     backgroundColor = UIColor.blackColor()
-    var i = 0
-    for button in buttons {
-      let levelData = levelLibrary[i++]
-      button.changeText(levelData.tag)
-      button.label!.fontSize = 14.0
-      button.label!.fontName = "HelveticaNeue-Light"
-      button.color = UIColor(white: 0.2, alpha: 1)
-      button.closureTouchUpInside = {
-        [weak self] in
-        self!.view.presentScene(
-          GameScene(size: size, levelData: levelData),
-          transition: SKTransition.crossFadeWithDuration(0.5)
-        )
-      }
-      button.userInteractionEnabled = true
-      newButtons += button
-      addChild(button)
-    }
+    wrapper.position.y = size.height
+    wrapper.addChildren(levelButtons)
+    addChild(wrapper)
     fitToSize()
   }
   
   func fitToSize() {
-    let buttonSpacing = size.width / 4.0
+    let columnCount = 4
+    let buttonSpacing = size.width / CGFloat(columnCount)
     let buttonSize = CGSize(width: buttonSpacing * 0.75, height: buttonSpacing * 0.75)
     var i = 0
-    for button in buttons {
-      button.size = buttonSize
-      button.position = CGPoint(
-        x: buttonSpacing * (0.5 + CGFloat(i)),
-        y: size.height - buttonSpacing * (0.5)
+    for levelButton in levelButtons {
+      levelButton.size = buttonSize
+      levelButton.position = CGPoint(
+        x: (CGFloat(i % columnCount) + 0.5) * buttonSpacing,
+        y: -(CGFloat(i / columnCount) + 0.5) * buttonSpacing
       )
       i++
     }

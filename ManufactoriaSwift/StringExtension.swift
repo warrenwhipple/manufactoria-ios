@@ -14,16 +14,14 @@ extension String {
       return Array(self)[i]
     }
     set {
-      var temp = Array(self)
-      temp[i] = newValue
+      var characters = Array(self)
+      characters[i] = newValue
       var newString = String()
-      newString.extend(temp)
+      newString.extend(characters)
       self = newString
     }
   }
   subscript (r: Range<Int>) -> String {
-    var start = advance(startIndex, r.startIndex)
-      var end = advance(startIndex, r.endIndex)
-      return substringWithRange(Range(start: start, end: end))
+    return substringWithRange(Range(start: advance(startIndex, r.startIndex), end: advance(startIndex, r.endIndex)))
   }
 }

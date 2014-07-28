@@ -22,7 +22,7 @@ class MenuTriangle: SKSpriteNode {
     self.userInteractionEnabled = true
   }
   
-  override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
+  override func touchesBegan(touches: NSSet!, withEvent event: UIEvent!) {
     delegate?.menuTrianglePressed()
   }
 }

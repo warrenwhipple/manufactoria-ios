@@ -69,60 +69,7 @@ class CellNode: SKSpriteNode {
     if cell != nextCell {
       glowTarget = 1.0
       if glow == glowTarget {
-        belt.removeFromParent()
-        bridge.removeFromParent()
-        pusher.removeFromParent()
-        puller.removeFromParent()
-        switch nextCell.type {
-        case .Blank: break
-        case .Belt: addChild(belt)
-        case .Bridge:
-          addChild(belt)
-          addChild(bridge)
-        case .PusherB:
-          addChild(belt)
-          addChild(pusher)
-          pusherFill.color = ColorBlue
-        case .PusherR:
-          addChild(belt)
-          addChild(pusher)
-          pusherFill.color = ColorRed
-        case .PusherG:
-          addChild(belt)
-          addChild(pusher)
-          pusherFill.color = ColorGreen
-        case .PusherY:
-          addChild(belt)
-          addChild(pusher)
-          pusherFill.color = ColorYellow
-        case .PullerBR:
-          addChild(belt)
-          addChild(puller)
-          pullerFill1.color = ColorBlue
-          pullerFill2.color = ColorRed
-        case .PullerRB:
-          addChild(belt)
-          addChild(puller)
-          pullerFill1.color = ColorRed
-          pullerFill2.color = ColorBlue
-        case .PullerGY:
-          addChild(belt)
-          addChild(puller)
-          pullerFill1.color = ColorGreen
-          pullerFill2.color = ColorYellow
-        case .PullerYG:
-          addChild(belt)
-          addChild(puller)
-          pullerFill1.color = ColorYellow
-          pullerFill2.color = ColorGreen
-        }
-        switch nextCell.direction {
-        case .North: zRotation = 0.0
-        case .East: zRotation = CGFloat(-M_PI_2)
-        case .South: zRotation = CGFloat(M_PI)
-        case .West: zRotation = CGFloat(M_PI_2)
-        }
-        cell = nextCell
+        applyCell(nextCell)
       }
     } else if isSelected {
       glowTarget = 0.5
@@ -137,6 +84,64 @@ class CellNode: SKSpriteNode {
     } else {
       glowMask.alpha = glowTarget
     }
+  }
+  
+  func applyCell(newCell: Cell) {
+    belt.removeFromParent()
+    bridge.removeFromParent()
+    pusher.removeFromParent()
+    puller.removeFromParent()
+    switch newCell.type {
+    case .Blank: break
+    case .Belt: addChild(belt)
+    case .Bridge:
+      addChild(belt)
+      addChild(bridge)
+    case .PusherB:
+      addChild(belt)
+      addChild(pusher)
+      pusherFill.color = ColorBlue
+    case .PusherR:
+      addChild(belt)
+      addChild(pusher)
+      pusherFill.color = ColorRed
+    case .PusherG:
+      addChild(belt)
+      addChild(pusher)
+      pusherFill.color = ColorGreen
+    case .PusherY:
+      addChild(belt)
+      addChild(pusher)
+      pusherFill.color = ColorYellow
+    case .PullerBR:
+      addChild(belt)
+      addChild(puller)
+      pullerFill1.color = ColorBlue
+      pullerFill2.color = ColorRed
+    case .PullerRB:
+      addChild(belt)
+      addChild(puller)
+      pullerFill1.color = ColorRed
+      pullerFill2.color = ColorBlue
+    case .PullerGY:
+      addChild(belt)
+      addChild(puller)
+      pullerFill1.color = ColorGreen
+      pullerFill2.color = ColorYellow
+    case .PullerYG:
+      addChild(belt)
+      addChild(puller)
+      pullerFill1.color = ColorYellow
+      pullerFill2.color = ColorGreen
+    }
+    switch newCell.direction {
+    case .North: zRotation = 0.0
+    case .East: zRotation = CGFloat(-M_PI_2)
+    case .South: zRotation = CGFloat(M_PI)
+    case .West: zRotation = CGFloat(M_PI_2)
+    }
+    cell = newCell
+    nextCell = newCell
   }
   
   func shimmer() {

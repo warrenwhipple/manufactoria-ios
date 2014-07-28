@@ -9,6 +9,7 @@
 import SpriteKit
 
 class TitleScene: SKScene {
+  let gameData = GameData.sharedInstance
   let title: SKLabelNode
   let arrow: SKLabelNode
   
@@ -21,6 +22,8 @@ class TitleScene: SKScene {
     title.position = CGPoint(x: size.width * 0.5, y: size.height * 0.5 + 40)
     arrow.text = "→"
     arrow.position = CGPoint(x: size.width * 0.5, y: size.height * 0.5 - 40)
+    arrow.alpha = 0
+    arrow.runAction(SKAction.sequence([SKAction.waitForDuration(1), SKAction.fadeInWithDuration(1)]))
     
     super.init(size: size)
     backgroundColor = UIColor.blackColor()
@@ -28,7 +31,11 @@ class TitleScene: SKScene {
     addChild(arrow)
   }
   
-  override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
-    view.presentScene(MenuScene(size: size), transition: SKTransition.crossFadeWithDuration(0.5))
+  override func touchesBegan(touches: NSSet!, withEvent event: UIEvent!) {
+    if gameData.levelsComplete == 0 {
+      view.presentScene(GameScene(size: size, levelNumber: 0), transition : SKTransition.crossFadeWithDuration(0.5))
+    } else {
+      view.presentScene(MenuScene(size: size), transition: SKTransition.crossFadeWithDuration(0.5))
+    }
   }
 }

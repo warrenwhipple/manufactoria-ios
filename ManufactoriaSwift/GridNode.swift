@@ -75,19 +75,19 @@ class GridNode: SKNode {
       }
     }
     
-    let entranceCellNodeFade = SKSpriteNode(texture: SKTexture(imageNamed: "beltFadeMask.png"), color: UIColor.blackColor(), size: CGSize(width: 1, height: 1))
-    entranceCellNodeFade.colorBlendFactor = 1
-    entranceCellNodeFade.zPosition = 2
-    let exitCellNodeFade = entranceCellNodeFade.copy() as SKSpriteNode
-    entranceCellNodeFade.yScale = -1
+    let entranceCellNodeGradient = SKSpriteNode(texture: SKTexture(imageNamed: "beltFadeMask.png"), color: UIColor.blackColor(), size: CGSize(width: 1, height: 1))
+    entranceCellNodeGradient.colorBlendFactor = 1
+    entranceCellNodeGradient.zPosition = 2
+    let exitCellNodeGradient = entranceCellNodeGradient.copy() as SKSpriteNode
+    entranceCellNodeGradient.yScale = -1
 
     entranceCellNode.position = CGPoint(x: CGFloat(grid.centerColumn) + 0.5, y: -0.5)
-    entranceCellNode.nextCell.type = CellType.Belt
-    entranceCellNode.addChild(entranceCellNodeFade)
+    entranceCellNode.applyCell(Cell(type: .Belt, direction: .North))
+    entranceCellNode.addChild(entranceCellNodeGradient)
     wrapper.addChild(entranceCellNode)
     exitCellNode.position = CGPoint(x: CGFloat(grid.centerColumn) + 0.5, y: CGFloat(grid.space.rows) + 0.5)
-    exitCellNode.nextCell.type = CellType.Belt
-    exitCellNode.addChild(exitCellNodeFade)
+    exitCellNode.applyCell(Cell(type: .Belt, direction: .North))
+    exitCellNode.addChild(exitCellNodeGradient)
     wrapper.addChild(exitCellNode)
     
     fitToRect()
@@ -136,7 +136,7 @@ class GridNode: SKNode {
     return GridCoord(floor(position.x), floor(position.y))
   }
   
-  override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
+  override func touchesBegan(touches: NSSet!, withEvent event: UIEvent!) {
     if state != GridNodeState.Editing {return}
     if let touchPhase = editTouch?.phase {
       switch touchPhase {
@@ -171,7 +171,7 @@ class GridNode: SKNode {
     }
   }
   
-  override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
+  override func touchesMoved(touches: NSSet!, withEvent event: UIEvent!) {
     if !editTouch {return}
     if !touches.containsObject(editTouch!) {return}
     let touchCoord = coordForTouch(editTouch!)
@@ -265,7 +265,7 @@ class GridNode: SKNode {
     bridgeEditMemory = nil
   }
   
-  override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
+  override func touchesEnded(touches: NSSet!, withEvent event: UIEvent!) {
     if !editTouch {return}
     if !touches.containsObject(editTouch!) {return}
     if grid.indexIsValidFor(editCoord) {
@@ -275,7 +275,7 @@ class GridNode: SKNode {
     bridgeEditMemory = nil
   }
   
-  override func touchesCancelled(touches: NSSet, withEvent event: UIEvent) {
+  override func touchesCancelled(touches: NSSet!, withEvent event: UIEvent!) {
     touchesEnded(touches, withEvent: event)
   }
 }

@@ -14,6 +14,7 @@ enum GameSceneState {
 
 class GameScene: SKScene, ToolbarNodeDelegate, EngineDelegate, MenuTriangleDelegate {
   // model objects
+  let levelNumber: Int
   let grid: Grid
   var stringQueue: [(String, Int)] = []
   let tape = Tape()
@@ -24,7 +25,7 @@ class GameScene: SKScene, ToolbarNodeDelegate, EngineDelegate, MenuTriangleDeleg
   let tapeNode = TapeNode()
   let toolbarNode = ToolbarNode()
   let menuTriangle = MenuTriangle()
-  let testButton = Button()
+  let testButton = TestButton()
   let robotNode = SKSpriteNode(texture: SKTexture(imageNamed: "robut.png"), color: UIColor.whiteColor(), size: CGSizeUnit)
   
   // variables
@@ -39,9 +40,11 @@ class GameScene: SKScene, ToolbarNodeDelegate, EngineDelegate, MenuTriangleDeleg
   
   override var size: CGSize {didSet{fitToSize()}}
   
-  init(size: CGSize, levelData: LevelData) {
-    grid = Grid(space: levelData.space)
-    engine = Engine(levelData: levelData)
+  init(size: CGSize, levelNumber: Int) {
+    self.levelNumber = levelNumber
+    let levelSetup = LevelLibrary[levelNumber]
+    grid = Grid(space: levelSetup.space)
+    engine = Engine(levelSetup: levelSetup)
     gridNode = GridNode(grid: grid)
     
     super.init(size: size)
@@ -210,22 +213,23 @@ class GameScene: SKScene, ToolbarNodeDelegate, EngineDelegate, MenuTriangleDeleg
   }
   
   func menuTrianglePressed() {
+    GameData.sharedInstance.completedLevel(levelNumber)
     view.presentScene(MenuScene(size: size), transition: SKTransition.crossFadeWithDuration(0.5))
   }
   
-  override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
+  override func touchesBegan(touches: NSSet!, withEvent event: UIEvent!) {
     gridNode.touchesBegan(touches, withEvent: event)
   }
   
-  override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
+  override func touchesMoved(touches: NSSet!, withEvent event: UIEvent!) {
     gridNode.touchesMoved(touches, withEvent: event)
   }
   
-  override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
+  override func touchesEnded(touches: NSSet!, withEvent event: UIEvent!) {
     gridNode.touchesEnded(touches, withEvent: event)
   }
   
-  override func touchesCancelled(touches: NSSet, withEvent event: UIEvent) {
+  override func touchesCancelled(touches: NSSet!, withEvent event: UIEvent!) {
     gridNode.touchesCancelled(touches, withEvent: event)
   }
 }

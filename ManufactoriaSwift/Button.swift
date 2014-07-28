@@ -9,69 +9,55 @@
 import SpriteKit
 
 class Button: SKSpriteNode {
-  var isPressed = false
+  let dimColor: UIColor
+  let glowColor: UIColor
   var touch: UITouch?
   var closureTouchDown: (()->())?
   var closureTouchUpInside: (()->())?
-  var label: SKLabelNode?
   
-  override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
-    if touch {
-      switch touch!.phase {
-      case .Began, .Moved, .Stationary: return
-      case .Ended, .Cancelled: break
-      }
-    }
+  init(dimColor: UIColor, glowColor: UIColor, size: CGSize) {
+    self.dimColor = dimColor
+    self.glowColor = glowColor
+    super.init(texture: nil, color: dimColor, size: size)
+    userInteractionEnabled = true
+  }
+  
+  convenience init(size: CGSize) {
+    self.init(dimColor: UIColor(white: 0.1, alpha: 1), glowColor: UIColor(white: 0.3, alpha: 1), size: size)
+  }
+  
+  override func touchesBegan(touches: NSSet!, withEvent event: UIEvent!) {
+    if touch {return}
     touch = touches.anyObject() as? UITouch
-    if touch {
-      isPressed = true
-      if closureTouchDown {
-        closureTouchDown!()
-      }
-    }
+    removeAllActions()
+    runAction(SKAction.colorizeWithColor(glowColor, colorBlendFactor: 1, duration: 0.1))
+    if closureTouchDown {closureTouchDown!()}
   }
   
-  func changeText(newText: String) {
-    if label {
-      if label!.text == newText {return}
-      label!.removeAllActions()
-      label!.runAction(SKAction.sequence([SKAction.fadeAlphaTo(0, duration: 0.25), SKAction.removeFromParent()]))
-    }
-    label = SKLabelNode()
-    label!.fontName = "HelveticaNeue-UltraLight"
-    label!.verticalAlignmentMode = .Center
-    label!.text = newText
-    label!.alpha = 0
-    label!.runAction(SKAction.fadeAlphaTo(1, duration: 0.25))
-    addChild(label)
-    size = label!.calculateAccumulatedFrame().size
-  }
-  
-  override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
+  override func touchesMoved(touches: NSSet!, withEvent event: UIEvent!) {
     if !touch {return}
-    if !isPressed {return}
     if !touches.containsObject(touch!) {return}
-    if !frame.contains(touch!.locationInNode(parent)) { // if touch moved outside of button
-      isPressed = false
+    if !frame.contains(touch!.locationInNode(parent)) {
+      touch = nil
+      removeAllActions()
+      runAction(SKAction.colorizeWithColor(dimColor, colorBlendFactor: 1, duration: 0.1))
     }
   }
   
-  override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
+  override func touchesEnded(touches: NSSet!, withEvent event: UIEvent!) {
     if !touch {return}
-    if !isPressed {return}
     if !touches.containsObject(touch!) {return}
-    if frame.contains(touch!.locationInNode(parent)) { // if touch moved outside of button
-      if closureTouchUpInside {
-        closureTouchUpInside!()
-      }
-    }
-    isPressed = false
+    if closureTouchUpInside {closureTouchUpInside!()}
+    touch = nil
+    removeAllActions()
+    runAction(SKAction.colorizeWithColor(dimColor, colorBlendFactor: 1, duration: 0.1))
   }
   
-  override func touchesCancelled(touches: NSSet, withEvent event: UIEvent) {
+  override func touchesCancelled(touches: NSSet!, withEvent event: UIEvent!) {
     if !touch {return}
-    if !isPressed {return}
     if !touches.containsObject(touch!) {return}
-    isPressed = false
+    touch = nil
+    removeAllActions()
+    runAction(SKAction.colorizeWithColor(dimColor, colorBlendFactor: 1, duration: 0.1))
   }
 }
