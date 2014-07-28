@@ -24,4 +24,18 @@ extension String {
   subscript (r: Range<Int>) -> String {
     return substringWithRange(Range(start: advance(startIndex, r.startIndex), end: advance(startIndex, r.endIndex)))
   }
+  func split(atCharacter: Character) -> [String] {
+    var strings: [String] = []
+    var nextString = ""
+    for nextCharacter in self {
+      if nextCharacter == atCharacter {
+        strings += nextString
+        nextString = ""
+      } else {
+        nextString += nextCharacter
+      }
+    }
+    strings += nextString
+    return strings
+  }
 }

@@ -14,6 +14,7 @@ class TitleScene: SKScene {
   let arrow: SKLabelNode
   
   init(size: CGSize) {
+    
     title = SKLabelNode()
     title.fontName = "HelveticaNeue-UltraLight"
     title.verticalAlignmentMode = .Center

@@ -32,6 +32,7 @@
 		2DCA18A51985849B00DF3118 /* SpriteKitExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCA18A41985849B00DF3118 /* SpriteKitExtensions.swift */; };
 		2DCA18A71985AA0200DF3118 /* ResetScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCA18A61985AA0200DF3118 /* ResetScene.swift */; };
 		2DCA18A91985B01C00DF3118 /* TestButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCA18A81985B01C00DF3118 /* TestButton.swift */; };
+		2DCA18AB1986D2FA00DF3118 /* WrappingLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCA18AA1986D2FA00DF3118 /* WrappingLabel.swift */; };
 		2DD23D6C196DB17C00838E96 /* TapeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD23D6B196DB17C00838E96 /* TapeNode.swift */; };
 		2DD23D6E196F0BF900838E96 /* LevelLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD23D6D196F0BF900838E96 /* LevelLibrary.swift */; };
 		2DD23D71196F223E00838E96 /* MenuScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD23D70196F223E00838E96 /* MenuScene.swift */; };
@@ -78,6 +79,7 @@
 		2DCA18A41985849B00DF3118 /* SpriteKitExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpriteKitExtensions.swift; sourceTree = "<group>"; };
 		2DCA18A61985AA0200DF3118 /* ResetScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResetScene.swift; sourceTree = "<group>"; };
 		2DCA18A81985B01C00DF3118 /* TestButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestButton.swift; sourceTree = "<group>"; };
+		2DCA18AA1986D2FA00DF3118 /* WrappingLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WrappingLabel.swift; sourceTree = "<group>"; };
 		2DD23D6B196DB17C00838E96 /* TapeNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TapeNode.swift; sourceTree = "<group>"; };
 		2DD23D6D196F0BF900838E96 /* LevelLibrary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LevelLibrary.swift; sourceTree = "<group>"; };
 		2DD23D70196F223E00838E96 /* MenuScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuScene.swift; sourceTree = "<group>"; };
@@ -149,6 +151,7 @@
 				2D60F5C8198156250032860B /* GameData.swift */,
 				2DD23D6D196F0BF900838E96 /* LevelLibrary.swift */,
 				2DC47A26196342F2006882ED /* Button.swift */,
+				2DCA18AA1986D2FA00DF3118 /* WrappingLabel.swift */,
 				2D60F5C5198041A70032860B /* TitleScene */,
 				2DD23D6F196F205100838E96 /* MenuScene */,
 				2DC49151194F4BEB00053237 /* GameScene */,
@@ -323,6 +326,7 @@
 				2D336E8919534044008E55A9 /* HelperFunctions.swift in Sources */,
 				2D15929A19514B4900A96BCC /* GridNode.swift in Sources */,
 				2DD23D6C196DB17C00838E96 /* TapeNode.swift in Sources */,
+				2DCA18AB1986D2FA00DF3118 /* WrappingLabel.swift in Sources */,
 				2D7F922C195C61FA00F04F63 /* ToolbarNode.swift in Sources */,
 				2DC49137194F45B800053237 /* GameViewController.swift in Sources */,
 				2D15929C19514B5400A96BCC /* CellNode.swift in Sources */,
