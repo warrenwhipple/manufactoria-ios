@@ -132,7 +132,7 @@ class GameScene: SKScene, ToolbarNodeDelegate, EngineDelegate, MenuTriangleDeleg
     }
     
     // calculate belt percent
-    beltPercent += Float(dt)
+    beltPercent += Float(dt) * 0.25
     while beltPercent >= 1.0 {
       beltPercent -= 1.0
     }

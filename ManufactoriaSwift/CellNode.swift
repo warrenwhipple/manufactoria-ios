@@ -9,20 +9,19 @@
 import SpriteKit
 
 // move these inside the class once class variables become available
-let pusherFillTex = SKTexture(imageNamed: "pusherFill.png")
-let pusherStrokeTex = SKTexture(imageNamed: "pusherStroke.png")
-let pullerFillTex = SKTexture(imageNamed: "pullerFill.png")
-let pullerStrokeTex = SKTexture(imageNamed: "pullerStroke.png")
+private let beltTex = SKTexture(imageNamed: "belt")
+private let pusherTex = SKTexture(imageNamed: "pusher.png")
+private let pullerTex = SKTexture(imageNamed: "puller.png")
+private let W = beltTex.size().height * 0.5
 
 class CellNode: SKSpriteNode {
   
-  let belt = SKSpriteNode(texture: nil, size: CGSize(width: 0.3, height: 1.0))
-  let bridge = SKSpriteNode(texture: nil, size: CGSize(width: 0.3, height: 1.0))
-  let pusher = SKSpriteNode(texture: pusherStrokeTex, size: CGSizeUnit)
-  let pusherFill = SKSpriteNode(texture: pusherFillTex, size: CGSizeUnit)
-  let puller = SKSpriteNode(texture: pullerStrokeTex, size: CGSizeUnit)
-  let pullerFill1 = SKSpriteNode(texture: pullerFillTex, size: CGSizeUnit)
-  let pullerFill2 = SKSpriteNode(texture: pullerFillTex, size: CGSizeUnit)
+  let belt = SKSpriteNode(texture: nil, size: CGSize(width: beltTex.size().width/W, height: 1.0))
+  let bridge = SKSpriteNode(texture: nil, size: CGSize(width: beltTex.size().width/W, height: 1.0))
+  let pusher = SKSpriteNode(texture: pusherTex, size: CGSize(width: pusherTex.size().width/W, height: pusherTex.size().height/W))
+  let puller = SKNode()
+  let puller1 = SKSpriteNode(texture: pullerTex, size: CGSize(width: pullerTex.size().width/W, height: pullerTex.size().height/W))
+  let puller2 = SKSpriteNode(texture: pullerTex, size: CGSize(width: pullerTex.size().width/W, height: pullerTex.size().height/W))
   
   let glowMask = SKSpriteNode(color: UIColor.whiteColor(), size: CGSizeUnit)
   var shimmerActionSequence: SKAction?
@@ -35,22 +34,24 @@ class CellNode: SKSpriteNode {
     
     belt.zPosition = 1
     bridge.zPosition = 2
-    bridge.zRotation = CGFloat(-M_PI_2)
     pusher.zPosition = 5
-    pusherFill.zPosition = -1
-    pusherFill.colorBlendFactor = 1
-    pusherFill.alpha = 0.8
-    pusher.addChild(pusherFill)
     puller.zPosition = 5
-    pullerFill1.zPosition = -1
-    pullerFill2.zPosition = -1
-    pullerFill1.colorBlendFactor = 1
-    pullerFill2.colorBlendFactor = 1
-    pullerFill2.xScale = -1
-    pullerFill1.alpha = 0.8
-    pullerFill2.alpha = 0.8
-    puller.addChild(pullerFill1)
-    puller.addChild(pullerFill2)
+
+    belt.alpha = 0.7
+    bridge.alpha = 0.7
+    //pusher.alpha = 0.9
+    //puller.alpha = 0.9
+
+    bridge.zRotation = CGFloat(-M_PI_2)
+    puller1.position.x = -0.25
+    puller2.position.x = 0.25
+    puller2.xScale = -1
+    
+    pusher.colorBlendFactor = 1
+    puller1.colorBlendFactor = 1
+    puller2.colorBlendFactor = 1
+    puller.addChild(puller1)
+    puller.addChild(puller2)
     
     glowMask.zPosition = 10
     glowMask.alpha = 0.0
@@ -100,39 +101,39 @@ class CellNode: SKSpriteNode {
     case .PusherB:
       addChild(belt)
       addChild(pusher)
-      pusherFill.color = ColorBlue
+      pusher.color = ColorBlue
     case .PusherR:
       addChild(belt)
       addChild(pusher)
-      pusherFill.color = ColorRed
+      pusher.color = ColorRed
     case .PusherG:
       addChild(belt)
       addChild(pusher)
-      pusherFill.color = ColorGreen
+      pusher.color = ColorGreen
     case .PusherY:
       addChild(belt)
       addChild(pusher)
-      pusherFill.color = ColorYellow
+      pusher.color = ColorYellow
     case .PullerBR:
       addChild(belt)
       addChild(puller)
-      pullerFill1.color = ColorBlue
-      pullerFill2.color = ColorRed
+      puller1.color = ColorBlue
+      puller2.color = ColorRed
     case .PullerRB:
       addChild(belt)
       addChild(puller)
-      pullerFill1.color = ColorRed
-      pullerFill2.color = ColorBlue
+      puller1.color = ColorRed
+      puller2.color = ColorBlue
     case .PullerGY:
       addChild(belt)
       addChild(puller)
-      pullerFill1.color = ColorGreen
-      pullerFill2.color = ColorYellow
+      puller1.color = ColorGreen
+      puller2.color = ColorYellow
     case .PullerYG:
       addChild(belt)
       addChild(puller)
-      pullerFill1.color = ColorYellow
-      pullerFill2.color = ColorGreen
+      puller1.color = ColorYellow
+      puller2.color = ColorGreen
     }
     switch newCell.direction {
     case .North: zRotation = 0.0
