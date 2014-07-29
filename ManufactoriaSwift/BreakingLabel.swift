@@ -1,5 +1,5 @@
 //
-//  WrappingLabel.swift
+//  BreakingLabel.swift
 //  ManufactoriaSwift
 //
 //  Created by Warren Whipple on 7/28/14.
@@ -64,15 +64,15 @@ class BreakingLabelNode: SKNode {
     var i = 0
     for label in labels {label.position.y = CGFloat(i++) * lineSpacing}
     if verticalAlignmentMode == .Baseline {return}
-    let accumulatedFrame = calculateAccumulatedFrame()
+    let top = labels[0].frame.maxY
+    let bottom = labels[labels.count-1].frame.minY
     var shift: CGFloat = 0.0
     switch verticalAlignmentMode {
-    case .Center: shift = -(accumulatedFrame.size.height * 0.5 + accumulatedFrame.origin.y)
-    case .Top: shift = -(accumulatedFrame.size.height + accumulatedFrame.origin.y)
-    case .Bottom: shift = -accumulatedFrame.origin.y
+    case .Center: shift = -(top * 0.5 + bottom)
+    case .Top: shift = -(top + bottom)
+    case .Bottom: shift = -bottom
     case .Baseline: break
     }
     for label in labels {label.position.y += shift}
-
   }
 }
