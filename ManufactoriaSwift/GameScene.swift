@@ -12,7 +12,7 @@ enum GameSceneState {
   case Editing, Thinking, Testing
 }
 
-class GameScene: SKScene, ToolbarNodeDelegate, EngineDelegate, MenuTriangleDelegate {
+class GameScene: SKScene, TestButtonDelegate, ToolbarNodeDelegate, EngineDelegate, MenuTriangleDelegate {
   // model objects
   let levelNumber: Int
   let grid: Grid
@@ -23,7 +23,7 @@ class GameScene: SKScene, ToolbarNodeDelegate, EngineDelegate, MenuTriangleDeleg
   // view objects
   let gridNode: GridNode
   let tapeNode = TapeNode()
-  let instructions = BreakingLabelNode()
+  let instructions = BreakingLabel()
   let toolbarNode = ToolbarNode()
   let menuTriangle = MenuTriangle()
   let testButton = TestButton()
@@ -63,10 +63,15 @@ class GameScene: SKScene, ToolbarNodeDelegate, EngineDelegate, MenuTriangleDeleg
     tapeNode.alpha = 0
     addChild(tapeNode)
     
-    instructions.fontName = "HelveticaNeue-Light"
+    testButton.delegate = self
+    addChild(testButton)
+    
+    instructions.fontName = "HelveticaNeue-Thin"
     instructions.fontSize = 16
-    instructions.horizontalAlignmentMode = .Center
+    instructions.horizontalAlignmentMode = .Left
+    instructions.verticalAlignmentMode = .Center
     instructions.text = levelSetup.instructions
+  
     addChild(instructions)
     
     toolbarNode.delegate = self
@@ -75,10 +80,6 @@ class GameScene: SKScene, ToolbarNodeDelegate, EngineDelegate, MenuTriangleDeleg
     menuTriangle.delegate = self
     self.addChild(menuTriangle)
     
-    testButton.changeText("Test")
-    testButton.userInteractionEnabled = true
-    testButton.closureTouchUpInside = {[weak self] in self!.transitionToState(.Thinking)}
-    addChild(testButton)
     
     fitToSize()
   }
@@ -88,17 +89,20 @@ class GameScene: SKScene, ToolbarNodeDelegate, EngineDelegate, MenuTriangleDeleg
     switch newState {
     case .Editing:
       engine.cancelAllTests()
-      gridNode.transitionToState(.Editing)
+      testButton.runAction(SKAction.fadeInWithDuration(0.5))
+      testButton.userInteractionEnabled = true
+      instructions.runAction(SKAction.fadeInWithDuration(0.5))
       tapeNode.runAction(SKAction.fadeOutWithDuration(0.5))
+      gridNode.transitionToState(.Editing)
       robotNode.runAction(SKAction.fadeOutWithDuration(0.5))
       toolbarNode.transitionToState(.Enabled)
-      testButton.changeText("Test")
-      testButton.closureTouchUpInside = {[weak self] in self!.transitionToState(.Thinking)}
     case .Thinking:
+      testButton.runAction(SKAction.fadeOutWithDuration(0.5))
+      testButton.userInteractionEnabled = false
+      instructions.runAction(SKAction.fadeOutWithDuration(0.5))
+      tapeNode.runAction(SKAction.fadeInWithDuration(0.5))
       gridNode.transitionToState(.Waiting)
       toolbarNode.transitionToState(.Disabled)
-      testButton.changeText("Cancel")
-      testButton.closureTouchUpInside = {[weak self] in self!.transitionToState(.Editing)}
       engine.queueTestWithGrid(grid)
     case .Testing:
       if !loadNextTape() {
@@ -106,10 +110,7 @@ class GameScene: SKScene, ToolbarNodeDelegate, EngineDelegate, MenuTriangleDeleg
         loadNextTape()
       }
       gridNode.transitionToState(.Waiting)
-      tapeNode.runAction(SKAction.fadeInWithDuration(0.5))
       toolbarNode.transitionToState(.Disabled)
-      testButton.changeText("Cancel")
-      testButton.closureTouchUpInside = {[weak self] in self!.transitionToState(.Editing)}
     }
     state = newState
   }
@@ -118,11 +119,11 @@ class GameScene: SKScene, ToolbarNodeDelegate, EngineDelegate, MenuTriangleDeleg
     let topGap = (size.height - size.width) * 0.5
     let bottomGap = size.height - topGap - size.width
     gridNode.rect = CGRect(origin: CGPointZero, size: size)
-    tapeNode.rect = CGRect(x: 0, y: size.height - topGap, width: size.width, height: topGap)
-    instructions.position = CGPoint(x: (size.width) * 0.5, y: size.height - topGap * 0.5)
+    tapeNode.position = CGPoint(x: 32, y: size.height - topGap * 0.5)
+    testButton.position = tapeNode.position
+    instructions.position = CGPoint(x: 64, y: size.height - topGap * 0.5)
     toolbarNode.rect = CGRect(x: 0, y: 0, width: size.width, height: bottomGap * 0.5)
     menuTriangle.position = CGPoint(x: size.width - menuTriangle.size.width / 2, y: size.height - menuTriangle.size.height / 2)
-    testButton.position = CGPoint(x: size.width * 0.75, y: bottomGap * 0.7)
   }
   
   func changeEditMode(editMode: EditMode) {
@@ -221,6 +222,10 @@ class GameScene: SKScene, ToolbarNodeDelegate, EngineDelegate, MenuTriangleDeleg
     println("Grid test looped.")
     stringQueue = [(tapeTest.input, tapeTest.maxTapeLength)]
     self.transitionToState(.Testing)
+  }
+  
+  func testButtonPressed() {
+    transitionToState(.Thinking)
   }
   
   func menuTrianglePressed() {

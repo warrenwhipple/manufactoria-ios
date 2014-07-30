@@ -11,21 +11,20 @@ import SpriteKit
 class TitleScene: SKScene {
   let gameData = GameData.sharedInstance
   let title: SKLabelNode
-  let arrow: SKLabelNode
+  let arrow: SKSpriteNode
   
   init(size: CGSize) {
-    
     title = SKLabelNode()
     title.fontName = "HelveticaNeue-UltraLight"
+    title.fontSize = 40
     title.verticalAlignmentMode = .Center
-    arrow = title.copy() as SKLabelNode
     title.text = "Manufactoria"
     title.position = CGPoint(x: size.width * 0.5, y: size.height * 0.5 + 40)
-    arrow.text = "→"
+    arrow = SKSpriteNode(texture: SKTexture(imageNamed: "printer.png"))
+    arrow.addChild(SKSpriteNode(texture: SKTexture(imageNamed: "playArrow.png")))
     arrow.position = CGPoint(x: size.width * 0.5, y: size.height * 0.5 - 40)
     arrow.alpha = 0
-    arrow.runAction(SKAction.sequence([SKAction.waitForDuration(1), SKAction.fadeInWithDuration(1)]))
-    
+    arrow.runAction(SKAction.sequence([SKAction.waitForDuration(1), SKAction.fadeInWithDuration(4)]))
     super.init(size: size)
     backgroundColor = UIColor.blackColor()
     addChild(title)

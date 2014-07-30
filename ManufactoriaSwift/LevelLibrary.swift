@@ -98,8 +98,8 @@ private func toStr(var n: Int) -> String {
 let LevelLibrary: [LevelSetup] = [
   
   LevelSetup(
-    tag: "move",
-    instructions: "Transport across\n the factory floor.",
+    tag: "↑",
+    instructions: "Connect the conveyor belts.",
     space: GridSpace(3, 3),
     exemplars: [""],
     generationFunction: {n in return [""]},
@@ -107,18 +107,18 @@ let LevelLibrary: [LevelSetup] = [
   ),
   
   LevelSetup(
-    tag: "B",
-    instructions: "Accept: Blue. Transport across.\nReject: Red. Dump on the floor.",
-    space: GridSpace(3, 3),
+    tag: "    B",
+    instructions: "Accept blue: to the exit.\nReject red: to the floor.",
+    space: GridSpace(5, 5),
     exemplars: ["b", "r"],
     generationFunction: {n in return ["b", "r"]},
     passFunction: {string in return string == "b"}
   ),
   
   LevelSetup(
-    tag: "BRB...",
-    instructions: "Accept: Strings that begin blue, red, blue.",
-    space: GridSpace(5, 5),
+    tag: "BRB...    ",
+    instructions: "Accept any that begin blue red blue.",
+    space: GridSpace(7, 7),
     exemplars: ["brbr", "rbrb"],
     generationFunction: {n in return generate("br", n)},
     passFunction: {
@@ -130,8 +130,8 @@ let LevelLibrary: [LevelSetup] = [
   
   LevelSetup(
     tag: ">= 3B",
-    instructions: "Accept: Strings with three or more blues.",
-    space: GridSpace(5, 5),
+    instructions: "Accept three or more blues.",
+    space: GridSpace(9, 9),
     exemplars: ["brbrb", "rbrbr"],
     generationFunction: {n in return generate("br", n)},
     passFunction: {
@@ -144,8 +144,8 @@ let LevelLibrary: [LevelSetup] = [
   
   LevelSetup(
     tag: "no R",
-    instructions: "Reject: Strings that contain any red.",
-    space: GridSpace(5, 5),
+    instructions: "Reject any red anywhere.",
+    space: GridSpace(11, 11),
     exemplars: ["bbbb", "bbrb"],
     generationFunction: {n in return generate("br", n)},
     passFunction: {
@@ -153,6 +153,19 @@ let LevelLibrary: [LevelSetup] = [
       var k = 0
       for c in s {if c == "r" {return false}}
       return true
+    }
+  ),
+  
+  LevelSetup(
+    tag: "first → last",
+    instructions: "Move the first color\nto the end.",
+    space: GridSpace(11, 11),
+    exemplars: ["brbr", "rrbb"],
+    generationFunction: {n in return generate("br", n)},
+    transformFunction: {
+      s in
+      if s.utf16Count > 1 {return s[1 ..< s.utf16Count] + s[0]}
+      return s
     }
   ),
 ]

@@ -9,7 +9,6 @@
 import SpriteKit
 
 class TapeNode: SKNode, TapeDelegate {
-  var rect: CGRect = CGRectZero {didSet{fitToRect()}}
   var dots: [SKSpriteNode] = []
   var maxLength: Int = 0
   let dotTexture = SKTexture(imageNamed: "dot.png")
@@ -30,11 +29,6 @@ class TapeNode: SKNode, TapeDelegate {
     fader.zPosition = 1
     fader.position.x = -dotSpacing
     addChild(fader)
-  }
-  
-  func fitToRect() {
-    if rect == CGRectZero {return}
-    position = CGPoint(x: dotSpacing * 2.0, y: rect.origin.y + rect.size.height * 0.5)
   }
   
   func loadString(string: String, maxLength: Int) {
@@ -63,8 +57,6 @@ class TapeNode: SKNode, TapeDelegate {
     
     // reset printer
     printer.position = dotPositionForIndex(i)
-    
-    fitToRect()
   }
   
   func writeColor(color: Color) {

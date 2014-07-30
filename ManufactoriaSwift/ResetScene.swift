@@ -19,25 +19,25 @@ class ResetScene: SKScene {
     
     questionLine1 = SKLabelNode()
     questionLine1.fontSize = 20
-    questionLine1.fontName = "HelveticaNeue-Light"
+    questionLine1.fontName = "HelveticaNeue-Thin"
     questionLine1.text = "Are you sure you want to"
     questionLine1.position = CGPoint(x: midX, y: midY + 70)
 
     questionLine2 = SKLabelNode()
     questionLine2.fontSize = 20
-    questionLine2.fontName = "HelveticaNeue-Light"
+    questionLine2.fontName = "HelveticaNeue-Thin"
     questionLine2.text = "reset and erase everything?"
     questionLine2.position = CGPoint(x: midX, y: midY + 40)
     
     let yesLabel = SKLabelNode()
     yesLabel.fontSize = 20
-    yesLabel.fontName = "HelveticaNeue-Light"
+    yesLabel.fontName = "HelveticaNeue-Thin"
     yesLabel.text = "reset"
     yesLabel.verticalAlignmentMode = .Center
     
     let noLabel = SKLabelNode()
     noLabel.fontSize = 20
-    noLabel.fontName = "HelveticaNeue-Light"
+    noLabel.fontName = "HelveticaNeue-Thin"
     noLabel.text = "cancel"
     noLabel.verticalAlignmentMode = .Center
 

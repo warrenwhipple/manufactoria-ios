@@ -8,15 +8,15 @@
 
 import SpriteKit
 
-class BreakingLabelNode: SKNode {
+class BreakingLabel: SKNode {
   var labels: [SKLabelNode] = []
   
-  var text: String? {
+  var breakingText: String? {
   didSet {
     for label in labels {label.removeFromParent()}
     labels = []
-    if text {
-      for textLine in text!.split("\n") {
+    if breakingText {
+      for textLine in breakingText!.split("\n") {
         let label = SKLabelNode()
         label.text = textLine
         label.fontColor = fontColor
@@ -63,15 +63,12 @@ class BreakingLabelNode: SKNode {
     let lineSpacing = -emLabel.frame.size.height * lineHeight
     var i = 0
     for label in labels {label.position.y = CGFloat(i++) * lineSpacing}
-    if verticalAlignmentMode == .Baseline {return}
-    let top = labels[0].frame.maxY
-    let bottom = labels[labels.count-1].frame.minY
     var shift: CGFloat = 0.0
     switch verticalAlignmentMode {
-    case .Center: shift = -(top * 0.5 + bottom)
-    case .Top: shift = -(top + bottom)
-    case .Bottom: shift = -bottom
-    case .Baseline: break
+    case .Baseline: return
+    case .Top: shift = -labels[0].frame.maxY
+    case .Bottom: shift = -labels[labels.count-1].frame.minY
+    case .Center: shift = -(labels[0].frame.maxY + labels[labels.count-1].position.y) * 0.5
     }
     for label in labels {label.position.y += shift}
   }
