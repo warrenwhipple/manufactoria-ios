@@ -11,12 +11,12 @@ import SpriteKit
 class BreakingLabel: SKNode {
   var labels: [SKLabelNode] = []
   
-  var breakingText: String? {
+  var text: String? {
   didSet {
     for label in labels {label.removeFromParent()}
     labels = []
-    if breakingText {
-      for textLine in breakingText!.split("\n") {
+    if text {
+      for textLine in text!.split("\n") {
         let label = SKLabelNode()
         label.text = textLine
         label.fontColor = fontColor

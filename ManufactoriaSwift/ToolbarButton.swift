@@ -8,12 +8,14 @@
 
 import SpriteKit
 
-protocol ToolbarButtonDelegate {
+/*
+@class_protocol protocol ToolbarButtonDelegate {
   func changeEditMode(editMode: EditMode, fromButton: ToolbarButton)
 }
+*/
 
 class ToolbarButton: SKSpriteNode {
-  var delegate: ToolbarButtonDelegate?
+  weak var delegate: ToolbarNode?
   let editModes: [EditMode]
   let displayNodes: [SKNode?]
   var mode = 0
@@ -39,16 +41,16 @@ class ToolbarButton: SKSpriteNode {
       var node: SKSpriteNode?
       switch editMode {
       case .Blank:
-        node = SKSpriteNode(color: UIColor.grayColor(), size: CGSize(width:0.7, height:0.7))
+        node = SKSpriteNode(color: UIColor.grayColor(), size: CGSize(width:30, height:30))
       case .Belt:
-        node = SKSpriteNode(texture: SKTexture(imageNamed: "beltButton.png"), size: CGSize(width: 0.3, height: 1))
+        node = SKSpriteNode(texture: SKTexture(imageNamed: "beltButton.png"))
       case .Bridge:
-        node = SKSpriteNode(texture: SKTexture(imageNamed: "beltButton.png"), size: CGSize(width: 0.3, height: 1))
-        let node2 = SKSpriteNode(texture: SKTexture(imageNamed: "beltButton.png"), size: CGSize(width: 0.3, height: 1))
+        node = SKSpriteNode(texture: SKTexture(imageNamed: "bridgeButton.png"))
+        let node2 = SKSpriteNode(texture: SKTexture(imageNamed: "beltButton.png"))
         node2.zRotation = CGFloat(-M_PI_2)
         node!.addChild(node2)
       case .PusherB, .PusherR, .PusherG, .PusherY:
-        node = SKSpriteNode(texture: SKTexture(imageNamed: "pusherFill.png"), size: CGSizeUnit)
+        node = SKSpriteNode(texture: SKTexture(imageNamed: "dot.png"))
         node!.colorBlendFactor = 1
         switch editMode {
         case .PusherB: node!.color = ColorBlue
@@ -57,11 +59,11 @@ class ToolbarButton: SKSpriteNode {
         case .PusherY: node!.color = ColorYellow
         default: break;
         }
-        let node2 = SKSpriteNode(texture: SKTexture(imageNamed: "pusherStroke.png"), size: CGSizeUnit)
+        let node2 = SKSpriteNode(texture: SKTexture(imageNamed: "ring.png"))
         node!.addChild(node2)
       case .PullerBR, .PullerRB, .PullerGY, .PullerYG:
-        node = SKSpriteNode(texture: SKTexture(imageNamed: "pullerFill.png"), size: CGSizeUnit)
-        let node2 = SKSpriteNode(texture: SKTexture(imageNamed: "pullerFill.png"), size: CGSizeUnit)
+        node = SKSpriteNode(texture: SKTexture(imageNamed: "pullerHalfFill.png"))
+        let node2 = SKSpriteNode(texture: SKTexture(imageNamed: "pullerHalfFill.png"))
         node!.colorBlendFactor = 1
         node2.colorBlendFactor = 1
         switch editMode {
@@ -79,14 +81,17 @@ class ToolbarButton: SKSpriteNode {
           node2.color = ColorGreen
         default: break;
         }
+        node!.anchorPoint.x = 1
+        node2.anchorPoint.x = 1
         node2.xScale = -1
         node!.addChild(node2)
-        let node3 = SKSpriteNode(texture: SKTexture(imageNamed: "pullerStroke.png"), size: CGSizeUnit)
+        let node3 = SKSpriteNode(texture: SKTexture(imageNamed: "pullerStroke.png"))
         node3.zPosition = 1
         node!.addChild(node3)
       }
       
       tempDisplayNodes += node
+      node!.setScale(1.0/46.0)
     }
     displayNodes = tempDisplayNodes
     
@@ -124,9 +129,7 @@ class ToolbarButton: SKSpriteNode {
   }
   
   func activate() {
-    if delegate {
-      delegate!.changeEditMode(editModes[mode], fromButton: self)
-    }
+    delegate?.changeEditMode(editModes[mode], fromButton: self)
     isFocused = true
   }
   

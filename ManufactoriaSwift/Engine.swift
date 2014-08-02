@@ -8,29 +8,47 @@
 
 import Foundation
 
-@objc protocol EngineDelegate {
-  func gridTestDidPassWithExemplarTapeTests(exemplarTapeTests: [TapeTestOp])
-  func gridTestDidFailWithTapeTest(tapeTest: TapeTestOp)
-  func gridTestDidLoopWithTapeTest(tapeTest: TapeTestOp)
+struct TapeTestResult {
+  let input: String
+  let output: String?
+  let maxTapeLength: Int
+  init(tapeTestOp: TapeTestOp) {
+    input = tapeTestOp.input
+    output = tapeTestOp.output
+    maxTapeLength = tapeTestOp.maxTapeLength
+  }
+  init() {
+    input = ""
+    output = ""
+    maxTapeLength = 8
+  }
 }
 
-@objc protocol TapeTestQueueOpDelegate {
+/*
+@class_protocol protocol EngineDelegate {
+  func gridTestDidPassWithExemplarTapeTests(exemplarTapeTests: [TapeTestResult])
+  func gridTestDidFailWithTapeTest(tapeTest: TapeTestResult)
+  func gridTestDidLoopWithTapeTest(tapeTest: TapeTestResult)
+}
+
+@class_protocol protocol TapeTestQueueOpDelegate {
   func tapeTestQueuingDidFinishWithCount(count: Int)
 }
 
-@objc protocol TapeTestOpDelegate {
-  func tapeTestDidFinish(tapeTestOp: TapeTestOp)
-  func tapeTestDidLoop(tapeTestOp: TapeTestOp)
+@class_protocol protocol TapeTestOpDelegate {
+  func tapeTestDidFinish(result: TapeTestResult)
+  func tapeTestDidLoop(result: TapeTestResult)
 }
+*/
 
-class Engine: TapeTestQueueOpDelegate, TapeTestOpDelegate {
-  var delegate: EngineDelegate?
+class Engine {
+  weak var delegate: GameScene?
   let levelSetup: LevelSetup
   var isTesting = false
   let queue = NSOperationQueue()
   var queuedTapeTestCount = 0
   var passedTapeTestCount = 0
-  var exemplarTapeTests: [String : TapeTestOp?] = [:]
+  var exemplarTapeTests: [String : TapeTestResult?] = [:]
   
   init(levelSetup: LevelSetup) {
     self.levelSetup = levelSetup
@@ -58,20 +76,20 @@ class Engine: TapeTestQueueOpDelegate, TapeTestOpDelegate {
     println("Tape queuing did finish with count: \(count).")
   }
   
-  func tapeTestDidFinish(tapeTestOp: TapeTestOp) {
+  func tapeTestDidFinish(result: TapeTestResult) {
     if !isTesting {return}
     
     // check for tape test failure
     if levelSetup.passFunction {
-      if levelSetup.passFunction!(tapeTestOp.input) == !tapeTestOp.output {
+      if levelSetup.passFunction!(result.input) == !result.output {
         cancelAllTests()
-        delegate?.gridTestDidFailWithTapeTest(tapeTestOp)
+        delegate?.gridTestDidFailWithTapeTest(result)
         return
       }
     } else if let transformFunction = levelSetup.transformFunction {
-      if !tapeTestOp.output || (transformFunction(tapeTestOp.input) != tapeTestOp.output!) {
+      if !result.output || (transformFunction(result.input) != result.output!) {
         cancelAllTests()
-        delegate?.gridTestDidFailWithTapeTest(tapeTestOp)
+        delegate?.gridTestDidFailWithTapeTest(result)
         return
       }
     } else {
@@ -81,14 +99,14 @@ class Engine: TapeTestQueueOpDelegate, TapeTestOpDelegate {
     
     // record max length if one of exemplars
     for key in exemplarTapeTests.keys {
-      if key == tapeTestOp.input {
-        exemplarTapeTests[key] = tapeTestOp
+      if key == result.input {
+        exemplarTapeTests[key] = result
       }
     }
     
     // if all tests are complete, run exemplars
     if ++passedTapeTestCount == queuedTapeTestCount {
-      var exemplarTapeTestArray: [TapeTestOp] = []
+      var exemplarTapeTestArray: [TapeTestResult] = []
       for value in exemplarTapeTests.values {
         if value {
           exemplarTapeTestArray += value!
@@ -98,10 +116,10 @@ class Engine: TapeTestQueueOpDelegate, TapeTestOpDelegate {
     }
   }
   
-  func tapeTestDidLoop(tapeTestOp: TapeTestOp) {
+  func tapeTestDidLoop(result: TapeTestResult) {
     if !isTesting {return}
     cancelAllTests()
-    delegate?.gridTestDidLoopWithTapeTest(tapeTestOp)
+    delegate?.gridTestDidLoopWithTapeTest(result)
   }
 }
 
@@ -109,14 +127,16 @@ class TapeTestQueueOp: NSOperation {
   let queue: NSOperationQueue
   let grid: Grid
   let levelSetup: LevelSetup
-  let delegate: protocol<TapeTestQueueOpDelegate, TapeTestOpDelegate>
+  weak var delegate: Engine?
   var queuedTapeTestCount = 0
   
-  init(queue: NSOperationQueue, grid: Grid, levelSetup: LevelSetup, delegate: protocol<TapeTestQueueOpDelegate, TapeTestOpDelegate>) {
+  init(queue: NSOperationQueue, grid: Grid, levelSetup: LevelSetup, delegate: Engine?) {
     self.queue = queue
     self.grid = grid
     self.levelSetup = levelSetup
     self.delegate = delegate
+    super.init()
+    queuePriority = NSOperationQueuePriority.VeryLow
   }
   
   override func main() {
@@ -131,7 +151,7 @@ class TapeTestQueueOp: NSOperation {
         self.queue.addOperation(TapeTestOp(grid: self.grid, tape: Tape(string), delegate: self.delegate))
       }
       dispatch_async(dispatch_get_main_queue()) {
-        self.delegate.tapeTestQueuingDidFinishWithCount(strings.count)
+        if self.delegate {self.delegate!.tapeTestQueuingDidFinishWithCount(strings.count)}
       }
     }
   }
@@ -140,18 +160,20 @@ class TapeTestQueueOp: NSOperation {
 class TapeTestOp: NSOperation {
   let grid: Grid
   let tape: Tape
-  let delegate: TapeTestOpDelegate
+  weak var delegate: Engine?
   let input: String
   var output: String?
   var tickCount = 0
   var maxTapeLength: Int
   
-  init(grid: Grid, tape: Tape, delegate: TapeTestOpDelegate) {
+  init(grid: Grid, tape: Tape, delegate: Engine?) {
     self.grid = grid
     self.tape = tape
     self.delegate = delegate
     input = tape.string
-    maxTapeLength = input.utf16Count
+    maxTapeLength = input.length()
+    super.init()
+    queuePriority = NSOperationQueuePriority.VeryLow
   }
   
   override func main() {
@@ -161,7 +183,7 @@ class TapeTestOp: NSOperation {
       while !self.cancelled {
         let tickResult = self.grid.testCoord(coord, lastCoord: lastcoord, tape: self.tape)
         self.tickCount++
-        self.maxTapeLength = max(self.maxTapeLength, self.tape.string.utf16Count)
+        self.maxTapeLength = max(self.maxTapeLength, self.tape.string.length())
         lastcoord = coord
         switch tickResult {
         case .North: coord.j++
@@ -173,13 +195,13 @@ class TapeTestOp: NSOperation {
           fallthrough
         case .Reject:
           dispatch_async(dispatch_get_main_queue()) {
-            self.delegate.tapeTestDidFinish(self)
+            if self.delegate {self.delegate!.tapeTestDidFinish(TapeTestResult(tapeTestOp: self))}
           }
           return
         }
-        if self.tickCount > 10000 || self.maxTapeLength > 1000 {
+        if self.tickCount > 100 || self.maxTapeLength > 10 {
           dispatch_async(dispatch_get_main_queue()) {
-            self.delegate.tapeTestDidLoop(self)
+            if self.delegate {self.delegate!.tapeTestDidLoop(TapeTestResult(tapeTestOp: self))}
           }
           return
         }

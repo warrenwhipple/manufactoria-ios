@@ -9,20 +9,22 @@
 import SpriteKit
 
 // move these inside the class once class variables become available
-let pusherFillTex = SKTexture(imageNamed: "pusherFill.png")
-let pusherStrokeTex = SKTexture(imageNamed: "pusherStroke.png")
-let pullerFillTex = SKTexture(imageNamed: "pullerFill.png")
-let pullerStrokeTex = SKTexture(imageNamed: "pullerStroke.png")
+private let BeltTex = SKTexture(imageNamed: "belt.png")
+private let PusherStrokeTex = SKTexture(imageNamed: "ring.png")
+private let PusherFillTex = SKTexture(imageNamed: "dot.png")
+private let PullerStrokeTex = SKTexture(imageNamed: "pullerStroke.png")
+private let PullerHalfFillTex = SKTexture(imageNamed: "pullerHalfFill.png")
+private let W = BeltTex.size().height * 0.5
 
 class CellNode: SKSpriteNode {
   
   let belt = SKSpriteNode(texture: nil, size: CGSize(width: 0.3, height: 1.0))
   let bridge = SKSpriteNode(texture: nil, size: CGSize(width: 0.3, height: 1.0))
-  let pusher = SKSpriteNode(texture: pusherStrokeTex, size: CGSizeUnit)
-  let pusherFill = SKSpriteNode(texture: pusherFillTex, size: CGSizeUnit)
-  let puller = SKSpriteNode(texture: pullerStrokeTex, size: CGSizeUnit)
-  let pullerFill1 = SKSpriteNode(texture: pullerFillTex, size: CGSizeUnit)
-  let pullerFill2 = SKSpriteNode(texture: pullerFillTex, size: CGSizeUnit)
+  let pusher = SKSpriteNode(texture: PusherStrokeTex, size: PusherStrokeTex.size() / W)
+  let pusherFill = SKSpriteNode(texture: PusherFillTex, size: PusherFillTex.size() / W)
+  let puller = SKSpriteNode(texture: PullerStrokeTex, size: PullerStrokeTex.size() / W)
+  let pullerFill1 = SKSpriteNode(texture: PullerHalfFillTex, size: PullerHalfFillTex.size() / W)
+  let pullerFill2 = SKSpriteNode(texture: PullerHalfFillTex, size: PullerHalfFillTex.size() / W)
   
   let glowMask = SKSpriteNode(color: UIColor.whiteColor(), size: CGSizeUnit)
   var shimmerActionSequence: SKAction?
@@ -42,6 +44,8 @@ class CellNode: SKSpriteNode {
     pusherFill.alpha = 0.8
     pusher.addChild(pusherFill)
     puller.zPosition = 5
+    pullerFill1.anchorPoint = CGPoint(x: 1, y: 0.5)
+    pullerFill2.anchorPoint = CGPoint(x: 1, y: 0.5)
     pullerFill1.zPosition = -1
     pullerFill2.zPosition = -1
     pullerFill1.colorBlendFactor = 1

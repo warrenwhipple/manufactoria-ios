@@ -12,13 +12,15 @@ enum Color {
   case Blue, Red, Green, Yellow
 }
 
-protocol TapeDelegate {
+/*
+@class_protocol protocol TapeDelegate {
   func writeColor(color: Color)
   func deleteColor()
 }
+*/
 
 class Tape {
-  var delegate: TapeDelegate?
+  weak var delegate: TapeNode?
   var string = ""
   
   init() {}
@@ -42,8 +44,8 @@ class Tape {
   }
   
   func color() -> Color? {
-    if string.utf16Count == 0 {return nil}
-    switch Array(string)[0] {
+    if string.isEmpty {return nil}
+    switch string.substringToIndex(advance(string.startIndex, 1)) {
     case "b": return Color.Blue
     case "r": return Color.Red
     case "g": return Color.Green
@@ -63,7 +65,7 @@ class Tape {
   }
   
   func deleteColor() {
-    if string.utf16Count > 0 {
+    if !string.isEmpty {
       string = string.substringFromIndex(advance(string.startIndex, 1))
       delegate?.deleteColor()
     }

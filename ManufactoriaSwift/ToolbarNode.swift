@@ -12,12 +12,14 @@ enum ToolbarNodeState {
   case Enabled, Disabled
 }
 
-protocol ToolbarNodeDelegate {
+/*
+@class_protocol protocol ToolbarNodeDelegate {
   func changeEditMode(editMode: EditMode)
 }
+*/
 
-class ToolbarNode: SKNode, ToolbarButtonDelegate {
-  var delegate: ToolbarNodeDelegate? {
+class ToolbarNode: SKNode {
+  weak var delegate: GameScene? {
   didSet {
     if delegate && buttons.count >= 2 {
       buttons[1].activate()

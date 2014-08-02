@@ -9,33 +9,48 @@
 import Foundation
 
 extension String {
+  
   subscript(i: Int) -> Character {
     get {
-      return Array(self)[i]
+      return Character(substringWithRange(Range(start: advance(startIndex, i), end: advance(startIndex, i+1))))
     }
     set {
-      var characters = Array(self)
-      characters[i] = newValue
-      var newString = String()
-      newString.extend(characters)
-      self = newString
+      var string = ""
+      if i > 0 {string += substringToIndex(advance(startIndex, i))}
+      string += newValue
+      if i + 2 < length() {string += substringFromIndex(advance(startIndex, i + 1))}
+      self = string
     }
   }
+  
   subscript (r: Range<Int>) -> String {
     return substringWithRange(Range(start: advance(startIndex, r.startIndex), end: advance(startIndex, r.endIndex)))
   }
+  
+  func from(i: Int) -> String {
+    return substringFromIndex(advance(startIndex, i))
+  }
+  
+  func to(i: Int) -> String {
+    return substringToIndex(advance(startIndex, i))
+  }
+  
+  func length() -> Int {
+    return countElements(self)
+  }
+  
   func split(atCharacter: Character) -> [String] {
     var strings: [String] = []
-    var nextString = ""
+    var string = ""
     for nextCharacter in self {
       if nextCharacter == atCharacter {
-        strings += nextString
-        nextString = ""
+        strings += string
+        string = ""
       } else {
-        nextString += nextCharacter
+        string += nextCharacter
       }
     }
-    strings += nextString
+    strings += string
     return strings
   }
 }

@@ -23,7 +23,6 @@ enum CellType {
     case .PullerYG: return EditMode.PullerYG
     }
   }
-  
 }
 
 enum Direction {

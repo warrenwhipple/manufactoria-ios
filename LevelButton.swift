@@ -18,7 +18,7 @@ class LevelButton: SKSpriteNode {
     super.init(texture: nil, color: UIColor(white: 0.1, alpha: 1), size: CGSizeZero)
     self.userInteractionEnabled = isEnabled
     label.fontSize = 12
-    label.fontName = "HelveticaNeue-Thin"
+    label.fontName = "HelveticaNeue-Light"
     label.verticalAlignmentMode = .Center
     label.text = text
     label.alpha = 0
@@ -26,7 +26,7 @@ class LevelButton: SKSpriteNode {
     let wait = SKAction.waitForDuration(0.1 * NSTimeInterval(levelNumber + 1))
     if isEnabled {
       runAction(SKAction.sequence([wait, SKAction.colorizeWithColor(UIColor(white: 0.3, alpha: 1), colorBlendFactor: 1, duration: 1)]))
-      label.runAction(SKAction.sequence([wait, SKAction.fadeInWithDuration(2)]))
+      label.runAction(SKAction.sequence([wait, SKAction.fadeAlphaTo(1, duration: 2)]))
     }
 
   }

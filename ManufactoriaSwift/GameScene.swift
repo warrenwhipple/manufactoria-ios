@@ -12,7 +12,7 @@ enum GameSceneState {
   case Editing, Thinking, Testing
 }
 
-class GameScene: SKScene, TestButtonDelegate, ToolbarNodeDelegate, EngineDelegate, MenuTriangleDelegate {
+class GameScene: SKScene {
   // model objects
   let levelNumber: Int
   let grid: Grid
@@ -24,6 +24,7 @@ class GameScene: SKScene, TestButtonDelegate, ToolbarNodeDelegate, EngineDelegat
   let gridNode: GridNode
   let tapeNode = TapeNode()
   let instructions = BreakingLabel()
+  
   let toolbarNode = ToolbarNode()
   let menuTriangle = MenuTriangle()
   let testButton = TestButton()
@@ -61,9 +62,11 @@ class GameScene: SKScene, TestButtonDelegate, ToolbarNodeDelegate, EngineDelegat
     
     tape.delegate = tapeNode
     tapeNode.alpha = 0
+    tapeNode.setScale(0.5)
     addChild(tapeNode)
     
     testButton.delegate = self
+    testButton.setScale(0.5)
     addChild(testButton)
     
     instructions.fontName = "HelveticaNeue-Thin"
@@ -80,7 +83,6 @@ class GameScene: SKScene, TestButtonDelegate, ToolbarNodeDelegate, EngineDelegat
     menuTriangle.delegate = self
     self.addChild(menuTriangle)
     
-    
     fitToSize()
   }
   
@@ -89,18 +91,18 @@ class GameScene: SKScene, TestButtonDelegate, ToolbarNodeDelegate, EngineDelegat
     switch newState {
     case .Editing:
       engine.cancelAllTests()
-      testButton.runAction(SKAction.fadeInWithDuration(0.5))
+      testButton.runAction(SKAction.fadeAlphaTo(1, duration: 0.5))
       testButton.userInteractionEnabled = true
-      instructions.runAction(SKAction.fadeInWithDuration(0.5))
-      tapeNode.runAction(SKAction.fadeOutWithDuration(0.5))
+      instructions.runAction(SKAction.fadeAlphaTo(1, duration: 0.5))
+      tapeNode.runAction(SKAction.fadeAlphaTo(0, duration: 0.5))
       gridNode.transitionToState(.Editing)
-      robotNode.runAction(SKAction.fadeOutWithDuration(0.5))
+      robotNode.runAction(SKAction.fadeAlphaTo(0, duration: 0.5))
       toolbarNode.transitionToState(.Enabled)
     case .Thinking:
-      testButton.runAction(SKAction.fadeOutWithDuration(0.5))
+      testButton.runAction(SKAction.fadeAlphaTo(0, duration: 0.5))
       testButton.userInteractionEnabled = false
-      instructions.runAction(SKAction.fadeOutWithDuration(0.5))
-      tapeNode.runAction(SKAction.fadeInWithDuration(0.5))
+      instructions.runAction(SKAction.fadeAlphaTo(0, duration: 0.5))
+      tapeNode.runAction(SKAction.fadeAlphaTo(1, duration: 0.5))
       gridNode.transitionToState(.Waiting)
       toolbarNode.transitionToState(.Disabled)
       engine.queueTestWithGrid(grid)
@@ -123,15 +125,11 @@ class GameScene: SKScene, TestButtonDelegate, ToolbarNodeDelegate, EngineDelegat
     testButton.position = tapeNode.position
     instructions.position = CGPoint(x: 64, y: size.height - topGap * 0.5)
     toolbarNode.rect = CGRect(x: 0, y: 0, width: size.width, height: bottomGap * 0.5)
-    menuTriangle.position = CGPoint(x: size.width - menuTriangle.size.width / 2, y: size.height - menuTriangle.size.height / 2)
+    menuTriangle.position = CGPoint(x: size.width, y: size.height)
   }
   
   func changeEditMode(editMode: EditMode) {
     gridNode.editMode = editMode
-  }
-  
-  override func didMoveToView(view: SKView) {
-    
   }
   
   override func update(currentTime: NSTimeInterval) {
@@ -202,7 +200,7 @@ class GameScene: SKScene, TestButtonDelegate, ToolbarNodeDelegate, EngineDelegat
     return false
   }
   
-  func gridTestDidPassWithExemplarTapeTests(exemplarTapeTests: [TapeTestOp]) {
+  func gridTestDidPassWithExemplarTapeTests(exemplarTapeTests: [TapeTestResult]) {
     println("Grid test passed.")
     stringQueue = []
     var i = 0
@@ -212,15 +210,15 @@ class GameScene: SKScene, TestButtonDelegate, ToolbarNodeDelegate, EngineDelegat
     self.transitionToState(.Testing)
   }
   
-  func gridTestDidFailWithTapeTest(tapeTest: TapeTestOp) {
-    println("Grid test failed with input: \(tapeTest.input).")
-    stringQueue = [(tapeTest.input, tapeTest.maxTapeLength)]
+  func gridTestDidFailWithTapeTest(result: TapeTestResult) {
+    println("Grid test failed with input: \(result.input).")
+    stringQueue = [(result.input, result.maxTapeLength)]
     self.transitionToState(.Testing)
   }
   
-  func gridTestDidLoopWithTapeTest(tapeTest: TapeTestOp) {
+  func gridTestDidLoopWithTapeTest(result: TapeTestResult) {
     println("Grid test looped.")
-    stringQueue = [(tapeTest.input, tapeTest.maxTapeLength)]
+    stringQueue = [(result.input, result.maxTapeLength)]
     self.transitionToState(.Testing)
   }
   

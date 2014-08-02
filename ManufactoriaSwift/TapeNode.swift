@@ -8,27 +8,27 @@
 
 import SpriteKit
 
-class TapeNode: SKNode, TapeDelegate {
+class TapeNode: SKNode {
   var dots: [SKSpriteNode] = []
   var maxLength: Int = 0
   let dotTexture = SKTexture(imageNamed: "dot.png")
   let dotSpacing: CGFloat
-  let printer = SKSpriteNode(imageNamed: "printer.png")
-  let eraser = SKSpriteNode(imageNamed: "eraser.png")
-  let fader: SKSpriteNode
+  let printer = SKSpriteNode(imageNamed: "ring.png")
+  //let eraser = SKSpriteNode(imageNamed: "eraser.png")
+  //let fader: SKSpriteNode
   
   init() {
     dotSpacing = dotTexture.size().width * 1.5
-    fader = SKSpriteNode(color: UIColor.blackColor(), size: CGSize(width: dotSpacing, height: dotSpacing))
+    //fader = SKSpriteNode(color: UIColor.blackColor(), size: CGSize(width: dotSpacing, height: dotSpacing))
     super.init()
     printer.zPosition = 2
     addChild(printer)
-    eraser.zPosition = 2
-    eraser.position.x = dotSpacing * -0.5
-    addChild(eraser)
-    fader.zPosition = 1
-    fader.position.x = -dotSpacing
-    addChild(fader)
+    //eraser.zPosition = 2
+    //eraser.position.x = dotSpacing * -0.5
+    //addChild(eraser)
+    //fader.zPosition = 1
+    //fader.position.x = -dotSpacing
+    //addChild(fader)
   }
   
   func loadString(string: String, maxLength: Int) {
@@ -74,7 +74,7 @@ class TapeNode: SKNode, TapeDelegate {
     let dotIndex = dots.count - 1
     dot.position = dotPositionForIndex(dotIndex)
     dot.runAction(SKAction.sequence([
-      SKAction.fadeInWithDuration(0.25),
+      SKAction.fadeAlphaTo(1, duration: 0.25),
       SKAction.colorizeWithColorBlendFactor(1, duration: 0.25)]))
     addChild(dot)
     
@@ -90,12 +90,12 @@ class TapeNode: SKNode, TapeDelegate {
     if dots.count == 0 {return}
     
     // animate deleting dot
-    let deleteDot = SKAction.moveByX(-dotSpacing, y: 0, duration: 1)
+    let deleteDot = SKAction.scaleTo(0, duration: 0.5)
     deleteDot.timingMode = .EaseInEaseOut
     dots[0].runAction(SKAction.sequence([deleteDot,SKAction.removeFromParent()]))
     dots.removeAtIndex(0)
-    fader.alpha = 0
-    fader.runAction(SKAction.fadeInWithDuration(1))
+    //fader.alpha = 0
+    //fader.runAction(SKAction.fadeAlphaTo(1, duration: 1))
     
     // move remaining dots
     var i = 0

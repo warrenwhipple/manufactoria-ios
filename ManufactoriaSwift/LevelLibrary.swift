@@ -123,7 +123,7 @@ let LevelLibrary: [LevelSetup] = [
     generationFunction: {n in return generate("br", n)},
     passFunction: {
       s in
-      if s.utf16Count < 3 {return false}
+      if s.length() < 3 {return false}
       return s[0...2] == "brb"
     }
   ),
@@ -157,14 +157,14 @@ let LevelLibrary: [LevelSetup] = [
   ),
   
   LevelSetup(
-    tag: "first → last",
-    instructions: "Move the first color\nto the end.",
-    space: GridSpace(11, 11),
+    tag: "first last",
+    instructions: "Move the first color to the end.",
+    space: GridSpace(13, 13),
     exemplars: ["brbr", "rrbb"],
     generationFunction: {n in return generate("br", n)},
     transformFunction: {
       s in
-      if s.utf16Count > 1 {return s[1 ..< s.utf16Count] + s[0]}
+      if s.length() > 1 {return s[1 ..< s.length()] + s[0]}
       return s
     }
   ),

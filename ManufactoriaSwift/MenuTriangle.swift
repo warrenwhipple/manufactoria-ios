@@ -8,18 +8,24 @@
 
 import SpriteKit
 
-protocol MenuTriangleDelegate {
+/*
+@class_protocol protocol MenuTriangleDelegate {
   func menuTrianglePressed()
 }
+*/
 
 class MenuTriangle: SKSpriteNode {
-  var delegate: MenuTriangleDelegate?
+  weak var delegate: GameScene?
+  var triangle = SKSpriteNode(texture: SKTexture(imageNamed: "menuTriangle.png"))
   
   init()  {
-    let texture = SKTexture(imageNamed: "menuTriangle.png")
-    super.init(texture: texture, color: UIColor(white: 0.25, alpha: 1.0), size: texture.size())
-    self.colorBlendFactor = 1.0
-    self.userInteractionEnabled = true
+    super.init(texture: nil, color: nil, size: CGSize(width: 64, height: 64))
+    userInteractionEnabled = true
+    anchorPoint = CGPoint(x: 1, y: 1)
+    triangle.size = CGSize(width: 16, height: 16)
+    triangle.anchorPoint = CGPoint(x: 1, y: 1)
+    triangle.alpha = 0.2
+    addChild(triangle)
   }
   
   override func touchesBegan(touches: NSSet!, withEvent event: UIEvent!) {

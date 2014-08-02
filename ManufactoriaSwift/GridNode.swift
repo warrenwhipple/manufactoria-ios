@@ -98,8 +98,9 @@ class GridNode: SKNode {
     if rect == CGRectZero {return}
     let maxCellWidth = rect.size.width / CGFloat(grid.space.columns)
     let maxCellHeight = rect.size.height / CGFloat(grid.space.rows)
-    let maxCellSize: CGFloat = 40.0
-    let cellSize = min(maxCellWidth, maxCellHeight, maxCellSize)
+    let maxCellSize: CGFloat = 46.0
+    var cellSize = min(maxCellWidth, maxCellHeight, maxCellSize)
+    if cellSize > maxCellSize - 0.5 {cellSize = maxCellSize} // if close, let overlap
     let gridSize = CGSize(width: cellSize * CGFloat(grid.space.columns), height: cellSize * CGFloat(grid.space.rows))
     wrapper.position = CGPoint(x: (rect.size.width - gridSize.width) * 0.5, y: (rect.size.height - gridSize.height) * 0.5)
     wrapper.setScale(cellSize)

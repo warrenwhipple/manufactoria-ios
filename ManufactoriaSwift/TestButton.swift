@@ -8,23 +8,25 @@
 
 import SpriteKit
 
-protocol TestButtonDelegate {
+/*
+@class_protocol protocol TestButtonDelegate {
   func testButtonPressed()
 }
+*/
 
 class TestButton: SKSpriteNode {
-  var delegate: TestButtonDelegate!
-  let printerCircle = SKSpriteNode(texture: SKTexture(imageNamed: "printer.png"))
+  weak var delegate: GameScene?
+  let printerCircle = SKSpriteNode(texture: SKTexture(imageNamed: "ring.png"))
   let playArrow = SKSpriteNode(texture: SKTexture(imageNamed: "playArrow.png"))
   
   init() {
-    super.init(texture: nil, color: nil, size: CGSize(width: 64, height: 64))
+    super.init(texture: nil, color: nil, size: CGSize(width: 128, height: 128))
     addChild(printerCircle)
     addChild(playArrow)
     userInteractionEnabled = true
   }
   
   override func touchesBegan(touches: NSSet!, withEvent event: UIEvent!) {
-    delegate.testButtonPressed()
+    delegate?.testButtonPressed()
   }  
 }

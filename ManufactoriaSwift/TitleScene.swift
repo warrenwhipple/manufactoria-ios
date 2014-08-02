@@ -20,11 +20,11 @@ class TitleScene: SKScene {
     title.verticalAlignmentMode = .Center
     title.text = "Manufactoria"
     title.position = CGPoint(x: size.width * 0.5, y: size.height * 0.5 + 40)
-    arrow = SKSpriteNode(texture: SKTexture(imageNamed: "printer.png"))
+    arrow = SKSpriteNode(texture: SKTexture(imageNamed: "ring.png"))
     arrow.addChild(SKSpriteNode(texture: SKTexture(imageNamed: "playArrow.png")))
     arrow.position = CGPoint(x: size.width * 0.5, y: size.height * 0.5 - 40)
     arrow.alpha = 0
-    arrow.runAction(SKAction.sequence([SKAction.waitForDuration(1), SKAction.fadeInWithDuration(4)]))
+    arrow.runAction(SKAction.sequence([SKAction.waitForDuration(1), SKAction.fadeAlphaTo(1, duration: 4)]))
     super.init(size: size)
     backgroundColor = UIColor.blackColor()
     addChild(title)
