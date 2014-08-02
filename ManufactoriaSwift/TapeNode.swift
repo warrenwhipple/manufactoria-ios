@@ -31,7 +31,7 @@ class TapeNode: SKNode {
     //addChild(fader)
   }
   
-  func loadString(string: String, maxLength: Int) {
+  func loadTape(tape: [Color], maxLength: Int) {
     self.maxLength = maxLength
     
     // remove old dots
@@ -40,13 +40,13 @@ class TapeNode: SKNode {
     
     // add new dots
     var i = 0
-    for character in string {
+    for color in tape {
       let dot = SKSpriteNode(texture: dotTexture)
-      switch character {
-      case "b": dot.color = ColorBlue
-      case "r": dot.color = ColorRed
-      case "g": dot.color = ColorGreen
-      case "y": dot.color = ColorYellow
+      switch color {
+      case .Blue: dot.color = ColorBlue
+      case .Red: dot.color = ColorRed
+      case .Green: dot.color = ColorGreen
+      case .Yellow: dot.color = ColorYellow
       default: break
       }
       dot.colorBlendFactor = 1

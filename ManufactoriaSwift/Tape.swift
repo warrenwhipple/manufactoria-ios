@@ -19,9 +19,10 @@ enum Color {
 }
 */
 
+/*
 class Tape {
   weak var delegate: TapeNode?
-  var string = ""
+  var colors: [Color] = []
   
   init() {}
   
@@ -30,44 +31,33 @@ class Tape {
   }
   
   func loadString(string: String) {
-    var cleanedString = ""
+    var newSequence: [Color] = []
     for c in string {
       switch c {
-      case "b", "B", "1": cleanedString += "b"
-      case "r", "R", "0": cleanedString += "r"
-      case "g", "G": cleanedString += "g"
-      case "y", "Y": cleanedString += "y"
+      case "b", "B", "1": newSequence += .Blue
+      case "r", "R", "0": newSequence += .Red
+      case "g", "G": newSequence += .Green
+      case "y", "Y": newSequence += .Yellow
       default: break
       }
     }
-    self.string = cleanedString
+    self.colors = newSequence
   }
   
   func color() -> Color? {
-    if string.isEmpty {return nil}
-    switch string.substringToIndex(advance(string.startIndex, 1)) {
-    case "b": return Color.Blue
-    case "r": return Color.Red
-    case "g": return Color.Green
-    case "y": return Color.Yellow
-    default: return nil
-    }
+    if colors.isEmpty {return nil}
+    return colors[0]
   }
   
   func writeColor(color: Color) {
-    switch color {
-    case .Blue: string += "b"
-    case .Red: string += "r"
-    case .Green: string += "g"
-    case .Yellow: string += "y"
-    }
+    colors += color
     delegate?.writeColor(color)
   }
   
   func deleteColor() {
-    if !string.isEmpty {
-      string = string.substringFromIndex(advance(string.startIndex, 1))
-      delegate?.deleteColor()
-    }
+    if colors.isEmpty {return}
+    colors.removeAtIndex(0)
+    delegate?.deleteColor()
   }
 }
+*/

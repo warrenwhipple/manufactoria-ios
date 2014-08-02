@@ -16,8 +16,8 @@ class GameScene: SKScene {
   // model objects
   let levelNumber: Int
   let grid: Grid
-  var stringQueue: [(String, Int)] = []
-  let tape = Tape()
+  var tapeTestResults: [TapeTestResult] = []
+  var tape: [Color] = []
   let engine: Engine
   
   // view objects
@@ -60,7 +60,7 @@ class GameScene: SKScene {
     robotNode.alpha = 0
     gridNode.wrapper.addChild(robotNode)
     
-    tape.delegate = tapeNode
+    //tape.delegate = tapeNode
     tapeNode.alpha = 0
     tapeNode.setScale(0.5)
     addChild(tapeNode)
@@ -108,7 +108,7 @@ class GameScene: SKScene {
       engine.queueTestWithGrid(grid)
     case .Testing:
       if !loadNextTape() {
-        stringQueue = [("", 8)]
+        tapeTestResults = [TapeTestResult()]
         loadNextTape()
       }
       gridNode.transitionToState(.Waiting)
@@ -156,7 +156,7 @@ class GameScene: SKScene {
       tickPercent += Float(dt) * gameSpeed
       while tickPercent >= 1.0 {
         tickPercent -= 1.0
-        let testResult = grid.testCoord(robotCoord, lastCoord: lastRobotCoord, tape: tape)
+        let testResult = grid.testCoord(robotCoord, lastCoord: lastRobotCoord, tape: &tape)
         lastRobotCoord = robotCoord
         switch testResult {
         case .Accept, .Reject: if !loadNextTape() {transitionToState(GameSceneState.Editing)}
@@ -188,37 +188,31 @@ class GameScene: SKScene {
   }
   
   func loadNextTape() -> Bool {
-    if stringQueue.count > 0 {
-      tickPercent = 0
-      robotCoord = grid.startCoordPlusOne
-      lastRobotCoord = grid.startCoord
-      tape.loadString(stringQueue[0].0)
-      tapeNode.loadString(stringQueue[0].0, maxLength: stringQueue[0].1)
-      stringQueue.removeAtIndex(0)
-      return true
-    }
-    return false
+    if tapeTestResults.isEmpty {return false}
+    tickPercent = 0
+    robotCoord = grid.startCoordPlusOne
+    lastRobotCoord = grid.startCoord
+    tape = (tapeTestResults[0].input)
+    tapeNode.loadTape(tapeTestResults[0].input, maxLength: tapeTestResults[0].maxTapeLength)
+    tapeTestResults.removeAtIndex(0)
+    return true
   }
   
   func gridTestDidPassWithExemplarTapeTests(exemplarTapeTests: [TapeTestResult]) {
     println("Grid test passed.")
-    stringQueue = []
-    var i = 0
-    for exemplarTapeTest in exemplarTapeTests {
-      stringQueue += (exemplarTapeTest.input, exemplarTapeTest.maxTapeLength)
-    }
+    tapeTestResults = exemplarTapeTests
     self.transitionToState(.Testing)
   }
   
   func gridTestDidFailWithTapeTest(result: TapeTestResult) {
     println("Grid test failed with input: \(result.input).")
-    stringQueue = [(result.input, result.maxTapeLength)]
+    tapeTestResults = [result]
     self.transitionToState(.Testing)
   }
   
   func gridTestDidLoopWithTapeTest(result: TapeTestResult) {
     println("Grid test looped.")
-    stringQueue = [(result.input, result.maxTapeLength)]
+    tapeTestResults = [result]
     self.transitionToState(.Testing)
   }
   

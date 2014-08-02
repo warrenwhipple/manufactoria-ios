@@ -8,8 +8,45 @@
 
 import Foundation
 
+extension Array {
+  func first() -> T? {
+    if isEmpty {return nil}
+    return self[0]
+  }
+  mutating func removeFirst() -> T? {
+    if isEmpty {return nil}
+    return removeAtIndex(0)
+  }
+  func string() -> String {
+    var string = ""
+    for color in self {
+      switch color as Color {
+      case .Blue: string += "b"
+      case .Red: string += "r"
+      case .Green: string += "g"
+      case .Yellow: string += "y"
+      }
+    }
+    return string
+  }
+}
+
 extension String {
-  
+
+  func colors() -> [Color] {
+    var colors: [Color] = []
+    for character in self {
+      switch character {
+      case "b", "B", "1": colors += .Blue
+      case "r", "R", "0": colors += .Red
+      case "g", "G": colors += .Green
+      case "y", "Y": colors += .Yellow
+      default: break
+      }
+    }
+    return colors
+  }
+
   subscript(i: Int) -> Character {
     get {
       return Character(substringWithRange(Range(start: advance(startIndex, i), end: advance(startIndex, i+1))))
