@@ -12,31 +12,38 @@ typealias GenerationFunction = (Int) -> ([String])
 typealias PassFunction = (String) -> (Bool)
 typealias TransformFunction = (String) -> (String)
 
+let PassResults = ["Nice.", "That works.", "Acceptable.", "Fine."]
+let FailResults = ["Nope.", "Wrong.", "No.", "Sorry.", "Yeah um no.", "Fail.", "Not good.", "Problematic."]
+let LoopResults = ["Circular.", "Bored.", "Out of patience.", "No no no no no... no."]
+
 struct LevelSetup {
   let tag: String
   let instructions: String
   let space: GridSpace
+  let buttons: [ToolbarButtonType]
   let exemplars: [String]
   let generationFunction: GenerationFunction
   let passFunction: PassFunction?
   let transformFunction: TransformFunction?
   
-  init(tag: String, instructions: String, space: GridSpace, exemplars: [String],
+  init(tag: String, instructions: String, space: GridSpace, buttons: [ToolbarButtonType], exemplars: [String],
     generationFunction: GenerationFunction, passFunction: PassFunction) {
       self.tag = tag
       self.instructions = instructions
       self.space = space
+      self.buttons = buttons
       self.exemplars = exemplars
       self.generationFunction = generationFunction
       self.passFunction = passFunction
       self.transformFunction = nil
   }
   
-  init(tag: String, instructions: String, space: GridSpace, exemplars: [String],
+  init(tag: String, instructions: String, space: GridSpace, buttons: [ToolbarButtonType], exemplars: [String],
     generationFunction: GenerationFunction, transformFunction: TransformFunction) {
       self.tag = tag
       self.instructions = instructions
       self.space = space
+      self.buttons = buttons
       self.exemplars = exemplars
       self.generationFunction = generationFunction
       self.passFunction = nil
@@ -99,8 +106,9 @@ let LevelLibrary: [LevelSetup] = [
   
   LevelSetup(
     tag: "↑",
-    instructions: "Connect the conveyor belts.",
+    instructions: "Connect the entrance and exit.",
     space: GridSpace(3, 3),
+    buttons: [.Blank, .Belt],
     exemplars: [""],
     generationFunction: {n in return [""]},
     passFunction: {string in return true}
@@ -110,6 +118,7 @@ let LevelLibrary: [LevelSetup] = [
     tag: "    B",
     instructions: "Accept blue: to the exit.\nReject red: to the floor.",
     space: GridSpace(5, 5),
+    buttons: [.Blank, .Belt, .PullerBR],
     exemplars: ["b", "r"],
     generationFunction: {n in return ["b", "r"]},
     passFunction: {string in return string == "b"}
@@ -119,6 +128,7 @@ let LevelLibrary: [LevelSetup] = [
     tag: "BRB...    ",
     instructions: "Accept any that begin blue red blue.",
     space: GridSpace(7, 7),
+    buttons: [.Blank, .BeltBridge, .PullerBR],
     exemplars: ["brbr", "rbrb"],
     generationFunction: {n in return generate("br", n)},
     passFunction: {
@@ -132,6 +142,7 @@ let LevelLibrary: [LevelSetup] = [
     tag: ">= 3B",
     instructions: "Accept three or more blues.",
     space: GridSpace(9, 9),
+    buttons: [.Blank, .Belt],
     exemplars: ["brbrb", "rbrbr"],
     generationFunction: {n in return generate("br", n)},
     passFunction: {
@@ -146,6 +157,7 @@ let LevelLibrary: [LevelSetup] = [
     tag: "no R",
     instructions: "Reject any red anywhere.",
     space: GridSpace(11, 11),
+    buttons: [.Blank, .Belt],
     exemplars: ["bbbb", "bbrb"],
     generationFunction: {n in return generate("br", n)},
     passFunction: {
@@ -160,6 +172,7 @@ let LevelLibrary: [LevelSetup] = [
     tag: "first last",
     instructions: "Move the first color to the end.",
     space: GridSpace(13, 13),
+    buttons: [.Blank, .Belt],
     exemplars: ["brbr", "rrbb"],
     generationFunction: {n in return generate("br", n)},
     transformFunction: {

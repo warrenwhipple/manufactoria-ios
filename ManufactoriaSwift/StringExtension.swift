@@ -17,6 +17,10 @@ extension Array {
     if isEmpty {return nil}
     return removeAtIndex(0)
   }
+  func last() -> T? {
+    if isEmpty {return nil}
+    return self[count - 1]
+  }
   func string() -> String {
     var string = ""
     for color in self {

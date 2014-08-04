@@ -21,24 +21,23 @@ class GameScene: SKScene {
   let engine: Engine
   
   // view objects
-  let gridNode: GridNode
-  let tapeNode = TapeNode()
-  let instructions = BreakingLabel()
-  
-  let toolbarNode = ToolbarNode()
   let menuTriangle = MenuTriangle()
-  let testButton = TestButton()
+  let statusNode = StatusNode()
+  let gridNode: GridNode
+  let toolbarNode: ToolbarNode
   let robotNode = SKSpriteNode(texture: SKTexture(imageNamed: "robut.png"), color: UIColor.whiteColor(), size: CGSizeUnit)
   
   // variables
   var state: GameSceneState = .Editing
   var robotCoord = GridCoord(0, 0)
   var lastRobotCoord = GridCoord(0, 0)
+  var lastTapeLength = 0
   var lastUpdateTime: NSTimeInterval = 0.0
   var gameSpeed: Float = 1.0
   var targetGameSpeed: Float = 1.0
   var tickPercent: Float = 0.0
   var beltPercent: Float = 0.0
+  var thinkingOperationsDone = false
   
   override var size: CGSize {didSet{fitToSize()}}
   
@@ -48,6 +47,7 @@ class GameScene: SKScene {
     grid = Grid(space: levelSetup.space)
     engine = Engine(levelSetup: levelSetup)
     gridNode = GridNode(grid: grid)
+    toolbarNode = ToolbarNode(buttonTypes: levelSetup.buttons)
     
     super.init(size: size)
     backgroundColor = UIColor.blackColor()
@@ -59,28 +59,18 @@ class GameScene: SKScene {
     robotNode.zPosition = 3
     robotNode.alpha = 0
     gridNode.wrapper.addChild(robotNode)
-    
-    //tape.delegate = tapeNode
-    tapeNode.alpha = 0
-    tapeNode.setScale(0.5)
-    addChild(tapeNode)
-    
-    testButton.delegate = self
-    testButton.setScale(0.5)
-    addChild(testButton)
-    
-    instructions.fontName = "HelveticaNeue-Thin"
-    instructions.fontSize = 16
-    instructions.horizontalAlignmentMode = .Left
-    instructions.verticalAlignmentMode = .Center
-    instructions.text = levelSetup.instructions
-  
-    addChild(instructions)
+        
+    statusNode.delegate = self
+    statusNode.instructions.text = levelSetup.instructions
+    statusNode.zPosition = 10
+    addChild(statusNode)
     
     toolbarNode.delegate = self
+    toolbarNode.zPosition = 10
     addChild(toolbarNode)
     
     menuTriangle.delegate = self
+    menuTriangle.zPosition = 100
     self.addChild(menuTriangle)
     
     fitToSize()
@@ -91,18 +81,14 @@ class GameScene: SKScene {
     switch newState {
     case .Editing:
       engine.cancelAllTests()
-      testButton.runAction(SKAction.fadeAlphaTo(1, duration: 0.5))
-      testButton.userInteractionEnabled = true
-      instructions.runAction(SKAction.fadeAlphaTo(1, duration: 0.5))
-      tapeNode.runAction(SKAction.fadeAlphaTo(0, duration: 0.5))
+      statusNode.state = .Editing
       gridNode.transitionToState(.Editing)
       robotNode.runAction(SKAction.fadeAlphaTo(0, duration: 0.5))
       toolbarNode.transitionToState(.Enabled)
     case .Thinking:
-      testButton.runAction(SKAction.fadeAlphaTo(0, duration: 0.5))
-      testButton.userInteractionEnabled = false
-      instructions.runAction(SKAction.fadeAlphaTo(0, duration: 0.5))
-      tapeNode.runAction(SKAction.fadeAlphaTo(1, duration: 0.5))
+      statusNode.state = .Thinking
+      statusNode.thinkingAnimationDone = false
+      thinkingOperationsDone = false
       gridNode.transitionToState(.Waiting)
       toolbarNode.transitionToState(.Disabled)
       engine.queueTestWithGrid(grid)
@@ -111,6 +97,7 @@ class GameScene: SKScene {
         tapeTestResults = [TapeTestResult()]
         loadNextTape()
       }
+      statusNode.state = .Testing
       gridNode.transitionToState(.Waiting)
       toolbarNode.transitionToState(.Disabled)
     }
@@ -118,13 +105,11 @@ class GameScene: SKScene {
   }
   
   func fitToSize() {
-    let topGap = (size.height - size.width) * 0.5
-    let bottomGap = size.height - topGap - size.width
     gridNode.rect = CGRect(origin: CGPointZero, size: size)
-    tapeNode.position = CGPoint(x: 32, y: size.height - topGap * 0.5)
-    testButton.position = tapeNode.position
-    instructions.position = CGPoint(x: 64, y: size.height - topGap * 0.5)
-    toolbarNode.rect = CGRect(x: 0, y: 0, width: size.width, height: bottomGap * 0.5)
+    let gridHeight = CGFloat(grid.space.rows) * gridNode.wrapper.yScale
+    let gapHeight = (size.height - gridHeight) * 0.5
+    toolbarNode.rect = CGRect(x: 0, y: 0, width: size.width, height: gapHeight)
+    statusNode.rect = CGRect(x: 0, y: gapHeight + gridHeight, width: size.width, height: gapHeight)
     menuTriangle.position = CGPoint(x: size.width, y: size.height)
   }
   
@@ -158,6 +143,10 @@ class GameScene: SKScene {
         tickPercent -= 1.0
         let testResult = grid.testCoord(robotCoord, lastCoord: lastRobotCoord, tape: &tape)
         lastRobotCoord = robotCoord
+        let tapeLength = tape.count
+        if tapeLength > lastTapeLength && tapeLength > 0 {statusNode.tapeNode.writeColor(tape.last()!)}
+        else if tapeLength < lastTapeLength {statusNode.tapeNode.deleteColor()}
+        lastTapeLength = tapeLength
         switch testResult {
         case .Accept, .Reject: if !loadNextTape() {transitionToState(GameSceneState.Editing)}
         case .North: robotCoord.j++
@@ -185,6 +174,9 @@ class GameScene: SKScene {
     
     // update child nodes
     gridNode.update(dt, beltPercent: beltPercent)
+    
+    // check if done thinking
+    if state == .Thinking && statusNode.thinkingAnimationDone && thinkingOperationsDone {transitionToState(.Testing)}
   }
   
   func loadNextTape() -> Bool {
@@ -193,27 +185,28 @@ class GameScene: SKScene {
     robotCoord = grid.startCoordPlusOne
     lastRobotCoord = grid.startCoord
     tape = (tapeTestResults[0].input)
-    tapeNode.loadTape(tapeTestResults[0].input, maxLength: tapeTestResults[0].maxTapeLength)
+    statusNode.tapeNode.loadTape(tapeTestResults[0].input, maxLength: tapeTestResults[0].maxTapeLength)
     tapeTestResults.removeAtIndex(0)
+    lastTapeLength = tape.count
     return true
   }
   
   func gridTestDidPassWithExemplarTapeTests(exemplarTapeTests: [TapeTestResult]) {
-    println("Grid test passed.")
+    statusNode.resultMessage.text = PassResults[Int(arc4random_uniform(UInt32(PassResults.count)))]
     tapeTestResults = exemplarTapeTests
-    self.transitionToState(.Testing)
+    thinkingOperationsDone = true
   }
   
   func gridTestDidFailWithTapeTest(result: TapeTestResult) {
-    println("Grid test failed with input: \(result.input).")
+    statusNode.resultMessage.text = FailResults[Int(arc4random_uniform(UInt32(FailResults.count)))]
     tapeTestResults = [result]
-    self.transitionToState(.Testing)
+    thinkingOperationsDone = true
   }
   
   func gridTestDidLoopWithTapeTest(result: TapeTestResult) {
-    println("Grid test looped.")
+    statusNode.resultMessage.text = LoopResults[Int(arc4random_uniform(UInt32(LoopResults.count)))]
     tapeTestResults = [result]
-    self.transitionToState(.Testing)
+    thinkingOperationsDone = true
   }
   
   func testButtonPressed() {

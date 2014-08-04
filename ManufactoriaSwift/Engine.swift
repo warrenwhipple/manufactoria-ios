@@ -73,7 +73,7 @@ class Engine {
   func tapeTestQueuingDidFinishWithCount(count: Int) {
     if !isTesting {return}
     queuedTapeTestCount = count
-    println("Tape queuing did finish with count: \(count).")
+    println("\(count) tests queued.")
   }
   
   func tapeTestDidFinish(result: TapeTestResult) {

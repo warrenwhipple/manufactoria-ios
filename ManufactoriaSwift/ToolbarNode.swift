@@ -30,16 +30,9 @@ class ToolbarNode: SKNode {
   let buttons: [ToolbarButton]
   var rect: CGRect = CGRectZero {didSet{fitToRect()}}
   
-  init() {
+  init(buttonTypes: [ToolbarButtonType]) {
     var tempButtons: [ToolbarButton] = []
-    tempButtons += ToolbarButton(editModes: [EditMode.Blank])
-    tempButtons += ToolbarButton(editModes: [EditMode.Belt, EditMode.Bridge])
-    tempButtons += ToolbarButton(editModes: [EditMode.PusherB])
-    tempButtons += ToolbarButton(editModes: [EditMode.PusherR])
-    tempButtons += ToolbarButton(editModes: [EditMode.PusherG])
-    tempButtons += ToolbarButton(editModes: [EditMode.PusherY])
-    tempButtons += ToolbarButton(editModes: [EditMode.PullerBR, EditMode.PullerRB])
-    tempButtons += ToolbarButton(editModes: [EditMode.PullerGY, EditMode.PullerYG])
+    for buttonType in buttonTypes {tempButtons += ToolbarButton(type: buttonType)}
     buttons = tempButtons
     super.init()
     for button in buttons {
@@ -49,8 +42,9 @@ class ToolbarNode: SKNode {
   }
   
   func fitToRect() {
-    if rect == CGRectZero {return}
-    if buttons.count == 0 {return}
+    position = rect.origin
+    if rect.size == CGSizeZero {return}
+    if buttons.isEmpty {return}
     let buttonSize = min(rect.size.height, rect.size.width / CGFloat(buttons.count))
     var xShift = (rect.size.width - buttonSize * CGFloat(buttons.count - 1)) * 0.5
     let yShift = rect.size.height * 0.5

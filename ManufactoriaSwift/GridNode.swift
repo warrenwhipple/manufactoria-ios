@@ -35,7 +35,6 @@ enum EditMode {
 class GridNode: SKNode {
   var state = GridNodeState.Editing
   unowned let grid: Grid
-  var rect: CGRect = CGRectZero {didSet{fitToRect()}}
   let wrapper = SKNode()
   let cellNodes: [CellNode]
   let entranceCellNode = CellNode()
@@ -65,7 +64,6 @@ class GridNode: SKNode {
     tempCellNodes += exitCellNode
     cellNodes = tempCellNodes
     super.init()
-    position = rect.origin
     for i in 0..<grid.space.columns {
       for j in 0..<grid.space.rows {
         var cellNode = self[GridCoord(i,j)]
@@ -80,6 +78,19 @@ class GridNode: SKNode {
     entranceCellNodeGradient.zPosition = 2
     let exitCellNodeGradient = entranceCellNodeGradient.copy() as SKSpriteNode
     entranceCellNodeGradient.yScale = -1
+    
+    /*let enterArrow = SKSpriteNode(texture: SKTexture(imageNamed: "enterExitArrow.png"))
+    let exitArrow = SKSpriteNode(texture: SKTexture(imageNamed: "enterExitArrow.png"))
+    enterArrow.size = CGSize(width: 14.0/46.0, height: 12.0/46.0)
+    exitArrow.size = enterArrow.size
+    enterArrow.anchorPoint = CGPoint(x: 0.5, y: 0)
+    exitArrow.anchorPoint = CGPoint(x: 0.5, y: 1)
+    enterArrow.position = CGPoint(x: CGFloat(grid.space.columns/2) + 0.5, y: 0)
+    exitArrow.position = CGPoint(x: CGFloat(grid.space.columns/2) + 0.5, y: CGFloat(grid.space.rows))
+    enterArrow.alpha = 0.5
+    exitArrow.alpha = 0.5
+    wrapper.addChild(enterArrow)
+    wrapper.addChild(exitArrow)*/
 
     entranceCellNode.position = CGPoint(x: CGFloat(grid.centerColumn) + 0.5, y: -0.5)
     entranceCellNode.applyCell(Cell(type: .Belt, direction: .North))
@@ -90,22 +101,32 @@ class GridNode: SKNode {
     exitCellNode.addChild(exitCellNodeGradient)
     wrapper.addChild(exitCellNode)
     
-    fitToRect()
     addChild(wrapper)
   }
   
-  func fitToRect() {
-    if rect == CGRectZero {return}
-    let maxCellWidth = rect.size.width / CGFloat(grid.space.columns)
-    let maxCellHeight = rect.size.height / CGFloat(grid.space.rows)
+  var rect: CGRect {
+  get {
+    return CGRect(origin: position, size: size)
+  }
+  set {
+    position = newValue.origin
+    size = newValue.size
+  }
+  }
+  
+  var size: CGSize = CGSizeZero {
+  didSet {
+    let maxCellWidth = size.width / CGFloat(grid.space.columns)
+    let maxCellHeight = size.height / CGFloat(grid.space.rows)
     let maxCellSize: CGFloat = 46.0
     var cellSize = min(maxCellWidth, maxCellHeight, maxCellSize)
     if cellSize > maxCellSize - 0.5 {cellSize = maxCellSize} // if close, let overlap
     let gridSize = CGSize(width: cellSize * CGFloat(grid.space.columns), height: cellSize * CGFloat(grid.space.rows))
-    wrapper.position = CGPoint(x: (rect.size.width - gridSize.width) * 0.5, y: (rect.size.height - gridSize.height) * 0.5)
+    wrapper.position = CGPoint(x: (size.width - gridSize.width) * 0.5, y: (size.height - gridSize.height) * 0.5)
     wrapper.setScale(cellSize)
   }
-  
+  }
+    
   func transitionToState(newState: GridNodeState) {
     if state == newState {return}
     switch newState {

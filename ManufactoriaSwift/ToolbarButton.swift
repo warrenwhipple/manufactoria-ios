@@ -8,6 +8,10 @@
 
 import SpriteKit
 
+enum ToolbarButtonType {
+  case Blank, Belt, BeltBridge, PullerBR, PullerGY, PushersBR, PushersBRGY
+}
+
 /*
 @class_protocol protocol ToolbarButtonDelegate {
   func changeEditMode(editMode: EditMode, fromButton: ToolbarButton)
@@ -33,8 +37,16 @@ class ToolbarButton: SKSpriteNode {
   var isPressed = false
   var touch: UITouch?
   
-  init(editModes: [EditMode]) {
-    self.editModes = editModes
+  init(type: ToolbarButtonType) {
+    switch type {
+    case .Blank: self.editModes = [.Blank]
+    case .Belt: self.editModes = [.Belt]
+    case .BeltBridge: self.editModes = [.Belt, .Bridge]
+    case .PullerBR: self.editModes = [.PullerBR, .PullerRB]
+    case .PullerGY: self.editModes = [.PullerGY, .PullerYG]
+    case .PushersBR: self.editModes = [.PusherB, .PusherR]
+    case .PushersBRGY: self.editModes = [.PusherB, .PusherR, .PusherG, .PusherY]
+    }
     
     var tempDisplayNodes: [SKNode?] = []
     for editMode in editModes {

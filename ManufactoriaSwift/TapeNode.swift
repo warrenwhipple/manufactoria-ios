@@ -9,26 +9,15 @@
 import SpriteKit
 
 class TapeNode: SKNode {
+  weak var delegate: StatusNode?
   var dots: [SKSpriteNode] = []
   var maxLength: Int = 0
   let dotTexture = SKTexture(imageNamed: "dot.png")
   let dotSpacing: CGFloat
-  let printer = SKSpriteNode(imageNamed: "ring.png")
-  //let eraser = SKSpriteNode(imageNamed: "eraser.png")
-  //let fader: SKSpriteNode
   
   init() {
     dotSpacing = dotTexture.size().width * 1.5
-    //fader = SKSpriteNode(color: UIColor.blackColor(), size: CGSize(width: dotSpacing, height: dotSpacing))
     super.init()
-    printer.zPosition = 2
-    addChild(printer)
-    //eraser.zPosition = 2
-    //eraser.position.x = dotSpacing * -0.5
-    //addChild(eraser)
-    //fader.zPosition = 1
-    //fader.position.x = -dotSpacing
-    //addChild(fader)
   }
   
   func loadTape(tape: [Color], maxLength: Int) {
@@ -56,7 +45,10 @@ class TapeNode: SKNode {
     }
     
     // reset printer
-    printer.position = dotPositionForIndex(i)
+    if delegate {
+      delegate!.ring.removeAllActions()
+      delegate!.ring.position = convertPoint(dotPositionForIndex(i), toNode: delegate!)
+    }
   }
   
   func writeColor(color: Color) {
@@ -79,11 +71,13 @@ class TapeNode: SKNode {
     addChild(dot)
     
     // animate printer
-    printer.removeAllActions()
-    printer.position = dotPositionForIndex(dotIndex)
-    let movePrinter = SKAction.moveTo(dotPositionForIndex(dotIndex + 1), duration: 0.5)
-    movePrinter.timingMode = .EaseInEaseOut
-    printer.runAction(SKAction.sequence([SKAction.waitForDuration(0.5), movePrinter]))
+    if delegate {
+      delegate!.ring.removeAllActions()
+      delegate!.ring.position = convertPoint(dotPositionForIndex(dotIndex), toNode: delegate!)
+      let movePrinter = SKAction.moveTo(convertPoint(dotPositionForIndex(dotIndex + 1), toNode: delegate!), duration: 0.5)
+      movePrinter.timingMode = .EaseInEaseOut
+      delegate!.ring.runAction(SKAction.sequence([SKAction.waitForDuration(0.5), movePrinter]))
+    }
   }
   
   func deleteColor() {
@@ -94,8 +88,6 @@ class TapeNode: SKNode {
     deleteDot.timingMode = .EaseInEaseOut
     dots[0].runAction(SKAction.sequence([deleteDot,SKAction.removeFromParent()]))
     dots.removeAtIndex(0)
-    //fader.alpha = 0
-    //fader.runAction(SKAction.fadeAlphaTo(1, duration: 1))
     
     // move remaining dots
     var i = 0
@@ -106,9 +98,10 @@ class TapeNode: SKNode {
     }
     
     // move printer
-    let movePrinter = SKAction.moveTo(dotPositionForIndex(i), duration: 1)
-    movePrinter.timingMode = .EaseInEaseOut
-    printer.runAction(movePrinter)
+    if delegate {
+      delegate!.ring.removeAllActions()
+      delegate!.ring.runEasedAction(SKAction.moveTo(convertPoint(dotPositionForIndex(i), toNode: delegate!), duration: 1))
+    }
   }
   
   func dotPositionForIndex(index: Int) -> CGPoint {

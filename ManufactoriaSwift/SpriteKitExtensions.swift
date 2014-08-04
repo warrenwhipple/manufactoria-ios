@@ -15,3 +15,10 @@ extension SKNode {
     }
   }
 }
+
+extension SKNode {
+  func runEasedAction(action: SKAction) {
+    action.timingMode = SKActionTimingMode.EaseInEaseOut
+    runAction(action)
+  }
+}
