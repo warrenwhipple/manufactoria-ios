@@ -28,7 +28,6 @@ class ToolbarNode: SKNode {
   }
   var state: ToolbarNodeState = .Enabled
   let buttons: [ToolbarButton]
-  var rect: CGRect = CGRectZero {didSet{fitToRect()}}
   
   init(buttonTypes: [ToolbarButtonType]) {
     var tempButtons: [ToolbarButton] = []
@@ -41,18 +40,27 @@ class ToolbarNode: SKNode {
     }
   }
   
-  func fitToRect() {
-    position = rect.origin
-    if rect.size == CGSizeZero {return}
+  var rect: CGRect {
+  get {
+    return CGRect(origin: position, size: size)
+  }
+  set {
+    position = newValue.origin
+    size = newValue.size
+  }
+  }
+  
+  var size: CGSize = CGSizeZero {
+  didSet {
     if buttons.isEmpty {return}
-    let buttonSize = min(rect.size.height, rect.size.width / CGFloat(buttons.count))
-    var xShift = (rect.size.width - buttonSize * CGFloat(buttons.count - 1)) * 0.5
-    let yShift = rect.size.height * 0.5
+    let spacing = size.width / CGFloat(buttons.count + 1)
+    var x: CGFloat = spacing
+    let y = size.height * 0.5
     for button in buttons {
-      button.setScale(buttonSize)
-      button.position = CGPoint(x: xShift, y: yShift)
-      xShift += buttonSize
+      button.position = CGPoint(x: x, y: y)
+      x += spacing
     }
+  }
   }
   
   func transitionToState(newState: ToolbarNodeState) {

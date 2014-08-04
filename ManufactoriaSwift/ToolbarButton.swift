@@ -103,7 +103,7 @@ class ToolbarButton: SKSpriteNode {
       }
       
       tempDisplayNodes += node
-      node!.setScale(1.0/46.0)
+      //node!.setScale(1.0/46.0)
     }
     displayNodes = tempDisplayNodes
     
