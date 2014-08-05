@@ -13,16 +13,17 @@ enum StatusNodeState {
 }
 
 class StatusNode: SKNode {
+  required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   weak var delegate: GameScene? {didSet{testTouchArea.delegate = delegate}}
   let testTouchArea = TestTouchArea(color: nil, size: CGSize(width: 64, height: 64))
   let tapeNode = TapeNode()
-  let ring = SKSpriteNode(texture: SKTexture(imageNamed: "ring.png"))
-  let ringArrow = SKSpriteNode(texture: SKTexture(imageNamed: "playArrow.png"))
+  let ring = SKSpriteNode("ring")
+  let ringArrow = SKSpriteNode("playArrow")
   let instructions = BreakingLabel()
   let resultMessage = SKLabelNode()
   var thinkingAnimationDone = false
   
-  init()  {
+  override init()  {
     super.init()
     
     testTouchArea.userInteractionEnabled = true

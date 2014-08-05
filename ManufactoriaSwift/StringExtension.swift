@@ -41,10 +41,10 @@ extension String {
     var colors: [Color] = []
     for character in self {
       switch character {
-      case "b", "B", "1": colors += .Blue
-      case "r", "R", "0": colors += .Red
-      case "g", "G": colors += .Green
-      case "y", "Y": colors += .Yellow
+      case "b", "B", "1": colors.append(.Blue)
+      case "r", "R", "0": colors.append(.Red)
+      case "g", "G": colors.append(.Green)
+      case "y", "Y": colors.append(.Yellow)
       default: break
       }
     }
@@ -85,13 +85,13 @@ extension String {
     var string = ""
     for nextCharacter in self {
       if nextCharacter == atCharacter {
-        strings += string
+        strings.append(string)
         string = ""
       } else {
         string += nextCharacter
       }
     }
-    strings += string
+    strings.append(string)
     return strings
   }
 }

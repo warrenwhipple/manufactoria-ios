@@ -9,6 +9,7 @@
 import SpriteKit
 
 class Button: SKSpriteNode {
+  required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   let dimColor: UIColor
   let glowColor: UIColor
   var touch: UITouch?
@@ -27,15 +28,15 @@ class Button: SKSpriteNode {
   }
   
   override func touchesBegan(touches: NSSet!, withEvent event: UIEvent!) {
-    if touch {return}
+    if touch != nil {return}
     touch = touches.anyObject() as? UITouch
     removeAllActions()
     runAction(SKAction.colorizeWithColor(glowColor, colorBlendFactor: 1, duration: 0.1))
-    if closureTouchDown {closureTouchDown!()}
+    if closureTouchDown != nil {closureTouchDown!()}
   }
   
   override func touchesMoved(touches: NSSet!, withEvent event: UIEvent!) {
-    if !touch {return}
+    if touch == nil {return}
     if !touches.containsObject(touch!) {return}
     if !frame.contains(touch!.locationInNode(parent)) {
       touch = nil
@@ -45,16 +46,16 @@ class Button: SKSpriteNode {
   }
   
   override func touchesEnded(touches: NSSet!, withEvent event: UIEvent!) {
-    if !touch {return}
+    if touch == nil {return}
     if !touches.containsObject(touch!) {return}
-    if closureTouchUpInside {closureTouchUpInside!()}
+    if closureTouchUpInside != nil {closureTouchUpInside!()}
     touch = nil
     removeAllActions()
     runAction(SKAction.colorizeWithColor(dimColor, colorBlendFactor: 1, duration: 0.1))
   }
   
   override func touchesCancelled(touches: NSSet!, withEvent event: UIEvent!) {
-    if !touch {return}
+    if touch == nil {return}
     if !touches.containsObject(touch!) {return}
     touch = nil
     removeAllActions()

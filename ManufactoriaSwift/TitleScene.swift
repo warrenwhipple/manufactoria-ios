@@ -9,19 +9,20 @@
 import SpriteKit
 
 class TitleScene: SKScene {
+  required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   let gameData = GameData.sharedInstance
   let title: SKLabelNode
   let arrow: SKSpriteNode
   
-  init(size: CGSize) {
+  override init(size: CGSize) {
     title = SKLabelNode()
     title.fontName = "HelveticaNeue-UltraLight"
     title.fontSize = 40
     title.verticalAlignmentMode = .Center
     title.text = "Manufactoria"
     title.position = CGPoint(x: size.width * 0.5, y: size.height * 0.5 + 40)
-    arrow = SKSpriteNode(texture: SKTexture(imageNamed: "ring.png"))
-    arrow.addChild(SKSpriteNode(texture: SKTexture(imageNamed: "playArrow.png")))
+    arrow = SKSpriteNode("ring")
+    arrow.addChild(SKSpriteNode("playArrow"))
     arrow.position = CGPoint(x: size.width * 0.5, y: size.height * 0.5 - 40)
     arrow.alpha = 0
     arrow.runAction(SKAction.sequence([SKAction.waitForDuration(1), SKAction.fadeAlphaTo(1, duration: 4)]))

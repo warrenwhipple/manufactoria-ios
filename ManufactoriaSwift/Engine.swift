@@ -80,33 +80,35 @@ class Engine {
     if !isTesting {return}
     
     // check for tape test failure
-    if levelSetup.passFunction {
-      if levelSetup.passFunction!(result.input.string()) == !result.output {
+    if let passFunction = levelSetup.passFunction {
+      if passFunction(result.input.string()) == (result.output != nil) {
         cancelAllTests()
         delegate?.gridTestDidFailWithTapeTest(result)
         return
       }
     } else if let transformFunction = levelSetup.transformFunction {
-      if !result.output || (transformFunction(result.input.string()) != result.output!.string()) {
+      if result.output == nil || (transformFunction(result.input.string()) != result.output!.string()) {
         cancelAllTests()
         delegate?.gridTestDidFailWithTapeTest(result)
         return
       }
     } else {
-      assert(!levelSetup.passFunction && !levelSetup.transformFunction)
+      assert(levelSetup.passFunction == nil && levelSetup.transformFunction == nil)
     }
     if !isTesting {return}
     
     // record max length if one of exemplars
     let inputString = result.input.string()
-    if exemplarTapeTests[inputString] {exemplarTapeTests[inputString] = result}
+    if exemplarTapeTests[inputString] != nil {
+      exemplarTapeTests[inputString] = result
+    }
     
     // if all tests are complete, run exemplars
     if ++passedTapeTestCount == queuedTapeTestCount {
       var exemplarTapeTestArray: [TapeTestResult] = []
       for value in exemplarTapeTests.values {
-        if value {
-          exemplarTapeTestArray += value!
+        if value != nil {
+          exemplarTapeTestArray.append(value!)
         }
       }
       delegate?.gridTestDidPassWithExemplarTapeTests(exemplarTapeTestArray)
@@ -148,7 +150,7 @@ class TapeTestQueueOp: NSOperation {
         self.queue.addOperation(TapeTestOp(grid: self.grid, tape: string.colors(), delegate: self.delegate))
       }
       dispatch_async(dispatch_get_main_queue()) {
-        if self.delegate {self.delegate!.tapeTestQueuingDidFinishWithCount(strings.count)}
+        if self.delegate != nil {self.delegate!.tapeTestQueuingDidFinishWithCount(strings.count)}
       }
     }
   }
@@ -192,13 +194,13 @@ class TapeTestOp: NSOperation {
           fallthrough
         case .Reject:
           dispatch_async(dispatch_get_main_queue()) {
-            if self.delegate {self.delegate!.tapeTestDidFinish(TapeTestResult(tapeTestOp: self))}
+            if self.delegate != nil {self.delegate!.tapeTestDidFinish(TapeTestResult(tapeTestOp: self))}
           }
           return
         }
         if self.tickCount > 100 || self.maxTapeLength > 10 {
           dispatch_async(dispatch_get_main_queue()) {
-            if self.delegate {self.delegate!.tapeTestDidLoop(TapeTestResult(tapeTestOp: self))}
+            if self.delegate != nil {self.delegate!.tapeTestDidLoop(TapeTestResult(tapeTestOp: self))}
           }
           return
         }

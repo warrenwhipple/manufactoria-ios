@@ -19,6 +19,7 @@ enum ToolbarButtonType {
 */
 
 class ToolbarButton: SKSpriteNode {
+  required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   weak var delegate: ToolbarNode?
   let editModes: [EditMode]
   let displayNodes: [SKNode?]
@@ -55,14 +56,14 @@ class ToolbarButton: SKSpriteNode {
       case .Blank:
         node = SKSpriteNode(color: UIColor.grayColor(), size: CGSize(width:30, height:30))
       case .Belt:
-        node = SKSpriteNode(texture: SKTexture(imageNamed: "beltButton.png"))
+        node = SKSpriteNode("beltButton")
       case .Bridge:
-        node = SKSpriteNode(texture: SKTexture(imageNamed: "bridgeButton.png"))
-        let node2 = SKSpriteNode(texture: SKTexture(imageNamed: "beltButton.png"))
+        node = SKSpriteNode("bridgeButton")
+        let node2 = SKSpriteNode("beltButton")
         node2.zRotation = CGFloat(-M_PI_2)
         node!.addChild(node2)
       case .PusherB, .PusherR, .PusherG, .PusherY:
-        node = SKSpriteNode(texture: SKTexture(imageNamed: "dot.png"))
+        node = SKSpriteNode("dot")
         node!.colorBlendFactor = 1
         switch editMode {
         case .PusherB: node!.color = ColorBlue
@@ -71,11 +72,11 @@ class ToolbarButton: SKSpriteNode {
         case .PusherY: node!.color = ColorYellow
         default: break;
         }
-        let node2 = SKSpriteNode(texture: SKTexture(imageNamed: "ring.png"))
+        let node2 = SKSpriteNode("ring")
         node!.addChild(node2)
       case .PullerBR, .PullerRB, .PullerGY, .PullerYG:
-        node = SKSpriteNode(texture: SKTexture(imageNamed: "pullerHalfFill.png"))
-        let node2 = SKSpriteNode(texture: SKTexture(imageNamed: "pullerHalfFill.png"))
+        node = SKSpriteNode("pullerHalfFill")
+        let node2 = SKSpriteNode("pullerHalfFill")
         node!.colorBlendFactor = 1
         node2.colorBlendFactor = 1
         switch editMode {
@@ -97,12 +98,12 @@ class ToolbarButton: SKSpriteNode {
         node2.anchorPoint.x = 1
         node2.xScale = -1
         node!.addChild(node2)
-        let node3 = SKSpriteNode(texture: SKTexture(imageNamed: "pullerStroke.png"))
+        let node3 = SKSpriteNode("pullerStroke")
         node3.zPosition = 1
         node!.addChild(node3)
       }
       
-      tempDisplayNodes += node
+      tempDisplayNodes.append(node)
       //node!.setScale(1.0/46.0)
     }
     displayNodes = tempDisplayNodes
@@ -113,7 +114,7 @@ class ToolbarButton: SKSpriteNode {
     alpha = 0.25
     
     for node in displayNodes {
-      if node {
+      if node != nil {
         node!.alpha = 0
         addChild(node!)
       }
@@ -146,14 +147,14 @@ class ToolbarButton: SKSpriteNode {
   }
   
   override func touchesBegan(touches: NSSet!, withEvent event: UIEvent!) {
-    if touch {
+    if touch != nil {
       switch touch!.phase {
       case .Began, .Moved, .Stationary: return
       case .Ended, .Cancelled: break
       }
     }
     touch = touches.anyObject() as? UITouch
-    if touch {
+    if touch != nil {
       if isFocused {
         incrementMode()
       } else {
@@ -164,7 +165,7 @@ class ToolbarButton: SKSpriteNode {
   }
   
   override func touchesMoved(touches: NSSet!, withEvent event: UIEvent!) {
-    if !touch {return}
+    if touch == nil {return}
     if !isPressed {return}
     if !touches.containsObject(touch!) {return}
     if !frame.contains(touch!.locationInNode(parent)) { // if touch moved outside of button
@@ -173,7 +174,7 @@ class ToolbarButton: SKSpriteNode {
   }
   
   override func touchesEnded(touches: NSSet!, withEvent event: UIEvent!) {
-    if !touch {return}
+    if touch == nil {return}
     if !isPressed {return}
     if !touches.containsObject(touch!) {return}
     isPressed = false

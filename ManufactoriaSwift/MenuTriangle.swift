@@ -15,10 +15,11 @@ import SpriteKit
 */
 
 class MenuTriangle: SKSpriteNode {
+  required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   weak var delegate: GameScene?
-  var triangle = SKSpriteNode(texture: SKTexture(imageNamed: "menuTriangle.png"))
+  var triangle = SKSpriteNode("menuTriangle")
   
-  init()  {
+  override init()  {
     super.init(texture: nil, color: nil, size: CGSize(width: 64, height: 64))
     userInteractionEnabled = true
     anchorPoint = CGPoint(x: 1, y: 1)

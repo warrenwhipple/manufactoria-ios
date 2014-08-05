@@ -14,11 +14,15 @@ extension SKNode {
       addChild(node)
     }
   }
-}
-
-extension SKNode {
   func runEasedAction(action: SKAction) {
     action.timingMode = SKActionTimingMode.EaseInEaseOut
     runAction(action)
   }
 }
+
+extension SKSpriteNode {
+  convenience init(_ string: String) {
+    self.init(texture: SKTexture(imageNamed: string + ".png"))
+  }
+}
+

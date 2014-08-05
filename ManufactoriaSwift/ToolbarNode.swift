@@ -19,19 +19,20 @@ enum ToolbarNodeState {
 */
 
 class ToolbarNode: SKNode {
+  required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   weak var delegate: GameScene? {
   didSet {
-    if delegate && buttons.count >= 2 {
+    if delegate != nil && buttons.count >= 2 {
       buttons[1].activate()
     }
   }
   }
-  var state: ToolbarNodeState = .Enabled
   let buttons: [ToolbarButton]
+  let indicator = SKSpriteNode("dot")
   
   init(buttonTypes: [ToolbarButtonType]) {
     var tempButtons: [ToolbarButton] = []
-    for buttonType in buttonTypes {tempButtons += ToolbarButton(type: buttonType)}
+    for buttonType in buttonTypes {tempButtons.append(ToolbarButton(type: buttonType))}
     buttons = tempButtons
     super.init()
     for button in buttons {
@@ -63,9 +64,10 @@ class ToolbarNode: SKNode {
   }
   }
   
-  func transitionToState(newState: ToolbarNodeState) {
-    if state == newState {return}
-    switch newState {
+  var state: ToolbarNodeState = .Enabled {
+  didSet {
+    if state == oldValue {return}
+    switch state {
     case .Enabled:
       for button in buttons {
         button.userInteractionEnabled = true
@@ -77,7 +79,7 @@ class ToolbarNode: SKNode {
         button.isPressed = false
       }
     }
-    state = newState
+  }
   }
   
   func changeEditMode(editMode: EditMode, fromButton: ToolbarButton) {
@@ -86,7 +88,7 @@ class ToolbarNode: SKNode {
         button.isFocused = false
       }
     }
-    if delegate {
+    if delegate != nil {
       delegate!.changeEditMode(editMode)
     }
   }

@@ -13,6 +13,8 @@ enum GameSceneState {
 }
 
 class GameScene: SKScene {
+  
+  required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   // model objects
   let levelNumber: Int
   let grid: Grid
@@ -84,13 +86,13 @@ class GameScene: SKScene {
       statusNode.state = .Editing
       gridNode.transitionToState(.Editing)
       robotNode.runAction(SKAction.fadeAlphaTo(0, duration: 0.5))
-      toolbarNode.transitionToState(.Enabled)
+      toolbarNode.state = .Enabled
     case .Thinking:
       statusNode.state = .Thinking
       statusNode.thinkingAnimationDone = false
       thinkingOperationsDone = false
       gridNode.transitionToState(.Waiting)
-      toolbarNode.transitionToState(.Disabled)
+      toolbarNode.state = .Disabled
       engine.queueTestWithGrid(grid)
     case .Testing:
       if !loadNextTape() {
@@ -99,7 +101,7 @@ class GameScene: SKScene {
       }
       statusNode.state = .Testing
       gridNode.transitionToState(.Waiting)
-      toolbarNode.transitionToState(.Disabled)
+      toolbarNode.state = .Disabled
     }
     state = newState
   }

@@ -9,6 +9,7 @@
 import SpriteKit
 
 class LevelButton: SKSpriteNode {
+  required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   let levelNumber: Int
   let label = SKLabelNode()
   var touch: UITouch? = nil
@@ -41,6 +42,7 @@ class LevelButton: SKSpriteNode {
 }
 
 class ResetButton: LevelButton {
+  required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   init(levelNumber: Int) {
     super.init(levelNumber: levelNumber, text: "reset", isEnabled: true)
     removeAllActions()

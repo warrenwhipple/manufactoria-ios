@@ -9,13 +9,14 @@
 import SpriteKit
 
 class BreakingLabel: SKNode {
+  required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   var labels: [SKLabelNode] = []
   
   var text: String? {
   didSet {
     for label in labels {label.removeFromParent()}
     labels = []
-    if text {
+    if text != nil {
       for textLine in text!.split("\n") {
         let label = SKLabelNode()
         label.text = textLine
@@ -24,7 +25,7 @@ class BreakingLabel: SKNode {
         label.fontSize = fontSize
         label.verticalAlignmentMode = .Baseline
         label.horizontalAlignmentMode = horizontalAlignmentMode
-        labels += label
+        labels.append(label)
         addChild(label)
       }
       alignLabels()
@@ -44,7 +45,7 @@ class BreakingLabel: SKNode {
   
   var lineHeight: CGFloat = 1.5 {didSet{ alignLabels()}}
   
-  convenience init() {self.init(fontNamed: nil)}
+  override convenience init() {self.init(fontNamed: nil)}
   init(fontNamed: String?) {
     let label = SKLabelNode()
     fontColor = label.fontColor

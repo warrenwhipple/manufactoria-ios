@@ -62,9 +62,9 @@ private func generate(characters: String, count: Int, filter: ((String) -> (Bool
     for string in lastLevel {
       for character in characters {
         let newString = string + character
-        if filter(newString) {list += newString}
+        if filter(newString) {list.append(newString)}
         if list.count >= count {return list}
-        nextLevel += newString
+        nextLevel.append(newString)
       }
     }
     lastLevel = nextLevel

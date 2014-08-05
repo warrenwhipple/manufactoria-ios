@@ -33,6 +33,7 @@ enum EditMode {
 }
 
 class GridNode: SKNode {
+  required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   var state = GridNodeState.Editing
   unowned let grid: Grid
   let wrapper = SKNode()
@@ -58,10 +59,10 @@ class GridNode: SKNode {
     self.grid = grid
     var tempCellNodes: [CellNode] = []
     for i in 0..<(grid.space.columns * grid.space.rows) {
-      tempCellNodes += CellNode()
+      tempCellNodes.append(CellNode())
     }
-    tempCellNodes += entranceCellNode
-    tempCellNodes += exitCellNode
+    tempCellNodes.append(entranceCellNode)
+    tempCellNodes.append(exitCellNode)
     cellNodes = tempCellNodes
     super.init()
     for i in 0..<grid.space.columns {
@@ -167,7 +168,7 @@ class GridNode: SKNode {
       }
     }
     editTouch = touches.anyObject() as? UITouch
-    if !editTouch {return}
+    if editTouch == nil {return}
     editCoord = coordForTouch(editTouch!)
     if grid.indexIsValidFor(editCoord) {
       self[editCoord].isSelected = true
@@ -194,7 +195,7 @@ class GridNode: SKNode {
   }
   
   override func touchesMoved(touches: NSSet!, withEvent event: UIEvent!) {
-    if !editTouch {return}
+    if editTouch == nil {return}
     if !touches.containsObject(editTouch!) {return}
     let touchCoord = coordForTouch(editTouch!)
     if touchCoord == editCoord {return}
@@ -221,7 +222,7 @@ class GridNode: SKNode {
       }
     case .Bridge:
       if isEditCell {
-        if bridgeEditMemory {
+        if bridgeEditMemory != nil {
           editCell = bridgeEditMemory!
         }
         var newBridgeDirection = Direction.North
@@ -288,7 +289,7 @@ class GridNode: SKNode {
   }
   
   override func touchesEnded(touches: NSSet!, withEvent event: UIEvent!) {
-    if !editTouch {return}
+    if editTouch == nil {return}
     if !touches.containsObject(editTouch!) {return}
     if grid.indexIsValidFor(editCoord) {
       self[editCoord].isSelected = false

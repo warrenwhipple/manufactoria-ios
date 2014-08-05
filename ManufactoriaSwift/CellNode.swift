@@ -17,6 +17,7 @@ private let PullerHalfFillTex = SKTexture(imageNamed: "pullerHalfFill.png")
 private let W = BeltTex.size().height * 0.5
 
 class CellNode: SKSpriteNode {
+  required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   
   let belt = SKSpriteNode(texture: nil, size: CGSize(width: 0.3, height: 1.0))
   let bridge = SKSpriteNode(texture: nil, size: CGSize(width: 0.3, height: 1.0))
@@ -32,7 +33,7 @@ class CellNode: SKSpriteNode {
   var nextCell = Cell(type: CellType.Blank, direction: Direction.North)
   var isSelected = false
   
-  init() {
+  override init() {
     super.init(texture: nil, color: UIColor.blackColor(), size: CGSizeUnit)
     
     belt.zPosition = 1
@@ -149,7 +150,7 @@ class CellNode: SKSpriteNode {
   }
   
   func shimmer() {
-    if !shimmerActionSequence {
+    if shimmerActionSequence == nil {
       shimmerActionSequence = SKAction.waitForDuration(NSTimeInterval(randFloat(5.0)))
       runAction(shimmerActionSequence, completion: {[weak self] in self!.shimmer()})
     } else {

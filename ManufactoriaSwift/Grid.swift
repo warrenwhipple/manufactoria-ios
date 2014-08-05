@@ -15,8 +15,8 @@ struct GridCoord {
     self.j = j
   }
 }
-@infix func == (left: GridCoord, right: GridCoord) -> Bool {return left.i == right.i && left.j == right.j}
-@infix func != (left: GridCoord, right: GridCoord) -> Bool {return left.i != right.i || left.j != right.j}
+func == (left: GridCoord, right: GridCoord) -> Bool {return left.i == right.i && left.j == right.j}
+func != (left: GridCoord, right: GridCoord) -> Bool {return left.i != right.i || left.j != right.j}
 
 struct GridSpace {
   var columns = 0
@@ -27,8 +27,8 @@ struct GridSpace {
     self.rows = rows
   }
 }
-@infix func == (left: GridSpace, right: GridSpace) -> Bool {return left.columns == right.columns && left.rows == right.rows}
-@infix func != (left: GridSpace, right: GridSpace) -> Bool {return left.columns != right.columns || left.rows != right.rows}
+func == (left: GridSpace, right: GridSpace) -> Bool {return left.columns == right.columns && left.rows == right.rows}
+func != (left: GridSpace, right: GridSpace) -> Bool {return left.columns != right.columns || left.rows != right.rows}
 
 enum TickTestResult {
   case North, East, South, West, Accept, Reject
@@ -91,16 +91,16 @@ class Grid {
         }
       }
     case .PusherB:
-      tape += .Blue
+      tape.append(.Blue)
       return cell.direction.tickTestResult()
     case .PusherR:
-      tape += .Red
+      tape.append(.Red)
       return cell.direction.tickTestResult()
     case .PusherG:
-      tape += .Green
+      tape.append(.Green)
       return cell.direction.tickTestResult()
     case .PusherY:
-      tape += .Yellow
+      tape.append(.Yellow)
       return cell.direction.tickTestResult()
     case .PullerBR:
       if let color = tape.first() {

@@ -9,11 +9,12 @@
 import SpriteKit
 
 class ResetScene: SKScene {
+  required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   let questionLine1, questionLine2: SKLabelNode
   let yesButton: Button
   let noButton: Button
   
-  init(size: CGSize) {
+  override init(size: CGSize) {
     let midX = size.width * 0.5
     let midY = size.height * 0.5
     

@@ -60,7 +60,7 @@ func floor(x: CGFloat) -> Int {
   }
 }
 
-@infix func + (left: CGSize, right: CGFloat) -> CGSize {return CGSize(width: left.width + right, height: left.height + right)}
-@infix func - (left: CGSize, right: CGFloat) -> CGSize {return CGSize(width: left.width - right, height: left.height - right)}
-@infix func * (left: CGSize, right: CGFloat) -> CGSize {return CGSize(width: left.width * right, height: left.height * right)}
-@infix func / (left: CGSize, right: CGFloat) -> CGSize {return CGSize(width: left.width / right, height: left.height / right)}
+func + (left: CGSize, right: CGFloat) -> CGSize {return CGSize(width: left.width + right, height: left.height + right)}
+func - (left: CGSize, right: CGFloat) -> CGSize {return CGSize(width: left.width - right, height: left.height - right)}
+func * (left: CGSize, right: CGFloat) -> CGSize {return CGSize(width: left.width * right, height: left.height * right)}
+func / (left: CGSize, right: CGFloat) -> CGSize {return CGSize(width: left.width / right, height: left.height / right)}

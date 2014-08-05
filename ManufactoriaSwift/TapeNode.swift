@@ -9,13 +9,14 @@
 import SpriteKit
 
 class TapeNode: SKNode {
+  required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   weak var delegate: StatusNode?
   var dots: [SKSpriteNode] = []
   var maxLength: Int = 0
   let dotTexture = SKTexture(imageNamed: "dot.png")
   let dotSpacing: CGFloat
   
-  init() {
+  override init() {
     dotSpacing = dotTexture.size().width * 1.5
     super.init()
   }
@@ -41,11 +42,11 @@ class TapeNode: SKNode {
       dot.colorBlendFactor = 1
       dot.position = dotPositionForIndex(i++)
       addChild(dot)
-      dots += dot
+      dots.append(dot)
     }
     
     // reset printer
-    if delegate {
+    if delegate != nil {
       delegate!.ring.removeAllActions()
       delegate!.ring.position = convertPoint(dotPositionForIndex(i), toNode: delegate!)
     }
@@ -55,7 +56,7 @@ class TapeNode: SKNode {
     
     // add dot
     let dot = SKSpriteNode(texture: dotTexture)
-    dots += dot
+    dots.append(dot)
     switch color {
     case .Blue: dot.color = ColorBlue
     case .Red: dot.color = ColorRed
@@ -71,7 +72,7 @@ class TapeNode: SKNode {
     addChild(dot)
     
     // animate printer
-    if delegate {
+    if delegate != nil {
       delegate!.ring.removeAllActions()
       delegate!.ring.position = convertPoint(dotPositionForIndex(dotIndex), toNode: delegate!)
       let movePrinter = SKAction.moveTo(convertPoint(dotPositionForIndex(dotIndex + 1), toNode: delegate!), duration: 0.5)
@@ -98,7 +99,7 @@ class TapeNode: SKNode {
     }
     
     // move printer
-    if delegate {
+    if delegate != nil {
       delegate!.ring.removeAllActions()
       delegate!.ring.runEasedAction(SKAction.moveTo(convertPoint(dotPositionForIndex(i), toNode: delegate!), duration: 1))
     }

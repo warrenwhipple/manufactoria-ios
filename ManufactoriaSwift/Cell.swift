@@ -72,5 +72,5 @@ struct Cell {
   var direction = Direction.North
   
 }
-@infix func == (left: Cell, right: Cell) -> Bool {return left.type == right.type && left.direction == right.direction}
-@infix func != (left: Cell, right: Cell) -> Bool {return left.type != right.type || left.direction != right.direction}
+func == (left: Cell, right: Cell) -> Bool {return left.type == right.type && left.direction == right.direction}
+func != (left: Cell, right: Cell) -> Bool {return left.type != right.type || left.direction != right.direction}

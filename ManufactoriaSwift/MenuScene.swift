@@ -9,17 +9,18 @@
 import SpriteKit
 
 class MenuScene: SKScene {
+  required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   let wrapper = SKNode()
   let levelButtons: [LevelButton]
   
-  init(size: CGSize) {
+  override init(size: CGSize) {
     var tempLevelButtons: [LevelButton] = []
     let gameData = GameData.sharedInstance
     for i in 0 ..< LevelLibrary.count {
       let levelSetup = LevelLibrary[i]
-      tempLevelButtons += LevelButton(levelNumber: i, text: levelSetup.tag, isEnabled: i <= gameData.levelsComplete)
+      tempLevelButtons.append(LevelButton(levelNumber: i, text: levelSetup.tag, isEnabled: i <= gameData.levelsComplete))
     }
-    tempLevelButtons += ResetButton(levelNumber: LevelLibrary.count)
+    tempLevelButtons.append(ResetButton(levelNumber: LevelLibrary.count))
     levelButtons = tempLevelButtons
     
     super.init(size: size)
