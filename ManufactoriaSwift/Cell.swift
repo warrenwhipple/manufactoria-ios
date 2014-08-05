@@ -6,6 +6,10 @@
 //  Copyright (c) 2014 Warren Whipple. All rights reserved.
 //
 
+enum Color {
+  case Blue, Red, Green, Yellow
+}
+
 enum CellType {
   case Blank, Belt, Bridge, PusherB, PusherR, PusherG, PusherY, PullerBR, PullerRB, PullerGY, PullerYG
   func editMode() -> EditMode {

@@ -20,13 +20,13 @@ struct LevelSetup {
   let tag: String
   let instructions: String
   let space: GridSpace
-  let buttons: [ToolbarButtonType]
+  let buttons: [ToolbarButton.Kind]
   let exemplars: [String]
   let generationFunction: GenerationFunction
   let passFunction: PassFunction?
   let transformFunction: TransformFunction?
   
-  init(tag: String, instructions: String, space: GridSpace, buttons: [ToolbarButtonType], exemplars: [String],
+  init(tag: String, instructions: String, space: GridSpace, buttons: [ToolbarButton.Kind], exemplars: [String],
     generationFunction: GenerationFunction, passFunction: PassFunction) {
       self.tag = tag
       self.instructions = instructions
@@ -38,7 +38,7 @@ struct LevelSetup {
       self.transformFunction = nil
   }
   
-  init(tag: String, instructions: String, space: GridSpace, buttons: [ToolbarButtonType], exemplars: [String],
+  init(tag: String, instructions: String, space: GridSpace, buttons: [ToolbarButton.Kind], exemplars: [String],
     generationFunction: GenerationFunction, transformFunction: TransformFunction) {
       self.tag = tag
       self.instructions = instructions
@@ -117,7 +117,7 @@ let LevelLibrary: [LevelSetup] = [
   LevelSetup(
     tag: "    B",
     instructions: "Accept blue: to the exit.\nReject red: to the floor.",
-    space: GridSpace(5, 5),
+    space: GridSpace(3, 3),
     buttons: [.Blank, .Belt, .PullerBR],
     exemplars: ["b", "r"],
     generationFunction: {n in return ["b", "r"]},
@@ -127,7 +127,7 @@ let LevelLibrary: [LevelSetup] = [
   LevelSetup(
     tag: "BRB...    ",
     instructions: "Accept any that begin blue red blue.",
-    space: GridSpace(7, 7),
+    space: GridSpace(5, 5),
     buttons: [.Blank, .BeltBridge, .PullerBR],
     exemplars: ["brbr", "rbrb"],
     generationFunction: {n in return generate("br", n)},
@@ -141,7 +141,7 @@ let LevelLibrary: [LevelSetup] = [
   LevelSetup(
     tag: ">= 3B",
     instructions: "Accept three or more blues.",
-    space: GridSpace(9, 9),
+    space: GridSpace(5, 5),
     buttons: [.Blank, .Belt],
     exemplars: ["brbrb", "rbrbr"],
     generationFunction: {n in return generate("br", n)},
@@ -156,7 +156,7 @@ let LevelLibrary: [LevelSetup] = [
   LevelSetup(
     tag: "no R",
     instructions: "Reject any red anywhere.",
-    space: GridSpace(11, 11),
+    space: GridSpace(5, 5),
     buttons: [.Blank, .Belt],
     exemplars: ["bbbb", "bbrb"],
     generationFunction: {n in return generate("br", n)},

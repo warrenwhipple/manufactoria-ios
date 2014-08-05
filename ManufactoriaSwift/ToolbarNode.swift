@@ -8,10 +8,6 @@
 
 import SpriteKit
 
-enum ToolbarNodeState {
-  case Enabled, Disabled
-}
-
 /*
 @class_protocol protocol ToolbarNodeDelegate {
   func changeEditMode(editMode: EditMode)
@@ -20,6 +16,8 @@ enum ToolbarNodeState {
 
 class ToolbarNode: SKNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
+  enum State {case Enabled, Disabled}
+  
   weak var delegate: GameScene? {
   didSet {
     if delegate != nil && buttons.count >= 2 {
@@ -30,9 +28,11 @@ class ToolbarNode: SKNode {
   let buttons: [ToolbarButton]
   let indicator = SKSpriteNode("dot")
   
-  init(buttonTypes: [ToolbarButtonType]) {
+  init(buttonKinds: [ToolbarButton.Kind]) {
     var tempButtons: [ToolbarButton] = []
-    for buttonType in buttonTypes {tempButtons.append(ToolbarButton(type: buttonType))}
+    for buttonKind in buttonKinds {
+      tempButtons.append(ToolbarButton(kind: buttonKind))
+    }
     buttons = tempButtons
     super.init()
     for button in buttons {
@@ -64,7 +64,7 @@ class ToolbarNode: SKNode {
   }
   }
   
-  var state: ToolbarNodeState = .Enabled {
+  var state: State = .Enabled {
   didSet {
     if state == oldValue {return}
     switch state {

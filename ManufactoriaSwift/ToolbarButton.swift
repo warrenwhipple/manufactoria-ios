@@ -8,10 +8,6 @@
 
 import SpriteKit
 
-enum ToolbarButtonType {
-  case Blank, Belt, BeltBridge, PullerBR, PullerGY, PushersBR, PushersBRGY
-}
-
 /*
 @class_protocol protocol ToolbarButtonDelegate {
   func changeEditMode(editMode: EditMode, fromButton: ToolbarButton)
@@ -20,6 +16,8 @@ enum ToolbarButtonType {
 
 class ToolbarButton: SKSpriteNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
+  enum Kind {case Blank, Belt, BeltBridge, PullerBR, PullerGY, PushersBR, PushersBRGY}
+  
   weak var delegate: ToolbarNode?
   let editModes: [EditMode]
   let displayNodes: [SKNode?]
@@ -38,8 +36,8 @@ class ToolbarButton: SKSpriteNode {
   var isPressed = false
   var touch: UITouch?
   
-  init(type: ToolbarButtonType) {
-    switch type {
+  init(kind: Kind) {
+    switch kind {
     case .Blank: self.editModes = [.Blank]
     case .Belt: self.editModes = [.Belt]
     case .BeltBridge: self.editModes = [.Belt, .Bridge]

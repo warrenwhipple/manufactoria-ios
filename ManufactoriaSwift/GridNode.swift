@@ -8,9 +8,6 @@
 
 import SpriteKit
 
-enum GridNodeState {
-  case Editing, Waiting
-}
 
 enum EditMode {
   case Blank, Belt, Bridge, PusherB, PusherR, PusherG, PusherY, PullerBR, PullerRB, PullerGY, PullerYG
@@ -34,7 +31,8 @@ enum EditMode {
 
 class GridNode: SKNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  var state = GridNodeState.Editing
+  enum State {case Editing, Waiting}
+  
   unowned let grid: Grid
   let wrapper = SKNode()
   let cellNodes: [CellNode]
@@ -106,37 +104,38 @@ class GridNode: SKNode {
   }
   
   var rect: CGRect {
-  get {
-    return CGRect(origin: position, size: size)
-  }
-  set {
-    position = newValue.origin
-    size = newValue.size
-  }
+    get {
+      return CGRect(origin: position, size: size)
+    }
+    set {
+      position = newValue.origin
+      size = newValue.size
+    }
   }
   
   var size: CGSize = CGSizeZero {
-  didSet {
-    let maxCellWidth = size.width / CGFloat(grid.space.columns)
-    let maxCellHeight = size.height / CGFloat(grid.space.rows)
-    let maxCellSize: CGFloat = 46.0
-    var cellSize = min(maxCellWidth, maxCellHeight, maxCellSize)
-    if cellSize > maxCellSize - 0.5 {cellSize = maxCellSize} // if close, let overlap
-    let gridSize = CGSize(width: cellSize * CGFloat(grid.space.columns), height: cellSize * CGFloat(grid.space.rows))
-    wrapper.position = CGPoint(x: (size.width - gridSize.width) * 0.5, y: (size.height - gridSize.height) * 0.5)
-    wrapper.setScale(cellSize)
-  }
-  }
-    
-  func transitionToState(newState: GridNodeState) {
-    if state == newState {return}
-    switch newState {
-    case .Editing:
-      break
-    case .Waiting:
-      break
+    didSet {
+      let maxCellWidth = size.width / CGFloat(grid.space.columns)
+      let maxCellHeight = size.height / CGFloat(grid.space.rows)
+      let maxCellSize: CGFloat = 46.0
+      var cellSize = min(maxCellWidth, maxCellHeight, maxCellSize)
+      if cellSize > maxCellSize - 0.5 {cellSize = maxCellSize} // if close, let overlap
+      let gridSize = CGSize(width: cellSize * CGFloat(grid.space.columns), height: cellSize * CGFloat(grid.space.rows))
+      wrapper.position = CGPoint(x: (size.width - gridSize.width) * 0.5, y: (size.height - gridSize.height) * 0.5)
+      wrapper.setScale(cellSize)
     }
-    state = newState
+  }
+  
+  var state: State = .Editing {
+    didSet {
+      if state == oldValue {return}
+      switch state {
+      case .Editing:
+        break
+      case .Waiting:
+        break
+      }
+    }
   }
   
   func update(dt: NSTimeInterval, beltPercent: Float) {
@@ -160,7 +159,7 @@ class GridNode: SKNode {
   }
   
   override func touchesBegan(touches: NSSet!, withEvent event: UIEvent!) {
-    if state != GridNodeState.Editing {return}
+    if state != .Editing {return}
     if let touchPhase = editTouch?.phase {
       switch touchPhase {
       case .Began, UITouchPhase.Moved, UITouchPhase.Stationary: return

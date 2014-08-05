@@ -48,18 +48,17 @@ class Engine {
   let queue = NSOperationQueue()
   var queuedTapeTestCount = 0
   var passedTapeTestCount = 0
-  var exemplarTapeTests: [String : TapeTestResult?] = [:]
+  var exemplarResults: [TapeTestResult] = []
   
   init(levelSetup: LevelSetup) {
     self.levelSetup = levelSetup
-    for string in levelSetup.exemplars {exemplarTapeTests[string] = nil}
   }
   
   func queueTestWithGrid(grid: Grid) {
     isTesting = true
     queuedTapeTestCount = 0
     passedTapeTestCount = 0
-    for key in exemplarTapeTests.keys {exemplarTapeTests[key] = nil}
+    exemplarResults = []
     queue.addOperation(TapeTestQueueOp(queue: queue, grid: grid, levelSetup: levelSetup, delegate: self))
   }
   
@@ -81,7 +80,7 @@ class Engine {
     
     // check for tape test failure
     if let passFunction = levelSetup.passFunction {
-      if passFunction(result.input.string()) == (result.output != nil) {
+      if passFunction(result.input.string()) == (result.output == nil) {
         cancelAllTests()
         delegate?.gridTestDidFailWithTapeTest(result)
         return
@@ -99,19 +98,15 @@ class Engine {
     
     // record max length if one of exemplars
     let inputString = result.input.string()
-    if exemplarTapeTests[inputString] != nil {
-      exemplarTapeTests[inputString] = result
+    for exemplarString in levelSetup.exemplars {
+      if inputString == exemplarString {
+        exemplarResults.append(result)
+      }
     }
     
     // if all tests are complete, run exemplars
     if ++passedTapeTestCount == queuedTapeTestCount {
-      var exemplarTapeTestArray: [TapeTestResult] = []
-      for value in exemplarTapeTests.values {
-        if value != nil {
-          exemplarTapeTestArray.append(value!)
-        }
-      }
-      delegate?.gridTestDidPassWithExemplarTapeTests(exemplarTapeTestArray)
+      delegate?.gridTestDidPassWithExemplarTapeTests(exemplarResults)
     }
   }
   

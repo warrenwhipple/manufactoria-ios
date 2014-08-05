@@ -8,12 +8,10 @@
 
 import SpriteKit
 
-enum StatusNodeState {
-  case Editing, Thinking, Testing
-}
-
 class StatusNode: SKNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
+  enum State {case Editing, Thinking, Testing}
+  
   weak var delegate: GameScene? {didSet{testTouchArea.delegate = delegate}}
   let testTouchArea = TestTouchArea(color: nil, size: CGSize(width: 64, height: 64))
   let tapeNode = TapeNode()
@@ -74,7 +72,7 @@ class StatusNode: SKNode {
   }
   }
   
-  var state: StatusNodeState = .Editing {
+  var state: State = .Editing {
   didSet {
     if state == oldValue {return}
     switch state {

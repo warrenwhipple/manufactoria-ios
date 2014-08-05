@@ -8,13 +8,10 @@
 
 import SpriteKit
 
-enum GameSceneState {
-  case Editing, Thinking, Testing
-}
-
 class GameScene: SKScene {
-  
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
+  enum State {case Editing, Thinking, Testing}
+  
   // model objects
   let levelNumber: Int
   let grid: Grid
@@ -30,7 +27,6 @@ class GameScene: SKScene {
   let robotNode = SKSpriteNode(texture: SKTexture(imageNamed: "robut.png"), color: UIColor.whiteColor(), size: CGSizeUnit)
   
   // variables
-  var state: GameSceneState = .Editing
   var robotCoord = GridCoord(0, 0)
   var lastRobotCoord = GridCoord(0, 0)
   var lastTapeLength = 0
@@ -49,7 +45,7 @@ class GameScene: SKScene {
     grid = Grid(space: levelSetup.space)
     engine = Engine(levelSetup: levelSetup)
     gridNode = GridNode(grid: grid)
-    toolbarNode = ToolbarNode(buttonTypes: levelSetup.buttons)
+    toolbarNode = ToolbarNode(buttonKinds: levelSetup.buttons)
     
     super.init(size: size)
     backgroundColor = UIColor.blackColor()
@@ -78,32 +74,33 @@ class GameScene: SKScene {
     fitToSize()
   }
   
-  func transitionToState(newState: GameSceneState) {
-    if state == newState {return}
-    switch newState {
-    case .Editing:
-      engine.cancelAllTests()
-      statusNode.state = .Editing
-      gridNode.transitionToState(.Editing)
-      robotNode.runAction(SKAction.fadeAlphaTo(0, duration: 0.5))
-      toolbarNode.state = .Enabled
-    case .Thinking:
-      statusNode.state = .Thinking
-      statusNode.thinkingAnimationDone = false
-      thinkingOperationsDone = false
-      gridNode.transitionToState(.Waiting)
-      toolbarNode.state = .Disabled
-      engine.queueTestWithGrid(grid)
-    case .Testing:
-      if !loadNextTape() {
-        tapeTestResults = [TapeTestResult()]
-        loadNextTape()
+  var state: State = .Editing {
+    didSet {
+      if state == oldValue {return}
+      switch state {
+      case .Editing:
+        engine.cancelAllTests()
+        statusNode.state = .Editing
+        gridNode.state = .Editing
+        robotNode.runAction(SKAction.fadeAlphaTo(0, duration: 0.5))
+        toolbarNode.state = .Enabled
+      case .Thinking:
+        statusNode.state = .Thinking
+        statusNode.thinkingAnimationDone = false
+        thinkingOperationsDone = false
+        gridNode.state = .Waiting
+        toolbarNode.state = .Disabled
+        engine.queueTestWithGrid(grid)
+      case .Testing:
+        if !loadNextTape() {
+          tapeTestResults = [TapeTestResult()]
+          loadNextTape()
+        }
+        statusNode.state = .Testing
+        gridNode.state = .Waiting
+        toolbarNode.state = .Disabled
       }
-      statusNode.state = .Testing
-      gridNode.transitionToState(.Waiting)
-      toolbarNode.state = .Disabled
     }
-    state = newState
   }
   
   func fitToSize() {
@@ -146,11 +143,18 @@ class GameScene: SKScene {
         let testResult = grid.testCoord(robotCoord, lastCoord: lastRobotCoord, tape: &tape)
         lastRobotCoord = robotCoord
         let tapeLength = tape.count
-        if tapeLength > lastTapeLength && tapeLength > 0 {statusNode.tapeNode.writeColor(tape.last()!)}
-        else if tapeLength < lastTapeLength {statusNode.tapeNode.deleteColor()}
+        if tapeLength > lastTapeLength && tapeLength > 0 {
+          statusNode.tapeNode.writeColor(tape.last()!)
+        }
+        else if tapeLength < lastTapeLength {
+          statusNode.tapeNode.deleteColor()
+        }
         lastTapeLength = tapeLength
         switch testResult {
-        case .Accept, .Reject: if !loadNextTape() {transitionToState(GameSceneState.Editing)}
+        case .Accept, .Reject:
+          if !loadNextTape() {
+            state = .Editing
+          }
         case .North: robotCoord.j++
         case .East: robotCoord.i++
         case .South: robotCoord.j--
@@ -178,7 +182,9 @@ class GameScene: SKScene {
     gridNode.update(dt, beltPercent: beltPercent)
     
     // check if done thinking
-    if state == .Thinking && statusNode.thinkingAnimationDone && thinkingOperationsDone {transitionToState(.Testing)}
+    if state == .Thinking && statusNode.thinkingAnimationDone && thinkingOperationsDone {
+      state = .Testing
+    }
   }
   
   func loadNextTape() -> Bool {
@@ -212,7 +218,7 @@ class GameScene: SKScene {
   }
   
   func testButtonPressed() {
-    transitionToState(.Thinking)
+    state = .Thinking
   }
   
   func menuTrianglePressed() {

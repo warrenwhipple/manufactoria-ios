@@ -10,6 +10,7 @@ import SpriteKit
 
 class TapeNode: SKNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
+  
   weak var delegate: StatusNode?
   var dots: [SKSpriteNode] = []
   var maxLength: Int = 0
