@@ -67,11 +67,11 @@ enum Direction {
 
 struct Cell {
   var type: CellType = CellType.Blank {
-  didSet {
-    if type == CellType.Blank {
-      direction = Direction.North
+    didSet {
+      if type == CellType.Blank {
+        direction = Direction.North
+      }
     }
-  }
   }
   var direction = Direction.North
   

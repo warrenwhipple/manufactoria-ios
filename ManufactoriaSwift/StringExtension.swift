@@ -36,7 +36,7 @@ extension Array {
 }
 
 extension String {
-
+  
   func colors() -> [Color] {
     var colors: [Color] = []
     for character in self {
@@ -50,7 +50,7 @@ extension String {
     }
     return colors
   }
-
+  
   subscript(i: Int) -> Character {
     get {
       return Character(substringWithRange(Range(start: advance(startIndex, i), end: advance(startIndex, i+1))))

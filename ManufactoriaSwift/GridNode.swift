@@ -39,7 +39,7 @@ class GridNode: SKNode {
   let entranceCellNode = CellNode()
   let exitCellNode = CellNode()
   var beltShift: Float = 0.0
-  let beltTexture = SKTexture(imageNamed: "belt.png")
+  let beltTexture = SKTexture("belt")
   var clippedBeltTexture = SKTexture()
   var editTouch: UITouch?
   var editCoord = GridCoord(0, 0)
@@ -72,14 +72,14 @@ class GridNode: SKNode {
       }
     }
     
-    let entranceCellNodeGradient = SKSpriteNode(texture: SKTexture(imageNamed: "beltFadeMask.png"), color: UIColor.blackColor(), size: CGSize(width: 1, height: 1))
+    let entranceCellNodeGradient = SKSpriteNode(texture: SKTexture("beltFadeMask"), color: UIColor.blackColor(), size: CGSize(width: 1, height: 1))
     entranceCellNodeGradient.colorBlendFactor = 1
     entranceCellNodeGradient.zPosition = 2
     let exitCellNodeGradient = entranceCellNodeGradient.copy() as SKSpriteNode
     entranceCellNodeGradient.yScale = -1
     
-    /*let enterArrow = SKSpriteNode(texture: SKTexture(imageNamed: "enterExitArrow.png"))
-    let exitArrow = SKSpriteNode(texture: SKTexture(imageNamed: "enterExitArrow.png"))
+    /*let enterArrow = SKSpriteNode(texture: SKTexture("enterExitArrow"))
+    let exitArrow = SKSpriteNode(texture: SKTexture("enterExitArrow"))
     enterArrow.size = CGSize(width: 14.0/46.0, height: 12.0/46.0)
     exitArrow.size = enterArrow.size
     enterArrow.anchorPoint = CGPoint(x: 0.5, y: 0)
@@ -90,7 +90,7 @@ class GridNode: SKNode {
     exitArrow.alpha = 0.5
     wrapper.addChild(enterArrow)
     wrapper.addChild(exitArrow)*/
-
+    
     entranceCellNode.position = CGPoint(x: CGFloat(grid.centerColumn) + 0.5, y: -0.5)
     entranceCellNode.applyCell(Cell(type: .Belt, direction: .North))
     entranceCellNode.addChild(entranceCellNodeGradient)

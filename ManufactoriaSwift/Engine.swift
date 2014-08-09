@@ -26,18 +26,18 @@ struct TapeTestResult {
 
 /*
 @class_protocol protocol EngineDelegate {
-  func gridTestDidPassWithExemplarTapeTests(exemplarTapeTests: [TapeTestResult])
-  func gridTestDidFailWithTapeTest(tapeTest: TapeTestResult)
-  func gridTestDidLoopWithTapeTest(tapeTest: TapeTestResult)
+func gridTestDidPassWithExemplarTapeTests(exemplarTapeTests: [TapeTestResult])
+func gridTestDidFailWithTapeTest(tapeTest: TapeTestResult)
+func gridTestDidLoopWithTapeTest(tapeTest: TapeTestResult)
 }
 
 @class_protocol protocol TapeTestQueueOpDelegate {
-  func tapeTestQueuingDidFinishWithCount(count: Int)
+func tapeTestQueuingDidFinishWithCount(count: Int)
 }
 
 @class_protocol protocol TapeTestOpDelegate {
-  func tapeTestDidFinish(result: TapeTestResult)
-  func tapeTestDidLoop(result: TapeTestResult)
+func tapeTestDidFinish(result: TapeTestResult)
+func tapeTestDidLoop(result: TapeTestResult)
 }
 */
 
@@ -72,7 +72,6 @@ class Engine {
   func tapeTestQueuingDidFinishWithCount(count: Int) {
     if !isTesting {return}
     queuedTapeTestCount = count
-    println("\(count) tests queued.")
   }
   
   func tapeTestDidFinish(result: TapeTestResult) {

@@ -24,7 +24,7 @@ class GameScene: SKScene {
   let statusNode = StatusNode()
   let gridNode: GridNode
   let toolbarNode: ToolbarNode
-  let robotNode = SKSpriteNode(texture: SKTexture(imageNamed: "robut.png"), color: UIColor.whiteColor(), size: CGSizeUnit)
+  let robotNode = SKSpriteNode(texture: SKTexture("robut"), color: UIColor.whiteColor(), size: CGSizeUnit)
   
   // variables
   var robotCoord = GridCoord(0, 0)
@@ -57,11 +57,19 @@ class GameScene: SKScene {
     robotNode.zPosition = 3
     robotNode.alpha = 0
     gridNode.wrapper.addChild(robotNode)
-        
+    
     statusNode.delegate = self
     statusNode.instructions.text = levelSetup.instructions
     statusNode.zPosition = 10
     addChild(statusNode)
+    
+    let swipeNode = SwipeNode(pages: [
+      SKSpriteNode(color: UIColor.redColor(), size: CGSize(width: 20, height: 20)),
+      SKSpriteNode(color: UIColor.blueColor(), size: CGSize(width: 20, height: 20))
+      ])
+    swipeNode.position = CGPoint(x: size.width * 0.5, y: size.width * 0.5)
+    swipeNode.zPosition = 200
+    addChild(swipeNode)
     
     toolbarNode.delegate = self
     toolbarNode.zPosition = 10
@@ -135,7 +143,7 @@ class GameScene: SKScene {
     gameSpeed = (gameSpeed + targetGameSpeed) * 0.5
     
     if state == .Testing {
-
+      
       // execute ellapsed ticks
       tickPercent += Float(dt) * gameSpeed
       while tickPercent >= 1.0 {
@@ -222,7 +230,6 @@ class GameScene: SKScene {
   }
   
   func menuTrianglePressed() {
-    GameData.sharedInstance.completedLevel(levelNumber)
     view.presentScene(MenuScene(size: size), transition: SKTransition.crossFadeWithDuration(0.5))
   }
   

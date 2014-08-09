@@ -16,11 +16,11 @@ class GameData: NSObject, NSCoding {
   var levelsComplete: Int
   
   class var sharedInstance: GameData {
-    if _gameDataSharedInstance == nil {
-      if NSFileManager.defaultManager().fileExistsAtPath(_gameDataFilePath) {
-        _gameDataSharedInstance =  NSKeyedUnarchiver.unarchiveObjectWithFile(_gameDataFilePath) as? GameData
-      }
-      if _gameDataSharedInstance == nil {_gameDataSharedInstance = GameData()}
+  if _gameDataSharedInstance == nil {
+    if NSFileManager.defaultManager().fileExistsAtPath(_gameDataFilePath) {
+      _gameDataSharedInstance =  NSKeyedUnarchiver.unarchiveObjectWithFile(_gameDataFilePath) as? GameData
+    }
+    if _gameDataSharedInstance == nil {_gameDataSharedInstance = GameData()}
     }
     return _gameDataSharedInstance!
   }
@@ -45,12 +45,7 @@ class GameData: NSObject, NSCoding {
   func save() {
     NSKeyedArchiver.archivedDataWithRootObject(self).writeToFile(_gameDataFilePath, atomically: true)
   }
-  
-  func reset() {
-    levelsComplete = 0
-    save()
-  }
-  
+    
   func completedLevel(levelNumber: Int) {
     levelsComplete = max(levelsComplete, levelNumber + 1)
     save()

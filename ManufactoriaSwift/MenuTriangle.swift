@@ -8,12 +8,6 @@
 
 import SpriteKit
 
-/*
-@class_protocol protocol MenuTriangleDelegate {
-  func menuTrianglePressed()
-}
-*/
-
 class MenuTriangle: SKSpriteNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   weak var delegate: GameScene?

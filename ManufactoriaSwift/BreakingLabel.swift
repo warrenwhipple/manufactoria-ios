@@ -13,24 +13,24 @@ class BreakingLabel: SKNode {
   var labels: [SKLabelNode] = []
   
   var text: String? {
-  didSet {
-    for label in labels {label.removeFromParent()}
-    labels = []
-    if text != nil {
-      for textLine in text!.split("\n") {
-        let label = SKLabelNode()
-        label.text = textLine
-        label.fontColor = fontColor
-        label.fontName = fontName
-        label.fontSize = fontSize
-        label.verticalAlignmentMode = .Baseline
-        label.horizontalAlignmentMode = horizontalAlignmentMode
-        labels.append(label)
-        addChild(label)
+    didSet {
+      for label in labels {label.removeFromParent()}
+      labels = []
+      if text != nil {
+        for textLine in text!.split("\n") {
+          let label = SKLabelNode()
+          label.text = textLine
+          label.fontColor = fontColor
+          label.fontName = fontName
+          label.fontSize = fontSize
+          label.verticalAlignmentMode = .Baseline
+          label.horizontalAlignmentMode = horizontalAlignmentMode
+          labels.append(label)
+          addChild(label)
+        }
+        alignLabels()
       }
-      alignLabels()
     }
-  }
   }
   
   var fontColor: UIColor {didSet {if !labels.isEmpty {for label in labels {label.fontColor = fontColor}}}}
@@ -46,13 +46,13 @@ class BreakingLabel: SKNode {
   var lineHeight: CGFloat = 1.5 {didSet{ alignLabels()}}
   
   override convenience init() {self.init(fontNamed: nil)}
+  
   init(fontNamed: String?) {
-    let label = SKLabelNode()
-    fontColor = label.fontColor
-    if label.fontName {fontName = label.fontName} else {fontName = ""}
-    fontSize = label.fontSize
-    verticalAlignmentMode = SKLabelVerticalAlignmentMode.Center
-    horizontalAlignmentMode = label.horizontalAlignmentMode
+    fontColor = UIColor.whiteColor()
+    fontName = fontNamed ?? "HelveticaNeue-Thin"
+    fontSize = 20
+    horizontalAlignmentMode = .Center
+    verticalAlignmentMode = .Center
     super.init()
   }
   

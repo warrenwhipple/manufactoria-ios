@@ -14,15 +14,31 @@ extension SKNode {
       addChild(node)
     }
   }
-  func runEasedAction(action: SKAction) {
-    action.timingMode = SKActionTimingMode.EaseInEaseOut
-    runAction(action)
+}
+ 
+extension SKTexture {
+  convenience init(_ string: String) {
+    self.init(imageNamed: string)
   }
 }
 
 extension SKSpriteNode {
   convenience init(_ string: String) {
-    self.init(texture: SKTexture(imageNamed: string + ".png"))
+    self.init(texture: SKTexture(imageNamed: string))
   }
 }
 
+extension SKAction {
+  func ease() -> SKAction {
+    timingMode = .EaseInEaseOut
+    return self
+  }
+  func easeIn() -> SKAction {
+    timingMode = .EaseIn
+    return self
+  }
+  func easeOut() -> SKAction {
+    timingMode = .EaseOut
+    return self
+  }
+}

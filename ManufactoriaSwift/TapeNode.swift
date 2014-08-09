@@ -14,7 +14,7 @@ class TapeNode: SKNode {
   weak var delegate: StatusNode?
   var dots: [SKSpriteNode] = []
   var maxLength: Int = 0
-  let dotTexture = SKTexture(imageNamed: "dot.png")
+  let dotTexture = SKTexture("dot")
   let dotSpacing: CGFloat
   
   override init() {
@@ -34,10 +34,10 @@ class TapeNode: SKNode {
     for color in tape {
       let dot = SKSpriteNode(texture: dotTexture)
       switch color {
-      case .Blue: dot.color = ColorBlue
-      case .Red: dot.color = ColorRed
-      case .Green: dot.color = ColorGreen
-      case .Yellow: dot.color = ColorYellow
+      case .Blue: dot.color = Globals.blue
+      case .Red: dot.color = Globals.red
+      case .Green: dot.color = Globals.green
+      case .Yellow: dot.color = Globals.yellow
       default: break
       }
       dot.colorBlendFactor = 1
@@ -59,10 +59,10 @@ class TapeNode: SKNode {
     let dot = SKSpriteNode(texture: dotTexture)
     dots.append(dot)
     switch color {
-    case .Blue: dot.color = ColorBlue
-    case .Red: dot.color = ColorRed
-    case .Green: dot.color = ColorGreen
-    case .Yellow: dot.color = ColorYellow
+    case .Blue: dot.color = Globals.blue
+    case .Red: dot.color = Globals.red
+    case .Green: dot.color = Globals.green
+    case .Yellow: dot.color = Globals.yellow
     }
     dot.alpha = 0
     let dotIndex = dots.count - 1
@@ -76,9 +76,9 @@ class TapeNode: SKNode {
     if delegate != nil {
       delegate!.ring.removeAllActions()
       delegate!.ring.position = convertPoint(dotPositionForIndex(dotIndex), toNode: delegate!)
-      let movePrinter = SKAction.moveTo(convertPoint(dotPositionForIndex(dotIndex + 1), toNode: delegate!), duration: 0.5)
-      movePrinter.timingMode = .EaseInEaseOut
-      delegate!.ring.runAction(SKAction.sequence([SKAction.waitForDuration(0.5), movePrinter]))
+      delegate!.ring.runAction(SKAction.sequence([
+        SKAction.waitForDuration(0.5),
+        SKAction.moveTo(convertPoint(dotPositionForIndex(dotIndex + 1), toNode: delegate!), duration: 0.5).ease()]))
     }
   }
   
@@ -86,23 +86,21 @@ class TapeNode: SKNode {
     if dots.count == 0 {return}
     
     // animate deleting dot
-    let deleteDot = SKAction.scaleTo(0, duration: 0.5)
-    deleteDot.timingMode = .EaseInEaseOut
-    dots[0].runAction(SKAction.sequence([deleteDot,SKAction.removeFromParent()]))
+    dots[0].runAction(SKAction.sequence([
+      SKAction.scaleTo(0, duration: 0.5).ease(),
+      SKAction.removeFromParent()]))
     dots.removeAtIndex(0)
     
     // move remaining dots
     var i = 0
     for dot in dots {
-      let moveDot = SKAction.moveTo(dotPositionForIndex(i++), duration: 1)
-      moveDot.timingMode = .EaseInEaseOut
-      dot.runAction(moveDot)
+      dot.runAction(SKAction.moveTo(dotPositionForIndex(i++), duration: 1).ease())
     }
     
     // move printer
     if delegate != nil {
       delegate!.ring.removeAllActions()
-      delegate!.ring.runEasedAction(SKAction.moveTo(convertPoint(dotPositionForIndex(i), toNode: delegate!), duration: 1))
+      delegate!.ring.runAction(SKAction.moveTo(convertPoint(dotPositionForIndex(i), toNode: delegate!), duration: 1))
     }
   }
   
