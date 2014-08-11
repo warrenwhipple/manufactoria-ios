@@ -21,7 +21,7 @@ class GameScene: SKScene {
   
   // view objects
   let menuTriangle = MenuTriangle()
-  let statusNode = StatusNode()
+  let statusNode: StatusNode
   let gridNode: GridNode
   let toolbarNode: ToolbarNode
   let robotNode = SKSpriteNode(texture: SKTexture("robut"), color: UIColor.whiteColor(), size: CGSizeUnit)
@@ -44,6 +44,7 @@ class GameScene: SKScene {
     let levelSetup = LevelLibrary[levelNumber]
     grid = Grid(space: levelSetup.space)
     engine = Engine(levelSetup: levelSetup)
+    statusNode = StatusNode(instructions: levelSetup.instructions)
     gridNode = GridNode(grid: grid)
     toolbarNode = ToolbarNode(buttonKinds: levelSetup.buttons)
     
@@ -59,18 +60,9 @@ class GameScene: SKScene {
     gridNode.wrapper.addChild(robotNode)
     
     statusNode.delegate = self
-    statusNode.instructions.text = levelSetup.instructions
     statusNode.zPosition = 10
     addChild(statusNode)
-    
-    let swipeNode = SwipeNode(pages: [
-      SKSpriteNode(color: UIColor.redColor(), size: CGSize(width: 20, height: 20)),
-      SKSpriteNode(color: UIColor.blueColor(), size: CGSize(width: 20, height: 20))
-      ])
-    swipeNode.position = CGPoint(x: size.width * 0.5, y: size.width * 0.5)
-    swipeNode.zPosition = 200
-    addChild(swipeNode)
-    
+        
     toolbarNode.delegate = self
     toolbarNode.zPosition = 10
     addChild(toolbarNode)
@@ -152,10 +144,10 @@ class GameScene: SKScene {
         lastRobotCoord = robotCoord
         let tapeLength = tape.count
         if tapeLength > lastTapeLength && tapeLength > 0 {
-          statusNode.tapeNode.writeColor(tape.last()!)
+          statusNode.firstPage.tapeNode.writeColor(tape.last()!)
         }
         else if tapeLength < lastTapeLength {
-          statusNode.tapeNode.deleteColor()
+          statusNode.firstPage.tapeNode.deleteColor()
         }
         lastTapeLength = tapeLength
         switch testResult {
@@ -201,26 +193,26 @@ class GameScene: SKScene {
     robotCoord = grid.startCoordPlusOne
     lastRobotCoord = grid.startCoord
     tape = (tapeTestResults[0].input)
-    statusNode.tapeNode.loadTape(tapeTestResults[0].input, maxLength: tapeTestResults[0].maxTapeLength)
+    statusNode.firstPage.tapeNode.loadTape(tapeTestResults[0].input, maxLength: tapeTestResults[0].maxTapeLength)
     tapeTestResults.removeAtIndex(0)
     lastTapeLength = tape.count
     return true
   }
   
   func gridTestDidPassWithExemplarTapeTests(exemplarTapeTests: [TapeTestResult]) {
-    statusNode.resultMessage.text = PassResults[Int(arc4random_uniform(UInt32(PassResults.count)))]
+    statusNode.firstPage.label.text = PassResults[Int(arc4random_uniform(UInt32(PassResults.count)))]
     tapeTestResults = exemplarTapeTests
     thinkingOperationsDone = true
   }
   
   func gridTestDidFailWithTapeTest(result: TapeTestResult) {
-    statusNode.resultMessage.text = FailResults[Int(arc4random_uniform(UInt32(FailResults.count)))]
+    statusNode.firstPage.label.text = FailResults[Int(arc4random_uniform(UInt32(FailResults.count)))]
     tapeTestResults = [result]
     thinkingOperationsDone = true
   }
   
   func gridTestDidLoopWithTapeTest(result: TapeTestResult) {
-    statusNode.resultMessage.text = LoopResults[Int(arc4random_uniform(UInt32(LoopResults.count)))]
+    statusNode.firstPage.label.text = LoopResults[Int(arc4random_uniform(UInt32(LoopResults.count)))]
     tapeTestResults = [result]
     thinkingOperationsDone = true
   }

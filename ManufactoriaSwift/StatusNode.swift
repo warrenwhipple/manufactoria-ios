@@ -8,42 +8,27 @@
 
 import SpriteKit
 
-class StatusNode: SKNode {
+class StatusNode: SwipeNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   enum State {case Editing, Thinking, Testing}
   
-  weak var delegate: GameScene? {didSet{testTouchArea.delegate = delegate}}
-  let testTouchArea = TestTouchArea(color: nil, size: CGSize(width: 64, height: 64))
-  let tapeNode = TapeNode()
-  let ring = SKSpriteNode("ring")
-  let ringArrow = SKSpriteNode("playArrow")
-  let instructions = BreakingLabel()
-  let resultMessage = BreakingLabel()
+  weak var delegate: GameScene? {
+    didSet{
+      for page in pages {
+        (page as Page).ringTouchArea.delegate = delegate
+      }
+    }
+  }
+  var firstPage: Page
+  var secondPage: Page?
+  let instructions: String
   var thinkingAnimationDone = false
   
-  override init()  {
-    super.init()
-    
-    testTouchArea.userInteractionEnabled = true
-    testTouchArea.zPosition = 100
-    addChild(testTouchArea)
-    
-    ring.zPosition = 10
-    ring.setScale(0.5)
-    ring.addChild(ringArrow)
-    addChild(ring)
-    
-    tapeNode.alpha = 0
-    tapeNode.setScale(0.5)
-    tapeNode.delegate = self
-    addChild(tapeNode)
-    
-    instructions.fontSize = 16
-    addChild(instructions)
-    
-    resultMessage.fontSize = 16
-    resultMessage.alpha = 0
-    addChild(resultMessage)
+  init(instructions: String) {
+    self.instructions = instructions
+    firstPage = Page()
+    firstPage.label.text = instructions
+    super.init(pages: [firstPage])
   }
   
   var rect: CGRect {
@@ -56,13 +41,11 @@ class StatusNode: SKNode {
     }
   }
   
-  var size: CGSize = CGSizeZero {
-    didSet{
-      testTouchArea.position = CGPoint(x: size.width * 0.5, y: size.height * (1.0/3.0))
-      ring.position = testTouchArea.position
-      tapeNode.position = testTouchArea.position
-      instructions.position = CGPoint(x: size.width * 0.5, y: size.height * (2.0/3.0))
-      resultMessage.position = instructions.position
+  override var size: CGSize {
+    didSet {
+      for page in pages {
+        (page as Page).size = size
+      }
     }
   }
   
@@ -71,28 +54,73 @@ class StatusNode: SKNode {
       if state == oldValue {return}
       switch state {
       case .Editing:
-        ring.removeAllActions()
-        ring.runAction(SKAction.moveTo(testTouchArea.position, duration: 0.5).ease())
-        ringArrow.runAction(SKAction.fadeAlphaTo(1, duration: 0.5))
-        tapeNode.runAction(SKAction.fadeAlphaTo(0, duration: 0.5))
-        instructions.runAction(SKAction.fadeAlphaTo(1, duration: 0.5))
-        resultMessage.runAction(SKAction.fadeAlphaTo(0, duration: 0.5))
-        testTouchArea.userInteractionEnabled = true
+        firstPage.userInteractionEnabled = true
+        firstPage.ringArrow.runAction(SKAction.fadeAlphaTo(1, duration: 0.5))
+        secondPage = firstPage
+        firstPage = Page()
+        firstPage.label.text = instructions
+        pages = [firstPage, secondPage!]
+        wrapper.position.x += size.width
       case .Thinking:
-        testTouchArea.userInteractionEnabled = false
+        touch = nil
+        userInteractionEnabled = false
+        if secondPage != nil {
+          if wrapper.position.x > size.width * 0.5 {
+            wrapper.position.x -= size.width
+            firstPage = secondPage!
+          }
+          pages = [firstPage]
+        }
         thinkingAnimationDone = false
-        self.runAction(SKAction.waitForDuration(0.75), completion: {[weak self] in self!.thinkingAnimationDone = true})
-        ring.runAction(SKAction.moveTo(tapeNode.position, duration: 0.5).ease())
-        ringArrow.runAction(SKAction.fadeAlphaTo(0, duration: 0.5))
-        instructions.runAction(SKAction.fadeAlphaTo(0, duration: 0.5))
+        runAction(SKAction.waitForDuration(0.5), completion: {[weak self] in self!.thinkingAnimationDone = true})
+        wrapper.runAction(SKAction.moveToX(0, duration: 0.5).ease())
+        firstPage.label.runAction(SKAction.fadeAlphaTo(0, duration: 0.5))
+        firstPage.ringTouchArea.userInteractionEnabled = false
+        firstPage.ringTouchArea.runAction(SKAction.moveTo(firstPage.tapeNode.position, duration: 0.5).ease())
+        firstPage.ring.runAction(SKAction.scaleTo(0.5, duration: 0.5))
+        firstPage.ringArrow.runAction(SKAction.fadeAlphaTo(0, duration: 0.5))
+        firstPage.tapeNode.runAction(SKAction.fadeAlphaTo(0, duration: 0.5))
       case .Testing:
-        tapeNode.runAction(SKAction.fadeAlphaTo(1, duration: 0.5))
-        resultMessage.runAction(SKAction.fadeAlphaTo(1, duration: 0.5))
+        firstPage.label.runAction(SKAction.fadeAlphaTo(1, duration: 0.5))
+        firstPage.tapeNode.alpha = 1
       }
     }
   }
   
-  class TestTouchArea: SKSpriteNode {
+  class Page: SKNode {
+    required init(coder: NSCoder) {fatalError("NSCoding not supported")}
+    let label = BreakingLabel()
+    let tapeNode = TapeNode()
+    let ringTouchArea = RingTouchArea(color: nil, size: CGSize(width: 64, height: 64))
+    let ring = SKSpriteNode("ring")
+    let ringArrow = SKSpriteNode("playArrow")
+    
+    override init() {
+      super.init()
+      label.fontSize = 16
+      addChild(label)
+      tapeNode.alpha = 0
+      tapeNode.setScale(0.5)
+      addChild(tapeNode)
+      ring.setScale(0.5)
+      ring.addChild(ringArrow)
+      ringTouchArea.userInteractionEnabled = true
+      ringTouchArea.zPosition = 100
+      ringTouchArea.addChild(ring)
+      addChild(ringTouchArea)
+    }
+    
+    var size: CGSize = CGSizeZero {
+      didSet{
+        label.position.y = size.height * (1.0/6.0)
+        tapeNode.position.y = size.height * (-1.0/6.0)
+        ringTouchArea.position = tapeNode.position
+      }
+    }
+    
+  }
+  
+  class RingTouchArea: SKSpriteNode {
     weak var delegate: GameScene?
     override func touchesBegan(touches: NSSet!, withEvent event: UIEvent!) {
       delegate?.testButtonPressed()
