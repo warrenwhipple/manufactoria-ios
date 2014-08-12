@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		2D03B938197AAD8700715176 /* MenuTriangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D03B937197AAD8700715176 /* MenuTriangle.swift */; };
-		2D03B93A197EB89700715176 /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D03B939197EB89700715176 /* StringExtension.swift */; };
+		2D03B93A197EB89700715176 /* SwiftExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D03B939197EB89700715176 /* SwiftExtensions.swift */; };
 		2D15929A19514B4900A96BCC /* GridNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D15929919514B4900A96BCC /* GridNode.swift */; };
 		2D15929C19514B5400A96BCC /* CellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D15929B19514B5400A96BCC /* CellNode.swift */; };
 		2D1CC15D195B59C000579575 /* gameScene.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 2D1CC15B195B59C000579575 /* gameScene.atlas */; };
@@ -50,7 +50,7 @@
 
 /* Begin PBXFileReference section */
 		2D03B937197AAD8700715176 /* MenuTriangle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuTriangle.swift; sourceTree = "<group>"; };
-		2D03B939197EB89700715176 /* StringExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringExtension.swift; sourceTree = "<group>"; };
+		2D03B939197EB89700715176 /* SwiftExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftExtensions.swift; sourceTree = "<group>"; };
 		2D15929919514B4900A96BCC /* GridNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridNode.swift; sourceTree = "<group>"; };
 		2D15929B19514B5400A96BCC /* CellNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CellNode.swift; sourceTree = "<group>"; };
 		2D1CC15B195B59C000579575 /* gameScene.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; name = gameScene.atlas; path = ../../../Documents/ManufactoriaSwift/gameScene/gameScene.atlas; sourceTree = "<group>"; };
@@ -146,8 +146,8 @@
 				2D62A46019929CC7002CD03F /* Globals.swift */,
 				2D336E8819534044008E55A9 /* HelperFunctions.swift */,
 				2DCA18A41985849B00DF3118 /* SpriteKitExtensions.swift */,
+				2D03B939197EB89700715176 /* SwiftExtensions.swift */,
 				2DCA18AA1986D2FA00DF3118 /* BreakingLabel.swift */,
-				2D03B939197EB89700715176 /* StringExtension.swift */,
 				2D60F5C8198156250032860B /* GameData.swift */,
 				2DD23D6D196F0BF900838E96 /* LevelLibrary.swift */,
 				2D37934419965135000B10EB /* Button.swift */,
@@ -334,7 +334,7 @@
 				2D03B938197AAD8700715176 /* MenuTriangle.swift in Sources */,
 				2DC4915F194F671F00053237 /* Cell.swift in Sources */,
 				2DD23D71196F223E00838E96 /* MenuScene.swift in Sources */,
-				2D03B93A197EB89700715176 /* StringExtension.swift in Sources */,
+				2D03B93A197EB89700715176 /* SwiftExtensions.swift in Sources */,
 				2DD23D731974730F00838E96 /* Engine.swift in Sources */,
 				2DCA18A71985AA0200DF3118 /* QuestionScene.swift in Sources */,
 				2DC49131194F45B800053237 /* AppDelegate.swift in Sources */,
