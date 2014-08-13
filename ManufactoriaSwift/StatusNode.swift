@@ -15,20 +15,22 @@ class StatusNode: SwipeNode {
   weak var delegate: GameScene? {
     didSet{
       for page in pages {
-        (page as Page).ringTouchArea.delegate = delegate
+        (page as StatusPage).ringTouchArea.delegate = delegate
       }
     }
   }
-  var firstPage: Page
-  var secondPage: Page?
+  
+  
+  var firstPage: StatusPage
+  var secondPage: StatusPage?
   let instructions: String
   var thinkingAnimationDone = false
   
   init(instructions: String) {
     self.instructions = instructions
-    firstPage = Page()
+    firstPage = StatusPage()
     firstPage.label.text = instructions
-    super.init(pages: [firstPage])
+    super.init(pages: [firstPage], texture: nil, color: nil, size: CGSizeZero)
   }
   
   var rect: CGRect {
@@ -40,15 +42,7 @@ class StatusNode: SwipeNode {
       size = newValue.size
     }
   }
-  
-  override var size: CGSize {
-    didSet {
-      for page in pages {
-        (page as Page).size = size
-      }
-    }
-  }
-  
+    
   var state: State = .Editing {
     didSet {
       if state == oldValue {return}
@@ -57,7 +51,7 @@ class StatusNode: SwipeNode {
         firstPage.userInteractionEnabled = true
         firstPage.ringArrow.runAction(SKAction.fadeAlphaTo(1, duration: 0.5))
         secondPage = firstPage
-        firstPage = Page()
+        firstPage = StatusPage()
         firstPage.label.text = instructions
         pages = [firstPage, secondPage!]
         wrapper.position.x += size.width
@@ -87,7 +81,7 @@ class StatusNode: SwipeNode {
     }
   }
   
-  class Page: SKNode {
+  class StatusPage: SKNode {
     required init(coder: NSCoder) {fatalError("NSCoding not supported")}
     let label = BreakingLabel()
     let tapeNode = TapeNode()

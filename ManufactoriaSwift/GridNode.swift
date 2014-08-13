@@ -155,7 +155,7 @@ class GridNode: SKNode {
   
   func coordForTouch(touch: UITouch) -> GridCoord {
     let position = touch.locationInNode(wrapper)
-    return GridCoord(floor(position.x), floor(position.y))
+    return GridCoord(Int(floor(position.x)), Int(floor(position.y)))
   }
   
   override func touchesBegan(touches: NSSet!, withEvent event: UIEvent!) {

@@ -20,7 +20,7 @@ class GameViewController: UIViewController {
     skView.showsNodeCount = false
     skView.ignoresSiblingOrder = true
     
-    let scene = TitleScene(size: skView.bounds.size)
+    let scene = SwipeNodeScene(size: skView.bounds.size)
     scene.scaleMode = .AspectFill
     
     skView.presentScene(scene)

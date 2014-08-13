@@ -46,13 +46,23 @@ func randBool() -> Bool {
   return arc4random_uniform(2) == 1
 }
 
-func floor(x: CGFloat) -> Int {
+/*
+func floorInt(x: CGFloat) -> Int {
   if x < 0 {
     return Int(x) - 1
   } else {
     return Int(x)
   }
 }
+
+func ceilingInt(x: CGFloat) -> Int {
+  if x > 0 {
+    return Int(x) + 1
+  } else {
+    return Int(x)
+  }
+}
+*/
 
 let CGSizeUnit = CGSize(width: 1.0, height: 1.0)
 
