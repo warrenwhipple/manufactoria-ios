@@ -102,14 +102,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		2D60F5C5198041A70032860B /* TitleScene */ = {
-			isa = PBXGroup;
-			children = (
-				2D60F5C6198041BD0032860B /* TitleScene.swift */,
-			);
-			name = TitleScene;
-			sourceTree = "<group>";
-		};
 		2D9A097A195643680007F6A4 /* Images */ = {
 			isa = PBXGroup;
 			children = (
@@ -151,9 +143,9 @@
 				2D60F5C8198156250032860B /* GameData.swift */,
 				2DD23D6D196F0BF900838E96 /* LevelLibrary.swift */,
 				2D37934419965135000B10EB /* Button.swift */,
+				2D60F5C6198041BD0032860B /* TitleScene.swift */,
+				2DD23D70196F223E00838E96 /* MenuScene.swift */,
 				2DCA18A61985AA0200DF3118 /* QuestionScene.swift */,
-				2D60F5C5198041A70032860B /* TitleScene */,
-				2DD23D6F196F205100838E96 /* MenuScene */,
 				2DC49151194F4BEB00053237 /* GameScene */,
 				2D9A097A195643680007F6A4 /* Images */,
 				2DC4913B194F45B800053237 /* Images.xcassets */,
@@ -203,14 +195,6 @@
 				2D7F922B195C61FA00F04F63 /* ToolbarNode.swift */,
 			);
 			name = GameScene;
-			sourceTree = "<group>";
-		};
-		2DD23D6F196F205100838E96 /* MenuScene */ = {
-			isa = PBXGroup;
-			children = (
-				2DD23D70196F223E00838E96 /* MenuScene.swift */,
-			);
-			name = MenuScene;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

@@ -108,7 +108,8 @@ class GameScene: SKScene {
     let gridHeight = CGFloat(grid.space.rows) * gridNode.wrapper.yScale
     let gapHeight = (size.height - gridHeight) * 0.5
     toolbarNode.rect = CGRect(x: 0, y: 0, width: size.width, height: gapHeight)
-    statusNode.rect = CGRect(x: 0, y: gapHeight + gridHeight, width: size.width, height: gapHeight)
+    statusNode.position = CGPoint(x: size.width * 0.5, y: gridHeight + gapHeight * 1.5)
+    statusNode.size = CGSize(width: size.width, height: gapHeight)
     menuTriangle.position = CGPoint(x: size.width, y: size.height)
   }
   
@@ -144,10 +145,10 @@ class GameScene: SKScene {
         lastRobotCoord = robotCoord
         let tapeLength = tape.count
         if tapeLength > lastTapeLength && tapeLength > 0 {
-          statusNode.firstPage.tapeNode.writeColor(tape.last()!)
+          statusNode.tapeNode.writeColor(tape.last()!)
         }
         else if tapeLength < lastTapeLength {
-          statusNode.firstPage.tapeNode.deleteColor()
+          statusNode.tapeNode.deleteColor()
         }
         lastTapeLength = tapeLength
         switch testResult {
@@ -193,26 +194,26 @@ class GameScene: SKScene {
     robotCoord = grid.startCoordPlusOne
     lastRobotCoord = grid.startCoord
     tape = (tapeTestResults[0].input)
-    statusNode.firstPage.tapeNode.loadTape(tapeTestResults[0].input, maxLength: tapeTestResults[0].maxTapeLength)
+    statusNode.tapeNode.loadTape(tapeTestResults[0].input, maxLength: tapeTestResults[0].maxTapeLength)
     tapeTestResults.removeAtIndex(0)
     lastTapeLength = tape.count
     return true
   }
   
   func gridTestDidPassWithExemplarTapeTests(exemplarTapeTests: [TapeTestResult]) {
-    statusNode.firstPage.label.text = PassResults[Int(arc4random_uniform(UInt32(PassResults.count)))]
+    statusNode.changeText(PassResults[Int(arc4random_uniform(UInt32(PassResults.count)))])
     tapeTestResults = exemplarTapeTests
     thinkingOperationsDone = true
   }
   
   func gridTestDidFailWithTapeTest(result: TapeTestResult) {
-    statusNode.firstPage.label.text = FailResults[Int(arc4random_uniform(UInt32(FailResults.count)))]
+    statusNode.changeText(FailResults[Int(arc4random_uniform(UInt32(FailResults.count)))])
     tapeTestResults = [result]
     thinkingOperationsDone = true
   }
   
   func gridTestDidLoopWithTapeTest(result: TapeTestResult) {
-    statusNode.firstPage.label.text = LoopResults[Int(arc4random_uniform(UInt32(LoopResults.count)))]
+    statusNode.changeText(LoopResults[Int(arc4random_uniform(UInt32(LoopResults.count)))])
     tapeTestResults = [result]
     thinkingOperationsDone = true
   }

@@ -48,8 +48,8 @@ class TapeNode: SKNode {
     
     // reset printer
     if delegate != nil {
-      delegate!.firstPage.ringTouchArea.removeAllActions()
-      delegate!.firstPage.ringTouchArea.position = convertPoint(dotPositionForIndex(i), toNode: delegate!.firstPage)
+      delegate!.ringTouchArea.removeAllActions()
+      delegate!.ringTouchArea.position = convertPoint(dotPositionForIndex(i), toNode: delegate!)
     }
   }
   
@@ -74,11 +74,11 @@ class TapeNode: SKNode {
     
     // animate printer
     if delegate != nil {
-      delegate!.firstPage.ringTouchArea.removeAllActions()
-      delegate!.firstPage.ringTouchArea.position = convertPoint(dotPositionForIndex(dotIndex), toNode: delegate!.firstPage)
-      delegate!.firstPage.ringTouchArea.runAction(SKAction.sequence([
+      delegate!.ringTouchArea.removeAllActions()
+      delegate!.ringTouchArea.position = convertPoint(dotPositionForIndex(dotIndex), toNode: delegate!)
+      delegate!.ringTouchArea.runAction(SKAction.sequence([
         SKAction.waitForDuration(0.5),
-        SKAction.moveTo(convertPoint(dotPositionForIndex(dotIndex + 1), toNode: delegate!.firstPage), duration: 0.5).ease()]))
+        SKAction.moveTo(convertPoint(dotPositionForIndex(dotIndex + 1), toNode: delegate!), duration: 0.5).ease()]))
     }
   }
   
@@ -99,8 +99,8 @@ class TapeNode: SKNode {
     
     // move printer
     if delegate != nil {
-      delegate!.firstPage.ringTouchArea.removeAllActions()
-      delegate!.firstPage.ringTouchArea.runAction(SKAction.moveTo(convertPoint(dotPositionForIndex(i), toNode: delegate!.firstPage), duration: 1))
+      delegate!.ringTouchArea.removeAllActions()
+      delegate!.ringTouchArea.runAction(SKAction.moveTo(convertPoint(dotPositionForIndex(i), toNode: delegate!), duration: 1))
     }
   }
   
