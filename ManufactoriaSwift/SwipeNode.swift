@@ -19,7 +19,7 @@ class SwipeNodeScene: SKScene {
       SKSpriteNode("robut")
       ])
     swipeNode.position = CGPoint(x: 0.5 * size.width, y: 0.5 * size.height)
-    swipeNode.size = size * 0.5
+    swipeNode.size = size
     addChild(swipeNode)
   }
 }
@@ -30,6 +30,7 @@ class SwipeNode: SKSpriteNode {
   let wrapper = SKNode()
   var touch: UITouch?
   var wrapperDragOffsetX: CGFloat = 0.0
+  var wrapperMinX: CGFloat = 0.0
   var lastTouchX: CGFloat = 0
   var lastLastTouchX: CGFloat = 0
   var lastTouchTime: NSTimeInterval = 0
@@ -60,7 +61,8 @@ class SwipeNode: SKSpriteNode {
         page.position.x = CGFloat(i) * size.width
         wrapper.addChild(page)
       }
-      snapToClosest()
+      wrapperMinX = -CGFloat(pages.count - 1) * size.width
+      snapToClosestWithInitialVelocityX(0)
     }
   }
   
@@ -73,11 +75,12 @@ class SwipeNode: SKSpriteNode {
       if oldValue.width != 0 {
         wrapper.position.x *= size.width / oldValue.width
       }
-      snapToClosest()
+      wrapperMinX = -CGFloat(pages.count - 1) * size.width
+      snapToClosestWithInitialVelocityX(0)
     }
   }
   
-  func snapToIndex(index: Int) {
+  func snapToIndex(index: Int, initialVelocityX: CGFloat) {
     var newX: CGFloat = 0
     if index > pages.count - 1 {
       newX = -CGFloat(pages.count - 1) * size.width
@@ -87,24 +90,35 @@ class SwipeNode: SKSpriteNode {
     if wrapper.position.x == newX {
       wrapper.removeActionForKey("snap")
     } else {
-      wrapper.runAction(SKAction.moveToX(newX, duration: 0.25).easeOut())
+      if initialVelocityX == 0 {
+        wrapper.runAction(SKAction.moveToX(newX, duration: 0.25).easeOut(), withKey: "snap")
+      } else {
+        let eta = (newX - wrapper.position.x) / initialVelocityX * 1.25
+        println(eta)
+        if eta < 0 || eta > 0.25 {
+          wrapper.runAction(SKAction.moveToX(newX, duration: 0.25).easeOut(), withKey: "snap")
+        } else {
+          wrapper.runAction(SKAction.moveToX(newX, duration: NSTimeInterval(eta)).easeOut(), withKey: "snap")
+        }
+      }
     }
   }
   
-  func snapToClosest() {
-    snapToIndex(Int(round(-wrapper.position.x / size.width)))
+  func snapToClosestWithInitialVelocityX(initialVelocityX: CGFloat) {
+    snapToIndex(Int(round(-wrapper.position.x / size.width)), initialVelocityX: initialVelocityX)
   }
   
-  func snapLeft() {
-    snapToIndex(Int(ceil(-wrapper.position.x / size.width)))
+  func snapLeftWithInitialVelocityX(initialVelocityX: CGFloat) {
+    snapToIndex(Int(ceil(-wrapper.position.x / size.width)), initialVelocityX: initialVelocityX)
   }
   
-  func snapRight() {
-    snapToIndex(Int(floor(-wrapper.position.x / size.width)))
+  func snapRightWithInitialVelocityX(initialVelocityX: CGFloat) {
+    snapToIndex(Int(floor(-wrapper.position.x / size.width)), initialVelocityX: initialVelocityX)
   }
   
   override func touchesBegan(touches: NSSet!, withEvent event: UIEvent!) {
     if touch != nil {return}
+    wrapper.removeActionForKey("snap")
     touch = touches.anyObject() as? UITouch
     wrapperDragOffsetX = wrapper.position.x - touch!.locationInNode(self).x
     lastTouchX = touch!.locationInView(scene.view).x
@@ -116,7 +130,16 @@ class SwipeNode: SKSpriteNode {
   override func touchesMoved(touches: NSSet!, withEvent event: UIEvent!) {
     if touch == nil {return}
     if !touches.containsObject(touch!) {return}
-    wrapper.position.x = wrapperDragOffsetX + touch!.locationInNode(self).x
+    let wrapperTargetX = wrapperDragOffsetX + touch!.locationInNode(self).x
+    if wrapperTargetX > 0 {
+      let percentOver = wrapperTargetX / size.width
+      wrapper.position.x = (1-(1-percentOver) * (1-percentOver)) * size.width * 0.25
+    } else if wrapperTargetX < wrapperMinX {
+      let percentOver = (wrapperMinX - wrapperTargetX) / size.width
+      wrapper.position.x = wrapperMinX - (1-(1-percentOver) * (1-percentOver)) * size.width * 0.25
+    } else {
+      wrapper.position.x = wrapperTargetX
+    }
     lastLastTouchX = lastTouchX
     lastTouchX = touch!.locationInView(scene.view).x
     lastLastTouchTime = lastTouchTime
@@ -132,17 +155,17 @@ class SwipeNode: SKSpriteNode {
     let deltaTouchTimeShort = touchTime - lastTouchTime
     let deltaTouchTimeLong = touchTime - lastLastTouchTime
     if deltaTouchTimeShort == 0.0 {
-      snapToClosest()
+      snapToClosestWithInitialVelocityX(0)
     } else if deltaTouchTimeLong == 0.0 {
-      snapToClosest()
+      snapToClosestWithInitialVelocityX((touchX - lastTouchX) / CGFloat(deltaTouchTimeShort))
     } else {
       let touchVelocityX = ((touchX - lastTouchX) / CGFloat(deltaTouchTimeShort) + (touchX - lastLastTouchX) / CGFloat(deltaTouchTimeLong)) * 0.5
       if touchVelocityX < -200.0 {
-        snapLeft()
+        snapLeftWithInitialVelocityX(touchVelocityX)
       } else if touchVelocityX > 200.0 {
-        snapRight()
+        snapRightWithInitialVelocityX(touchVelocityX)
       } else {
-        snapToClosest()
+        snapToClosestWithInitialVelocityX(touchVelocityX)
       }
     }
     touch = nil
