@@ -66,6 +66,8 @@ func ceilingInt(x: CGFloat) -> Int {
 
 let CGSizeUnit = CGSize(width: 1.0, height: 1.0)
 
+func + (left: CGPoint, right: CGPoint) -> CGPoint {return CGPoint(x: left.x + right.x, y: left.y + right.y)}
+func - (left: CGPoint, right: CGPoint) -> CGPoint {return CGPoint(x: left.x - right.x, y: left.y - right.y)}
 func + (left: CGSize, right: CGFloat) -> CGSize {return CGSize(width: left.width + right, height: left.height + right)}
 func - (left: CGSize, right: CGFloat) -> CGSize {return CGSize(width: left.width - right, height: left.height - right)}
 func * (left: CGSize, right: CGFloat) -> CGSize {return CGSize(width: left.width * right, height: left.height * right)}

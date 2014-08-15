@@ -109,7 +109,11 @@ class GameScene: SKScene {
     let gapHeight = (size.height - gridHeight) * 0.5
     toolbarNode.rect = CGRect(x: 0, y: 0, width: size.width, height: gapHeight)
     statusNode.position = CGPoint(x: size.width * 0.5, y: gridHeight + gapHeight * 1.5)
-    statusNode.size = CGSize(width: size.width, height: gapHeight)
+    
+    // ambiguous bug error workaround
+    let swipeNode: SwipeNode = statusNode
+    swipeNode.size = CGSize(width: size.width, height: gapHeight)
+    
     menuTriangle.position = CGPoint(x: size.width, y: size.height)
   }
   
@@ -201,19 +205,19 @@ class GameScene: SKScene {
   }
   
   func gridTestDidPassWithExemplarTapeTests(exemplarTapeTests: [TapeTestResult]) {
-    statusNode.changeText(PassResults[Int(arc4random_uniform(UInt32(PassResults.count)))])
+    statusNode.changeText(PassComments[Int(arc4random_uniform(UInt32(PassComments.count)))])
     tapeTestResults = exemplarTapeTests
     thinkingOperationsDone = true
   }
   
   func gridTestDidFailWithTapeTest(result: TapeTestResult) {
-    statusNode.changeText(FailResults[Int(arc4random_uniform(UInt32(FailResults.count)))])
+    statusNode.changeText(FailComments[Int(arc4random_uniform(UInt32(FailComments.count)))])
     tapeTestResults = [result]
     thinkingOperationsDone = true
   }
   
   func gridTestDidLoopWithTapeTest(result: TapeTestResult) {
-    statusNode.changeText(LoopResults[Int(arc4random_uniform(UInt32(LoopResults.count)))])
+    statusNode.changeText(LoopComments[Int(arc4random_uniform(UInt32(LoopComments.count)))])
     tapeTestResults = [result]
     thinkingOperationsDone = true
   }

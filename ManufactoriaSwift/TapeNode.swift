@@ -16,10 +16,12 @@ class TapeNode: SKNode {
   var maxLength: Int = 0
   let dotTexture = SKTexture("dot")
   let dotSpacing: CGFloat
+  let printer = Printer()
   
   override init() {
     dotSpacing = dotTexture.size().width * 1.5
     super.init()
+    addChild(printer)
   }
   
   func loadTape(tape: [Color], maxLength: Int) {
@@ -47,10 +49,8 @@ class TapeNode: SKNode {
     }
     
     // reset printer
-    if delegate != nil {
-      delegate!.ringTouchArea.removeAllActions()
-      delegate!.ringTouchArea.position = convertPoint(dotPositionForIndex(i), toNode: delegate!)
-    }
+    printer.removeAllActions()
+    printer.position = dotPositionForIndex(i)
   }
   
   func writeColor(color: Color) {
@@ -73,13 +73,12 @@ class TapeNode: SKNode {
     addChild(dot)
     
     // animate printer
-    if delegate != nil {
-      delegate!.ringTouchArea.removeAllActions()
-      delegate!.ringTouchArea.position = convertPoint(dotPositionForIndex(dotIndex), toNode: delegate!)
-      delegate!.ringTouchArea.runAction(SKAction.sequence([
-        SKAction.waitForDuration(0.5),
-        SKAction.moveTo(convertPoint(dotPositionForIndex(dotIndex + 1), toNode: delegate!), duration: 0.5).ease()]))
-    }
+    printer.removeAllActions()
+    printer.position = dotPositionForIndex(dotIndex)
+    printer.runAction(SKAction.sequence([
+      SKAction.waitForDuration(0.5),
+      SKAction.moveTo(dotPositionForIndex(dotIndex + 1), duration: 0.5).ease()
+      ]))
   }
   
   func deleteColor() {
@@ -98,13 +97,18 @@ class TapeNode: SKNode {
     }
     
     // move printer
-    if delegate != nil {
-      delegate!.ringTouchArea.removeAllActions()
-      delegate!.ringTouchArea.runAction(SKAction.moveTo(convertPoint(dotPositionForIndex(i), toNode: delegate!), duration: 1))
-    }
+    printer.removeAllActions()
+    printer.runAction(SKAction.moveTo(dotPositionForIndex(i), duration: 1))
   }
   
   func dotPositionForIndex(index: Int) -> CGPoint {
     return CGPoint(x: CGFloat(index) * dotSpacing, y: 0)
+  }
+  
+  class Printer: SKNode {
+    required init(coder: NSCoder) {fatalError("NSCoding not supported")}
+    override init() {super.init()}
+    weak var delegate: StatusNode.TestButton?
+    override var position: CGPoint {didSet {delegate?.printerMoved(self)}}
   }
 }

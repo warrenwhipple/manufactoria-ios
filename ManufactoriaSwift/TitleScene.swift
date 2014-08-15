@@ -34,7 +34,7 @@ class TitleScene: SKScene {
   
   override func touchesBegan(touches: NSSet!, withEvent event: UIEvent!) {
     if gameData.levelsComplete == 0 {
-      view.presentScene(GameScene(size: size, levelNumber: 0), transition : SKTransition.crossFadeWithDuration(0.5))
+      view.presentScene(FirstTutorialScene(size: size), transition : SKTransition.crossFadeWithDuration(0.5))
     } else {
       view.presentScene(MenuScene(size: size), transition: SKTransition.crossFadeWithDuration(0.5))
     }

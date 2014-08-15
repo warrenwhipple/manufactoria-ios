@@ -12,9 +12,9 @@ typealias GenerationFunction = (Int) -> ([String])
 typealias PassFunction = (String) -> (Bool)
 typealias TransformFunction = (String) -> (String)
 
-let PassResults = ["Nice.", "That works.", "Acceptable.", "Fine."]
-let FailResults = ["Nope.", "Wrong.", "No.", "Sorry.", "Yeah um no.", "Fail.", "Not good.", "Problematic."]
-let LoopResults = ["Circular.", "Bored.", "Out of patience.", "No no no no no... no."]
+let PassComments = ["Nice.", "That works.", "Acceptable.", "Pass."]
+let FailComments = ["Nope.", "Wrong.", "No.", "Sorry.", "Fail."]
+let LoopComments = ["Circular.", "Out of patience.", "Loopy."]
 
 struct LevelSetup {
   let tag: String
