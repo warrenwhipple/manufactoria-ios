@@ -49,7 +49,7 @@ class BreakingLabel: SKNode {
   
   init(fontNamed: String?) {
     fontColor = UIColor.whiteColor()
-    fontName = fontNamed ?? "HelveticaNeue-Thin"
+    fontName = fontNamed ?? ""
     fontSize = 20
     horizontalAlignmentMode = .Center
     verticalAlignmentMode = .Center

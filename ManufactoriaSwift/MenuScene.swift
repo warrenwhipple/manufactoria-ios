@@ -58,8 +58,7 @@ class MenuScene: SKScene {
       self.levelNumber = levelNumber
       super.init(texture: nil, color: UIColor(white: 0.1, alpha: 1), size: CGSizeZero)
       self.userInteractionEnabled = isEnabled
-      label.fontSize = 12
-      label.fontName = "HelveticaNeue-Light"
+      label.fontXSmall()
       label.verticalAlignmentMode = .Center
       label.text = text
       label.alpha = 0

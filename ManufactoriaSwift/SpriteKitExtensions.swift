@@ -42,3 +42,19 @@ extension SKAction {
     return self
   }
 }
+
+extension SKLabelNode {
+  func fontXSmall() {fontSize = 12; fontName = "HelveticaNeue-Light"}
+  func fontSmall()  {fontSize = 16; fontName = "HelveticaNeue-Thin"}
+  func fontMedium() {fontSize = 20; fontName = "HelveticaNeue-Thin"}
+  func fontLarge()  {fontSize = 24; fontName = "HelveticaNeue-Thin"}
+  func fontXLarge() {fontSize = 40; fontName = "HelveticaNeue-UltraLight"}
+}
+
+extension BreakingLabel {
+  func fontXSmall() {fontSize = 12; fontName = "HelveticaNeue-Light"}
+  func fontSmall()  {fontSize = 16; fontName = "HelveticaNeue-Thin"}
+  func fontMedium() {fontSize = 20; fontName = "HelveticaNeue-Thin"}
+  func fontLarge()  {fontSize = 24; fontName = "HelveticaNeue-Thin"}
+  func fontXLarge() {fontSize = 40; fontName = "HelveticaNeue-UltraLight"}
+}

@@ -41,7 +41,7 @@ class FirstTutorialScene: GameScene {
   
   override func touchesBegan(touches: NSSet!, withEvent event: UIEvent!) {
     super.touchesBegan(touches, withEvent: event)
-    if statusNode.testButton.userInteractionEnabled {
+    if state == State.Editing && statusNode.testButton.userInteractionEnabled {
       statusNode.testButton.userInteractionEnabled = false
       statusNode.testButton.runAction(SKAction.fadeAlphaTo(0, duration: 0.5))
     }
@@ -49,7 +49,7 @@ class FirstTutorialScene: GameScene {
   
   override func touchesEnded(touches: NSSet!, withEvent event: UIEvent!) {
     super.touchesEnded(touches, withEvent: event)
-    if tutorialGridPasses() {
+    if state == State.Editing && tutorialGridPasses() {
       statusNode.testButton.userInteractionEnabled = true
       statusNode.testButton.runAction(SKAction.fadeAlphaTo(1, duration: 0.5))
       let swipeNode: SwipeNode = statusNode // swift ambiguity bug workaround

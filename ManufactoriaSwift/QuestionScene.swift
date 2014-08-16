@@ -16,23 +16,26 @@ class QuestionScene: SKScene {
     let midY = size.height * 0.5
     
     let questionLabel = BreakingLabel()
+    questionLabel.fontMedium()
     questionLabel.verticalAlignmentMode = SKLabelVerticalAlignmentMode.Bottom
     questionLabel.text = questionText
     questionLabel.position = CGPoint(x: midX, y: midY + questionLabel.lineHeight * questionLabel.fontSize)
     
     let yesLabel = BreakingLabel()
+    yesLabel.fontMedium()
     yesLabel.text = yesText
     
     let noLabel = BreakingLabel()
+    noLabel.fontMedium()
     noLabel.text = noText
-    
-    let yesButton = Button(size: CGSize(width: 80, height: 80))
-    yesButton.closureTouchUpInside = yesClosure
+        
+    let yesButton = Button.glowButton(size: CGSize(width: 80, height: 80))
+    yesButton.touchUpInsideClosure = yesClosure
     yesButton.position = CGPoint(x: midX - 70, y: midY - 40)
     yesButton.addChild(yesLabel)
     
-    let noButton = Button(size: CGSize(width: 80, height: 80))
-    noButton.closureTouchUpInside = noClosure
+    let noButton = Button.glowButton(size: CGSize(width: 80, height: 80))
+    noButton.touchUpInsideClosure = noClosure
     noButton.position = CGPoint(x: midX + 70, y: midY - 40)
     noButton.addChild(noLabel)
     

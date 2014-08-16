@@ -10,54 +10,40 @@ import SpriteKit
 
 class Button: SKSpriteNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  let dimColor: UIColor
-  let glowColor: UIColor
-  let glowDimDuration: NSTimeInterval
-  var closureTouchDown: (()->())?
-  var closureTouchUpInside: (()->())?
+  var pressAction: SKAction?
+  var releaseAction: SKAction?
+  var touchDownClosure: (()->())?
+  var touchUpInsideClosure: (()->())?
   
-  init(dimColor: UIColor, glowColor: UIColor, glowDimDuration: NSTimeInterval, size: CGSize) {
-    self.dimColor = dimColor
-    self.glowColor = glowColor
-    self.glowDimDuration = glowDimDuration
-    super.init(texture: nil, color: dimColor, size: size)
+  override init(texture: SKTexture!, color: UIColor!, size: CGSize) {
+    super.init(texture: texture, color: color, size: size)
     userInteractionEnabled = true
   }
   
-  convenience init(size: CGSize) {
-    self.init(dimColor: UIColor(white: 0.1, alpha: 1), glowColor: UIColor(white: 0.3, alpha: 1), glowDimDuration: 0.125, size: size)
-  }
+  convenience override init() {self.init(texture: nil, color: nil, size: CGSizeZero)}
+  convenience init(size: CGSize) {self.init(texture: nil, color: nil, size: size)}
+  convenience init(texture: SKTexture) {self.init(texture: texture, color: nil, size: texture.size())}
   
   var touch: UITouch? {
     didSet {
-      if (touch == nil) && (oldValue != nil) {
-        dim()
-      } else if (touch != nil) && (oldValue == nil) {
-        glow()
+      if (touch != nil) && (oldValue == nil) {
+        if pressAction != nil {runAction(pressAction!, withKey: "pressReleaseAnimation")}
+      } else if (touch == nil) && (oldValue != nil) {
+        if releaseAction != nil {runAction(releaseAction!, withKey: "pressReleaseAnimation")}
       }
     }
   }
   
-  func glow() {
-    runAction(SKAction.colorizeWithColor(glowColor, colorBlendFactor: 1, duration: glowDimDuration))
-  }
-  
-  func dim() {
-    runAction(SKAction.colorizeWithColor(dimColor, colorBlendFactor: 1, duration: glowDimDuration))
-  }
-  
-  func touchDown() {
-    if closureTouchDown != nil {closureTouchDown!()}
-  }
-  
-  func touchUpInside() {
-    if closureTouchUpInside != nil {closureTouchUpInside!()}
+  override var userInteractionEnabled: Bool {
+    didSet {
+      if userInteractionEnabled == false {touch = nil}
+    }
   }
   
   override func touchesBegan(touches: NSSet!, withEvent event: UIEvent!) {
     if touch != nil {return}
     touch = touches.anyObject() as? UITouch
-    touchDown()
+    if touchDownClosure != nil {touchDownClosure!()}
   }
   
   override func touchesMoved(touches: NSSet!, withEvent event: UIEvent!) {
@@ -71,7 +57,7 @@ class Button: SKSpriteNode {
   override func touchesEnded(touches: NSSet!, withEvent event: UIEvent!) {
     if touch == nil {return}
     if !touches.containsObject(touch!) {return}
-    touchUpInside()
+    if touchUpInsideClosure != nil {touchUpInsideClosure!()}
     touch = nil
   }
   
@@ -79,5 +65,21 @@ class Button: SKSpriteNode {
     if touch == nil {return}
     if !touches.containsObject(touch!) {return}
     touch = nil
+  }
+  
+  class func glowButton(#size: CGSize) -> Button {
+    let button = Button(size: size)
+    button.pressAction = SKAction.colorizeWithColor(UIColor(white: 0.3, alpha: 1), colorBlendFactor: 1, duration: 0.25)
+    button.releaseAction = SKAction.colorizeWithColor(UIColor(white: 0.1, alpha: 1), colorBlendFactor: 1, duration: 0.25)
+    button.color = UIColor(white: 0.1, alpha: 1)
+    return button
+  }
+  
+  class func growButton(#texture: SKTexture) -> Button {
+    let button = Button(size: texture.size())
+    button.texture = texture
+    button.pressAction = SKAction.scaleTo(1.25, duration: 0.25)
+    button.releaseAction = SKAction.scaleTo(1, duration: 0.25)
+    return button
   }
 }

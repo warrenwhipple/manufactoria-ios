@@ -10,7 +10,7 @@ import SpriteKit
 
 class GameScene: SKScene {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  enum State {case Editing, Thinking, Testing}
+  enum State {case Editing, Thinking, Testing, Congratulating}
   
   // model objects
   let levelNumber: Int
@@ -36,15 +36,17 @@ class GameScene: SKScene {
   var tickPercent: Float = 0.0
   var beltPercent: Float = 0.0
   var thinkingOperationsDone = false
+  var gridTestDidPass = false
   
   override var size: CGSize {didSet{fitToSize()}}
   
-  init(size: CGSize, levelNumber: Int) {
+  init(size: CGSize, var levelNumber: Int) {
+    if levelNumber > LevelLibrary.count - 1 {levelNumber = 0}
     self.levelNumber = levelNumber
     let levelSetup = LevelLibrary[levelNumber]
     grid = Grid(space: levelSetup.space)
     engine = Engine(levelSetup: levelSetup)
-    statusNode = StatusNode(instructions: levelSetup.instructions)
+    statusNode = StatusNode(instructions: levelSetup.instructions, nextLevelNumber: levelNumber + 1)
     gridNode = GridNode(grid: grid)
     toolbarNode = ToolbarNode(buttonKinds: levelSetup.buttons)
     
@@ -88,6 +90,7 @@ class GameScene: SKScene {
         statusNode.state = .Thinking
         statusNode.thinkingAnimationDone = false
         thinkingOperationsDone = false
+        gridTestDidPass = false
         gridNode.state = .Waiting
         toolbarNode.state = .Disabled
         engine.queueTestWithGrid(grid)
@@ -97,8 +100,8 @@ class GameScene: SKScene {
           loadNextTape()
         }
         statusNode.state = .Testing
-        gridNode.state = .Waiting
-        toolbarNode.state = .Disabled
+      case .Congratulating:
+        statusNode.state = .Congratulating
       }
     }
   }
@@ -158,7 +161,8 @@ class GameScene: SKScene {
         switch testResult {
         case .Accept, .Reject:
           if !loadNextTape() {
-            state = .Editing
+            if gridTestDidPass {state = .Congratulating}
+            else {state = .Editing}
           }
         case .North: robotCoord.j++
         case .East: robotCoord.i++
@@ -207,6 +211,12 @@ class GameScene: SKScene {
   func gridTestDidPassWithExemplarTapeTests(exemplarTapeTests: [TapeTestResult]) {
     statusNode.changeText(PassComments[Int(arc4random_uniform(UInt32(PassComments.count)))])
     tapeTestResults = exemplarTapeTests
+    let gameData = GameData.sharedInstance
+    if gameData.levelsComplete < levelNumber + 1 {
+      gameData.levelsComplete = levelNumber + 1
+      gameData.save()
+    }
+    gridTestDidPass = true
     thinkingOperationsDone = true
   }
   

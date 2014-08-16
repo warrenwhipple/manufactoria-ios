@@ -16,13 +16,12 @@ class TitleScene: SKScene {
   
   override init(size: CGSize) {
     title = SKLabelNode()
-    title.fontName = "HelveticaNeue-UltraLight"
-    title.fontSize = 40
+    title.fontXLarge()
     title.verticalAlignmentMode = .Center
     title.text = "Manufactoria"
     title.position = CGPoint(x: size.width * 0.5, y: size.height * 0.5 + 40)
     arrow = SKSpriteNode("ring")
-    arrow.addChild(SKSpriteNode("playArrow"))
+    arrow.addChild(SKSpriteNode("playIcon"))
     arrow.position = CGPoint(x: size.width * 0.5, y: size.height * 0.5 - 40)
     arrow.alpha = 0
     arrow.runAction(SKAction.sequence([SKAction.waitForDuration(1), SKAction.fadeAlphaTo(1, duration: 4)]))
