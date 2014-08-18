@@ -8,6 +8,21 @@
 
 import SpriteKit
 
+extension CGRect {
+  init(center: CGPoint, size: CGSize) {
+    origin = CGPoint(x: center.x - 0.5 * size.width, y: center.y - 0.5 * size.height)
+    self.size = size
+  }
+  init(centerX: CGFloat, centerY: CGFloat, width: CGFloat, height: CGFloat) {
+    origin = CGPoint(x: centerX - 0.5 * width, y: centerY - 0.5 * height)
+    self.size = CGSize(width: width, height: height)
+  }
+  var center: CGPoint {
+    get {return CGPoint(x: origin.x + 0.5 * size.width, y: origin.y + 0.5 * size.height)}
+    set {origin = CGPoint(x: newValue.x - 0.5 * size.width, y: newValue.y - 0.5 * size.height)}
+  }
+}
+
 extension SKNode {
   func addChildren(nodes: [SKNode]) {
     for node in nodes {

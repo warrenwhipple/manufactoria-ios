@@ -142,7 +142,7 @@ let LevelLibrary: [LevelSetup] = [
     tag: ">= 3B",
     instructions: "Accept three or more blues.",
     space: GridSpace(5, 5),
-    buttons: [.Blank, .Belt],
+    buttons: [.Blank, .BeltBridge, .PullerBR],
     exemplars: ["brbrb", "rbrbr"],
     generationFunction: {n in return generate("br", n)},
     passFunction: {
@@ -157,7 +157,7 @@ let LevelLibrary: [LevelSetup] = [
     tag: "no R",
     instructions: "Reject any red anywhere.",
     space: GridSpace(5, 5),
-    buttons: [.Blank, .Belt],
+    buttons: [.Blank, .BeltBridge, .PullerBR],
     exemplars: ["bbbb", "bbrb"],
     generationFunction: {n in return generate("br", n)},
     passFunction: {
@@ -171,8 +171,8 @@ let LevelLibrary: [LevelSetup] = [
   LevelSetup(
     tag: "first last",
     instructions: "Move the first color to the end.",
-    space: GridSpace(13, 13),
-    buttons: [.Blank, .Belt],
+    space: GridSpace(5, 5),
+    buttons: [.Blank, .BeltBridge, .PullerBR, .PushersBR],
     exemplars: ["brbr", "rrbb"],
     generationFunction: {n in return generate("br", n)},
     transformFunction: {

@@ -12,6 +12,7 @@ class TapeNode: SKNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   
   weak var delegate: StatusNode?
+  let wrapper = SKNode()
   var dots: [SKSpriteNode] = []
   var maxLength: Int = 0
   let dotTexture = SKTexture("dot")
@@ -21,7 +22,8 @@ class TapeNode: SKNode {
   override init() {
     dotSpacing = dotTexture.size().width * 1.5
     super.init()
-    addChild(printer)
+    wrapper.addChild(printer)
+    addChild(wrapper)
   }
   
   func loadTape(tape: [Color], maxLength: Int) {
@@ -44,7 +46,7 @@ class TapeNode: SKNode {
       }
       dot.colorBlendFactor = 1
       dot.position = dotPositionForIndex(i++)
-      addChild(dot)
+      wrapper.addChild(dot)
       dots.append(dot)
     }
     
@@ -70,7 +72,7 @@ class TapeNode: SKNode {
     dot.runAction(SKAction.sequence([
       SKAction.fadeAlphaTo(1, duration: 0.25),
       SKAction.colorizeWithColorBlendFactor(1, duration: 0.25)]))
-    addChild(dot)
+    wrapper.addChild(dot)
     
     // animate printer
     printer.removeAllActions()

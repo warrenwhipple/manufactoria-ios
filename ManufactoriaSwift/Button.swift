@@ -82,4 +82,11 @@ class Button: SKSpriteNode {
     button.releaseAction = SKAction.scaleTo(1, duration: 0.25)
     return button
   }
+  
+  class func growButton(#size: CGSize) -> Button {
+    let button = Button(size: size)
+    button.pressAction = SKAction.scaleTo(1.25, duration: 0.25)
+    button.releaseAction = SKAction.scaleTo(1, duration: 0.25)
+    return button
+  }
 }

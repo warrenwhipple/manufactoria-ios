@@ -138,8 +138,8 @@ class GridNode: SKNode {
     }
   }
   
-  func update(dt: NSTimeInterval, beltPercent: Float) {
-    clippedBeltTexture = SKTexture(rect: CGRect(x: 0, y: CGFloat(1.0 - beltPercent) * 0.5, width: 1, height: 0.5), inTexture: beltTexture)
+  func update(dt: NSTimeInterval, beltPercent: CGFloat) {
+    clippedBeltTexture = SKTexture(rect: CGRect(x: 0, y: (1.0 - beltPercent) * 0.5, width: 1, height: 0.5), inTexture: beltTexture)
     for cellNode in cellNodes {
       cellNode.update(dt, clippedBeltTexture: clippedBeltTexture)
     }

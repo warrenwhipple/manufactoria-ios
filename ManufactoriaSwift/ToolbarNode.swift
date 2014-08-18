@@ -10,7 +10,6 @@ import SpriteKit
 
 class ToolbarNode: SKNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  enum State {case Enabled, Disabled}
   
   weak var delegate: GameScene? {
     didSet {
@@ -46,17 +45,7 @@ class ToolbarNode: SKNode {
     }
     addChild(indicator)
   }
-  
-  var rect: CGRect {
-    get {
-      return CGRect(origin: position, size: size)
-    }
-    set {
-      position = newValue.origin
-      size = newValue.size
-    }
-  }
-  
+    
   var size: CGSize = CGSizeZero {
     didSet {
       if buttons.isEmpty {return}
@@ -71,15 +60,14 @@ class ToolbarNode: SKNode {
     }
   }
   
-  var state: State = .Enabled {
+  var isEnabled: Bool = true {
     didSet {
-      if state == oldValue {return}
-      switch state {
-      case .Enabled:
+      if isEnabled == oldValue {return}
+      if isEnabled == true {
         for button in buttons {
           button.userInteractionEnabled = true
         }
-      case .Disabled:
+      } else {
         for button in buttons {
           button.userInteractionEnabled = false
           button.touch = nil

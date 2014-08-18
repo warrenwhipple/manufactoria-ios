@@ -85,7 +85,12 @@ class Engine {
         return
       }
     } else if let transformFunction = levelSetup.transformFunction {
-      if result.output == nil || (transformFunction(result.input.string()) != result.output!.string()) {
+      if result.output == nil {
+        cancelAllTests()
+        delegate?.gridTestDidFailWithTapeTest(result)
+        return
+      }
+      if result.output != nil && (transformFunction(result.input.string()) != result.output!.string()) {
         cancelAllTests()
         delegate?.gridTestDidFailWithTapeTest(result)
         return
@@ -135,7 +140,7 @@ class TapeTestQueueOp: NSOperation {
   override func main() {
     autoreleasepool {
       if self.cancelled {return}
-      let strings = self.levelSetup.generationFunction(8)
+      let strings = self.levelSetup.generationFunction(2000)
       for string in strings {
         if self.cancelled {
           self.queue.cancelAllOperations()

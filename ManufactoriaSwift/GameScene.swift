@@ -24,6 +24,7 @@ class GameScene: SKScene {
   let statusNode: StatusNode
   let gridNode: GridNode
   let toolbarNode: ToolbarNode
+  let speedControlNode: SpeedControlNode
   let robotNode = SKSpriteNode(texture: SKTexture("robut"), color: UIColor.whiteColor(), size: CGSizeUnit)
   
   // variables
@@ -31,10 +32,8 @@ class GameScene: SKScene {
   var lastRobotCoord = GridCoord(0, 0)
   var lastTapeLength = 0
   var lastUpdateTime: NSTimeInterval = 0.0
-  var gameSpeed: Float = 1.0
-  var targetGameSpeed: Float = 1.0
-  var tickPercent: Float = 0.0
-  var beltPercent: Float = 0.0
+  var tickPercent: CGFloat = 0.0
+  var beltPercent: CGFloat = 0.0
   var thinkingOperationsDone = false
   var gridTestDidPass = false
   
@@ -49,6 +48,7 @@ class GameScene: SKScene {
     statusNode = StatusNode(instructions: levelSetup.instructions, nextLevelNumber: levelNumber + 1)
     gridNode = GridNode(grid: grid)
     toolbarNode = ToolbarNode(buttonKinds: levelSetup.buttons)
+    speedControlNode = SpeedControlNode()
     
     super.init(size: size)
     backgroundColor = UIColor.blackColor()
@@ -69,6 +69,8 @@ class GameScene: SKScene {
     toolbarNode.zPosition = 10
     addChild(toolbarNode)
     
+    speedControlNode.delegate = self
+    
     menuTriangle.delegate = self
     menuTriangle.zPosition = 100
     self.addChild(menuTriangle)
@@ -85,14 +87,19 @@ class GameScene: SKScene {
         statusNode.state = .Editing
         gridNode.state = .Editing
         robotNode.runAction(SKAction.fadeAlphaTo(0, duration: 0.5))
-        toolbarNode.state = .Enabled
+        speedControlNode.isEnabled = false
+        speedControlNode.runAction(SKAction.sequence([SKAction.fadeAlphaTo(0, duration: 0.5), SKAction.removeFromParent()]))
+        if toolbarNode.parent == nil {addChild(toolbarNode)}
+        toolbarNode.runAction(SKAction.fadeAlphaTo(1, duration: 0.5))
+        toolbarNode.isEnabled = true
       case .Thinking:
         statusNode.state = .Thinking
         statusNode.thinkingAnimationDone = false
         thinkingOperationsDone = false
         gridTestDidPass = false
         gridNode.state = .Waiting
-        toolbarNode.state = .Disabled
+        toolbarNode.isEnabled = false
+        toolbarNode.runAction(SKAction.sequence([SKAction.fadeAlphaTo(0, duration: 0.5), SKAction.removeFromParent()]))
         engine.queueTestWithGrid(grid)
       case .Testing:
         if !loadNextTape() {
@@ -100,24 +107,55 @@ class GameScene: SKScene {
           loadNextTape()
         }
         statusNode.state = .Testing
+        if speedControlNode.parent == nil {addChild(speedControlNode)}
+        speedControlNode.runAction(SKAction.fadeAlphaTo(1, duration: 0.5))
+        speedControlNode.isEnabled = true
       case .Congratulating:
         statusNode.state = .Congratulating
+        speedControlNode.isEnabled = false
+        speedControlNode.runAction(SKAction.sequence([SKAction.fadeAlphaTo(0, duration: 0.5), SKAction.removeFromParent()]))
       }
     }
   }
   
   func fitToSize() {
     gridNode.rect = CGRect(origin: CGPointZero, size: size)
-    let gridHeight = CGFloat(grid.space.rows) * gridNode.wrapper.yScale
-    let gapHeight = (size.height - gridHeight) * 0.5
-    toolbarNode.rect = CGRect(x: 0, y: 0, width: size.width, height: gapHeight)
-    statusNode.position = CGPoint(x: size.width * 0.5, y: gridHeight + gapHeight * 1.5)
+    let gridRect = CGRect(centerX: 0.5 * size.width, centerY: 0.5 * size.height,
+      width: CGFloat(grid.space.columns) * gridNode.wrapper.xScale, height: CGFloat(grid.space.rows) * gridNode.wrapper.yScale)
+    let bottomGapRect = CGRect(x: 0,y: 0,
+      width: size.width, height: 0.5 * (size.height - gridRect.size.height))
+    let topGapRect = CGRect(x: 0, y: gridRect.maxY,
+      width: size.width, height: bottomGapRect.height)
     
+    toolbarNode.size = bottomGapRect.size
+    speedControlNode.position = bottomGapRect.center
+    speedControlNode.size = bottomGapRect.size
+    statusNode.position = topGapRect.center
+
     // ambiguous bug error workaround
-    let swipeNode: SwipeNode = statusNode
-    swipeNode.size = CGSize(width: size.width, height: gapHeight)
+    let statusSwipeNode: SwipeNode = statusNode
+    statusSwipeNode.size = topGapRect.size
     
     menuTriangle.position = CGPoint(x: size.width, y: size.height)
+  }
+  
+  var gameSpeed: CGFloat = 1.0 {
+    didSet {
+      statusNode.tapeNode.wrapper.speed = gameSpeed
+    }
+  }
+  
+  var targetGameSpeed: CGFloat = 1.0 {
+    didSet {
+      
+      if targetGameSpeed == 0.5 {
+        speedControlNode.speedLabel.text = "½X"
+      } else if targetGameSpeed == 0.25 {
+        speedControlNode.speedLabel.text = "¼X"
+      } else {
+        speedControlNode.speedLabel.text = "\(Int(targetGameSpeed))X"
+      }
+    }
   }
   
   func changeEditMode(editMode: EditMode) {
@@ -134,18 +172,21 @@ class GameScene: SKScene {
     }
     
     // calculate belt percent
-    beltPercent += Float(dt) * 0.25
+    beltPercent += CGFloat(dt) * 0.25
     while beltPercent >= 1.0 {
       beltPercent -= 1.0
     }
     
     // adjust game speed
-    gameSpeed = (gameSpeed + targetGameSpeed) * 0.5
+    if gameSpeed != targetGameSpeed {
+      if abs(gameSpeed - targetGameSpeed) < 0.001 {gameSpeed = targetGameSpeed}
+      else {gameSpeed = (gameSpeed + targetGameSpeed) * 0.5}
+    }
     
     if state == .Testing {
       
       // execute ellapsed ticks
-      tickPercent += Float(dt) * gameSpeed
+      tickPercent += CGFloat(dt) * gameSpeed
       while tickPercent >= 1.0 {
         tickPercent -= 1.0
         let testResult = grid.testCoord(robotCoord, lastCoord: lastRobotCoord, tape: &tape)
@@ -197,6 +238,8 @@ class GameScene: SKScene {
   }
   
   func loadNextTape() -> Bool {
+    gameSpeed = 1.0
+    targetGameSpeed = 1.0
     if tapeTestResults.isEmpty {return false}
     tickPercent = 0
     robotCoord = grid.startCoordPlusOne
@@ -254,5 +297,18 @@ class GameScene: SKScene {
   
   override func touchesCancelled(touches: NSSet!, withEvent event: UIEvent!) {
     gridNode.touchesCancelled(touches, withEvent: event)
+  }
+  
+  class GameSpeed: SKNode {
+    override var speed: CGFloat {
+      didSet {
+        
+      }
+    }
+    var target: CGFloat = 0 {
+      didSet {
+        
+      }
+    }
   }
 }
