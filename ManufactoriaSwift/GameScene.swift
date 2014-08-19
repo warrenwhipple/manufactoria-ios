@@ -24,7 +24,8 @@ class GameScene: SKScene {
   let statusNode: StatusNode
   let gridNode: GridNode
   let toolbarNode: ToolbarNode
-  let speedControlNode: SpeedControlNode
+  let speedAnchor = SpeedAnchor()
+  let speedControlNode = SpeedControlNode()
   let robotNode = SKSpriteNode(texture: SKTexture("robut"), color: UIColor.whiteColor(), size: CGSizeUnit)
   
   // variables
@@ -48,7 +49,6 @@ class GameScene: SKScene {
     statusNode = StatusNode(instructions: levelSetup.instructions, nextLevelNumber: levelNumber + 1)
     gridNode = GridNode(grid: grid)
     toolbarNode = ToolbarNode(buttonKinds: levelSetup.buttons)
-    speedControlNode = SpeedControlNode()
     
     super.init(size: size)
     backgroundColor = UIColor.blackColor()
@@ -68,6 +68,9 @@ class GameScene: SKScene {
     toolbarNode.delegate = self
     toolbarNode.zPosition = 10
     addChild(toolbarNode)
+    
+    speedAnchor.delegate = self
+    addChild(speedAnchor)
     
     speedControlNode.delegate = self
     
@@ -139,25 +142,6 @@ class GameScene: SKScene {
     menuTriangle.position = CGPoint(x: size.width, y: size.height)
   }
   
-  var gameSpeed: CGFloat = 1.0 {
-    didSet {
-      statusNode.tapeNode.wrapper.speed = gameSpeed
-    }
-  }
-  
-  var targetGameSpeed: CGFloat = 1.0 {
-    didSet {
-      
-      if targetGameSpeed == 0.5 {
-        speedControlNode.speedLabel.text = "½X"
-      } else if targetGameSpeed == 0.25 {
-        speedControlNode.speedLabel.text = "¼X"
-      } else {
-        speedControlNode.speedLabel.text = "\(Int(targetGameSpeed))X"
-      }
-    }
-  }
-  
   func changeEditMode(editMode: EditMode) {
     gridNode.editMode = editMode
   }
@@ -177,16 +161,10 @@ class GameScene: SKScene {
       beltPercent -= 1.0
     }
     
-    // adjust game speed
-    if gameSpeed != targetGameSpeed {
-      if abs(gameSpeed - targetGameSpeed) < 0.001 {gameSpeed = targetGameSpeed}
-      else {gameSpeed = (gameSpeed + targetGameSpeed) * 0.5}
-    }
-    
     if state == .Testing {
       
       // execute ellapsed ticks
-      tickPercent += CGFloat(dt) * gameSpeed
+      tickPercent += CGFloat(dt) * speedAnchor.speed
       while tickPercent >= 1.0 {
         tickPercent -= 1.0
         let testResult = grid.testCoord(robotCoord, lastCoord: lastRobotCoord, tape: &tape)
@@ -238,8 +216,8 @@ class GameScene: SKScene {
   }
   
   func loadNextTape() -> Bool {
-    gameSpeed = 1.0
-    targetGameSpeed = 1.0
+    speedAnchor.speed = 1
+    speedAnchor.target = 1
     if tapeTestResults.isEmpty {return false}
     tickPercent = 0
     robotCoord = grid.startCoordPlusOne
@@ -299,15 +277,25 @@ class GameScene: SKScene {
     gridNode.touchesCancelled(touches, withEvent: event)
   }
   
-  class GameSpeed: SKNode {
+  class SpeedAnchor: SKNode {
+    required init(coder: NSCoder) {fatalError("NSCoding not supported")}
+    override init() {super.init()}
+    weak var delegate: GameScene?
     override var speed: CGFloat {
       didSet {
-        
+        delegate?.statusNode.tapeNode.wrapper.speed = speed
       }
     }
-    var target: CGFloat = 0 {
+    var target: CGFloat = 1 {
       didSet {
-        
+        self.runAction(SKAction.speedTo(target, duration: 0.5).ease())
+        if target == 0.5 {
+          delegate?.speedControlNode.speedLabel.text = "½X"
+        } else if target == 0.25 {
+          delegate?.speedControlNode.speedLabel.text = "¼X"
+        } else {
+          delegate?.speedControlNode.speedLabel.text = "\(Int(target))X"
+        }
       }
     }
   }

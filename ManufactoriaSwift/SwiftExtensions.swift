@@ -21,6 +21,10 @@ extension Array {
     if isEmpty {return nil}
     return self[count - 1]
   }
+  mutating func removeLast() -> T? {
+    if isEmpty {return nil}
+    return removeAtIndex(count - 1)
+  }
   func string() -> String {
     var string = ""
     for color in self {
@@ -95,3 +99,7 @@ extension String {
     return strings
   }
 }
+
+func + (left: String, right: Character) -> String {return left + String(right)}
+func + (left: Character, right: String) -> String {return String(left) + right}
+func += (inout left: String, right: Character) -> String {left += String(right); return left}

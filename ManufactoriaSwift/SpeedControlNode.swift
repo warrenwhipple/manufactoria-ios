@@ -46,14 +46,14 @@ class SpeedControlNode: SKNode {
     
     slowerButton.touchDownClosure = {
       [weak self] in
-      if self!.delegate != nil && self!.delegate!.targetGameSpeed > 0.25 {
-        self!.delegate!.targetGameSpeed *= 0.5
+      if self!.delegate != nil && self!.delegate!.speedAnchor.target > 0.25 {
+        self!.delegate!.speedAnchor.target *= 0.5
       }
     }
     fasterButton.touchDownClosure = {
       [weak self] in
-      if self!.delegate != nil && self!.delegate!.targetGameSpeed < 32 {
-        self!.delegate!.targetGameSpeed *= 2
+      if self!.delegate != nil && self!.delegate!.speedAnchor.target < 32 {
+        self!.delegate!.speedAnchor.target *= 2
       }
     }
     

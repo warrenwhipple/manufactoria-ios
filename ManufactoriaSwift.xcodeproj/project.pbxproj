@@ -13,7 +13,7 @@
 		2D15929C19514B5400A96BCC /* CellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D15929B19514B5400A96BCC /* CellNode.swift */; };
 		2D1CC15D195B59C000579575 /* gameScene.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 2D1CC15B195B59C000579575 /* gameScene.atlas */; };
 		2D2D26AB199E610D00EC4A45 /* FirstTutorialScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2D26AA199E610D00EC4A45 /* FirstTutorialScene.swift */; };
-		2D336E8919534044008E55A9 /* HelperFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D336E8819534044008E55A9 /* HelperFunctions.swift */; };
+		2D336E8919534044008E55A9 /* RandFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D336E8819534044008E55A9 /* RandFunctions.swift */; };
 		2D37934519965135000B10EB /* Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D37934419965135000B10EB /* Button.swift */; };
 		2D5C7319199FE80600D53D0D /* SpeedControlNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5C7318199FE80600D53D0D /* SpeedControlNode.swift */; };
 		2D60F5C7198041BD0032860B /* TitleScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D60F5C6198041BD0032860B /* TitleScene.swift */; };
@@ -21,6 +21,7 @@
 		2D62A46119929CC7002CD03F /* Globals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D62A46019929CC7002CD03F /* Globals.swift */; };
 		2D7F922C195C61FA00F04F63 /* ToolbarNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7F922B195C61FA00F04F63 /* ToolbarNode.swift */; };
 		2D7F92321960A14500F04F63 /* belt@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2D7F92311960A14500F04F63 /* belt@2x.png */; };
+		2D849F3619A39EB6008F3D69 /* CoreGraphicsExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D849F3519A39EB6008F3D69 /* CoreGraphicsExtensions.swift */; };
 		2D8C19A3199696A90064B790 /* SwipeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8C19A2199696A90064B790 /* SwipeNode.swift */; };
 		2DC49131194F45B800053237 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC49130194F45B800053237 /* AppDelegate.swift */; };
 		2DC49135194F45B800053237 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC49134194F45B800053237 /* GameScene.swift */; };
@@ -57,7 +58,7 @@
 		2D15929B19514B5400A96BCC /* CellNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CellNode.swift; sourceTree = "<group>"; };
 		2D1CC15B195B59C000579575 /* gameScene.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; name = gameScene.atlas; path = ../../../Documents/ManufactoriaSwift/gameScene/gameScene.atlas; sourceTree = "<group>"; };
 		2D2D26AA199E610D00EC4A45 /* FirstTutorialScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FirstTutorialScene.swift; sourceTree = "<group>"; };
-		2D336E8819534044008E55A9 /* HelperFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HelperFunctions.swift; sourceTree = "<group>"; };
+		2D336E8819534044008E55A9 /* RandFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RandFunctions.swift; sourceTree = "<group>"; };
 		2D37934419965135000B10EB /* Button.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
 		2D5C7318199FE80600D53D0D /* SpeedControlNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpeedControlNode.swift; sourceTree = "<group>"; };
 		2D60F5C6198041BD0032860B /* TitleScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = TitleScene.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
@@ -65,6 +66,7 @@
 		2D62A46019929CC7002CD03F /* Globals.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Globals.swift; sourceTree = "<group>"; };
 		2D7F922B195C61FA00F04F63 /* ToolbarNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToolbarNode.swift; sourceTree = "<group>"; };
 		2D7F92311960A14500F04F63 /* belt@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "belt@2x.png"; path = "../../../Documents/ManufactoriaSwift/gameScene/belt@2x.png"; sourceTree = "<group>"; };
+		2D849F3519A39EB6008F3D69 /* CoreGraphicsExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreGraphicsExtensions.swift; sourceTree = "<group>"; };
 		2D8C19A2199696A90064B790 /* SwipeNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwipeNode.swift; sourceTree = "<group>"; };
 		2DC4912B194F45B800053237 /* ManufactoriaSwift.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ManufactoriaSwift.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2DC4912F194F45B800053237 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -140,9 +142,10 @@
 				2DC49130194F45B800053237 /* AppDelegate.swift */,
 				2DC49136194F45B800053237 /* GameViewController.swift */,
 				2D62A46019929CC7002CD03F /* Globals.swift */,
-				2D336E8819534044008E55A9 /* HelperFunctions.swift */,
-				2DCA18A41985849B00DF3118 /* SpriteKitExtensions.swift */,
 				2D03B939197EB89700715176 /* SwiftExtensions.swift */,
+				2D336E8819534044008E55A9 /* RandFunctions.swift */,
+				2D849F3519A39EB6008F3D69 /* CoreGraphicsExtensions.swift */,
+				2DCA18A41985849B00DF3118 /* SpriteKitExtensions.swift */,
 				2DCA18AA1986D2FA00DF3118 /* BreakingLabel.swift */,
 				2D60F5C8198156250032860B /* GameData.swift */,
 				2DD23D6D196F0BF900838E96 /* LevelLibrary.swift */,
@@ -310,10 +313,11 @@
 				2DCEF7D5198D63960008DA44 /* StatusNode.swift in Sources */,
 				2D60F5C9198156250032860B /* GameData.swift in Sources */,
 				2DCA18A51985849B00DF3118 /* SpriteKitExtensions.swift in Sources */,
-				2D336E8919534044008E55A9 /* HelperFunctions.swift in Sources */,
+				2D336E8919534044008E55A9 /* RandFunctions.swift in Sources */,
 				2D15929A19514B4900A96BCC /* GridNode.swift in Sources */,
 				2DD23D6C196DB17C00838E96 /* TapeNode.swift in Sources */,
 				2D8C19A3199696A90064B790 /* SwipeNode.swift in Sources */,
+				2D849F3619A39EB6008F3D69 /* CoreGraphicsExtensions.swift in Sources */,
 				2DCA18AB1986D2FA00DF3118 /* BreakingLabel.swift in Sources */,
 				2D7F922C195C61FA00F04F63 /* ToolbarNode.swift in Sources */,
 				2DC49137194F45B800053237 /* GameViewController.swift in Sources */,
@@ -400,7 +404,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				METAL_ENABLE_DEBUG_INFO = YES;
-				ONLY_ACTIVE_ARCH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -437,6 +441,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				METAL_ENABLE_DEBUG_INFO = NO;
+				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
