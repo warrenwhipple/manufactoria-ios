@@ -67,12 +67,12 @@ class GridNode: SKNode {
       for j in 0..<grid.space.rows {
         var cellNode = self[GridCoord(i,j)]
         cellNode.position = CGPoint(CGFloat(i) + 0.5, CGFloat(j) + 0.5)
-        cellNode.shimmer()
+        cellNode.shimmerNode.startMidShimmer()
         wrapper.addChild(cellNode)
       }
     }
     
-    let entranceCellNodeGradient = SKSpriteNode(texture: SKTexture(imageNamed: "beltFadeMask"), color: UIColor.blackColor(), size: CGSize(1))
+    let entranceCellNodeGradient = SKSpriteNode(texture: SKTexture(imageNamed: "beltFadeMask"), color: Globals.backgroundColor, size: CGSize(1))
     entranceCellNodeGradient.colorBlendFactor = 1
     entranceCellNodeGradient.zPosition = 2
     let exitCellNodeGradient = entranceCellNodeGradient.copy() as SKSpriteNode

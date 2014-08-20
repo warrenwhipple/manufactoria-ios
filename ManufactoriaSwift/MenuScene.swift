@@ -76,7 +76,7 @@ class MenuScene: SKScene {
       addChild(label)
       addChild(shimmerNode)
       
-      shimmerNode.alpha = CGFloat(randFloat(0.125))
+      shimmerNode.alpha = randCGFloat(0.125)
       shimmerNode.runAction(SKAction.sequence([
         SKAction.fadeAlphaTo(0, duration: NSTimeInterval(shimmerNode.alpha * 32)),
         SKAction.runBlock({[unowned self] in self.shimmer()})
@@ -84,7 +84,7 @@ class MenuScene: SKScene {
     }
     
     func shimmer() {
-      let shimmerAlpha = CGFloat(randFloat(0.125))
+      let shimmerAlpha = randCGFloat(0.125)
       let shimmerDuration = NSTimeInterval(shimmerAlpha * 32)
       shimmerNode.runAction(SKAction.sequence([
         SKAction.fadeAlphaTo(shimmerAlpha, duration: shimmerDuration),

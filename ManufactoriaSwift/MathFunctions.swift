@@ -18,14 +18,6 @@ func randInt(x: Int) -> Int {
   }
 }
 
-func randInt(x: Int, y: Int) -> Int {
-  if x <= y {
-    return x + Int(arc4random_uniform(UInt32(y-x)))
-  } else {
-    return y + Int(arc4random_uniform(UInt32(x-y)))
-  }
-}
-
 func randFloat() -> Float {
   return Float(arc4random()) / Float(UINT32_MAX)
 }
@@ -34,12 +26,12 @@ func randFloat(x: Float) -> Float {
   return Float(arc4random()) / Float(UINT32_MAX) * x
 }
 
-func randFloat(x: Float, y: Float) -> Float {
-  if x <= y {
-    return Float(arc4random()) / Float(UINT32_MAX) * (y - x) + x
-  } else {
-    return Float(arc4random()) / Float(UINT32_MAX) * (x - y) + y
-  }
+func randCGFloat() -> CGFloat {
+  return CGFloat(arc4random()) / CGFloat(UINT32_MAX)
+}
+
+func randCGFloat(x: CGFloat) -> CGFloat {
+  return CGFloat(arc4random()) / CGFloat(UINT32_MAX) * x
 }
 
 func randBool() -> Bool {

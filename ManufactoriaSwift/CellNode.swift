@@ -16,7 +16,7 @@ private let PullerStrokeTex = SKTexture(imageNamed: "pullerStroke")
 private let PullerHalfFillTex = SKTexture(imageNamed: "pullerHalfFill")
 private let W = BeltTex.size().height * 0.5
 
-class CellNode: SKSpriteNode {
+class CellNode: SKNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   
   let belt = SKSpriteNode(texture: nil, size: CGSize(0.3, 1))
@@ -27,14 +27,17 @@ class CellNode: SKSpriteNode {
   let pullerFill1 = SKSpriteNode(texture: PullerHalfFillTex, size: PullerHalfFillTex.size() / W)
   let pullerFill2 = SKSpriteNode(texture: PullerHalfFillTex, size: PullerHalfFillTex.size() / W)
   
-  let glowMask = SKSpriteNode(color: UIColor.whiteColor(), size: CGSize(1))
-  var shimmerActionSequence: SKAction?
+  let glowNode = SKSpriteNode(color: Globals.strokeColor, size: CGSize(1))
+  let shimmerNode = ShimmerNode(size: CGSize(1))
   var cell = Cell(type: CellType.Blank, direction: Direction.North)
   var nextCell = Cell(type: CellType.Blank, direction: Direction.North)
   var isSelected = false
   
   override init() {
-    super.init(texture: nil, color: UIColor.blackColor(), size: CGSize(1))
+    super.init()
+    
+    shimmerNode.alpha = randCGFloat(shimmerNode.alphaMax)
+    addChild(shimmerNode)
     
     belt.zPosition = 1
     bridge.zPosition = 2
@@ -57,9 +60,9 @@ class CellNode: SKSpriteNode {
     puller.addChild(pullerFill1)
     puller.addChild(pullerFill2)
     
-    glowMask.zPosition = 10
-    glowMask.alpha = 0.0
-    addChild(glowMask)
+    glowNode.zPosition = 10
+    glowNode.alpha = 0
+    addChild(glowNode)
   }
   
   func update(dt: NSTimeInterval, clippedBeltTexture: SKTexture) {
@@ -67,7 +70,7 @@ class CellNode: SKSpriteNode {
     belt.texture = clippedBeltTexture
     bridge.texture = clippedBeltTexture
     
-    let glow = glowMask.alpha
+    let glow = glowNode.alpha
     let glowStep = CGFloat(dt) * 4.0
     var glowTarget = CGFloat(0.0)
     
@@ -83,11 +86,11 @@ class CellNode: SKSpriteNode {
     if glow == glowTarget {
       // do nothing
     } else if glow < glowTarget - glowStep {
-      glowMask.alpha += glowStep
+      glowNode.alpha += glowStep
     } else if glow > glowTarget + glowStep {
-      glowMask.alpha -= glowStep
+      glowNode.alpha -= glowStep
     } else {
-      glowMask.alpha = glowTarget
+      glowNode.alpha = glowTarget
     }
   }
   
@@ -147,20 +150,5 @@ class CellNode: SKSpriteNode {
     }
     cell = newCell
     nextCell = newCell
-  }
-  
-  func shimmer() {
-    if shimmerActionSequence == nil {
-      shimmerActionSequence = SKAction.waitForDuration(NSTimeInterval(randFloat(5.0)))
-      runAction(shimmerActionSequence, completion: {[weak self] in self!.shimmer()})
-    } else {
-      let brightness = CGFloat(randFloat(0.1))
-      let color = UIColor(white: brightness, alpha: 1.0)
-      let duration = NSTimeInterval(brightness * 20.0)
-      let glowAction = SKAction.colorizeWithColor(color, colorBlendFactor: 1.0, duration: duration)
-      let dimAction = SKAction.colorizeWithColor(UIColor.blackColor(), colorBlendFactor: 1.0, duration: duration)
-      shimmerActionSequence = SKAction.sequence([glowAction, dimAction])
-      runAction(shimmerActionSequence, completion: {[weak self] in self!.shimmer()})
-    }
-  }
+  }  
 }
