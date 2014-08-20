@@ -15,7 +15,7 @@ class TapeNode: SKNode {
   let wrapper = SKNode()
   var dots: [SKSpriteNode] = []
   var maxLength: Int = 0
-  let dotTexture = SKTexture("dot")
+  let dotTexture = SKTexture(imageNamed: "dot")
   let dotSpacing: CGFloat
   let printer = Printer()
   
@@ -38,10 +38,10 @@ class TapeNode: SKNode {
     for color in tape {
       let dot = SKSpriteNode(texture: dotTexture)
       switch color {
-      case .Blue: dot.color = Globals.blue
-      case .Red: dot.color = Globals.red
-      case .Green: dot.color = Globals.green
-      case .Yellow: dot.color = Globals.yellow
+      case .Blue: dot.color = Globals.blueColor
+      case .Red: dot.color = Globals.redColor
+      case .Green: dot.color = Globals.greenColor
+      case .Yellow: dot.color = Globals.yellowColor
       default: break
       }
       dot.colorBlendFactor = 1
@@ -61,10 +61,10 @@ class TapeNode: SKNode {
     let dot = SKSpriteNode(texture: dotTexture)
     dots.append(dot)
     switch color {
-    case .Blue: dot.color = Globals.blue
-    case .Red: dot.color = Globals.red
-    case .Green: dot.color = Globals.green
-    case .Yellow: dot.color = Globals.yellow
+    case .Blue: dot.color = Globals.blueColor
+    case .Red: dot.color = Globals.redColor
+    case .Green: dot.color = Globals.greenColor
+    case .Yellow: dot.color = Globals.yellowColor
     }
     dot.alpha = 0
     let dotIndex = dots.count - 1

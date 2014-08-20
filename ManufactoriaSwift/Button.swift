@@ -75,9 +75,8 @@ class Button: SKSpriteNode {
     return button
   }
   
-  class func growButton(#texture: SKTexture) -> Button {
-    let button = Button(size: texture.size())
-    button.texture = texture
+  class func growButton(#imageNamed: String) -> Button {
+    let button = Button(imageNamed: imageNamed)
     button.pressAction = SKAction.scaleTo(1.25, duration: 0.25)
     button.releaseAction = SKAction.scaleTo(1, duration: 0.25)
     return button

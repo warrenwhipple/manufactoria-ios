@@ -17,8 +17,12 @@ class MenuScene: SKScene {
     var tempLevelButtons: [LevelButton] = []
     let gameData = GameData.sharedInstance
     for i in 0 ..< LevelLibrary.count {
-      let levelSetup = LevelLibrary[i]
-      tempLevelButtons.append(LevelButton(levelNumber: i, text: levelSetup.tag, isEnabled: i <= gameData.levelsComplete))
+      tempLevelButtons.append(LevelButton(levelNumber: i, text: LevelLibrary[i].tag, isEnabled: i <= gameData.levelsComplete))
+    }
+    if tempLevelButtons.count < 26 {
+      for i in tempLevelButtons.count ..< 26 {
+        tempLevelButtons.append(LevelButton(levelNumber: i, text: "", isEnabled: false))
+      }
     }
     tempLevelButtons.append(UnlockButton(levelNumber: LevelLibrary.count))
     tempLevelButtons.append(ResetButton(levelNumber: LevelLibrary.count + 1))
@@ -26,7 +30,7 @@ class MenuScene: SKScene {
     
     super.init(size: size)
     
-    backgroundColor = UIColor.blackColor()
+    backgroundColor = Globals.backgroundColor
     wrapper.position.y = size.height
     wrapper.addChildren(levelButtons)
     addChild(wrapper)
@@ -34,45 +38,59 @@ class MenuScene: SKScene {
   }
   
   func fitToSize() {
-    let columnCount = 4
-    let buttonSpacing = size.width / CGFloat(columnCount)
-    let buttonSize = CGSize(buttonSpacing * 0.75, buttonSpacing * 0.75)
+    let buttonSize = CGSize(size.width / 4, size.height / 7)
     var i = 0
     for levelButton in levelButtons {
-      levelButton.size = buttonSize
+      levelButton.shimmerNode.size = buttonSize
       levelButton.position = CGPoint(
-        x: (CGFloat(i % columnCount) + 0.5) * buttonSpacing,
-        y: -(CGFloat(i / columnCount) + 0.5) * buttonSpacing
+        x: (CGFloat(i % 4) + 0.5) * buttonSize.width,
+        y: -(CGFloat(i / 4) + 0.5) * buttonSize.height
       )
       i++
     }
   }
   
-  class LevelButton: SKSpriteNode {
+  class LevelButton: SKNode {
     required init(coder: NSCoder) {fatalError("NSCoding not supported")}
     let levelNumber: Int
-    let label = SKLabelNode()
-    var touch: UITouch? = nil
+    let label: SKLabelNode
+    let shimmerNode: SKSpriteNode
+    var touch: UITouch?
     
     init(levelNumber: Int, text: String, isEnabled: Bool) {
       self.levelNumber = levelNumber
-      super.init(texture: nil, color: UIColor(white: 0.1, alpha: 1), size: CGSizeZero)
-      self.userInteractionEnabled = isEnabled
-      label.fontXSmall()
-      label.verticalAlignmentMode = .Center
-      label.text = text
-      label.alpha = 0
-      addChild(label)
-      let wait = SKAction.waitForDuration(0.1 * NSTimeInterval(levelNumber + 1))
+      
+      label = SKLabelNode()
       if isEnabled {
-        runAction(SKAction.sequence([wait, SKAction.colorizeWithColor(UIColor(white: 0.3, alpha: 1), colorBlendFactor: 1, duration: 1)]))
-        label.runAction(SKAction.sequence([wait, SKAction.fadeAlphaTo(1, duration: 2)]))
+        label.fontSmall()
+        label.verticalAlignmentMode = .Center
+        label.fontColor = Globals.strokeColor
+        label.text = text
       }
       
+      shimmerNode = SKSpriteNode(color: Globals.strokeColor, size: CGSizeZero)
+      shimmerNode.zPosition = 1
+
+      super.init()
+      userInteractionEnabled = isEnabled
+      addChild(label)
+      addChild(shimmerNode)
+      
+      shimmerNode.alpha = CGFloat(randFloat(0.125))
+      shimmerNode.runAction(SKAction.sequence([
+        SKAction.fadeAlphaTo(0, duration: NSTimeInterval(shimmerNode.alpha * 32)),
+        SKAction.runBlock({[weak self] in self!.shimmer()})
+        ]), withKey: "shimmer")
     }
     
-    func lightUpWithDelay(delay: CGFloat) {
-      
+    func shimmer() {
+      let shimmerAlpha = CGFloat(randFloat(0.125))
+      let shimmerDuration = NSTimeInterval(shimmerAlpha * 32)
+      shimmerNode.runAction(SKAction.sequence([
+        SKAction.fadeAlphaTo(shimmerAlpha, duration: shimmerDuration),
+        SKAction.fadeAlphaTo(0, duration: shimmerDuration),
+        SKAction.runBlock({[weak self] in self!.shimmer()})
+        ]), withKey: "shimmer")
     }
     
     override func touchesBegan(touches: NSSet!, withEvent event: UIEvent!) {

@@ -152,18 +152,18 @@ class ToolbarNode: SKNode {
         changeNode?.addChild(fill2)
         if kind == .PullerBR {
           modes = [.PullerBR, .PullerRB]
-          fill1.color = Globals.blue
-          fill2.color = Globals.red
+          fill1.color = Globals.blueColor
+          fill2.color = Globals.redColor
         } else {
           modes = [.PullerBR, .PullerRB]
-          fill1.color = Globals.blue
-          fill2.color = Globals.red
+          fill1.color = Globals.blueColor
+          fill2.color = Globals.redColor
         }
       case .PushersBR, .PushersBRGY:
         staticNode = SKSpriteNode("ring")
         changeNode = SKSpriteNode("dot")
         staticNode?.zPosition = 1
-        changeNode?.color = Globals.blue
+        changeNode?.color = Globals.blueColor
         changeNode?.colorBlendFactor = 1
         if kind == .PushersBR {
           modes = [.PusherB, .PusherR]
@@ -197,10 +197,10 @@ class ToolbarNode: SKNode {
         if modeIndex == 0 {changeNode?.runAction(SKAction.rotateToAngle(0, duration: 0.25).ease())}
         else {changeNode?.runAction(SKAction.rotateToAngle(CGFloat(-M_PI), duration: 0.25).ease())}
       case .PushersBR, .PushersBRGY:
-        if modeIndex == 0 {changeNode?.runAction(SKAction.colorizeWithColor(Globals.blue, colorBlendFactor: 1, duration: 0.25))}
-        else if modeIndex == 1 {changeNode?.runAction(SKAction.colorizeWithColor(Globals.red, colorBlendFactor: 1, duration: 0.25))}
-        else if modeIndex == 2 {changeNode?.runAction(SKAction.colorizeWithColor(Globals.green, colorBlendFactor: 1, duration: 0.25))}
-        else {changeNode?.runAction(SKAction.colorizeWithColor(Globals.yellow, colorBlendFactor: 1, duration: 0.25))}
+        if modeIndex == 0 {changeNode?.runAction(SKAction.colorizeWithColor(Globals.blueColor, colorBlendFactor: 1, duration: 0.25))}
+        else if modeIndex == 1 {changeNode?.runAction(SKAction.colorizeWithColor(Globals.redColor, colorBlendFactor: 1, duration: 0.25))}
+        else if modeIndex == 2 {changeNode?.runAction(SKAction.colorizeWithColor(Globals.greenColor, colorBlendFactor: 1, duration: 0.25))}
+        else {changeNode?.runAction(SKAction.colorizeWithColor(Globals.yellowColor, colorBlendFactor: 1, duration: 0.25))}
       }
     }
     
@@ -239,7 +239,7 @@ class ToolbarNode: SKNode {
       focusIndex = initialFocusIndex
       currentDotCount = initialDotCount
       var tempDots: [SKSpriteNode] = []
-      let dotTexture = SKTexture("dot")
+      let dotTexture = SKTexture(imageNamed: "dot")
       for i in 0 ..< maxDotCount {
         tempDots.append(SKSpriteNode(texture: dotTexture, size: CGSize(4)))
       }

@@ -40,7 +40,7 @@ class QuestionScene: SKScene {
     noButton.addChild(noLabel)
     
     super.init(size: size)
-    backgroundColor = UIColor.blackColor()
+    backgroundColor = Globals.backgroundColor
         
     addChild(questionLabel)
     addChild(yesButton)

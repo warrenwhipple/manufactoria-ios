@@ -27,7 +27,7 @@ class GameScene: SKScene {
   let toolbarNode: ToolbarNode
   let speedAnchor = SpeedAnchor()
   let speedControlNode = SpeedControlNode()
-  let robotNode = SKSpriteNode(texture: SKTexture("robut"), color: UIColor.whiteColor(), size: CGSize(1))
+  let robotNode: SKSpriteNode
   
   // variables
   var robotCoord = GridCoord(0, 0)
@@ -51,8 +51,11 @@ class GameScene: SKScene {
     gridNode = GridNode(grid: grid)
     toolbarNode = ToolbarNode(buttonKinds: levelSetup.buttons)
     
+    robotNode = SKSpriteNode("robut")
+    robotNode.size = CGSize(1)
+    
     super.init(size: size)
-    backgroundColor = UIColor.blackColor()
+    backgroundColor = Globals.backgroundColor
     
     engine.delegate = self
     

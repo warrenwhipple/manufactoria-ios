@@ -39,7 +39,7 @@ class GridNode: SKNode {
   let entranceCellNode = CellNode()
   let exitCellNode = CellNode()
   var beltShift: Float = 0.0
-  let beltTexture = SKTexture("belt")
+  let beltTexture = SKTexture(imageNamed: "belt")
   var clippedBeltTexture = SKTexture()
   var editTouch: UITouch?
   var editCoord = GridCoord(0, 0)
@@ -72,7 +72,7 @@ class GridNode: SKNode {
       }
     }
     
-    let entranceCellNodeGradient = SKSpriteNode(texture: SKTexture("beltFadeMask"), color: UIColor.blackColor(), size: CGSize(1))
+    let entranceCellNodeGradient = SKSpriteNode(texture: SKTexture(imageNamed: "beltFadeMask"), color: UIColor.blackColor(), size: CGSize(1))
     entranceCellNodeGradient.colorBlendFactor = 1
     entranceCellNodeGradient.zPosition = 2
     let exitCellNodeGradient = entranceCellNodeGradient.copy() as SKSpriteNode

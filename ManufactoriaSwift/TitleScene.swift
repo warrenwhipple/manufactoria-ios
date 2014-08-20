@@ -17,6 +17,7 @@ class TitleScene: SKScene {
   override init(size: CGSize) {
     title = SKLabelNode()
     title.fontXLarge()
+    title.fontColor = Globals.strokeColor
     title.verticalAlignmentMode = .Center
     title.text = "Manufactoria"
     title.position = CGPoint(size.width * 0.5, size.height * 0.5 + 40)
@@ -26,7 +27,7 @@ class TitleScene: SKScene {
     arrow.alpha = 0
     arrow.runAction(SKAction.sequence([SKAction.waitForDuration(1), SKAction.fadeAlphaTo(1, duration: 4)]))
     super.init(size: size)
-    backgroundColor = UIColor.blackColor()
+    backgroundColor = Globals.backgroundColor
     addChild(title)
     addChild(arrow)
   }

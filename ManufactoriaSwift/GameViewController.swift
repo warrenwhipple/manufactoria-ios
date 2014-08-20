@@ -18,6 +18,7 @@ class GameViewController: UIViewController {
     skView.showsFPS = false
     skView.showsNodeCount = false
     skView.ignoresSiblingOrder = true
+    skView.backgroundColor = Globals.backgroundColor
     
     let scene = TitleScene(size: skView.bounds.size)
     scene.scaleMode = .AspectFill

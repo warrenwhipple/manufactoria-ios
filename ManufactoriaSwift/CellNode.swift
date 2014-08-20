@@ -9,11 +9,11 @@
 import SpriteKit
 
 // move these inside the class once class variables become available
-private let BeltTex = SKTexture("belt")
-private let PusherStrokeTex = SKTexture("ring")
-private let PusherFillTex = SKTexture("dot")
-private let PullerStrokeTex = SKTexture("pullerStroke")
-private let PullerHalfFillTex = SKTexture("pullerHalfFill")
+private let BeltTex = SKTexture(imageNamed: "belt")
+private let PusherStrokeTex = SKTexture(imageNamed: "ring")
+private let PusherFillTex = SKTexture(imageNamed: "dot")
+private let PullerStrokeTex = SKTexture(imageNamed: "pullerStroke")
+private let PullerHalfFillTex = SKTexture(imageNamed: "pullerHalfFill")
 private let W = BeltTex.size().height * 0.5
 
 class CellNode: SKSpriteNode {
@@ -105,39 +105,39 @@ class CellNode: SKSpriteNode {
     case .PusherB:
       addChild(belt)
       addChild(pusher)
-      pusherFill.color = Globals.blue
+      pusherFill.color = Globals.blueColor
     case .PusherR:
       addChild(belt)
       addChild(pusher)
-      pusherFill.color = Globals.red
+      pusherFill.color = Globals.redColor
     case .PusherG:
       addChild(belt)
       addChild(pusher)
-      pusherFill.color = Globals.green
+      pusherFill.color = Globals.greenColor
     case .PusherY:
       addChild(belt)
       addChild(pusher)
-      pusherFill.color = Globals.yellow
+      pusherFill.color = Globals.yellowColor
     case .PullerBR:
       addChild(belt)
       addChild(puller)
-      pullerFill1.color = Globals.blue
-      pullerFill2.color = Globals.red
+      pullerFill1.color = Globals.blueColor
+      pullerFill2.color = Globals.redColor
     case .PullerRB:
       addChild(belt)
       addChild(puller)
-      pullerFill1.color = Globals.red
-      pullerFill2.color = Globals.blue
+      pullerFill1.color = Globals.redColor
+      pullerFill2.color = Globals.blueColor
     case .PullerGY:
       addChild(belt)
       addChild(puller)
-      pullerFill1.color = Globals.green
-      pullerFill2.color = Globals.yellow
+      pullerFill1.color = Globals.greenColor
+      pullerFill2.color = Globals.yellowColor
     case .PullerYG:
       addChild(belt)
       addChild(puller)
-      pullerFill1.color = Globals.yellow
-      pullerFill2.color = Globals.green
+      pullerFill1.color = Globals.yellowColor
+      pullerFill2.color = Globals.greenColor
     }
     switch newCell.direction {
     case .North: zRotation = 0.0

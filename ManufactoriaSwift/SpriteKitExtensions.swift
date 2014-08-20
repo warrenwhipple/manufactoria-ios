@@ -16,15 +16,17 @@ extension SKNode {
   }
 }
  
-extension SKTexture {
+/*extension SKTexture {
   convenience init(_ string: String) {
     self.init(imageNamed: string)
   }
-}
+}*/
 
 extension SKSpriteNode {
   convenience init(_ string: String) {
     self.init(texture: SKTexture(imageNamed: string))
+    color = Globals.strokeColor
+    colorBlendFactor = 1
   }
 }
 

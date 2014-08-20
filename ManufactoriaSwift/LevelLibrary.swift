@@ -51,6 +51,17 @@ struct LevelSetup {
   }
 }
 
+private let BlankLevelSetup = LevelSetup(
+  tag: "blank",
+  instructions: "Level placeholder.",
+  space: GridSpace(5, 5),
+  buttons: [.Blank, .BeltBridge, .PullerBR, .PushersBR],
+  exemplars: ["b", "r"],
+  generationFunction: {n in return generate("br", n)},
+  passFunction: {s in return true}
+)
+
+
 // Helper functions for generating string inputs
 
 private func generate(characters: String, count: Int, filter: ((String) -> (Bool))) -> [String] {
@@ -102,7 +113,7 @@ private func toStr(var n: Int) -> String {
   return s
 }
 
-let LevelLibrary: [LevelSetup] = [
+var LevelLibrary: [LevelSetup] = [
   
   LevelSetup(
     tag: "↑",
@@ -180,5 +191,5 @@ let LevelLibrary: [LevelSetup] = [
       if s.length() > 1 {return s[1 ..< s.length()] + s[0]}
       return s
     }
-  ),
+  )
 ]
