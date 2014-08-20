@@ -104,7 +104,7 @@ class TapeNode: SKNode {
   }
   
   func dotPositionForIndex(index: Int) -> CGPoint {
-    return CGPoint(x: CGFloat(index) * dotSpacing, y: 0)
+    return CGPoint(CGFloat(index) * dotSpacing, 0)
   }
   
   class Printer: SKNode {

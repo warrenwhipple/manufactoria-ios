@@ -8,6 +8,24 @@
 
 import CoreGraphics
 
+extension CGSize {
+  init(_ square: CGFloat) {
+    width = square
+    height = square
+  }
+  init(_ width: CGFloat, _ height: CGFloat) {
+    self.width = width
+    self.height = height
+  }
+}
+
+extension CGPoint {
+  init(_ x: CGFloat, _ y: CGFloat) {
+    self.x = x
+    self.y = y
+  }
+}
+
 extension CGRect {
   init(center: CGPoint, size: CGSize) {
     origin = CGPoint(x: center.x - 0.5 * size.width, y: center.y - 0.5 * size.height)
@@ -23,11 +41,14 @@ extension CGRect {
   }
 }
 
-let CGSizeUnit = CGSize(width: 1.0, height: 1.0)
-
 func + (left: CGPoint, right: CGPoint) -> CGPoint {return CGPoint(x: left.x + right.x, y: left.y + right.y)}
 func - (left: CGPoint, right: CGPoint) -> CGPoint {return CGPoint(x: left.x - right.x, y: left.y - right.y)}
-func + (left: CGSize, right: CGFloat) -> CGSize {return CGSize(width: left.width + right, height: left.height + right)}
-func - (left: CGSize, right: CGFloat) -> CGSize {return CGSize(width: left.width - right, height: left.height - right)}
+func * (left: CGPoint, right: CGFloat) -> CGPoint {return CGPoint(x: left.x * right, y: left.y * right)}
+func * (left: CGFloat, right: CGPoint) -> CGPoint {return CGPoint(x: left * right.x, y: left * right.y)}
+func / (left: CGPoint, right: CGFloat) -> CGPoint {return CGPoint(x: left.x / right, y: left.y / right)}
+func / (left: CGFloat, right: CGPoint) -> CGPoint {return CGPoint(x: left / right.x, y: left / right.y)}
+
 func * (left: CGSize, right: CGFloat) -> CGSize {return CGSize(width: left.width * right, height: left.height * right)}
+func * (left: CGFloat, right: CGSize) -> CGSize {return CGSize(width: left * right.width, height: left * right.height)}
 func / (left: CGSize, right: CGFloat) -> CGSize {return CGSize(width: left.width / right, height: left.height / right)}
+func / (left: CGFloat, right: CGSize) -> CGSize {return CGSize(width: left / right.width, height: left / right.height)}

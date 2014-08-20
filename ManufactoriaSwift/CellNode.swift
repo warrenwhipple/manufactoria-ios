@@ -19,22 +19,22 @@ private let W = BeltTex.size().height * 0.5
 class CellNode: SKSpriteNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   
-  let belt = SKSpriteNode(texture: nil, size: CGSize(width: 0.3, height: 1.0))
-  let bridge = SKSpriteNode(texture: nil, size: CGSize(width: 0.3, height: 1.0))
+  let belt = SKSpriteNode(texture: nil, size: CGSize(0.3, 1))
+  let bridge = SKSpriteNode(texture: nil, size: CGSize(0.3, 1))
   let pusher = SKSpriteNode(texture: PusherStrokeTex, size: PusherStrokeTex.size() / W)
   let pusherFill = SKSpriteNode(texture: PusherFillTex, size: PusherFillTex.size() / W)
   let puller = SKSpriteNode(texture: PullerStrokeTex, size: PullerStrokeTex.size() / W)
   let pullerFill1 = SKSpriteNode(texture: PullerHalfFillTex, size: PullerHalfFillTex.size() / W)
   let pullerFill2 = SKSpriteNode(texture: PullerHalfFillTex, size: PullerHalfFillTex.size() / W)
   
-  let glowMask = SKSpriteNode(color: UIColor.whiteColor(), size: CGSizeUnit)
+  let glowMask = SKSpriteNode(color: UIColor.whiteColor(), size: CGSize(1))
   var shimmerActionSequence: SKAction?
   var cell = Cell(type: CellType.Blank, direction: Direction.North)
   var nextCell = Cell(type: CellType.Blank, direction: Direction.North)
   var isSelected = false
   
   override init() {
-    super.init(texture: nil, color: UIColor.blackColor(), size: CGSizeUnit)
+    super.init(texture: nil, color: UIColor.blackColor(), size: CGSize(1))
     
     belt.zPosition = 1
     bridge.zPosition = 2
@@ -45,8 +45,8 @@ class CellNode: SKSpriteNode {
     pusherFill.alpha = 0.8
     pusher.addChild(pusherFill)
     puller.zPosition = 5
-    pullerFill1.anchorPoint = CGPoint(x: 1, y: 0.5)
-    pullerFill2.anchorPoint = CGPoint(x: 1, y: 0.5)
+    pullerFill1.anchorPoint = CGPoint(1, 0.5)
+    pullerFill2.anchorPoint = CGPoint(1, 0.5)
     pullerFill1.zPosition = -1
     pullerFill2.zPosition = -1
     pullerFill1.colorBlendFactor = 1

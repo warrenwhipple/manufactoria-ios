@@ -18,7 +18,7 @@ class SwipeNodeScene: SKScene {
       SKSpriteNode("ring"),
       SKSpriteNode("robut")
       ])
-    swipeNode.position = CGPoint(x: 0.5 * size.width, y: 0.5 * size.height)
+    swipeNode.position = CGPoint(0.5 * size.width, 0.5 * size.height)
     swipeNode.size = size
     addChild(swipeNode)
   }

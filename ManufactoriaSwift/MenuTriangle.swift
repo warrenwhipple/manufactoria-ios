@@ -14,11 +14,11 @@ class MenuTriangle: SKSpriteNode {
   var triangle = SKSpriteNode("menuTriangle")
   
   override init()  {
-    super.init(texture: nil, color: nil, size: CGSize(width: 64, height: 64))
+    super.init(texture: nil, color: nil, size: CGSize(64))
     userInteractionEnabled = true
-    anchorPoint = CGPoint(x: 1, y: 1)
-    triangle.size = CGSize(width: 16, height: 16)
-    triangle.anchorPoint = CGPoint(x: 1, y: 1)
+    anchorPoint = CGPoint(1, 1)
+    triangle.size = CGSize(16)
+    triangle.anchorPoint = CGPoint(1, 1)
     triangle.alpha = 0.2
     addChild(triangle)
   }

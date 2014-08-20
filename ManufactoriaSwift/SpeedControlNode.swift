@@ -19,7 +19,7 @@ class SpeedControlNode: SKNode {
   let speedLabel: SKLabelNode
   
   override init() {
-    let buttonSize = CGSize(width: 64, height: 64)
+    let buttonSize = CGSize(64)
     let speedTexture = SKTexture("speedIcon")
     let skipTexture = SKTexture("skipIcon")
     let backIcon = SKSpriteNode(texture: skipTexture)
@@ -56,6 +56,18 @@ class SpeedControlNode: SKNode {
         self!.delegate!.speedAnchor.target *= 2
       }
     }
+    backButton.touchDownClosure = {
+      [weak self] in
+      if self!.delegate != nil {
+        self!.delegate!.loadLastTape()
+      }
+    }
+    skipButton.touchDownClosure = {
+      [weak self] in
+      if self!.delegate != nil {
+        self!.delegate!.skipTape()
+      }
+    }
     
     addChild(backButton)
     addChild(slowerButton)
@@ -72,7 +84,7 @@ class SpeedControlNode: SKNode {
       for node in nodes {
         node.position.x = (CGFloat(i++) + 0.5) * buttonWidth - 0.5 * size.width
         if node != speedLabel {
-          (node as Button).size = CGSize(width: buttonWidth, height: buttonWidth)
+          (node as Button).size = CGSize(buttonWidth)
         }
       }
     }

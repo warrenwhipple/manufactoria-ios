@@ -53,10 +53,10 @@ class ToolbarNode: SKNode {
       var x: CGFloat = spacing
       let y = size.height * 0.5
       for button in buttons {
-        button.position = CGPoint(x: x, y: y)
+        button.position = CGPoint(x, y)
         x += spacing
       }
-      indicator.position = CGPoint(x: buttonInFocus.position.x, y: buttonInFocus.position.y - 32.0)
+      indicator.position = CGPoint(buttonInFocus.position.x, buttonInFocus.position.y - 32.0)
     }
   }
   
@@ -140,8 +140,8 @@ class ToolbarNode: SKNode {
         changeNode = SKSpriteNode("pullerStroke")
         let fill1 = SKSpriteNode("pullerHalfFill")
         let fill2 = SKSpriteNode("pullerHalfFill")
-        fill1.anchorPoint = CGPoint(x: 1, y: 0.5)
-        fill2.anchorPoint = CGPoint(x: 1, y: 0.5)
+        fill1.anchorPoint = CGPoint(1, 0.5)
+        fill2.anchorPoint = CGPoint(1, 0.5)
         fill2.xScale = -1
         fill1.colorBlendFactor = 1
         fill2.colorBlendFactor = 1
@@ -241,7 +241,7 @@ class ToolbarNode: SKNode {
       var tempDots: [SKSpriteNode] = []
       let dotTexture = SKTexture("dot")
       for i in 0 ..< maxDotCount {
-        tempDots.append(SKSpriteNode(texture: dotTexture, size: CGSize(width: 4, height: 4)))
+        tempDots.append(SKSpriteNode(texture: dotTexture, size: CGSize(4)))
       }
       dots = tempDots
       super.init()

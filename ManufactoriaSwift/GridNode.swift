@@ -66,13 +66,13 @@ class GridNode: SKNode {
     for i in 0..<grid.space.columns {
       for j in 0..<grid.space.rows {
         var cellNode = self[GridCoord(i,j)]
-        cellNode.position = CGPoint(x: CGFloat(i) + 0.5, y: CGFloat(j) + 0.5)
+        cellNode.position = CGPoint(CGFloat(i) + 0.5, CGFloat(j) + 0.5)
         cellNode.shimmer()
         wrapper.addChild(cellNode)
       }
     }
     
-    let entranceCellNodeGradient = SKSpriteNode(texture: SKTexture("beltFadeMask"), color: UIColor.blackColor(), size: CGSize(width: 1, height: 1))
+    let entranceCellNodeGradient = SKSpriteNode(texture: SKTexture("beltFadeMask"), color: UIColor.blackColor(), size: CGSize(1))
     entranceCellNodeGradient.colorBlendFactor = 1
     entranceCellNodeGradient.zPosition = 2
     let exitCellNodeGradient = entranceCellNodeGradient.copy() as SKSpriteNode
@@ -80,22 +80,22 @@ class GridNode: SKNode {
     
     /*let enterArrow = SKSpriteNode(texture: SKTexture("enterExitArrow"))
     let exitArrow = SKSpriteNode(texture: SKTexture("enterExitArrow"))
-    enterArrow.size = CGSize(width: 14.0/46.0, height: 12.0/46.0)
+    enterArrow.size = CGSize(14.0/46.0, 12.0/46.0)
     exitArrow.size = enterArrow.size
-    enterArrow.anchorPoint = CGPoint(x: 0.5, y: 0)
-    exitArrow.anchorPoint = CGPoint(x: 0.5, y: 1)
-    enterArrow.position = CGPoint(x: CGFloat(grid.space.columns/2) + 0.5, y: 0)
-    exitArrow.position = CGPoint(x: CGFloat(grid.space.columns/2) + 0.5, y: CGFloat(grid.space.rows))
+    enterArrow.anchorPoint = CGPoint(0.5, 0)
+    exitArrow.anchorPoint = CGPoint(0.5, 1)
+    enterArrow.position = CGPoint(CGFloat(grid.space.columns/2) + 0.5, 0)
+    exitArrow.position = CGPoint(CGFloat(grid.space.columns/2) + 0.5, CGFloat(grid.space.rows))
     enterArrow.alpha = 0.5
     exitArrow.alpha = 0.5
     wrapper.addChild(enterArrow)
     wrapper.addChild(exitArrow)*/
     
-    entranceCellNode.position = CGPoint(x: CGFloat(grid.centerColumn) + 0.5, y: -0.5)
+    entranceCellNode.position = CGPoint(CGFloat(grid.centerColumn) + 0.5, -0.5)
     entranceCellNode.applyCell(Cell(type: .Belt, direction: .North))
     entranceCellNode.addChild(entranceCellNodeGradient)
     wrapper.addChild(entranceCellNode)
-    exitCellNode.position = CGPoint(x: CGFloat(grid.centerColumn) + 0.5, y: CGFloat(grid.space.rows) + 0.5)
+    exitCellNode.position = CGPoint(CGFloat(grid.centerColumn) + 0.5, CGFloat(grid.space.rows) + 0.5)
     exitCellNode.applyCell(Cell(type: .Belt, direction: .North))
     exitCellNode.addChild(exitCellNodeGradient)
     wrapper.addChild(exitCellNode)
@@ -120,8 +120,8 @@ class GridNode: SKNode {
       let maxCellSize: CGFloat = 46.0
       var cellSize = min(maxCellWidth, maxCellHeight, maxCellSize)
       if cellSize > maxCellSize - 0.5 {cellSize = maxCellSize} // if close, let overlap
-      let gridSize = CGSize(width: cellSize * CGFloat(grid.space.columns), height: cellSize * CGFloat(grid.space.rows))
-      wrapper.position = CGPoint(x: (size.width - gridSize.width) * 0.5, y: (size.height - gridSize.height) * 0.5)
+      let gridSize = CGSize(cellSize * CGFloat(grid.space.columns), cellSize * CGFloat(grid.space.rows))
+      wrapper.position = CGPoint((size.width - gridSize.width) * 0.5, (size.height - gridSize.height) * 0.5)
       wrapper.setScale(cellSize)
     }
   }

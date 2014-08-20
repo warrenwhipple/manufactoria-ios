@@ -16,6 +16,7 @@ class GameScene: SKScene {
   let levelNumber: Int
   let grid: Grid
   var tapeTestResults: [TapeTestResult] = []
+  var currentTapeTestIndex = 0
   var tape: [Color] = []
   let engine: Engine
   
@@ -26,7 +27,7 @@ class GameScene: SKScene {
   let toolbarNode: ToolbarNode
   let speedAnchor = SpeedAnchor()
   let speedControlNode = SpeedControlNode()
-  let robotNode = SKSpriteNode(texture: SKTexture("robut"), color: UIColor.whiteColor(), size: CGSizeUnit)
+  let robotNode = SKSpriteNode(texture: SKTexture("robut"), color: UIColor.whiteColor(), size: CGSize(1))
   
   // variables
   var robotCoord = GridCoord(0, 0)
@@ -105,10 +106,7 @@ class GameScene: SKScene {
         toolbarNode.runAction(SKAction.sequence([SKAction.fadeAlphaTo(0, duration: 0.5), SKAction.removeFromParent()]))
         engine.queueTestWithGrid(grid)
       case .Testing:
-        if !loadNextTape() {
-          tapeTestResults = [TapeTestResult()]
-          loadNextTape()
-        }
+        loadTape(0)
         statusNode.state = .Testing
         if speedControlNode.parent == nil {addChild(speedControlNode)}
         speedControlNode.runAction(SKAction.fadeAlphaTo(1, duration: 0.5))
@@ -139,7 +137,7 @@ class GameScene: SKScene {
     let statusSwipeNode: SwipeNode = statusNode
     statusSwipeNode.size = topGapRect.size
     
-    menuTriangle.position = CGPoint(x: size.width, y: size.height)
+    menuTriangle.position = CGPoint(size.width, size.height)
   }
   
   func changeEditMode(editMode: EditMode) {
@@ -178,11 +176,7 @@ class GameScene: SKScene {
         }
         lastTapeLength = tapeLength
         switch testResult {
-        case .Accept, .Reject:
-          if !loadNextTape() {
-            if gridTestDidPass {state = .Congratulating}
-            else {state = .Editing}
-          }
+        case .Accept, .Reject: loadNextTape()
         case .North: robotCoord.j++
         case .East: robotCoord.i++
         case .South: robotCoord.j--
@@ -215,18 +209,43 @@ class GameScene: SKScene {
     }
   }
   
-  func loadNextTape() -> Bool {
+  func loadTape(i: Int) {
+    currentTapeTestIndex = i
     speedAnchor.speed = 1
     speedAnchor.target = 1
-    if tapeTestResults.isEmpty {return false}
     tickPercent = 0
     robotCoord = grid.startCoordPlusOne
     lastRobotCoord = grid.startCoord
-    tape = (tapeTestResults[0].input)
-    statusNode.tapeNode.loadTape(tapeTestResults[0].input, maxLength: tapeTestResults[0].maxTapeLength)
-    tapeTestResults.removeAtIndex(0)
+    tape = (tapeTestResults[i].input)
+    statusNode.tapeNode.loadTape(tapeTestResults[i].input, maxLength: tapeTestResults[i].maxTapeLength)
     lastTapeLength = tape.count
-    return true
+  }
+  
+  func loadNextTape() {
+    if currentTapeTestIndex >= tapeTestResults.count - 1 {
+      if gridTestDidPass {state = .Congratulating}
+      else {state = .Editing}
+    } else {
+      loadTape(currentTapeTestIndex + 1)
+    }
+  }
+
+  func skipTape() {
+    speedControlNode.speedLabel.text = ""
+    speedAnchor.runAction(SKAction.speedTo(32, duration: 0.5).ease(), withKey: "speed")
+    if tapeTestResults[currentTapeTestIndex].didLoop {
+      robotNode.runAction(SKAction.sequence([SKAction.waitForDuration(0.5), SKAction.fadeAlphaTo(0, duration: 0.5)]))
+      runAction(SKAction.waitForDuration(1), completion: {[weak self] in self!.loadNextTape()})
+    }
+  }
+  
+  func loadLastTape() {
+    if currentTapeTestIndex == 0 {loadResetTape()}
+    else {loadTape(currentTapeTestIndex - 1)}
+  }
+  
+  func loadResetTape() {
+    loadTape(currentTapeTestIndex)
   }
   
   func gridTestDidPassWithExemplarTapeTests(exemplarTapeTests: [TapeTestResult]) {
@@ -288,7 +307,7 @@ class GameScene: SKScene {
     }
     var target: CGFloat = 1 {
       didSet {
-        self.runAction(SKAction.speedTo(target, duration: 0.5).ease())
+        runAction(SKAction.speedTo(target, duration: 0.5).ease(), withKey: "speed")
         if target == 0.5 {
           delegate?.speedControlNode.speedLabel.text = "½X"
         } else if target == 0.25 {

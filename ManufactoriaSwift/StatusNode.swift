@@ -84,8 +84,8 @@ class StatusNode: SwipeNode {
   
   override var size: CGSize {
     didSet{
-      label.position = CGPoint(x: 0, y: size.height * (1.0/6.0))
-      tapeNode.position = CGPoint(x: 0, y: -size.height * (1.0/6.0))
+      label.position = CGPoint(0, size.height * (1.0/6.0))
+      tapeNode.position = CGPoint(0, -size.height * (1.0/6.0))
       testButton.position = convertPoint(tapeNode.dotPositionForIndex(tapeNode.dots.count), fromNode: tapeNode)
     }
   }
@@ -120,16 +120,16 @@ class StatusNode: SwipeNode {
         testButton.removeFromParent()
         page.addChild(menuButton)
         page.addChild(nextButton)
-        let menuPoint = tapeNode.position + CGPoint(x: -size.width * (1.0/6.0), y: 0)
-        let nextPoint = tapeNode.position + CGPoint(x: size.width * (1.0/6.0), y: 0)
+        let menuPoint = tapeNode.position + CGPoint(-size.width * (1.0/6.0), 0)
+        let nextPoint = tapeNode.position + CGPoint(size.width * (1.0/6.0), 0)
         menuButton.runAction(SKAction.moveTo(menuPoint, duration: 0.5).ease())
         nextButton.runAction(SKAction.moveTo(nextPoint, duration: 0.5).ease())
         menuButton.runAction(SKAction.scaleTo(1, duration: 0.5))
         nextButton.runAction(SKAction.scaleTo(1, duration: 0.5))
         menuIcon.runAction(SKAction.fadeAlphaTo(1, duration: 0.5))
         nextIcon.runAction(SKAction.fadeAlphaTo(1, duration: 0.5))
-        menuLabel.position = menuPoint + CGPoint(x: 0, y: -40)
-        nextLabel.position = nextPoint + CGPoint(x: 0, y: -40)
+        menuLabel.position = menuPoint + CGPoint(0, -40)
+        nextLabel.position = nextPoint + CGPoint(0, -40)
         page.addChild(menuLabel)
         page.addChild(nextLabel)
         let textFadeIn = SKAction.sequence([SKAction.waitForDuration(1), SKAction.fadeAlphaTo(1, duration: 0.5)])

@@ -36,7 +36,7 @@ class MenuScene: SKScene {
   func fitToSize() {
     let columnCount = 4
     let buttonSpacing = size.width / CGFloat(columnCount)
-    let buttonSize = CGSize(width: buttonSpacing * 0.75, height: buttonSpacing * 0.75)
+    let buttonSize = CGSize(buttonSpacing * 0.75, buttonSpacing * 0.75)
     var i = 0
     for levelButton in levelButtons {
       levelButton.size = buttonSize

@@ -19,10 +19,10 @@ class TitleScene: SKScene {
     title.fontXLarge()
     title.verticalAlignmentMode = .Center
     title.text = "Manufactoria"
-    title.position = CGPoint(x: size.width * 0.5, y: size.height * 0.5 + 40)
+    title.position = CGPoint(size.width * 0.5, size.height * 0.5 + 40)
     arrow = SKSpriteNode("ring")
     arrow.addChild(SKSpriteNode("playIcon"))
-    arrow.position = CGPoint(x: size.width * 0.5, y: size.height * 0.5 - 40)
+    arrow.position = CGPoint(size.width * 0.5, size.height * 0.5 - 40)
     arrow.alpha = 0
     arrow.runAction(SKAction.sequence([SKAction.waitForDuration(1), SKAction.fadeAlphaTo(1, duration: 4)]))
     super.init(size: size)

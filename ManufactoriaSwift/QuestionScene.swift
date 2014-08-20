@@ -19,7 +19,7 @@ class QuestionScene: SKScene {
     questionLabel.fontMedium()
     questionLabel.verticalAlignmentMode = SKLabelVerticalAlignmentMode.Bottom
     questionLabel.text = questionText
-    questionLabel.position = CGPoint(x: midX, y: midY + questionLabel.lineHeight * questionLabel.fontSize)
+    questionLabel.position = CGPoint(midX, midY + questionLabel.lineHeight * questionLabel.fontSize)
     
     let yesLabel = BreakingLabel()
     yesLabel.fontMedium()
@@ -29,14 +29,14 @@ class QuestionScene: SKScene {
     noLabel.fontMedium()
     noLabel.text = noText
         
-    let yesButton = Button.glowButton(size: CGSize(width: 80, height: 80))
+    let yesButton = Button.glowButton(size: CGSize(80))
     yesButton.touchUpInsideClosure = yesClosure
-    yesButton.position = CGPoint(x: midX - 70, y: midY - 40)
+    yesButton.position = CGPoint(midX - 70, midY - 40)
     yesButton.addChild(yesLabel)
     
-    let noButton = Button.glowButton(size: CGSize(width: 80, height: 80))
+    let noButton = Button.glowButton(size: CGSize(80))
     noButton.touchUpInsideClosure = noClosure
-    noButton.position = CGPoint(x: midX + 70, y: midY - 40)
+    noButton.position = CGPoint(midX + 70, midY - 40)
     noButton.addChild(noLabel)
     
     super.init(size: size)
