@@ -17,24 +17,27 @@ class QuestionScene: SKScene {
     
     let questionLabel = BreakingLabel()
     questionLabel.fontMedium()
+    questionLabel.fontColor = Globals.strokeColor
     questionLabel.verticalAlignmentMode = SKLabelVerticalAlignmentMode.Bottom
     questionLabel.text = questionText
     questionLabel.position = CGPoint(midX, midY + questionLabel.lineHeight * questionLabel.fontSize)
     
     let yesLabel = BreakingLabel()
     yesLabel.fontMedium()
+    yesLabel.fontColor = Globals.strokeColor
     yesLabel.text = yesText
     
     let noLabel = BreakingLabel()
     noLabel.fontMedium()
+    noLabel.fontColor = Globals.strokeColor
     noLabel.text = noText
         
-    let yesButton = Button.glowButton(size: CGSize(80))
+    let yesButton = Button.fadeButton(size: CGSize(80))
     yesButton.touchUpInsideClosure = yesClosure
     yesButton.position = CGPoint(midX - 70, midY - 40)
     yesButton.addChild(yesLabel)
     
-    let noButton = Button.glowButton(size: CGSize(80))
+    let noButton = Button.fadeButton(size: CGSize(80))
     noButton.touchUpInsideClosure = noClosure
     noButton.position = CGPoint(midX + 70, midY - 40)
     noButton.addChild(noLabel)

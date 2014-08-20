@@ -79,7 +79,7 @@ class MenuScene: SKScene {
       shimmerNode.alpha = CGFloat(randFloat(0.125))
       shimmerNode.runAction(SKAction.sequence([
         SKAction.fadeAlphaTo(0, duration: NSTimeInterval(shimmerNode.alpha * 32)),
-        SKAction.runBlock({[weak self] in self!.shimmer()})
+        SKAction.runBlock({[unowned self] in self.shimmer()})
         ]), withKey: "shimmer")
     }
     
@@ -89,7 +89,7 @@ class MenuScene: SKScene {
       shimmerNode.runAction(SKAction.sequence([
         SKAction.fadeAlphaTo(shimmerAlpha, duration: shimmerDuration),
         SKAction.fadeAlphaTo(0, duration: shimmerDuration),
-        SKAction.runBlock({[weak self] in self!.shimmer()})
+        SKAction.runBlock({[unowned self] in self.shimmer()})
         ]), withKey: "shimmer")
     }
     
@@ -102,8 +102,6 @@ class MenuScene: SKScene {
     required init(coder: NSCoder) {fatalError("NSCoding not supported")}
     init(levelNumber: Int) {
       super.init(levelNumber: levelNumber, text: "unlock", isEnabled: true)
-      removeAllActions()
-      runAction(SKAction.sequence([SKAction.waitForDuration(0.1 * NSTimeInterval(levelNumber + 1)), SKAction.colorizeWithColor(UIColor(red: 0.3, green: 0.2, blue: 0.2, alpha: 1), colorBlendFactor: 1, duration: 1)]))
     }
     override func touchesBegan(touches: NSSet!, withEvent event: UIEvent!) {
       scene.view.presentScene(QuestionScene(
@@ -133,8 +131,6 @@ class MenuScene: SKScene {
     required init(coder: NSCoder) {fatalError("NSCoding not supported")}
     init(levelNumber: Int) {
       super.init(levelNumber: levelNumber, text: "reset", isEnabled: true)
-      removeAllActions()
-      runAction(SKAction.sequence([SKAction.waitForDuration(0.1 * NSTimeInterval(levelNumber + 1)), SKAction.colorizeWithColor(UIColor(red: 0.3, green: 0.2, blue: 0.2, alpha: 1), colorBlendFactor: 1, duration: 1)]))
     }
     override func touchesBegan(touches: NSSet!, withEvent event: UIEvent!) {
       scene.view.presentScene(QuestionScene(
@@ -146,7 +142,7 @@ class MenuScene: SKScene {
           if view != nil {
             GameData.sharedInstance.levelsComplete = 0
             GameData.sharedInstance.save()
-            view!.presentScene(TitleScene(size: view!.bounds.size), transition: SKTransition.fadeWithColor(UIColor.whiteColor(), duration: 3))
+            view!.presentScene(TitleScene(size: view!.bounds.size), transition: SKTransition.fadeWithColor(Globals.strokeColor, duration: 3))
           }
         },
         noClosure: {

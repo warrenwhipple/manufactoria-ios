@@ -67,11 +67,13 @@ class Button: SKSpriteNode {
     touch = nil
   }
   
-  class func glowButton(#size: CGSize) -> Button {
+  class func fadeButton(#size: CGSize) -> Button {
     let button = Button(size: size)
-    button.pressAction = SKAction.colorizeWithColor(UIColor(white: 0.3, alpha: 1), colorBlendFactor: 1, duration: 0.25)
-    button.releaseAction = SKAction.colorizeWithColor(UIColor(white: 0.1, alpha: 1), colorBlendFactor: 1, duration: 0.25)
-    button.color = UIColor(white: 0.1, alpha: 1)
+    let pressColor = Globals.backgroundColor.blend(Globals.strokeColor, blendFactor: 0.2)
+    let releaseColor = Globals.backgroundColor.blend(Globals.strokeColor, blendFactor: 0.1)
+    button.color = releaseColor
+    button.pressAction = SKAction.colorizeWithColor(pressColor, colorBlendFactor: 1, duration: 0.25)
+    button.releaseAction = SKAction.colorizeWithColor(releaseColor, colorBlendFactor: 1, duration: 0.25)
     return button
   }
   

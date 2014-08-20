@@ -1,5 +1,5 @@
 //
-//  RandFunctions.swift
+//  MathFunctions.swift
 //  ManufactoriaSwift
 //
 //  Created by Warren Whipple on 6/19/14.
