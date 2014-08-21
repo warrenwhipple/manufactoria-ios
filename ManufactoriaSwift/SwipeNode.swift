@@ -15,7 +15,7 @@ class SwipeNodeScene: SKScene {
     super.init(size: size)
     let swipeNode = SwipeNode(pages: [
       SKSpriteNode("beltButton"),
-      SKSpriteNode("ring"),
+      SKSpriteNode("thinRing"),
       SKSpriteNode("robut")
       ])
     swipeNode.position = CGPoint(0.5 * size.width, 0.5 * size.height)

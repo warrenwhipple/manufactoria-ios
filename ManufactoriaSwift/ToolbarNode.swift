@@ -127,7 +127,10 @@ class ToolbarNode: SKNode {
       switch kind {
       case .Blank:
         modes = [.Blank]
-        staticNode = SKSpriteNode(color: UIColor.grayColor(), size: Globals.cellPointSize * 0.75)
+        staticNode = SKSpriteNode(
+          color: Globals.backgroundColor.blend(Globals.strokeColor, blendFactor: 0.25),
+          size: Globals.cellPointSize * 0.75
+        )
       case .Belt:
         modes = [.Belt]
         staticNode = SKSpriteNode("beltButton")
@@ -160,7 +163,7 @@ class ToolbarNode: SKNode {
           fill2.color = Globals.redColor
         }
       case .PushersBR, .PushersBRGY:
-        staticNode = SKSpriteNode("ring")
+        staticNode = SKSpriteNode("thinRing")
         changeNode = SKSpriteNode("dot")
         staticNode?.zPosition = 1
         changeNode?.color = Globals.blueColor
@@ -241,12 +244,13 @@ class ToolbarNode: SKNode {
       var tempDots: [SKSpriteNode] = []
       let dotTexture = SKTexture(imageNamed: "dot")
       for i in 0 ..< maxDotCount {
-        tempDots.append(SKSpriteNode(texture: dotTexture, size: CGSize(4)))
+        tempDots.append(SKSpriteNode(texture: dotTexture, color: Globals.strokeColor, size: CGSize(4)))
       }
       dots = tempDots
       super.init()
       for i in 0 ..< dots.count {
         let dot = dots[i]
+        dot.colorBlendFactor = 1
         if i == focusIndex {
           dot.alpha = 1
           dot.position.x = dotX(i)

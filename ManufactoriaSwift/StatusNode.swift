@@ -34,6 +34,7 @@ class StatusNode: SwipeNode {
 
     label = BreakingLabel()
     label.fontSmall()
+    label.fontColor = Globals.strokeColor
     label.text = instructions
 
     tapeNode = TapeNode()
@@ -49,8 +50,8 @@ class StatusNode: SwipeNode {
     nextIcon = SKSpriteNode("playIcon")
     menuIcon.alpha = 0
     nextIcon.alpha = 0
-    menuButton = Button.growButton(imageNamed: "ring")
-    nextButton = Button.growButton(imageNamed: "ring")
+    menuButton = Button.growButton(imageNamed: "thinRing")
+    nextButton = Button.growButton(imageNamed: "thinRing")
     menuButton.setScale(0.5)
     nextButton.setScale(0.5)
     menuButton.addChild(menuIcon)
@@ -61,6 +62,8 @@ class StatusNode: SwipeNode {
     nextLabel.alpha = 0
     menuLabel.fontSmall()
     nextLabel.fontSmall()
+    menuLabel.fontColor = Globals.strokeColor
+    nextLabel.fontColor = Globals.strokeColor
     menuLabel.text = "menu"
     nextLabel.text = "next"
     
@@ -159,9 +162,10 @@ class StatusNode: SwipeNode {
     weak var delegate: StatusNode?
     
     init() {
-      let texture = SKTexture(imageNamed: "ring")
+      let texture = SKTexture(imageNamed: "thinRing")
       super.init(texture: texture, color: Globals.strokeColor, size: texture.size())
-      let tempButton = Button.growButton(imageNamed: "ring")
+      colorBlendFactor = 1
+      let tempButton = Button.growButton(imageNamed: "thinRing")
       pressAction = tempButton.pressAction
       releaseAction = tempButton.releaseAction
       touchUpInsideClosure = {[weak self] in if self!.delegate != nil {self!.delegate!.testButtonPressed()}}

@@ -27,7 +27,7 @@ class CellNode: SKNode {
     bridge.zRotation = CGFloat(-M_PI_2)
     bridge.colorBlendFactor = 1
     
-    pusher = SKSpriteNode("ring")
+    pusher = SKSpriteNode("thinRing")
     pusherFill = SKSpriteNode("dot")
     pusher.zPosition = 5
     pusherFill.zPosition = -1

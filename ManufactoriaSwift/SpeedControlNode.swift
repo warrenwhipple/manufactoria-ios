@@ -36,6 +36,7 @@ class SpeedControlNode: SKNode {
     skipButton.addChild(skipIcon)
     speedLabel = SKLabelNode()
     speedLabel.fontLarge()
+    speedLabel.fontColor = Globals.strokeColor
     speedLabel.horizontalAlignmentMode = .Center
     speedLabel.verticalAlignmentMode = .Center
     speedLabel.text = "1X"
