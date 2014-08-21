@@ -57,7 +57,9 @@ class GridNode: SKNode {
     self.grid = grid
     var tempCellNodes: [CellNode] = []
     for i in 0..<(grid.space.columns * grid.space.rows) {
-      tempCellNodes.append(CellNode())
+      let cellNode = CellNode()
+      cellNode.shimmerNode.startMidShimmer()
+      tempCellNodes.append(cellNode)
     }
     tempCellNodes.append(entranceCellNode)
     tempCellNodes.append(exitCellNode)
@@ -67,12 +69,11 @@ class GridNode: SKNode {
       for j in 0..<grid.space.rows {
         var cellNode = self[GridCoord(i,j)]
         cellNode.position = CGPoint(CGFloat(i) + 0.5, CGFloat(j) + 0.5)
-        cellNode.shimmerNode.startMidShimmer()
         wrapper.addChild(cellNode)
       }
     }
     
-    let entranceCellNodeGradient = SKSpriteNode(texture: SKTexture(imageNamed: "beltFadeMask"), color: Globals.backgroundColor, size: CGSize(1))
+    let entranceCellNodeGradient = SKSpriteNode(texture: SKTexture(imageNamed: "beltFadeMask"), color: Globals.backgroundColor, size: Globals.cellPointSize)
     entranceCellNodeGradient.colorBlendFactor = 1
     entranceCellNodeGradient.zPosition = 2
     let exitCellNodeGradient = entranceCellNodeGradient.copy() as SKSpriteNode

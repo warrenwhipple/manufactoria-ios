@@ -9,7 +9,8 @@
 import SpriteKit
 
 struct Globals {
-  static let cellPointSize = CGSize(46)
+  static let cellPointSize = CGSize(SKTexture(imageNamed: "belt").size().height * 0.5)
+  static let beltPointSize = CGSize(SKTexture(imageNamed: "belt").size().width, SKTexture(imageNamed: "belt").size().height * 0.5)
   static let yellowColor =         UIColor(hue: 0.15, saturation: 1.0, brightness: 1.0, alpha: 1)
   static let greenColor =          UIColor(hue: 0.40, saturation: 1.0, brightness: 1.0, alpha: 1)
   static let blueColor =           UIColor(hue: 0.60, saturation: 1.0, brightness: 1.0, alpha: 1)

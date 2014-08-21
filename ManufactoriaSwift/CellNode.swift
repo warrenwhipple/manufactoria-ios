@@ -8,45 +8,36 @@
 
 import SpriteKit
 
-// move these inside the class once class variables become available
-private let BeltTex = SKTexture(imageNamed: "belt")
-private let PusherStrokeTex = SKTexture(imageNamed: "ring")
-private let PusherFillTex = SKTexture(imageNamed: "dot")
-private let PullerStrokeTex = SKTexture(imageNamed: "pullerStroke")
-private let PullerHalfFillTex = SKTexture(imageNamed: "pullerHalfFill")
-private let W = BeltTex.size().height * 0.5
-
 class CellNode: SKNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   
-  let belt = SKSpriteNode(texture: nil, size: CGSize(0.3, 1))
-  let bridge = SKSpriteNode(texture: nil, size: CGSize(0.3, 1))
-  let pusher = SKSpriteNode(texture: PusherStrokeTex, size: PusherStrokeTex.size() / W)
-  let pusherFill = SKSpriteNode(texture: PusherFillTex, size: PusherFillTex.size() / W)
-  let puller = SKSpriteNode(texture: PullerStrokeTex, size: PullerStrokeTex.size() / W)
-  let pullerFill1 = SKSpriteNode(texture: PullerHalfFillTex, size: PullerHalfFillTex.size() / W)
-  let pullerFill2 = SKSpriteNode(texture: PullerHalfFillTex, size: PullerHalfFillTex.size() / W)
-  
-  let glowNode = SKSpriteNode(color: Globals.strokeColor, size: CGSize(1))
-  let shimmerNode = ShimmerNode(size: CGSize(1))
+  let belt, bridge, pusher, pusherFill, puller, pullerFill1, pullerFill2, glowNode: SKSpriteNode
+  let shimmerNode: ShimmerNode
   var cell = Cell(type: CellType.Blank, direction: Direction.North)
   var nextCell = Cell(type: CellType.Blank, direction: Direction.North)
   var isSelected = false
   
   override init() {
-    super.init()
-    
-    shimmerNode.alpha = randCGFloat(shimmerNode.alphaMax)
-    addChild(shimmerNode)
-    
+    belt = SKSpriteNode(color: Globals.strokeColor, size: Globals.beltPointSize)
     belt.zPosition = 1
-    bridge.zPosition = 2
+    belt.colorBlendFactor = 1
+
+    bridge = SKSpriteNode(color: Globals.strokeColor, size: Globals.beltPointSize)
+    bridge.zPosition = 1
     bridge.zRotation = CGFloat(-M_PI_2)
+    bridge.colorBlendFactor = 1
+    
+    pusher = SKSpriteNode("ring")
+    pusherFill = SKSpriteNode("dot")
     pusher.zPosition = 5
     pusherFill.zPosition = -1
     pusherFill.colorBlendFactor = 1
     pusherFill.alpha = 0.8
     pusher.addChild(pusherFill)
+    
+    puller = SKSpriteNode("pullerStroke")
+    pullerFill1 = SKSpriteNode("pullerHalfFill")
+    pullerFill2 = SKSpriteNode("pullerHalfFill")
     puller.zPosition = 5
     pullerFill1.anchorPoint = CGPoint(1, 0.5)
     pullerFill2.anchorPoint = CGPoint(1, 0.5)
@@ -60,9 +51,17 @@ class CellNode: SKNode {
     puller.addChild(pullerFill1)
     puller.addChild(pullerFill2)
     
+    glowNode = SKSpriteNode(color: Globals.strokeColor, size: Globals.cellPointSize)
     glowNode.zPosition = 10
     glowNode.alpha = 0
+    
+    shimmerNode = ShimmerNode(size: Globals.cellPointSize)
+
+    super.init()
+    self.setScale(1 / Globals.cellPointSize.width)
+    
     addChild(glowNode)
+    addChild(shimmerNode)
   }
   
   func update(dt: NSTimeInterval, clippedBeltTexture: SKTexture) {

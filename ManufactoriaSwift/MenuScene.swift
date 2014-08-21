@@ -54,7 +54,7 @@ class MenuScene: SKScene {
     required init(coder: NSCoder) {fatalError("NSCoding not supported")}
     let levelNumber: Int
     let label: SKLabelNode
-    let shimmerNode: SKSpriteNode
+    let shimmerNode: ShimmerNode
     var touch: UITouch?
     
     init(levelNumber: Int, text: String, isEnabled: Bool) {
@@ -68,29 +68,15 @@ class MenuScene: SKScene {
         label.text = text
       }
       
-      shimmerNode = SKSpriteNode(color: Globals.strokeColor, size: CGSizeZero)
+      shimmerNode = ShimmerNode()
       shimmerNode.zPosition = 1
+      shimmerNode.startMidShimmer()
 
       super.init()
       userInteractionEnabled = isEnabled
       addChild(label)
       addChild(shimmerNode)
       
-      shimmerNode.alpha = randCGFloat(0.125)
-      shimmerNode.runAction(SKAction.sequence([
-        SKAction.fadeAlphaTo(0, duration: NSTimeInterval(shimmerNode.alpha * 32)),
-        SKAction.runBlock({[unowned self] in self.shimmer()})
-        ]), withKey: "shimmer")
-    }
-    
-    func shimmer() {
-      let shimmerAlpha = randCGFloat(0.125)
-      let shimmerDuration = NSTimeInterval(shimmerAlpha * 32)
-      shimmerNode.runAction(SKAction.sequence([
-        SKAction.fadeAlphaTo(shimmerAlpha, duration: shimmerDuration),
-        SKAction.fadeAlphaTo(0, duration: shimmerDuration),
-        SKAction.runBlock({[unowned self] in self.shimmer()})
-        ]), withKey: "shimmer")
     }
     
     override func touchesBegan(touches: NSSet!, withEvent event: UIEvent!) {
