@@ -22,7 +22,10 @@ class Button: SKSpriteNode {
   
   convenience override init() {self.init(texture: nil, color: nil, size: CGSizeZero)}
   convenience init(size: CGSize) {self.init(texture: nil, color: nil, size: size)}
-  convenience init(texture: SKTexture) {self.init(texture: texture, color: nil, size: texture.size())}
+  convenience init(texture: SKTexture) {
+    self.init(texture: texture, color: Globals.strokeColor, size: texture.size())
+    colorBlendFactor = 1
+  }
   
   var touch: UITouch? {
     didSet {

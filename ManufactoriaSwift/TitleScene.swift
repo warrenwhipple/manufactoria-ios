@@ -16,7 +16,7 @@ class TitleScene: SKScene {
   
   override init(size: CGSize) {
     title = SKLabelNode()
-    title.fontMedium()
+    title.fontLarge()
     title.fontColor = Globals.strokeColor
     title.verticalAlignmentMode = .Center
     title.text = "Manufactoria"

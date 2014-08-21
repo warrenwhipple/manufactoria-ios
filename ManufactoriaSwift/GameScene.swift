@@ -21,7 +21,7 @@ class GameScene: SKScene {
   let engine: Engine
   
   // view objects
-  let menuTriangle = MenuTriangle()
+  let menuButton: Button
   let statusNode: StatusNode
   let gridNode: GridNode
   let toolbarNode: ToolbarNode
@@ -54,6 +54,13 @@ class GameScene: SKScene {
     robotNode = SKSpriteNode("robut")
     robotNode.size = CGSize(1)
     
+    menuButton = Button(color: nil, size: CGSize(64))
+    menuButton.zPosition = 100
+    let menuIcon = MenuIcon(size: CGSize(16))
+    menuIcon.shimmerNodes[3].removeFromParent()
+    menuIcon.position = CGPoint(24, 24)
+    menuButton.addChild(menuIcon)
+    
     super.init(size: size)
     backgroundColor = Globals.backgroundColor
     
@@ -78,9 +85,11 @@ class GameScene: SKScene {
     
     speedControlNode.delegate = self
     
-    menuTriangle.delegate = self
-    menuTriangle.zPosition = 100
-    self.addChild(menuTriangle)
+    menuButton.touchUpInsideClosure = {
+      [unowned self] in
+      self.view.presentScene(MenuScene(size: size), transition: SKTransition.crossFadeWithDuration(0.5))
+    }
+    self.addChild(menuButton)
     
     fitToSize()
   }
@@ -140,7 +149,7 @@ class GameScene: SKScene {
     let statusSwipeNode: SwipeNode = statusNode
     statusSwipeNode.size = topGapRect.size
     
-    menuTriangle.position = CGPoint(size.width, size.height)
+    menuButton.position = CGPoint(size.width - 32, size.height - 32)
   }
   
   func changeEditMode(editMode: EditMode) {
@@ -277,10 +286,6 @@ class GameScene: SKScene {
   
   func testButtonPressed() {
     state = .Thinking
-  }
-  
-  func menuTrianglePressed() {
-    view.presentScene(MenuScene(size: size), transition: SKTransition.crossFadeWithDuration(0.5))
   }
   
   override func touchesBegan(touches: NSSet!, withEvent event: UIEvent!) {

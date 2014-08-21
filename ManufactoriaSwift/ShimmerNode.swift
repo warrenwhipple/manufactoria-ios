@@ -61,12 +61,44 @@ class ShimmerNode: SKSpriteNode {
   }
   
   private func repeatShimmer() {
-    let shimmerAlpha = randCGFloat(0.125)
-    let shimmerDuration = NSTimeInterval(shimmerAlpha * 32)
+    let shimmerAlpha = randCGFloat(alphaMax - alphaMin) + alphaMin
+    let shimmerDuration = NSTimeInterval(shimmerAlpha * shimmerSpeed)
     runAction(SKAction.sequence([
       SKAction.fadeAlphaTo(shimmerAlpha, duration: shimmerDuration),
-      SKAction.fadeAlphaTo(0, duration: shimmerDuration),
+      SKAction.fadeAlphaTo(alphaMin, duration: shimmerDuration),
       SKAction.runBlock({[unowned self] in self.repeatShimmer()})
       ]), withKey: "shimmer")
+  }
+}
+
+class MenuIcon: SKNode {
+  required init(coder: NSCoder) {fatalError("NSCoding not supported")}
+  
+  let shimmerNodes: [ShimmerNode]
+  var size: CGSize {
+    didSet {
+      
+    }
+  }
+  
+  init(size: CGSize) {
+    self.size = size
+    shimmerNodes = [ShimmerNode(), ShimmerNode(), ShimmerNode(), ShimmerNode()]
+    super.init()
+    for shimmerNode in shimmerNodes {
+      shimmerNode.alphaMin = 0.125
+      shimmerNode.alphaMax = 0.25
+      shimmerNode.startMidShimmer()
+      addChild(shimmerNode)
+    }
+    fitToSize()
+  }
+  
+  private func fitToSize() {
+    for shimmerNode in shimmerNodes {shimmerNode.size = size * 0.5}
+    shimmerNodes[0].position = CGPoint(size.width * 0.25, size.height * 0.25)
+    shimmerNodes[1].position = CGPoint(-size.width * 0.25, size.height * 0.25)
+    shimmerNodes[2].position = CGPoint(size.width * 0.25, -size.height * 0.25)
+    shimmerNodes[3].position = CGPoint(-size.width * 0.25, -size.height * 0.25)
   }
 }

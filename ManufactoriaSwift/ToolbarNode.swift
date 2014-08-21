@@ -140,7 +140,7 @@ class ToolbarNode: SKNode {
         staticNode?.zPosition = 1
         changeNode = SKSpriteNode("bridgeButton")
       case .PullerBR, .PullerGY:
-        changeNode = SKSpriteNode("pullerStroke")
+        changeNode = SKSpriteNode()
         let fill1 = SKSpriteNode("pullerHalfFill")
         let fill2 = SKSpriteNode("pullerHalfFill")
         fill1.anchorPoint = CGPoint(1, 0.5)
@@ -163,9 +163,9 @@ class ToolbarNode: SKNode {
           fill2.color = Globals.redColor
         }
       case .PushersBR, .PushersBRGY:
-        staticNode = SKSpriteNode("thinRing")
+        //staticNode = SKSpriteNode("thinRing")
         changeNode = SKSpriteNode("dot")
-        staticNode?.zPosition = 1
+        //staticNode?.zPosition = 1
         changeNode?.color = Globals.blueColor
         changeNode?.colorBlendFactor = 1
         if kind == .PushersBR {

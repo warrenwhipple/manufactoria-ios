@@ -62,7 +62,7 @@ class MenuScene: SKScene {
       
       label = SKLabelNode()
       if isEnabled {
-        label.fontSmall()
+        label.fontMedium()
         label.verticalAlignmentMode = .Center
         label.fontColor = Globals.strokeColor
         label.text = text

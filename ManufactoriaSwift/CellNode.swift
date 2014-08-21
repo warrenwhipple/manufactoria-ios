@@ -11,7 +11,8 @@ import SpriteKit
 class CellNode: SKNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   
-  let belt, bridge, pusher, pusherFill, puller, pullerFill1, pullerFill2, glowNode: SKSpriteNode
+  let belt, bridge, pusher, pullerLeft, pullerRight, glowNode: SKSpriteNode
+  let puller: SKNode
   let shimmerNode: ShimmerNode
   var cell = Cell(type: CellType.Blank, direction: Direction.North)
   var nextCell = Cell(type: CellType.Blank, direction: Direction.North)
@@ -27,29 +28,18 @@ class CellNode: SKNode {
     bridge.zRotation = CGFloat(-M_PI_2)
     bridge.colorBlendFactor = 1
     
-    pusher = SKSpriteNode("thinRing")
-    pusherFill = SKSpriteNode("dot")
+    pusher = SKSpriteNode("dot")
     pusher.zPosition = 5
-    pusherFill.zPosition = -1
-    pusherFill.colorBlendFactor = 1
-    pusherFill.alpha = 0.8
-    pusher.addChild(pusherFill)
     
-    puller = SKSpriteNode("pullerStroke")
-    pullerFill1 = SKSpriteNode("pullerHalfFill")
-    pullerFill2 = SKSpriteNode("pullerHalfFill")
+    puller = SKNode()
+    pullerLeft = SKSpriteNode("pullerHalfFill")
+    pullerRight = SKSpriteNode("pullerHalfFill")
     puller.zPosition = 5
-    pullerFill1.anchorPoint = CGPoint(1, 0.5)
-    pullerFill2.anchorPoint = CGPoint(1, 0.5)
-    pullerFill1.zPosition = -1
-    pullerFill2.zPosition = -1
-    pullerFill1.colorBlendFactor = 1
-    pullerFill2.colorBlendFactor = 1
-    pullerFill2.xScale = -1
-    pullerFill1.alpha = 0.8
-    pullerFill2.alpha = 0.8
-    puller.addChild(pullerFill1)
-    puller.addChild(pullerFill2)
+    pullerLeft.anchorPoint = CGPoint(1, 0.5)
+    pullerRight.anchorPoint = CGPoint(1, 0.5)
+    pullerRight.xScale = -1
+    puller.addChild(pullerLeft)
+    puller.addChild(pullerRight)
     
     glowNode = SKSpriteNode(color: Globals.strokeColor, size: Globals.cellPointSize)
     glowNode.zPosition = 10
@@ -107,39 +97,39 @@ class CellNode: SKNode {
     case .PusherB:
       addChild(belt)
       addChild(pusher)
-      pusherFill.color = Globals.blueColor
+      pusher.color = Globals.blueColor
     case .PusherR:
       addChild(belt)
       addChild(pusher)
-      pusherFill.color = Globals.redColor
+      pusher.color = Globals.redColor
     case .PusherG:
       addChild(belt)
       addChild(pusher)
-      pusherFill.color = Globals.greenColor
+      pusher.color = Globals.greenColor
     case .PusherY:
       addChild(belt)
       addChild(pusher)
-      pusherFill.color = Globals.yellowColor
+      pusher.color = Globals.yellowColor
     case .PullerBR:
       addChild(belt)
       addChild(puller)
-      pullerFill1.color = Globals.blueColor
-      pullerFill2.color = Globals.redColor
+      pullerLeft.color = Globals.blueColor
+      pullerRight.color = Globals.redColor
     case .PullerRB:
       addChild(belt)
       addChild(puller)
-      pullerFill1.color = Globals.redColor
-      pullerFill2.color = Globals.blueColor
+      pullerLeft.color = Globals.redColor
+      pullerRight.color = Globals.blueColor
     case .PullerGY:
       addChild(belt)
       addChild(puller)
-      pullerFill1.color = Globals.greenColor
-      pullerFill2.color = Globals.yellowColor
+      pullerLeft.color = Globals.greenColor
+      pullerRight.color = Globals.yellowColor
     case .PullerYG:
       addChild(belt)
       addChild(puller)
-      pullerFill1.color = Globals.yellowColor
-      pullerFill2.color = Globals.greenColor
+      pullerLeft.color = Globals.yellowColor
+      pullerRight.color = Globals.greenColor
     }
     switch newCell.direction {
     case .North: zRotation = 0.0

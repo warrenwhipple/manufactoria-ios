@@ -20,7 +20,7 @@ class StatusNode: SwipeNode {
   let tapeNode: TapeNode
   let instructions: String
   let menuButton: Button
-  let menuIcon: SKSpriteNode
+  let menuIcon: MenuIcon
   let menuLabel: SKLabelNode
   let nextButton: Button
   let nextIcon: SKSpriteNode
@@ -33,7 +33,7 @@ class StatusNode: SwipeNode {
     self.instructions = instructions
 
     label = BreakingLabel()
-    label.fontSmall()
+    label.fontMedium()
     label.fontColor = Globals.strokeColor
     label.text = instructions
 
@@ -46,7 +46,7 @@ class StatusNode: SwipeNode {
     testButton.zPosition = 10
     testButton.addChild(testIcon)
     
-    menuIcon = SKSpriteNode("menuIcon")
+    menuIcon = MenuIcon(size: CGSize(14))
     nextIcon = SKSpriteNode("playIcon")
     menuIcon.alpha = 0
     nextIcon.alpha = 0
@@ -60,8 +60,8 @@ class StatusNode: SwipeNode {
     nextLabel = SKLabelNode()
     menuLabel.alpha = 0
     nextLabel.alpha = 0
-    menuLabel.fontSmall()
-    nextLabel.fontSmall()
+    menuLabel.fontMedium()
+    nextLabel.fontMedium()
     menuLabel.fontColor = Globals.strokeColor
     nextLabel.fontColor = Globals.strokeColor
     menuLabel.text = "menu"
