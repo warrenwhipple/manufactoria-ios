@@ -12,8 +12,7 @@ class TitleScene: SKScene {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   let gameData = GameData.sharedInstance
   let title: SKLabelNode
-  let button: SKSpriteNode
-  let arrow: SKSpriteNode
+  let button: RingButton
   
   override init(size: CGSize) {
     title = SKLabelNode()
@@ -22,30 +21,29 @@ class TitleScene: SKScene {
     title.verticalAlignmentMode = .Center
     title.text = "Manufactoria"
     title.position = CGPoint(size.width * 0.5, size.height * 0.5 + 40)
-    button = SKSpriteNode("ring")
-    arrow = SKSpriteNode("playIcon")
-    button.addChild(arrow)
+    button = RingButton(icon: SKSpriteNode("playIcon"), state: .Hidden)
+    button.transitionDuration = 2
     button.position = CGPoint(size.width * 0.5, size.height * 0.5 - 40)
-    button.setScale(0)
-    button.runAction(SKAction.sequence([
-      SKAction.waitForDuration(1),
-      SKAction.scaleTo(1, duration: 2).easeOut()
-      ]))
-    arrow.runAction(SKAction.sequence([
-      SKAction.waitForDuration(1),
-      SKAction.rotateByAngle(CGFloat(-8*M_PI), duration: 3).easeOut()
-      ]))
+    button.size = size * 2
     super.init(size: size)
     backgroundColor = Globals.backgroundColor
+    if gameData.levelsComplete == 0 {
+      button.touchUpInsideClosure = {
+        [unowned self] in
+        self.view.presentScene(FirstTutorialScene(size: size), transition : SKTransition.crossFadeWithDuration(0.5))
+      }
+    } else {
+      button.touchUpInsideClosure = {
+        [unowned self] in
+        self.view.presentScene(MenuScene(size: size), transition: SKTransition.crossFadeWithDuration(0.5))
+      }
+    }
     addChild(title)
     addChild(button)
-  }
-  
-  override func touchesBegan(touches: NSSet!, withEvent event: UIEvent!) {
-    if gameData.levelsComplete == 0 {
-      view.presentScene(FirstTutorialScene(size: size), transition : SKTransition.crossFadeWithDuration(0.5))
-    } else {
-      view.presentScene(MenuScene(size: size), transition: SKTransition.crossFadeWithDuration(0.5))
-    }
+    button.userInteractionEnabled = true
+    runAction(SKAction.sequence([
+      SKAction.waitForDuration(1),
+      SKAction.runBlock({[unowned self] in self.button.state = .Button})
+      ]))
   }
 }
