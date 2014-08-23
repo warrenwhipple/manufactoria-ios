@@ -103,37 +103,54 @@ class RingButton: Button {
   let innerRing = SKSpriteNode("ringInner")
   let printer = SKSpriteNode("printer")
   let icon: SKNode
-  let outerPrinterScale, innerPrinterScale: CGFloat
+  let printerSizeRatio, outerTextureSize, innerTextureSize: CGFloat
   var transitionDuration: NSTimeInterval = 0.5
   
   init(icon: SKNode, state: State) {
     self.icon = icon
     self.state = state
-    outerPrinterScale = printer.size.width / outerRing.size.width
-    innerPrinterScale = (printer.size.width - outerRing.size.width + innerRing.size.width) / innerRing.size.width
+    printerSizeRatio = printer.size.width / outerRing.size.width
+    outerTextureSize = outerRing.size.width
+    innerTextureSize = innerRing.size.width
     innerRing.color = Globals.backgroundColor
+    
+    super.init(texture: nil, color: nil, size: CGSizeZero)
+    
     switch state {
     case .Button:
       printer.alpha = 0
     case .Hidden:
-      outerRing.setScale(0)
-      innerRing.setScale(0)
-      icon.setScale(0)
+      setComponentScales(0)
       icon.alpha = 0
       printer.alpha = 0
     case .Printer:
-      outerRing.setScale(outerPrinterScale)
-      innerRing.setScale(innerPrinterScale)
-      icon.setScale(outerPrinterScale)
+      setComponentScales(printerSizeRatio)
       outerRing.alpha = 0
       innerRing.alpha = 0
       icon.alpha = 0
     }
-    super.init(texture: nil, color: nil, size: CGSizeZero)
+    
+    pressAction = SKAction.scaleTo(1.125, duration: 0.125).ease()
+    releaseAction = SKAction.scaleTo(1, duration: 0.125).ease()
+    
     addChild(outerRing)
     addChild(innerRing)
     addChild(icon)
     addChild(printer)
+  }
+  
+  func setComponentScales(newScale: CGFloat) {
+    outerRing.setScale(newScale)
+    innerRing.setScale(newScale)
+    icon.setScale(newScale)
+  }
+  
+  func actionThatScalesComponentsTo(newScale: CGFloat, duration: NSTimeInterval) -> SKAction {
+    return SKAction.customActionWithDuration(duration, actionBlock: {
+      [unowned self]
+      node, time in
+      self.setComponentScales(time / CGFloat(duration))
+    })
   }
   
   var state: State {
@@ -143,36 +160,32 @@ class RingButton: Button {
       switch state {
       case .Button:
         userInteractionEnabled = true
+        runAction(actionThatScalesComponentsTo(1, duration: transitionDuration).ease(), withKey: "scaleComponents")
         outerRing.alpha = 1
-        outerRing.runAction(SKAction.scaleTo(1, duration: transitionDuration).ease())
         innerRing.alpha = 1
-        innerRing.runAction(SKAction.scaleTo(1, duration: transitionDuration).ease())
-        icon.runAction(SKAction.scaleTo(1, duration: transitionDuration).ease())
         icon.runAction(SKAction.fadeAlphaTo(1, duration: transitionDuration))
         while icon.zRotation < -0.01 {icon.zRotation += CGFloat(2*M_PI)}
         icon.runAction(SKAction.rotateToAngle(-CGFloat(6*M_PI), duration: transitionDuration * 1.5).easeOut())
         printer.alpha = 0
       case .Hidden:
         userInteractionEnabled = false
+        runAction(actionThatScalesComponentsTo(0, duration: transitionDuration).ease(), withKey: "scaleComponents")
         outerRing.alpha = 1
-        outerRing.runAction(SKAction.scaleTo(0, duration: transitionDuration).ease())
         innerRing.alpha = 1
-        innerRing.runAction(SKAction.scaleTo(0, duration: transitionDuration).ease())
-        icon.runAction(SKAction.scaleTo(0, duration: transitionDuration).ease())
         icon.runAction(SKAction.fadeAlphaTo(0, duration: transitionDuration))
         while icon.zRotation < -0.01 {icon.zRotation += CGFloat(2*M_PI)}
         icon.runAction(SKAction.rotateToAngle(-CGFloat(6*M_PI), duration: transitionDuration * 1.5).easeIn())
         printer.alpha = 0
       case .Printer:
         userInteractionEnabled = false
-        outerRing.runAction(SKAction.scaleTo(outerPrinterScale, duration: transitionDuration).ease(), completion: {
-          [unowned self] in
-          self.outerRing.alpha = 0
-          self.innerRing.alpha = 0
-          self.printer.alpha = 1
-        })
-        innerRing.runAction(SKAction.scaleTo(innerPrinterScale, duration: transitionDuration).ease())
-        icon.runAction(SKAction.scaleTo(outerPrinterScale, duration: transitionDuration).ease())
+        runAction(SKAction.sequence([
+          actionThatScalesComponentsTo(1, duration: transitionDuration).ease(),
+          SKAction.runBlock({[unowned self] in
+            self.outerRing.alpha = 0
+            self.innerRing.alpha = 0
+            self.printer.alpha = 1
+          })
+          ]), withKey: "scaleComponents")
         icon.runAction(SKAction.fadeAlphaTo(0, duration: transitionDuration))
         while icon.zRotation < -0.01 {icon.zRotation += CGFloat(2*M_PI)}
         icon.runAction(SKAction.rotateToAngle(-CGFloat(6*M_PI), duration: transitionDuration * 1.5).easeIn())
