@@ -13,7 +13,7 @@ class ShimmerNode: SKSpriteNode {
 
   var alphaMin: CGFloat = 0 {didSet {if alphaMin < 0 {alphaMin = 0} else if alphaMin > alphaMax {alphaMin = alphaMax}}}
   var alphaMax: CGFloat = 0.125 {didSet {if alphaMax > 1 {alphaMax = 1} else if alphaMax < alphaMin {alphaMax = alphaMin}}}
-  var shimmerSpeed: CGFloat = 32 {didSet {if shimmerSpeed < 0 {shimmerSpeed = 0}}}
+  var shimmerSpeed: CGFloat = 1 {didSet {if shimmerSpeed < 0 {shimmerSpeed = 0}}}
   var isShimmering: Bool {get {return actionForKey("shimmer") != nil}}
 
   convenience override init() {self.init(texture: nil, color: Globals.strokeColor, size: CGSizeZero)}
@@ -32,13 +32,13 @@ class ShimmerNode: SKSpriteNode {
       if randBool() {
         let shimmerAlpha = randCGFloat(alphaMax - alpha) + alpha
         runAction(SKAction.sequence([
-          SKAction.fadeAlphaTo(shimmerAlpha, duration: NSTimeInterval((shimmerAlpha - alpha) * shimmerSpeed)),
-          SKAction.fadeAlphaTo(alphaMin, duration: NSTimeInterval((shimmerAlpha - alphaMin) * shimmerSpeed)),
+          SKAction.fadeAlphaTo(shimmerAlpha, duration: NSTimeInterval((shimmerAlpha - alpha) * 32 / shimmerSpeed)),
+          SKAction.fadeAlphaTo(alphaMin, duration: NSTimeInterval((shimmerAlpha - alphaMin) * 32 / shimmerSpeed)),
           SKAction.runBlock({[unowned self] in self.repeatShimmer()})
           ]), withKey: "shimmer")
       } else {
         runAction(SKAction.sequence([
-          SKAction.fadeAlphaTo(alphaMin, duration: NSTimeInterval(alpha * shimmerSpeed)),
+          SKAction.fadeAlphaTo(alphaMin, duration: NSTimeInterval(alpha * 32 / shimmerSpeed)),
           SKAction.runBlock({[unowned self] in self.repeatShimmer()})
           ]), withKey: "shimmer")
       }
@@ -56,13 +56,13 @@ class ShimmerNode: SKSpriteNode {
   func stopShimmer() {
     removeActionForKey("shimmer")
     if alpha > alphaMin {
-      runAction(SKAction.fadeAlphaTo(alphaMin, duration: NSTimeInterval((alpha - alphaMin) * shimmerSpeed)))
+      runAction(SKAction.fadeAlphaTo(alphaMin, duration: NSTimeInterval((alpha - alphaMin) * 32 / shimmerSpeed)))
     }
   }
   
   private func repeatShimmer() {
     let shimmerAlpha = randCGFloat(alphaMax - alphaMin) + alphaMin
-    let shimmerDuration = NSTimeInterval(shimmerAlpha * shimmerSpeed)
+    let shimmerDuration = NSTimeInterval(shimmerAlpha * 32 / shimmerSpeed)
     runAction(SKAction.sequence([
       SKAction.fadeAlphaTo(shimmerAlpha, duration: shimmerDuration),
       SKAction.fadeAlphaTo(alphaMin, duration: shimmerDuration),
@@ -86,8 +86,9 @@ class MenuIcon: SKNode {
     shimmerNodes = [ShimmerNode(), ShimmerNode(), ShimmerNode(), ShimmerNode()]
     super.init()
     for shimmerNode in shimmerNodes {
-      shimmerNode.alphaMin = 0.125
-      shimmerNode.alphaMax = 0.25
+      shimmerNode.alphaMin = 0.25
+      shimmerNode.alphaMax = 0.50
+      shimmerNode.shimmerSpeed = 4
       shimmerNode.startMidShimmer()
       addChild(shimmerNode)
     }

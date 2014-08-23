@@ -94,3 +94,83 @@ class Button: SKSpriteNode {
     return button
   }
 }
+
+class RingButton: Button {
+  required init(coder: NSCoder) {fatalError("NSCoding not supported")}
+  enum State {case Button, Hidden, Printer}
+  
+  let resizableRing = ResizableRing()
+  let buttonSize, printerSize: CGFloat
+  let printerRing = SKSpriteNode("printer")
+  let icon: SKNode
+  var transitionDuration: NSTimeInterval = 0.5
+  
+  init(icon: SKNode, state: State) {
+    buttonSize = resizableRing.size.width
+    printerSize = printerRing.size.width
+    self.icon = icon
+    self.state = state
+    switch state {
+    case .Button:
+      printerRing.alpha = 0
+    case .Hidden:
+      printerRing.alpha = 0
+      icon.alpha = 0
+    case .Printer:
+      resizableRing.alpha = 0
+      resizableRing.size = printerRing.size
+      icon.alpha = 0
+    }
+    super.init(texture: nil, color: nil, size: CGSizeZero)
+    addChild(resizableRing)
+    addChild(printerRing)
+    addChild(icon)
+  }
+  
+  var state: State {
+    didSet {
+      if state == oldValue {return}
+      touch = nil
+      switch state {
+      case .Button:
+        userInteractionEnabled = true
+        resizableRing.runAction(SKAction.resizeToWidth(buttonSize, height: buttonSize, duration: transitionDuration).ease())
+        printerRing.alpha = 0
+        icon.runAction(SKAction.fadeAlphaTo(1, duration: transitionDuration))
+      case .Hidden:
+        userInteractionEnabled = false
+        resizableRing.runAction(SKAction.resizeToWidth(0, height: 0, duration: transitionDuration).ease())
+        printerRing.alpha = 0
+        icon.runAction(SKAction.fadeAlphaTo(0, duration: transitionDuration))
+      case .Printer:
+        userInteractionEnabled = false
+        resizableRing.runAction(SKAction.sequence([
+          SKAction.resizeToWidth(printerSize, height: printerSize, duration: transitionDuration).ease(),
+          SKAction.runBlock({[unowned self] in self.resizableRing.alpha = 0}),
+          SKAction.runBlock({[unowned self] in self.printerRing.alpha = 1})
+          ]))
+        icon.runAction(SKAction.fadeAlphaTo(0, duration: transitionDuration))
+      }
+    }
+  }
+  
+  func followNode(node: SKNode) {
+    position = parent.convertPoint(node.position, fromNode: node.parent)
+  }
+  
+  class ResizableRing: SKSpriteNode {
+    required init(coder: NSCoder) {fatalError("NSCoding not supported")}
+    let inner = SKSpriteNode("ringInner")
+    override init() {
+      let tex = SKTexture(imageNamed: "ringOutter")
+      inner.color = Globals.backgroundColor
+      super.init(texture: tex, color: Globals.strokeColor, size: tex.size())
+      addChild(inner)
+    }
+    override var size: CGSize {
+      didSet {
+        inner.size = CGSize(width: size.width - 2, height: size.height - 2)
+      }
+    }
+  }
+}

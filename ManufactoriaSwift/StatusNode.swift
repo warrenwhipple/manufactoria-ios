@@ -15,8 +15,7 @@ class StatusNode: SwipeNode {
   weak var delegate: GameScene?
   let page: SKNode
   let label: BreakingLabel
-  let testButton: TestButton
-  let testIcon: SKSpriteNode
+  let ring: Ring
   let tapeNode: TapeNode
   let instructions: String
   let menuButton: Button
@@ -26,6 +25,7 @@ class StatusNode: SwipeNode {
   let nextIcon: SKSpriteNode
   let nextLabel: SKLabelNode
   
+  let failPage: SKNode?
   
   var thinkingAnimationDone = false
   
@@ -39,19 +39,16 @@ class StatusNode: SwipeNode {
 
     tapeNode = TapeNode()
     tapeNode.alpha = 0
-    tapeNode.setScale(0.5)
     
-    testIcon = SKSpriteNode("playIcon")
-    testButton = TestButton()
-    testButton.zPosition = 10
-    testButton.addChild(testIcon)
+    ring = Ring()
+    ring.zPosition = 10
     
     menuIcon = MenuIcon(size: CGSize(14))
     nextIcon = SKSpriteNode("playIcon")
     menuIcon.alpha = 0
     nextIcon.alpha = 0
-    menuButton = Button.growButton(imageNamed: "thinRing")
-    nextButton = Button.growButton(imageNamed: "thinRing")
+    menuButton = Button.growButton(imageNamed: "ring")
+    nextButton = Button.growButton(imageNamed: "ring")
     menuButton.setScale(0.5)
     nextButton.setScale(0.5)
     menuButton.addChild(menuIcon)
@@ -70,14 +67,14 @@ class StatusNode: SwipeNode {
     page = SKNode()
     page.addChild(label)
     page.addChild(tapeNode)
-    page.addChild(testButton)
+    page.addChild(ring)
     
     super.init(pages: [page])
     userInteractionEnabled = false
     
     tapeNode.delegate = self
-    tapeNode.printer.delegate = testButton
-    testButton.delegate = self
+    tapeNode.printer.delegate = ring
+    ring.delegate = self
     
     menuButton.touchUpInsideClosure = {[weak self] in self!.scene.view.presentScene(MenuScene(size: self!.scene.size), transition: SKTransition.crossFadeWithDuration(0.5))}
     nextButton.touchUpInsideClosure = {[weak self] in self!.scene.view.presentScene(GameScene(size: self!.scene.size, levelNumber: nextLevelNumber), transition: SKTransition.crossFadeWithDuration(0.5))}
@@ -85,9 +82,9 @@ class StatusNode: SwipeNode {
   
   override var size: CGSize {
     didSet{
-      label.position = CGPoint(0, size.height * (1.0/6.0))
-      tapeNode.position = CGPoint(0, -size.height * (1.0/6.0))
-      testButton.position = convertPoint(tapeNode.dotPositionForIndex(tapeNode.dots.count), fromNode: tapeNode)
+      label.position = CGPoint(0, round(size.height * (1.0/6.0)))
+      tapeNode.position = CGPoint(0, -round(size.height * (1.0/6.0)))
+      ring.position = convertPoint(tapeNode.dotPositionForIndex(tapeNode.dots.count), fromNode: tapeNode)
     }
   }
   
@@ -97,28 +94,23 @@ class StatusNode: SwipeNode {
       switch state {
       case .Editing:
         changeText(instructions)
-        testButton.removeAllActions()
-        testButton.runAction(SKAction.moveTo(tapeNode.position, duration: 0.5).ease())
-        testButton.runAction(SKAction.scaleTo(1, duration: 0.5).ease())
-        testIcon.runAction(SKAction.fadeAlphaTo(1, duration: 0.5))
+        ring.state = .TestButton
+        ring.runAction(SKAction.moveTo(tapeNode.position, duration: 0.5).ease())
         tapeNode.runAction(SKAction.fadeAlphaTo(0, duration: 0.5))
         userInteractionEnabled = true
-        testButton.userInteractionEnabled = true
       case .Thinking:
         userInteractionEnabled = false
-        testButton.userInteractionEnabled = false
+        ring.state = .Printer
         thinkingAnimationDone = false
         runAction(SKAction.waitForDuration(0.75), completion: {[weak self] in self!.thinkingAnimationDone = true})
         changeText("")
-        testButton.runAction(SKAction.scaleTo(0.5, duration: 0.5).ease())
-        testIcon.runAction(SKAction.fadeAlphaTo(0, duration: 0.5))
       case .Testing:
         tapeNode.runAction(SKAction.fadeAlphaTo(1, duration: 0.5))
       case .Congratulating:
         tapeNode.runAction(SKAction.fadeAlphaTo(0, duration: 0.5))
-        menuButton.position = testButton.position
-        nextButton.position = testButton.position
-        testButton.removeFromParent()
+        menuButton.position = ring.position
+        nextButton.position = ring.position
+        ring.removeFromParent()
         page.addChild(menuButton)
         page.addChild(nextButton)
         let menuPoint = tapeNode.position + CGPoint(-size.width * (1.0/6.0), 0)
@@ -152,23 +144,71 @@ class StatusNode: SwipeNode {
     label.runAction(SKAction.sequence(sequence), withKey: "changeText")
   }
   
+  func changeText(text: String?, textPosition: CGPoint) {
+    var sequence: [SKAction] = []
+    if label.alpha != 0 {
+      sequence.append(SKAction.fadeAlphaTo(0, duration: 0.5))
+    }
+    sequence.append(SKAction.runBlock({[weak self] in self!.label.text = text}))
+    sequence.append(SKAction.runBlock({[weak self] in self!.label.position = textPosition}))
+    if text != nil && text! != "" {
+      sequence.append(SKAction.fadeAlphaTo(1, duration: 0.5))
+    }
+    label.runAction(SKAction.sequence(sequence), withKey: "changeText")
+  }
+  
+  func generateFailPageForTestResult(result: TapeTestResult) {
+    // TODO: finish this function
+    
+  }
+  
   func testButtonPressed() {
     delegate?.testButtonPressed()
   }
   
-  class TestButton: Button {
+  class Ring: Button {
     required init(coder: NSCoder) {fatalError("NSCoding not supported")}
+    enum State {case TestButton, Printer}
     
     weak var delegate: StatusNode?
+    let ringSprite = SKSpriteNode("ring")
+    let printerSprite = SKSpriteNode("printer")
+    let playSprite = SKSpriteNode("playIcon")
+    let printerSizeRatio: CGFloat
     
     init() {
-      let texture = SKTexture(imageNamed: "thinRing")
-      super.init(texture: texture, color: Globals.strokeColor, size: texture.size())
-      colorBlendFactor = 1
-      let tempButton = Button.growButton(imageNamed: "thinRing")
-      pressAction = tempButton.pressAction
-      releaseAction = tempButton.releaseAction
+      printerSizeRatio = printerSprite.size.width / ringSprite.size.width
+      printerSprite.setScale(1 / printerSizeRatio)
+      printerSprite.alpha = 0
+      super.init(texture: nil, color: nil, size: CGSizeZero)
+      addChild(ringSprite)
+      addChild(printerSprite)
+      addChild(playSprite)
       touchUpInsideClosure = {[weak self] in if self!.delegate != nil {self!.delegate!.testButtonPressed()}}
+    }
+    
+    var state: State = .TestButton {
+      didSet {
+        if state == oldValue {return}
+        switch state {
+        case .TestButton:
+          userInteractionEnabled = true
+          runAction(SKAction.scaleTo(1, duration: 0.5).ease())
+          ringSprite.runAction(SKAction.fadeAlphaTo(1, duration: 0.125))
+          printerSprite.runAction(SKAction.fadeAlphaTo(0, duration: 0.125))
+          playSprite.runAction(SKAction.fadeAlphaTo(1, duration: 0.5))
+        case .Printer:
+          userInteractionEnabled = false
+          runAction(SKAction.scaleTo(printerSizeRatio, duration: 0.5).ease())
+          ringSprite.runAction(SKAction.sequence([
+            SKAction.waitForDuration(0.375),
+            SKAction.fadeAlphaTo(0, duration: 0.125)]))
+          printerSprite.runAction(SKAction.sequence([
+            SKAction.waitForDuration(0.375),
+            SKAction.fadeAlphaTo(1, duration: 0.125)]))
+          playSprite.runAction(SKAction.fadeAlphaTo(0, duration: 0.5))
+        }
+      }
     }
     
     func printerMoved(printer: SKNode) {

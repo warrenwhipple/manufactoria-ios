@@ -10,17 +10,18 @@ import SpriteKit
 
 class FirstTutorialScene: GameScene {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
+  var playButtonIsHidden = true
   
   init(size: CGSize) {
     super.init(size: size, levelNumber: 0)
-    statusNode.testButton.userInteractionEnabled = false
-    statusNode.testButton.alpha = 0
-    statusNode.label.position.y = 0
-    toolbarNode.alpha = 0
+    //statusNode.label.position.y = 0
+    //statusNode.ring.position.y = 0
+    statusNode.ring.userInteractionEnabled = false
+    statusNode.ring.setScale(0)
     toolbarNode.removeFromParent()
   }
   
-  func tutorialGridPasses() -> Bool {
+  func checkTutorialGrid() -> Bool {
     var coord = grid.startCoordPlusOne
     var lastCoord = grid.startCoord
     var tape: [Color] = []
@@ -39,21 +40,33 @@ class FirstTutorialScene: GameScene {
     return false
   }
   
+  func showPlayButton() {
+    if !playButtonIsHidden {return}
+    playButtonIsHidden = false
+    statusNode.label.runAction(SKAction.fadeAlphaTo(0, duration: 1))
+    statusNode.ring.runAction(SKAction.scaleTo(1, duration: 1))
+    statusNode.ring.userInteractionEnabled = true
+  }
+  
+  func hidePlayButton() {
+    if playButtonIsHidden {return}
+    playButtonIsHidden = true
+    statusNode.label.runAction(SKAction.fadeAlphaTo(1, duration: 1))
+    statusNode.ring.runAction(SKAction.scaleTo(0, duration: 1))
+    statusNode.ring.userInteractionEnabled = false
+  }
+  
   override func touchesBegan(touches: NSSet!, withEvent event: UIEvent!) {
     super.touchesBegan(touches, withEvent: event)
-    if state == State.Editing && statusNode.testButton.userInteractionEnabled {
-      statusNode.testButton.userInteractionEnabled = false
-      statusNode.testButton.runAction(SKAction.fadeAlphaTo(0, duration: 0.5))
+    if state == State.Editing {
+      hidePlayButton()
     }
   }
   
   override func touchesEnded(touches: NSSet!, withEvent event: UIEvent!) {
     super.touchesEnded(touches, withEvent: event)
-    if state == State.Editing && tutorialGridPasses() {
-      statusNode.testButton.userInteractionEnabled = true
-      statusNode.testButton.runAction(SKAction.fadeAlphaTo(1, duration: 0.5))
-      let swipeNode: SwipeNode = statusNode // swift ambiguity bug workaround
-      statusNode.label.runAction(SKAction.moveToY(swipeNode.size.height * (1.0/6.0), duration: 0.5).ease())
+    if state == State.Editing && checkTutorialGrid() {
+      showPlayButton()
     }
   }
 }

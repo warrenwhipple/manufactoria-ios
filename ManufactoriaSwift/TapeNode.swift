@@ -110,7 +110,7 @@ class TapeNode: SKNode {
   class Printer: SKNode {
     required init(coder: NSCoder) {fatalError("NSCoding not supported")}
     override init() {super.init()}
-    weak var delegate: StatusNode.TestButton?
+    weak var delegate: StatusNode.Ring?
     override var position: CGPoint {didSet {delegate?.printerMoved(self)}}
   }
 }

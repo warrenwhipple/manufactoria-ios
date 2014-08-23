@@ -12,6 +12,7 @@ class TitleScene: SKScene {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   let gameData = GameData.sharedInstance
   let title: SKLabelNode
+  let button: SKSpriteNode
   let arrow: SKSpriteNode
   
   override init(size: CGSize) {
@@ -21,15 +22,23 @@ class TitleScene: SKScene {
     title.verticalAlignmentMode = .Center
     title.text = "Manufactoria"
     title.position = CGPoint(size.width * 0.5, size.height * 0.5 + 40)
-    arrow = SKSpriteNode("thinRing")
-    arrow.addChild(SKSpriteNode("playIcon"))
-    arrow.position = CGPoint(size.width * 0.5, size.height * 0.5 - 40)
-    arrow.alpha = 0
-    arrow.runAction(SKAction.sequence([SKAction.waitForDuration(1), SKAction.fadeAlphaTo(1, duration: 4)]))
+    button = SKSpriteNode("ring")
+    arrow = SKSpriteNode("playIcon")
+    button.addChild(arrow)
+    button.position = CGPoint(size.width * 0.5, size.height * 0.5 - 40)
+    button.setScale(0)
+    button.runAction(SKAction.sequence([
+      SKAction.waitForDuration(1),
+      SKAction.scaleTo(1, duration: 2).easeOut()
+      ]))
+    arrow.runAction(SKAction.sequence([
+      SKAction.waitForDuration(1),
+      SKAction.rotateByAngle(CGFloat(-8*M_PI), duration: 3).easeOut()
+      ]))
     super.init(size: size)
     backgroundColor = Globals.backgroundColor
     addChild(title)
-    addChild(arrow)
+    addChild(button)
   }
   
   override func touchesBegan(touches: NSSet!, withEvent event: UIEvent!) {

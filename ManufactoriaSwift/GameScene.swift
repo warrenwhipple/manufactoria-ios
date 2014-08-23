@@ -89,7 +89,7 @@ class GameScene: SKScene {
       [unowned self] in
       self.view.presentScene(MenuScene(size: size), transition: SKTransition.crossFadeWithDuration(0.5))
     }
-    self.addChild(menuButton)
+    addChild(menuButton)
     
     fitToSize()
   }

@@ -28,12 +28,12 @@ class CellNode: SKNode {
     bridge.zRotation = CGFloat(-M_PI_2)
     bridge.colorBlendFactor = 1
     
-    pusher = SKSpriteNode("dot")
+    pusher = SKSpriteNode("pusher")
     pusher.zPosition = 5
     
     puller = SKNode()
-    pullerLeft = SKSpriteNode("pullerHalfFill")
-    pullerRight = SKSpriteNode("pullerHalfFill")
+    pullerLeft = SKSpriteNode("pullerHalf")
+    pullerRight = SKSpriteNode("pullerHalf")
     puller.zPosition = 5
     pullerLeft.anchorPoint = CGPoint(1, 0.5)
     pullerRight.anchorPoint = CGPoint(1, 0.5)
