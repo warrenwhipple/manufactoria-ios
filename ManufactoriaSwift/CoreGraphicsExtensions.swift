@@ -17,6 +17,9 @@ extension CGSize {
     self.width = width
     self.height = height
   }
+  var center: CGPoint {
+    get {return CGPoint(x: 0.5 * width, y: 0.5 * height)}
+  }
 }
 
 extension CGPoint {

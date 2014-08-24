@@ -32,12 +32,12 @@ class QuestionScene: SKScene {
     noLabel.fontColor = Globals.strokeColor
     noLabel.text = noText
         
-    let yesButton = Button.fadeButton(size: CGSize(80))
+    let yesButton = Button(size: CGSize(80))
     yesButton.touchUpInsideClosure = yesClosure
     yesButton.position = CGPoint(midX - 70, midY - 40)
     yesButton.addChild(yesLabel)
     
-    let noButton = Button.fadeButton(size: CGSize(80))
+    let noButton = Button(size: CGSize(80))
     noButton.touchUpInsideClosure = noClosure
     noButton.position = CGPoint(midX + 70, midY - 40)
     noButton.addChild(noLabel)

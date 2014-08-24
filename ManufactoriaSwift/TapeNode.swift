@@ -17,7 +17,7 @@ class TapeNode: SKNode {
   var maxLength: Int = 0
   let dotTexture = SKTexture(imageNamed: "dot")
   let dotSpacing: CGFloat
-  let printer = Printer()
+  let printer = SKNode()
   
   override init() {
     dotSpacing = dotTexture.size().width * 1.5
@@ -105,12 +105,5 @@ class TapeNode: SKNode {
   
   func dotPositionForIndex(index: Int) -> CGPoint {
     return CGPoint(CGFloat(index) * dotSpacing, 0)
-  }
-  
-  class Printer: SKNode {
-    required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-    override init() {super.init()}
-    weak var delegate: StatusNode.Ring?
-    override var position: CGPoint {didSet {delegate?.printerMoved(self)}}
   }
 }

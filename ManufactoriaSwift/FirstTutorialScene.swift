@@ -10,14 +10,12 @@ import SpriteKit
 
 class FirstTutorialScene: GameScene {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  var playButtonIsHidden = true
+  var testButtonIsHidden = true
   
   init(size: CGSize) {
     super.init(size: size, levelNumber: 0)
-    //statusNode.label.position.y = 0
-    //statusNode.ring.position.y = 0
-    statusNode.ring.userInteractionEnabled = false
-    statusNode.ring.setScale(0)
+    statusNode.testButton.alpha = 0
+    statusNode.testButton.state = .Hidden
     toolbarNode.removeFromParent()
   }
   
@@ -40,33 +38,32 @@ class FirstTutorialScene: GameScene {
     return false
   }
   
-  func showPlayButton() {
-    if !playButtonIsHidden {return}
-    playButtonIsHidden = false
+  func showTestButton() {
+    if !testButtonIsHidden {return}
+    testButtonIsHidden = false
     statusNode.label.runAction(SKAction.fadeAlphaTo(0, duration: 1))
-    statusNode.ring.runAction(SKAction.scaleTo(1, duration: 1))
-    statusNode.ring.userInteractionEnabled = true
+    statusNode.testButton.alpha = 1
+    statusNode.testButton.state = .Button
   }
   
-  func hidePlayButton() {
-    if playButtonIsHidden {return}
-    playButtonIsHidden = true
+  func hideTestButton() {
+    if testButtonIsHidden {return}
+    testButtonIsHidden = true
     statusNode.label.runAction(SKAction.fadeAlphaTo(1, duration: 1))
-    statusNode.ring.runAction(SKAction.scaleTo(0, duration: 1))
-    statusNode.ring.userInteractionEnabled = false
+    statusNode.testButton.state = .Hidden
   }
   
   override func touchesBegan(touches: NSSet!, withEvent event: UIEvent!) {
     super.touchesBegan(touches, withEvent: event)
     if state == State.Editing {
-      hidePlayButton()
+      hideTestButton()
     }
   }
   
   override func touchesEnded(touches: NSSet!, withEvent event: UIEvent!) {
     super.touchesEnded(touches, withEvent: event)
     if state == State.Editing && checkTutorialGrid() {
-      showPlayButton()
+      showTestButton()
     }
   }
 }

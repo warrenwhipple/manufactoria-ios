@@ -22,9 +22,10 @@ class TitleScene: SKScene {
     title.text = "Manufactoria"
     title.position = CGPoint(size.width * 0.5, size.height * 0.5 + 40)
     button = RingButton(icon: SKSpriteNode("playIcon"), state: .Hidden)
-    button.transitionDuration = 2
     button.position = CGPoint(size.width * 0.5, size.height * 0.5 - 40)
     button.size = size * 2
+    button.scaleDuration = 2
+    button.state = .Button
     super.init(size: size)
     backgroundColor = Globals.backgroundColor
     if gameData.levelsComplete == 0 {
@@ -40,10 +41,5 @@ class TitleScene: SKScene {
     }
     addChild(title)
     addChild(button)
-    button.userInteractionEnabled = true
-    runAction(SKAction.sequence([
-      SKAction.waitForDuration(1),
-      SKAction.runBlock({[unowned self] in self.button.state = .Button})
-      ]))
   }
 }

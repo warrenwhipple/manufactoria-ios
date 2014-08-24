@@ -26,10 +26,10 @@ class SpeedControlNode: SKNode {
     let skipIcon = SKSpriteNode("skipIcon")
     backIcon.xScale = -1
     slowerIcon.xScale = -1
-    backButton = Button.growButton(size: buttonSize)
-    slowerButton = Button.growButton(size: buttonSize)
-    fasterButton = Button.growButton(size: buttonSize)
-    skipButton = Button.growButton(size: buttonSize)
+    backButton = Button(size: buttonSize)
+    slowerButton = Button(size: buttonSize)
+    fasterButton = Button(size: buttonSize)
+    skipButton = Button(size: buttonSize)
     backButton.addChild(backIcon)
     slowerButton.addChild(slowerIcon)
     fasterButton.addChild(fasterIcon)
