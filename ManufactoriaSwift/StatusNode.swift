@@ -13,13 +13,14 @@ class StatusNode: SwipeNode {
   enum State {case Editing, Thinking, Testing, Congratulating}
   
   weak var delegate: GameScene?
-  let page: SKNode
+  let instructionsPage: SKNode
+  let failResultsPage: SKNode
+  
   let label: BreakingLabel
   let testButton: RingButton
   let tapeNode: TapeNode
   let instructions: String
   
-  let failPage: SKNode?
   
   var thinkingAnimationDone = false
   
@@ -32,18 +33,19 @@ class StatusNode: SwipeNode {
     label.text = instructions
 
     tapeNode = TapeNode()
-    tapeNode.alpha = 0
+    tapeNode.dotWrapper.alpha = 0
     
     testButton = RingButton(icon: SKSpriteNode("playIcon"), state: .Button)
     testButton.zPosition = 10
     
-    page = SKNode()
-    page.addChild(label)
-    page.addChild(tapeNode)
-    page.addChild(testButton)
+    instructionsPage = SKNode()
+    instructionsPage.addChild(label)
+    instructionsPage.addChild(tapeNode)
+    instructionsPage.addChild(testButton)
     
-    super.init(pages: [page])
-    userInteractionEnabled = false
+    failResultsPage = SKNode()
+    
+    super.init(pages: [instructionsPage, failResultsPage])
     
     tapeNode.delegate = self
     
@@ -54,7 +56,7 @@ class StatusNode: SwipeNode {
     didSet{
       label.position = CGPoint(0, round(size.height * (1.0/6.0)))
       tapeNode.position = CGPoint(0, -round(size.height * (1.0/6.0)))
-      testButton.position = convertPoint(tapeNode.dotPositionForIndex(tapeNode.dots.count), fromNode: tapeNode)
+      testButton.position = tapeNode.position
     }
   }
   
@@ -64,18 +66,25 @@ class StatusNode: SwipeNode {
       switch state {
       case .Editing:
         changeText(instructions)
-        testButton.state = .Button
+        testButton.removeFromParent()
+        testButton.position = convertPoint(tapeNode.printer.position, fromNode: tapeNode.printer.parent)
+        instructionsPage.addChild(testButton)
         testButton.runAction(SKAction.moveTo(tapeNode.position, duration: 0.5).ease())
-        tapeNode.runAction(SKAction.fadeAlphaTo(0, duration: 0.5))
+        testButton.state = .Button
+        tapeNode.dotWrapper.runAction(SKAction.fadeAlphaTo(0, duration: 0.5))
         userInteractionEnabled = true
       case .Thinking:
         userInteractionEnabled = false
-        testButton.state = .Printer
         thinkingAnimationDone = false
+        testButton.state = .Printer
+        testButton.runAction(SKAction.moveTo(tapeNode.position, duration: 0.5))
         runAction(SKAction.waitForDuration(0.75), completion: {[weak self] in self!.thinkingAnimationDone = true})
         changeText("")
       case .Testing:
-        tapeNode.runAction(SKAction.fadeAlphaTo(1, duration: 0.5))
+        testButton.removeFromParent()
+        testButton.position = CGPointZero
+        tapeNode.printer.addChild(testButton)
+        tapeNode.dotWrapper.runAction(SKAction.fadeAlphaTo(1, duration: 0.5))
       case .Congratulating:
         testButton.state = .Hidden
       }

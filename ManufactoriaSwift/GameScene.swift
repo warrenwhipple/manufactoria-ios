@@ -319,7 +319,7 @@ class GameScene: SKScene {
     weak var delegate: GameScene?
     override var speed: CGFloat {
       didSet {
-        delegate?.statusNode.tapeNode.wrapper.speed = speed
+        delegate?.statusNode.tapeNode.dotPrinterWrapper.speed = speed
       }
     }
     var target: CGFloat = 1 {

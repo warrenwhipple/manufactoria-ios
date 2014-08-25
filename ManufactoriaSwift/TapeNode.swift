@@ -10,11 +10,14 @@ import SpriteKit
 
 class TapeNode: SKNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
+  enum State {case Loading, Waiting, Writing, Deleting, Clearing}
   
   weak var delegate: StatusNode?
-  let wrapper = SKNode()
+  let dotPrinterWrapper = SKNode()
+  let dotWrapper = SKNode()
   var dots: [SKSpriteNode] = []
   var maxLength: Int = 0
+  var maxDotsAcross: Int = 8
   let dotTexture = SKTexture(imageNamed: "dot")
   let dotSpacing: CGFloat
   let printer = SKNode()
@@ -22,8 +25,13 @@ class TapeNode: SKNode {
   override init() {
     dotSpacing = dotTexture.size().width * 1.5
     super.init()
-    wrapper.addChild(printer)
-    addChild(wrapper)
+    dotPrinterWrapper.addChild(printer)
+    dotPrinterWrapper.addChild(dotWrapper)
+    addChild(dotPrinterWrapper)
+  }
+  
+  func update(tickPercent: CGFloat) {
+    
   }
   
   func loadTape(tape: String, maxLength: Int) {
@@ -35,6 +43,7 @@ class TapeNode: SKNode {
     
     // add new dots
     var i = 0
+    let dotCount = tape.length()
     for character in tape {
       let dot = SKSpriteNode(texture: dotTexture)
       switch character.color() {
@@ -42,17 +51,13 @@ class TapeNode: SKNode {
       case .Red: dot.color = Globals.redColor
       case .Green: dot.color = Globals.greenColor
       case .Yellow: dot.color = Globals.yellowColor
-      default: break
       }
       dot.colorBlendFactor = 1
-      dot.position = dotPositionForIndex(i++)
-      wrapper.addChild(dot)
+      dotWrapper.addChild(dot)
       dots.append(dot)
     }
-    
-    // reset printer
-    printer.removeAllActions()
-    printer.position = dotPositionForIndex(i)
+    printer.position = CGPointZero
+    animateTapeReposition()
   }
   
   func writeColor(color: Color) {
@@ -63,8 +68,7 @@ class TapeNode: SKNode {
     dot.color = Globals.strokeColor
     dot.colorBlendFactor = 1
     dot.alpha = 0
-    let dotIndex = dots.count - 1
-    dot.position = dotPositionForIndex(dotIndex)
+    dot.position = dotPositionForIndex(dots.count - 1, of: dots.count)
     var newColor: UIColor!
     switch color {
     case .Blue: newColor = Globals.blueColor
@@ -72,41 +76,32 @@ class TapeNode: SKNode {
     case .Green: newColor = Globals.greenColor
     case .Yellow: newColor = Globals.yellowColor
     }
+    dotWrapper.addChild(dot)
     dot.runAction(SKAction.sequence([
       SKAction.fadeAlphaTo(1, duration: 0.25),
-      SKAction.colorizeWithColor(newColor, colorBlendFactor: 1, duration: 0.25)]))
-    wrapper.addChild(dot)
-    
-    // animate printer
-    printer.removeAllActions()
-    printer.position = dotPositionForIndex(dotIndex)
-    printer.runAction(SKAction.sequence([
-      SKAction.waitForDuration(0.5),
-      SKAction.moveTo(dotPositionForIndex(dotIndex + 1), duration: 0.5).ease()
+      SKAction.colorizeWithColor(newColor, colorBlendFactor: 1, duration: 0.25),
+      SKAction.runBlock({[unowned self] in self.animateTapeReposition()})
       ]))
   }
   
   func deleteColor() {
     if dots.count == 0 {return}
-    
-    // animate deleting dot
     dots[0].runAction(SKAction.sequence([
       SKAction.scaleTo(0, duration: 0.5).ease(),
       SKAction.removeFromParent()]))
     dots.removeAtIndex(0)
-    
-    // move remaining dots
-    var i = 0
-    for dot in dots {
-      dot.runAction(SKAction.moveTo(dotPositionForIndex(i++), duration: 1).ease())
-    }
-    
-    // move printer
-    printer.removeAllActions()
-    printer.runAction(SKAction.moveTo(dotPositionForIndex(i), duration: 1))
+    animateTapeReposition()
   }
   
-  func dotPositionForIndex(index: Int) -> CGPoint {
+  func animateTapeReposition() {
+    var i = 0
+    for dot in dots {
+      dot.runAction(SKAction.moveTo(dotPositionForIndex(i++, of: dots.count), duration: 0.5).ease(), withKey: "move")
+    }
+    printer.runAction(SKAction.moveTo(dotPositionForIndex(i++, of: dots.count), duration: 0.5).ease(), withKey: "move")
+  }
+  
+  func dotPositionForIndex(index: Int, of: Int) -> CGPoint {
     return CGPoint(CGFloat(index) * dotSpacing, 0)
   }
 }

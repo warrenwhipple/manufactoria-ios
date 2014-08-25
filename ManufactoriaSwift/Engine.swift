@@ -32,6 +32,7 @@ class Engine {
   
   init(levelSetup: LevelSetup) {
     self.levelSetup = levelSetup
+    queue.maxConcurrentOperationCount = 1
   }
   
   func queueTestWithGrid(grid: Grid) {

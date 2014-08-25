@@ -173,9 +173,5 @@ class RingButton: Button {
           ]), withKey: "fade")
       }
     }
-  }
-  
-  func followNode(node: SKNode) {
-    position = parent.convertPoint(node.position, fromNode: node.parent)
-  }
+  }  
 }
