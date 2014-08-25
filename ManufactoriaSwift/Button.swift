@@ -135,11 +135,11 @@ class RingButton: Button {
     
     pressClosure = {
       [unowned self] in
-      self.ringFill.runAction(SKAction.fadeAlphaTo(0.25, duration: 0.25).easeOut(), withKey: "fade")
+      self.ringFill.runAction(SKAction.fadeAlphaTo(0.3, duration: 0.2).easeOut(), withKey: "fade")
     }
     releaseClosure = {
       [unowned self] in
-      self.ringFill.runAction(SKAction.fadeAlphaTo(0, duration: 0.5).easeIn(), withKey: "fade")
+      self.ringFill.runAction(SKAction.fadeAlphaTo(0, duration: 0.4).easeIn(), withKey: "fade")
     }
     
     ring.addChild(ringFill)

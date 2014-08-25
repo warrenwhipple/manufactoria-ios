@@ -92,7 +92,7 @@ class GameScene: SKScene {
     
     menuButton.touchUpInsideClosure = {
       [unowned self] in
-      self.view.presentScene(MenuScene(size: size), transition: SKTransition.crossFadeWithDuration(0.5))
+      self.view.presentScene(MenuScene(size: size), transition: SKTransition.pushWithDirection(.Left, duration: 0.5).outInPlay())
     }
     addChild(menuButton)
     

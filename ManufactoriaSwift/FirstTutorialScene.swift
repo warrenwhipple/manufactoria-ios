@@ -19,6 +19,24 @@ class FirstTutorialScene: GameScene {
     toolbarNode.removeFromParent()
   }
   
+  /*
+  override func fitToSize() {
+    super.fitToSize()
+    statusNode.label.position.y = 0
+    statusNode.testButton.position.y = 0
+    statusNode.tapeNode.position.y = 0
+  }
+  
+  override var state: State {
+    didSet {
+      if state == oldValue {return}
+      if state == .Thinking {
+        statusNode.testButton.state = .Hidden
+      }
+    }
+  }
+  */
+  
   func checkTutorialGrid() -> Bool {
     var coord = grid.startCoordPlusOne
     var lastCoord = grid.startCoord

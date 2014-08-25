@@ -18,7 +18,7 @@ class EndMenuNode: SKNode {
   let nextLabel: SKLabelNode
   
   init(nextLevelNumber: Int) {
-    let buttonSize = CGSize(64)
+    let buttonSize = CGSize(80)
     let nextIcon = SKSpriteNode("playIcon")
     let menuIcon = MenuIcon(size: CGSize(nextIcon.size.width))
     menuButton = Button(size: buttonSize)
@@ -35,8 +35,8 @@ class EndMenuNode: SKNode {
     nextLabel.horizontalAlignmentMode = .Center
     menuLabel.text = "menu"
     nextLabel.text = "next"
-    menuLabel.position.y = -32
-    nextLabel.position.y = -32
+    menuLabel.position.y = -40
+    nextLabel.position.y = -40
     menuButton.addChild(menuLabel)
     nextButton.addChild(nextLabel)
     
@@ -44,10 +44,16 @@ class EndMenuNode: SKNode {
     
     menuButton.touchUpInsideClosure = {
       [unowned self] in
-      self.scene.view.presentScene(MenuScene(size: self.scene.size), transition: SKTransition.crossFadeWithDuration(0.5))
+      self.scene.view.presentScene(
+        MenuScene(size: self.scene.size),
+        transition: SKTransition.pushWithDirection(.Left, duration: 0.5).outInPlay())
     }
     nextButton.touchUpInsideClosure = {
-      [unowned self] in self.scene.view.presentScene(GameScene(size: self.scene.size, levelNumber: nextLevelNumber), transition: SKTransition.crossFadeWithDuration(0.5))
+      [unowned self] in
+      if self.delegate != nil {self.delegate!.menuButton.alpha = 0}
+      self.scene.view.presentScene(
+        GameScene(size: self.scene.size, levelNumber: nextLevelNumber),
+        transition: SKTransition.pushWithDirection(.Left, duration: 0.5).outInPlay())
     }
 
     addChild(menuButton)

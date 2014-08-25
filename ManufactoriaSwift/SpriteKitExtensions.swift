@@ -33,12 +33,6 @@ extension SKNode {
   }
 }
  
-/*extension SKTexture {
-  convenience init(_ string: String) {
-    self.init(imageNamed: string)
-  }
-}*/
-
 extension SKSpriteNode {
   convenience init(_ string: String) {
     self.init(texture: SKTexture(imageNamed: string))
@@ -48,18 +42,15 @@ extension SKSpriteNode {
 }
 
 extension SKAction {
-  func ease() -> SKAction {
-    timingMode = .EaseInEaseOut
-    return self
-  }
-  func easeIn() -> SKAction {
-    timingMode = .EaseIn
-    return self
-  }
-  func easeOut() -> SKAction {
-    timingMode = .EaseOut
-    return self
-  }
+  func ease() -> SKAction {timingMode = .EaseInEaseOut; return self}
+  func easeIn() -> SKAction {timingMode = .EaseIn; return self}
+  func easeOut() -> SKAction {timingMode = .EaseOut; return self}
+}
+
+extension SKTransition {
+  func outPlay() -> SKTransition {pausesOutgoingScene = false; return self}
+  func inPlay() -> SKTransition {pausesIncomingScene = false; return self}
+  func outInPlay() -> SKTransition {pausesOutgoingScene = false; pausesIncomingScene = false; return self}
 }
 
 extension SKLabelNode {

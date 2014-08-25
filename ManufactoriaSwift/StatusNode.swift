@@ -76,7 +76,8 @@ class StatusNode: SwipeNode {
         changeText("")
       case .Testing:
         tapeNode.runAction(SKAction.fadeAlphaTo(1, duration: 0.5))
-      case .Congratulating: break
+      case .Congratulating:
+        testButton.state = .Hidden
       }
     }
   }

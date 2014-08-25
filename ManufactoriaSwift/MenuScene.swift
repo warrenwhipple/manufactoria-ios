@@ -80,7 +80,7 @@ class MenuScene: SKScene {
     }
     
     override func touchesBegan(touches: NSSet!, withEvent event: UIEvent!) {
-      scene.view.presentScene(GameScene(size: scene.view.bounds.size, levelNumber: levelNumber), transition: SKTransition.crossFadeWithDuration(0.5))
+      scene.view.presentScene(GameScene(size: scene.view.bounds.size, levelNumber: levelNumber), transition: SKTransition.pushWithDirection(.Right, duration: 0.5).outInPlay())
     }
   }
   
@@ -99,16 +99,16 @@ class MenuScene: SKScene {
           if view != nil {
             GameData.sharedInstance.levelsComplete = LevelLibrary.count
             GameData.sharedInstance.save()
-            view!.presentScene(MenuScene(size: view!.bounds.size), transition: SKTransition.crossFadeWithDuration(0.5))
+            view!.presentScene(MenuScene(size: view!.bounds.size), transition: SKTransition.pushWithDirection(.Right, duration: 0.5).outInPlay())
           }
         },
         noClosure: {
           [weak view = self.scene.view] in
           if view != nil {
-            view!.presentScene(MenuScene(size: view!.bounds.size), transition: SKTransition.crossFadeWithDuration(0.5))
+            view!.presentScene(MenuScene(size: view!.bounds.size), transition: SKTransition.pushWithDirection(.Right, duration: 2.5).outInPlay())
           }
         },
-        size: scene.size), transition: SKTransition.crossFadeWithDuration(0.5)
+        size: scene.size), transition: SKTransition.pushWithDirection(.Left, duration: 2.5).outInPlay()
       )
     }
   }
@@ -128,16 +128,16 @@ class MenuScene: SKScene {
           if view != nil {
             GameData.sharedInstance.levelsComplete = 0
             GameData.sharedInstance.save()
-            view!.presentScene(TitleScene(size: view!.bounds.size), transition: SKTransition.fadeWithColor(Globals.strokeColor, duration: 3))
+            view!.presentScene(TitleScene(size: view!.bounds.size), transition: SKTransition.fadeWithColor(Globals.strokeColor, duration: 3).outInPlay())
           }
         },
         noClosure: {
           [weak view = self.scene.view] in
           if view != nil {
-            view!.presentScene(MenuScene(size: view!.bounds.size), transition: SKTransition.crossFadeWithDuration(0.5))
+            view!.presentScene(MenuScene(size: view!.bounds.size), transition: SKTransition.pushWithDirection(.Right, duration: 0.5).outInPlay())
           }
         },
-        size: scene.size), transition: SKTransition.crossFadeWithDuration(0.5)
+        size: scene.size), transition: SKTransition.pushWithDirection(.Left, duration: 0.5).outInPlay()
       )
     }
   }
