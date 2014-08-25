@@ -18,16 +18,12 @@ class StatusNode: SwipeNode {
   let testButton: RingButton
   let tapeNode: TapeNode
   let instructions: String
-  let menuButton: RingButton
-  let menuLabel: SKLabelNode
-  let nextButton: RingButton
-  let nextLabel: SKLabelNode
   
   let failPage: SKNode?
   
   var thinkingAnimationDone = false
   
-  init(instructions: String, nextLevelNumber: Int) {
+  init(instructions: String) {
     self.instructions = instructions
 
     label = BreakingLabel()
@@ -41,19 +37,6 @@ class StatusNode: SwipeNode {
     testButton = RingButton(icon: SKSpriteNode("playIcon"), state: .Button)
     testButton.zPosition = 10
     
-    menuButton = RingButton(icon: MenuIcon(size: CGSize(16)), state: .Printer)
-    nextButton = RingButton(icon: SKSpriteNode("playIcon"), state: .Printer)
-    menuLabel = SKLabelNode()
-    nextLabel = SKLabelNode()
-    menuLabel.alpha = 0
-    nextLabel.alpha = 0
-    menuLabel.fontMedium()
-    nextLabel.fontMedium()
-    menuLabel.fontColor = Globals.strokeColor
-    nextLabel.fontColor = Globals.strokeColor
-    menuLabel.text = "menu"
-    nextLabel.text = "next"
-    
     page = SKNode()
     page.addChild(label)
     page.addChild(tapeNode)
@@ -65,8 +48,6 @@ class StatusNode: SwipeNode {
     tapeNode.delegate = self
     
     testButton.touchUpInsideClosure = {[unowned self] in self.testButtonPressed()}
-    menuButton.touchUpInsideClosure = {[unowned self] in self.scene.view.presentScene(MenuScene(size: self.scene.size), transition: SKTransition.crossFadeWithDuration(0.5))}
-    nextButton.touchUpInsideClosure = {[unowned self] in self.scene.view.presentScene(GameScene(size: self.scene.size, levelNumber: nextLevelNumber), transition: SKTransition.crossFadeWithDuration(0.5))}
   }
   
   override var size: CGSize {
@@ -95,26 +76,7 @@ class StatusNode: SwipeNode {
         changeText("")
       case .Testing:
         tapeNode.runAction(SKAction.fadeAlphaTo(1, duration: 0.5))
-      case .Congratulating:
-        tapeNode.runAction(SKAction.fadeAlphaTo(0, duration: 0.5))
-        menuButton.position = testButton.position
-        nextButton.position = testButton.position
-        testButton.removeFromParent()
-        page.addChild(menuButton)
-        page.addChild(nextButton)
-        let menuPoint = tapeNode.position + CGPoint(-size.width * (1.0/6.0), 0)
-        let nextPoint = tapeNode.position + CGPoint(size.width * (1.0/6.0), 0)
-        menuButton.runAction(SKAction.moveTo(menuPoint, duration: 0.5).ease())
-        nextButton.runAction(SKAction.moveTo(nextPoint, duration: 0.5).ease())
-        menuButton.runAction(SKAction.scaleTo(1, duration: 0.5))
-        nextButton.runAction(SKAction.scaleTo(1, duration: 0.5))
-        menuLabel.position = menuPoint + CGPoint(0, -40)
-        nextLabel.position = nextPoint + CGPoint(0, -40)
-        page.addChild(menuLabel)
-        page.addChild(nextLabel)
-        let textFadeIn = SKAction.sequence([SKAction.waitForDuration(1), SKAction.fadeAlphaTo(1, duration: 0.5)])
-        menuLabel.runAction(textFadeIn)
-        nextLabel.runAction(textFadeIn)
+      case .Congratulating: break
       }
     }
   }

@@ -27,6 +27,7 @@ class GameScene: SKScene {
   let toolbarNode: ToolbarNode
   let speedAnchor = SpeedAnchor()
   let speedControlNode = SpeedControlNode()
+  let endMenuNode: EndMenuNode
   let robotNode: SKSpriteNode
   
   // variables
@@ -47,9 +48,11 @@ class GameScene: SKScene {
     let levelSetup = LevelLibrary[levelNumber]
     grid = Grid(space: levelSetup.space)
     engine = Engine(levelSetup: levelSetup)
-    statusNode = StatusNode(instructions: levelSetup.instructions, nextLevelNumber: levelNumber + 1)
+    statusNode = StatusNode(instructions: levelSetup.instructions)
     gridNode = GridNode(grid: grid)
     toolbarNode = ToolbarNode(buttonKinds: levelSetup.buttons)
+    endMenuNode = EndMenuNode(nextLevelNumber: levelNumber + 1)
+    endMenuNode.alpha = 0
     
     robotNode = SKSpriteNode("robut")
     robotNode.size = CGSize(1)
@@ -84,6 +87,8 @@ class GameScene: SKScene {
     addChild(speedAnchor)
     
     speedControlNode.delegate = self
+    
+    endMenuNode.delegate = self
     
     menuButton.touchUpInsideClosure = {
       [unowned self] in
@@ -127,6 +132,8 @@ class GameScene: SKScene {
         statusNode.state = .Congratulating
         speedControlNode.isEnabled = false
         speedControlNode.runAction(SKAction.sequence([SKAction.fadeAlphaTo(0, duration: 0.5), SKAction.removeFromParent()]))
+        if endMenuNode.parent == nil {addChild(endMenuNode)}
+        endMenuNode.runAction(SKAction.fadeAlphaTo(1, duration: 0.5))
       }
     }
   }
@@ -143,6 +150,8 @@ class GameScene: SKScene {
     toolbarNode.size = bottomGapRect.size
     speedControlNode.position = bottomGapRect.center
     speedControlNode.size = bottomGapRect.size
+    endMenuNode.position = bottomGapRect.center
+    endMenuNode.size = bottomGapRect.size
     statusNode.position = topGapRect.center
 
     // ambiguous bug error workaround
