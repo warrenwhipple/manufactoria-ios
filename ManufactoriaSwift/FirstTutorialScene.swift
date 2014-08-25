@@ -40,7 +40,7 @@ class FirstTutorialScene: GameScene {
   func checkTutorialGrid() -> Bool {
     var coord = grid.startCoordPlusOne
     var lastCoord = grid.startCoord
-    var tape: [Color] = []
+    var tape: String = ""
     var ticks = 0
     while ++ticks < 9 {
       switch grid.testCoord(coord, lastCoord: lastCoord, tape: &tape) {

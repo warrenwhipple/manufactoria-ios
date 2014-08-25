@@ -26,7 +26,7 @@ class TapeNode: SKNode {
     addChild(wrapper)
   }
   
-  func loadTape(tape: [Color], maxLength: Int) {
+  func loadTape(tape: String, maxLength: Int) {
     self.maxLength = maxLength
     
     // remove old dots
@@ -35,9 +35,9 @@ class TapeNode: SKNode {
     
     // add new dots
     var i = 0
-    for color in tape {
+    for character in tape {
       let dot = SKSpriteNode(texture: dotTexture)
-      switch color {
+      switch character.color() {
       case .Blue: dot.color = Globals.blueColor
       case .Red: dot.color = Globals.redColor
       case .Green: dot.color = Globals.greenColor
@@ -60,18 +60,21 @@ class TapeNode: SKNode {
     // add dot
     let dot = SKSpriteNode(texture: dotTexture)
     dots.append(dot)
-    switch color {
-    case .Blue: dot.color = Globals.blueColor
-    case .Red: dot.color = Globals.redColor
-    case .Green: dot.color = Globals.greenColor
-    case .Yellow: dot.color = Globals.yellowColor
-    }
+    dot.color = Globals.strokeColor
+    dot.colorBlendFactor = 1
     dot.alpha = 0
     let dotIndex = dots.count - 1
     dot.position = dotPositionForIndex(dotIndex)
+    var newColor: UIColor!
+    switch color {
+    case .Blue: newColor = Globals.blueColor
+    case .Red: newColor = Globals.redColor
+    case .Green: newColor = Globals.greenColor
+    case .Yellow: newColor = Globals.yellowColor
+    }
     dot.runAction(SKAction.sequence([
       SKAction.fadeAlphaTo(1, duration: 0.25),
-      SKAction.colorizeWithColorBlendFactor(1, duration: 0.25)]))
+      SKAction.colorizeWithColor(newColor, colorBlendFactor: 1, duration: 0.25)]))
     wrapper.addChild(dot)
     
     // animate printer

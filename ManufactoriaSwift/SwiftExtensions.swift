@@ -40,29 +40,16 @@ extension Array {
 }
 
 extension String {
-  
-  func colors() -> [Color] {
-    var colors: [Color] = []
-    for character in self {
-      switch character {
-      case "b", "B", "1": colors.append(.Blue)
-      case "r", "R", "0": colors.append(.Red)
-      case "g", "G": colors.append(.Green)
-      case "y", "Y": colors.append(.Yellow)
-      default: break
-      }
-    }
-    return colors
-  }
-  
+    
   subscript(i: Int) -> Character {
     get {
-      return Character(substringWithRange(Range(start: advance(startIndex, i), end: advance(startIndex, i+1))))
+      if i >= 0 {return Character(substringWithRange(Range(start: advance(startIndex, i), end: advance(startIndex, i+1))))}
+      else {return Character(substringWithRange(Range(start: advance(endIndex, i), end: advance(endIndex, i+1))))}
     }
     set {
       var string = ""
       if i > 0 {string += substringToIndex(advance(startIndex, i))}
-      string += newValue
+      string.append(newValue)
       if i + 2 < length() {string += substringFromIndex(advance(startIndex, i + 1))}
       self = string
     }
@@ -92,11 +79,23 @@ extension String {
         strings.append(string)
         string = ""
       } else {
-        string += nextCharacter
+        string.append(nextCharacter)
       }
     }
     strings.append(string)
     return strings
+  }
+}
+
+extension Character {
+  func color() -> Color {
+    switch self {
+      case "b", "B", "1": return .Blue
+      case "r", "R", "0": return .Red
+      case "g", "G": return .Green
+      case "y", "Y": return .Yellow
+      default: return .Red
+    }
   }
 }
 

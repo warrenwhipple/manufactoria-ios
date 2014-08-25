@@ -63,7 +63,7 @@ class Grid {
     cells = [Cell](count: space.columns * space.rows, repeatedValue: Cell())
   }
   
-  func testCoord(coord: GridCoord, lastCoord: GridCoord, inout tape: [Color]) -> TickTestResult {
+  func testCoord(coord: GridCoord, lastCoord: GridCoord, inout tape: String) -> TickTestResult {
     if coord == startCoord {return .North}
     if coord == endCoord {return .Accept}
     //if coord == endCoordPlusOne {return .Accept}
@@ -91,57 +91,61 @@ class Grid {
         }
       }
     case .PusherB:
-      tape.append(.Blue)
+      tape += "b"
       return cell.direction.tickTestResult()
     case .PusherR:
-      tape.append(.Red)
+      tape += "r"
       return cell.direction.tickTestResult()
     case .PusherG:
-      tape.append(.Green)
+      tape += "g"
       return cell.direction.tickTestResult()
     case .PusherY:
-      tape.append(.Yellow)
+      tape += "y"
       return cell.direction.tickTestResult()
     case .PullerBR:
-      if let color = tape.first() {
+      if !tape.isEmpty {
+        let color = tape[0].color()
         if color == Color.Blue {
-          tape.removeFirst()
+          tape = tape.from(1)
           return cell.direction.ccw().tickTestResult()
         } else if color == Color.Red {
-          tape.removeFirst()
+          tape = tape.from(1)
           return cell.direction.cw().tickTestResult()
         }
       }
       return cell.direction.tickTestResult()
     case .PullerRB:
-      if let color = tape.first() {
+      if !tape.isEmpty {
+        let color = tape[0].color()
         if color == Color.Red {
-          tape.removeFirst()
+          tape = tape.from(1)
           return cell.direction.ccw().tickTestResult()
         } else if color == Color.Blue {
-          tape.removeFirst()
+          tape = tape.from(1)
           return cell.direction.cw().tickTestResult()
         }
       }
       return cell.direction.tickTestResult()
     case .PullerGY:
-      if let color = tape.first() {
+      if !tape.isEmpty {
+        let color = tape[0].color()
         if color == Color.Green {
-          tape.removeFirst()
+          tape = tape.from(1)
           return cell.direction.ccw().tickTestResult()
         } else if color == Color.Yellow {
-          tape.removeFirst()
+          tape = tape.from(1)
           return cell.direction.cw().tickTestResult()
         }
       }
       return cell.direction.tickTestResult()
     case .PullerYG:
-      if let color = tape.first() {
+      if !tape.isEmpty {
+        let color = tape[0].color()
         if color == Color.Yellow {
-          tape.removeFirst()
+          tape = tape.from(1)
           return cell.direction.ccw().tickTestResult()
         } else if color == Color.Green {
-          tape.removeFirst()
+          tape = tape.from(1)
           return cell.direction.cw().tickTestResult()
         }
       }

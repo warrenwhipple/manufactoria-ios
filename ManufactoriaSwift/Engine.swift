@@ -9,8 +9,8 @@
 import Foundation
 
 struct TapeTestResult {
-  let input: [Color]
-  let output: [Color]?
+  let input: String
+  let output: String?
   let maxTapeLength: Int
   let didLoop: Bool
   init(tapeTestOp: TapeTestOp) {
@@ -20,23 +20,6 @@ struct TapeTestResult {
     didLoop = tapeTestOp.didLoop
   }
 }
-
-/*
-@class_protocol protocol EngineDelegate {
-func gridTestDidPassWithExemplarTapeTests(exemplarTapeTests: [TapeTestResult])
-func gridTestDidFailWithTapeTest(tapeTest: TapeTestResult)
-func gridTestDidLoopWithTapeTest(tapeTest: TapeTestResult)
-}
-
-@class_protocol protocol TapeTestQueueOpDelegate {
-func tapeTestQueuingDidFinishWithCount(count: Int)
-}
-
-@class_protocol protocol TapeTestOpDelegate {
-func tapeTestDidFinish(result: TapeTestResult)
-func tapeTestDidLoop(result: TapeTestResult)
-}
-*/
 
 class Engine {
   weak var delegate: GameScene?
@@ -82,7 +65,7 @@ class Engine {
     }
     // check for tape test failure
     if let passFunction = levelSetup.passFunction {
-      if passFunction(result.input.string()) == (result.output == nil) {
+      if passFunction(result.input) == (result.output == nil) {
         cancelAllTests()
         delegate?.gridTestDidFailWithTapeTest(result)
         return
@@ -93,7 +76,7 @@ class Engine {
         delegate?.gridTestDidFailWithTapeTest(result)
         return
       }
-      if result.output != nil && (transformFunction(result.input.string()) != result.output!.string()) {
+      if result.output != nil && (transformFunction(result.input) != result.output!) {
         cancelAllTests()
         delegate?.gridTestDidFailWithTapeTest(result)
         return
@@ -104,7 +87,7 @@ class Engine {
     if !isTesting {return}
     
     // record max length if one of exemplars
-    let inputString = result.input.string()
+    let inputString = result.input
     for exemplarString in levelSetup.exemplars {
       if inputString == exemplarString {
         exemplarResults.append(result)
@@ -143,7 +126,7 @@ class TapeTestQueueOp: NSOperation {
           self.queue.cancelAllOperations()
           return
         }
-        self.queue.addOperation(TapeTestOp(grid: self.grid, tape: string.colors(), delegate: self.delegate))
+        self.queue.addOperation(TapeTestOp(grid: self.grid, tape: string, delegate: self.delegate))
       }
       dispatch_async(dispatch_get_main_queue()) {
         if self.delegate != nil {self.delegate!.tapeTestQueuingDidFinishWithCount(strings.count)}
@@ -155,19 +138,19 @@ class TapeTestQueueOp: NSOperation {
 class TapeTestOp: NSOperation {
   weak var delegate: Engine?
   let grid: Grid
-  var tape: [Color]
-  let input: [Color]
-  var output: [Color]?
+  var tape: String
+  let input: String
+  var output: String?
   var tickCount = 0
   var maxTapeLength: Int
   var didLoop = false
   
-  init(grid: Grid, tape: [Color], delegate: Engine?) {
+  init(grid: Grid, tape: String, delegate: Engine?) {
     self.grid = grid
     self.tape = tape
     self.delegate = delegate
     input = tape
-    maxTapeLength = input.count
+    maxTapeLength = input.length()
     super.init()
     queuePriority = NSOperationQueuePriority.VeryLow
   }
@@ -179,7 +162,7 @@ class TapeTestOp: NSOperation {
       while !self.cancelled {
         let tickResult = self.grid.testCoord(coord, lastCoord: lastcoord, tape: &self.tape)
         self.tickCount++
-        self.maxTapeLength = max(self.maxTapeLength, self.tape.count)
+        self.maxTapeLength = max(self.maxTapeLength, self.tape.length())
         lastcoord = coord
         switch tickResult {
         case .North: coord.j++

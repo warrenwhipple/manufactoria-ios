@@ -17,7 +17,7 @@ class GameScene: SKScene {
   let grid: Grid
   var tapeTestResults: [TapeTestResult] = []
   var currentTapeTestIndex = 0
-  var tape: [Color] = []
+  var tape: String = ""
   let engine: Engine
   
   // view objects
@@ -188,9 +188,9 @@ class GameScene: SKScene {
         tickPercent -= 1.0
         let testResult = grid.testCoord(robotCoord, lastCoord: lastRobotCoord, tape: &tape)
         lastRobotCoord = robotCoord
-        let tapeLength = tape.count
+        let tapeLength = tape.length()
         if tapeLength > lastTapeLength && tapeLength > 0 {
-          statusNode.tapeNode.writeColor(tape.last()!)
+          statusNode.tapeNode.writeColor(tape[-1].color())
         }
         else if tapeLength < lastTapeLength {
           statusNode.tapeNode.deleteColor()
@@ -239,7 +239,7 @@ class GameScene: SKScene {
     lastRobotCoord = grid.startCoord
     tape = (tapeTestResults[i].input)
     statusNode.tapeNode.loadTape(tapeTestResults[i].input, maxLength: tapeTestResults[i].maxTapeLength)
-    lastTapeLength = tape.count
+    lastTapeLength = tape.length()
   }
   
   func loadNextTape() {
