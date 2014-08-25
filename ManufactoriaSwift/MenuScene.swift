@@ -105,10 +105,10 @@ class MenuScene: SKScene {
         noClosure: {
           [weak view = self.scene.view] in
           if view != nil {
-            view!.presentScene(MenuScene(size: view!.bounds.size), transition: SKTransition.pushWithDirection(.Right, duration: 2.5).outInPlay())
+            view!.presentScene(MenuScene(size: view!.bounds.size), transition: SKTransition.pushWithDirection(.Right, duration: 0.5).outInPlay())
           }
         },
-        size: scene.size), transition: SKTransition.pushWithDirection(.Left, duration: 2.5).outInPlay()
+        size: scene.size), transition: SKTransition.pushWithDirection(.Left, duration: 0.5).outInPlay()
       )
     }
   }
