@@ -39,32 +39,32 @@ class SpeedControlNode: SKNode {
     speedLabel.fontColor = Globals.strokeColor
     speedLabel.horizontalAlignmentMode = .Center
     speedLabel.verticalAlignmentMode = .Center
-    speedLabel.text = "1X"
+    speedLabel.text = ""
     
     super.init()
     
     slowerButton.touchDownClosure = {
-      [weak self] in
-      if self!.delegate != nil && self!.delegate!.speedAnchor.target > 0.25 {
-        self!.delegate!.speedAnchor.target *= 0.5
+      [unowned self] in
+      if self.delegate != nil && self.delegate!.gameSpeed > 0.25 {
+        self.delegate!.gameSpeed *= 0.5
       }
     }
     fasterButton.touchDownClosure = {
-      [weak self] in
-      if self!.delegate != nil && self!.delegate!.speedAnchor.target < 32 {
-        self!.delegate!.speedAnchor.target *= 2
+      [unowned self] in
+      if self.delegate != nil && self.delegate!.gameSpeed < 32 {
+        self.delegate!.gameSpeed *= 2
       }
     }
     backButton.touchDownClosure = {
-      [weak self] in
-      if self!.delegate != nil {
-        self!.delegate!.loadLastTape()
+      [unowned self] in
+      if self.delegate != nil {
+        self.delegate!.loadLastTape()
       }
     }
     skipButton.touchDownClosure = {
-      [weak self] in
-      if self!.delegate != nil {
-        self!.delegate!.skipTape()
+      [unowned self] in
+      if self.delegate != nil {
+        self.delegate!.skipTape()
       }
     }
     

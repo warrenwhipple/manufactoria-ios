@@ -6,8 +6,18 @@
 //  Copyright (c) 2014 Warren Whipple. All rights reserved.
 //
 
+import SpriteKit
+
 enum Color {
   case Blue, Red, Green, Yellow
+  func uiColor() -> UIColor {
+    switch self {
+    case .Blue: return Globals.blueColor
+    case .Red: return Globals.redColor
+    case .Green: return Globals.greenColor
+    case .Yellow: return Globals.yellowColor
+    }
+  }
 }
 
 enum CellType {

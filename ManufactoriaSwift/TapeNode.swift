@@ -13,31 +13,96 @@ class TapeNode: SKNode {
   enum State {case Loading, Waiting, Writing, Deleting, Clearing}
   
   weak var delegate: StatusNode?
-  let dotPrinterWrapper = SKNode()
+  var state: State = .Loading
   let dotWrapper = SKNode()
   var dots: [SKSpriteNode] = []
-  var maxLength: Int = 0
+  var deletingDot: SKSpriteNode?
   var maxDotsAcross: Int = 8
   let dotTexture = SKTexture(imageNamed: "dot")
   let dotSpacing: CGFloat
   let printer = SKNode()
   
   override init() {
-    dotSpacing = dotTexture.size().width * 1.5
+    dotSpacing = dotTexture.size().width * 1.25
     super.init()
-    dotPrinterWrapper.addChild(printer)
-    dotPrinterWrapper.addChild(dotWrapper)
-    addChild(dotPrinterWrapper)
+    addChild(printer)
+    addChild(dotWrapper)
   }
   
   func update(tickPercent: CGFloat) {
-    
+    switch state {
+    case .Loading:
+      let ease = easeInOut(tickPercent)
+      let offsetX = -0.5 * dotSpacing * CGFloat(dots.count) * ease
+      var i = 0
+      for dot in dots {dot.position.x = CGFloat(i++) * dotSpacing * ease + offsetX}
+      printer.position.x = CGFloat(i) * dotSpacing * ease + offsetX
+    case .Waiting:
+      let offsetX = -0.5 * dotSpacing * CGFloat(dots.count)
+      var i = 0
+      for dot in dots {dot.position.x = CGFloat(i++) * dotSpacing + offsetX}
+      printer.position.x = CGFloat(i) * dotSpacing + offsetX
+    case .Writing:
+      if tickPercent < 0.5 {
+        let ease = easeInOut(2 * tickPercent)
+        let offsetX = -0.5 * dotSpacing * CGFloat(dots.count - 1)
+        var i = 0
+        for dot in dots {dot.position.x = CGFloat(i++) * dotSpacing + offsetX}
+        if let lastDot = dots.last {lastDot.alpha = ease}
+        printer.position.x = CGFloat(i - 1) * dotSpacing + offsetX
+      } else {
+        let ease = easeInOut(2 * tickPercent - 1)
+        let easeLeft = 1 - ease
+        let offsetX = -0.5 * dotSpacing * (easeLeft * CGFloat(dots.count - 1) + ease * CGFloat(dots.count))
+        var i = 0
+        for dot in dots {dot.position.x = CGFloat(i++) * dotSpacing + offsetX}
+        printer.position.x = dotSpacing * (easeLeft * CGFloat(i - 1) + ease * CGFloat(i)) + offsetX
+      }
+    case .Deleting:
+      if tickPercent < 0.5 {
+        let easeLeft = 1 - easeInOut(2 * tickPercent)
+        let offsetX = -0.5 * dotSpacing * CGFloat(dots.count + 1)
+        if let dot = deletingDot {dot.position.x = offsetX; dot.setScale(easeLeft)}
+        var i = 1
+        for dot in dots {dot.position.x = CGFloat(i++) * dotSpacing + offsetX}
+        printer.position.x = CGFloat(i) * dotSpacing + offsetX
+      } else {
+        let ease = easeInOut(2 * tickPercent - 1)
+        let easeLeft = 1 - ease
+        if let dot = deletingDot {dot.setScale(0)}
+        let offsetX = -0.5 * dotSpacing * (easeLeft * CGFloat(dots.count - 1) + ease * CGFloat(dots.count))
+        var i = 0
+        for dot in dots {dot.position.x = CGFloat(i++) * dotSpacing + offsetX}
+        printer.position.x = CGFloat(i) * dotSpacing + offsetX
+      }
+    case .Clearing:
+      let easeLeft = 1 - easeInOut(tickPercent)
+      let offsetX = -0.5 * dotSpacing * CGFloat(dots.count) * easeLeft
+      var i = 0
+      for dot in dots {dot.position.x = CGFloat(i++) * dotSpacing * easeLeft + offsetX}
+      printer.position.x = CGFloat(i) * dotSpacing * easeLeft + offsetX
+    }
   }
   
-  func loadTape(tape: String, maxLength: Int) {
-    self.maxLength = maxLength
-    
+  func tickComplete() {
+    switch state {
+    case .Waiting: break
+    case .Writing:
+      dots.last?.alpha = 1
+      state = .Waiting
+    case .Deleting:
+      deletingDot?.removeFromParent()
+      deletingDot = nil
+      state = .Waiting
+    case .Loading: state = .Waiting
+    case .Clearing: state = .Waiting
+    }
+  }
+  
+  func loadTape(tape: String) {
     // remove old dots
+    deletingDot?.removeFromParent()
+    deletingDot = nil
     for dot in dots {dot.removeFromParent()}
     dots = []
     
@@ -46,62 +111,41 @@ class TapeNode: SKNode {
     let dotCount = tape.length()
     for character in tape {
       let dot = SKSpriteNode(texture: dotTexture)
-      switch character.color() {
-      case .Blue: dot.color = Globals.blueColor
-      case .Red: dot.color = Globals.redColor
-      case .Green: dot.color = Globals.greenColor
-      case .Yellow: dot.color = Globals.yellowColor
-      }
+      dot.color = character.color().uiColor()
       dot.colorBlendFactor = 1
       dotWrapper.addChild(dot)
       dots.append(dot)
     }
     printer.position = CGPointZero
-    animateTapeReposition()
+    state = .Loading
   }
   
   func writeColor(color: Color) {
-    
-    // add dot
+    deletingDot?.removeFromParent()
+    deletingDot = nil
     let dot = SKSpriteNode(texture: dotTexture)
-    dots.append(dot)
-    dot.color = Globals.strokeColor
+    dot.color = color.uiColor()
     dot.colorBlendFactor = 1
-    dot.alpha = 0
-    dot.position = dotPositionForIndex(dots.count - 1, of: dots.count)
-    var newColor: UIColor!
-    switch color {
-    case .Blue: newColor = Globals.blueColor
-    case .Red: newColor = Globals.redColor
-    case .Green: newColor = Globals.greenColor
-    case .Yellow: newColor = Globals.yellowColor
-    }
+    dots.append(dot)
     dotWrapper.addChild(dot)
-    dot.runAction(SKAction.sequence([
-      SKAction.fadeAlphaTo(1, duration: 0.25),
-      SKAction.colorizeWithColor(newColor, colorBlendFactor: 1, duration: 0.25),
-      SKAction.runBlock({[unowned self] in self.animateTapeReposition()})
-      ]))
+    state = .Writing
   }
   
   func deleteColor() {
-    if dots.count == 0 {return}
-    dots[0].runAction(SKAction.sequence([
-      SKAction.scaleTo(0, duration: 0.5).ease(),
-      SKAction.removeFromParent()]))
-    dots.removeAtIndex(0)
-    animateTapeReposition()
-  }
-  
-  func animateTapeReposition() {
-    var i = 0
-    for dot in dots {
-      dot.runAction(SKAction.moveTo(dotPositionForIndex(i++, of: dots.count), duration: 0.5).ease(), withKey: "move")
+    deletingDot?.removeFromParent()
+    deletingDot = nil
+    if !dots.isEmpty {
+      deletingDot = dots[0]
+      dots.removeFirst()
+      state = .Deleting
+    } else {
+      state = .Waiting
     }
-    printer.runAction(SKAction.moveTo(dotPositionForIndex(i++, of: dots.count), duration: 0.5).ease(), withKey: "move")
   }
   
-  func dotPositionForIndex(index: Int, of: Int) -> CGPoint {
-    return CGPoint(CGFloat(index) * dotSpacing, 0)
+  func clearTape() {
+    deletingDot?.removeFromParent()
+    deletingDot = nil
+    state = .Clearing
   }
 }

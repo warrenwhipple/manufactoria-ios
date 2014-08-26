@@ -37,3 +37,8 @@ func randCGFloat(x: CGFloat) -> CGFloat {
 func randBool() -> Bool {
   return arc4random_uniform(2) == 1
 }
+
+func easeInOut(t: CGFloat) -> CGFloat {
+  let tt = t*t;
+  return 3*tt - 2*tt*t
+}

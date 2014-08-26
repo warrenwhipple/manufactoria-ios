@@ -33,7 +33,6 @@ class StatusNode: SwipeNode {
     label.text = instructions
 
     tapeNode = TapeNode()
-    tapeNode.dotWrapper.alpha = 0
     
     testButton = RingButton(icon: SKSpriteNode("playIcon"), state: .Button)
     testButton.zPosition = 10
@@ -71,7 +70,6 @@ class StatusNode: SwipeNode {
         instructionsPage.addChild(testButton)
         testButton.runAction(SKAction.moveTo(tapeNode.position, duration: 0.5).ease())
         testButton.state = .Button
-        tapeNode.dotWrapper.runAction(SKAction.fadeAlphaTo(0, duration: 0.5))
         userInteractionEnabled = true
       case .Thinking:
         userInteractionEnabled = false
@@ -84,7 +82,6 @@ class StatusNode: SwipeNode {
         testButton.removeFromParent()
         testButton.position = CGPointZero
         tapeNode.printer.addChild(testButton)
-        tapeNode.dotWrapper.runAction(SKAction.fadeAlphaTo(1, duration: 0.5))
       case .Congratulating:
         testButton.state = .Hidden
       }

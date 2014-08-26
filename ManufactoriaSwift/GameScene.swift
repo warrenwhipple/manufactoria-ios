@@ -25,18 +25,18 @@ class GameScene: SKScene {
   let statusNode: StatusNode
   let gridNode: GridNode
   let toolbarNode: ToolbarNode
-  let speedAnchor = SpeedAnchor()
   let speedControlNode = SpeedControlNode()
   let endMenuNode: EndMenuNode
   let robotNode: SKSpriteNode
   
   // variables
+  var gameSpeed: CGFloat = 0
   var robotCoord = GridCoord(0, 0)
   var lastRobotCoord = GridCoord(0, 0)
-  var lastTapeLength = 0
-  var lastUpdateTime: NSTimeInterval = 0.0
-  var tickPercent: CGFloat = 0.0
-  var beltPercent: CGFloat = 0.0
+  var lastTapeLength: Int = 0
+  var lastUpdateTime: NSTimeInterval = 0
+  var tickPercent: CGFloat = 0
+  var beltPercent: CGFloat = 0
   var thinkingOperationsDone = false
   var gridTestDidPass = false
   
@@ -82,9 +82,6 @@ class GameScene: SKScene {
     toolbarNode.delegate = self
     toolbarNode.zPosition = 10
     addChild(toolbarNode)
-    
-    speedAnchor.delegate = self
-    addChild(speedAnchor)
     
     speedControlNode.delegate = self
     
@@ -183,9 +180,10 @@ class GameScene: SKScene {
     if state == .Testing {
       
       // execute ellapsed ticks
-      tickPercent += CGFloat(dt) * speedAnchor.speed
+      tickPercent += CGFloat(dt) * gameSpeed
       while tickPercent >= 1.0 {
         tickPercent -= 1.0
+        statusNode.tapeNode.tickComplete()
         let testResult = grid.testCoord(robotCoord, lastCoord: lastRobotCoord, tape: &tape)
         lastRobotCoord = robotCoord
         let tapeLength = tape.length()
@@ -204,6 +202,7 @@ class GameScene: SKScene {
         case .West: robotCoord.i--
         }
       }
+      statusNode.tapeNode.update(tickPercent)
       
       // update robot
       robotNode.position = CGPoint(
@@ -232,13 +231,12 @@ class GameScene: SKScene {
   
   func loadTape(i: Int) {
     currentTapeTestIndex = i
-    speedAnchor.speed = 1
-    speedAnchor.target = 1
+    gameSpeed = 1
     tickPercent = 0
     robotCoord = grid.startCoordPlusOne
     lastRobotCoord = grid.startCoord
     tape = (tapeTestResults[i].input)
-    statusNode.tapeNode.loadTape(tapeTestResults[i].input, maxLength: tapeTestResults[i].maxTapeLength)
+    statusNode.tapeNode.loadTape(tapeTestResults[i].input)
     lastTapeLength = tape.length()
   }
   
@@ -253,7 +251,7 @@ class GameScene: SKScene {
 
   func skipTape() {
     speedControlNode.speedLabel.text = ""
-    speedAnchor.runAction(SKAction.speedTo(32, duration: 0.5).ease(), withKey: "speed")
+    gameSpeed = 32
     if tapeTestResults[currentTapeTestIndex].didLoop {
       robotNode.runAction(SKAction.sequence([SKAction.waitForDuration(0.5), SKAction.fadeAlphaTo(0, duration: 0.5)]))
       runAction(SKAction.waitForDuration(1), completion: {[weak self] in self!.loadNextTape()})
@@ -311,28 +309,5 @@ class GameScene: SKScene {
   
   override func touchesCancelled(touches: NSSet!, withEvent event: UIEvent!) {
     gridNode.touchesCancelled(touches, withEvent: event)
-  }
-  
-  class SpeedAnchor: SKNode {
-    required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-    override init() {super.init()}
-    weak var delegate: GameScene?
-    override var speed: CGFloat {
-      didSet {
-        delegate?.statusNode.tapeNode.dotPrinterWrapper.speed = speed
-      }
-    }
-    var target: CGFloat = 1 {
-      didSet {
-        runAction(SKAction.speedTo(target, duration: 0.5).ease(), withKey: "speed")
-        if target == 0.5 {
-          delegate?.speedControlNode.speedLabel.text = "½X"
-        } else if target == 0.25 {
-          delegate?.speedControlNode.speedLabel.text = "¼X"
-        } else {
-          delegate?.speedControlNode.speedLabel.text = "\(Int(target))X"
-        }
-      }
-    }
   }
 }

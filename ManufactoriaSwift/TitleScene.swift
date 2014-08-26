@@ -41,7 +41,7 @@ class TitleScene: SKScene {
     addChild(button)
     button.ring.setScale(0)
     runAction(SKAction.sequence([
-      SKAction.waitForDuration(0.5),
+      SKAction.waitForDuration(1),
       SKAction.runBlock({
       [unowned self] in
         self.button.ring.runAction(SKAction.scaleTo(1, duration: 2).easeOut())
