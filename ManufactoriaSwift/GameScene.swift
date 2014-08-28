@@ -27,7 +27,7 @@ class GameScene: SKScene {
   let toolbarNode: ToolbarNode
   let speedControlNode = SpeedControlNode()
   let endMenuNode: EndMenuNode
-  let robotNode: SKSpriteNode
+  var robotNode: SKSpriteNode?
   
   // variables
   var gameSpeed: CGFloat = 0
@@ -54,9 +54,6 @@ class GameScene: SKScene {
     endMenuNode = EndMenuNode(nextLevelNumber: levelNumber + 1)
     endMenuNode.alpha = 0
     
-    robotNode = SKSpriteNode("robut")
-    robotNode.size = CGSize(1)
-    
     menuButton = Button(color: nil, size: CGSize(64))
     menuButton.zPosition = 100
     let menuIcon = MenuIcon(size: CGSize(16))
@@ -71,10 +68,6 @@ class GameScene: SKScene {
     
     addChild(gridNode)
     
-    robotNode.zPosition = 3
-    robotNode.alpha = 0
-    gridNode.wrapper.addChild(robotNode)
-    
     statusNode.delegate = self
     statusNode.zPosition = 10
     addChild(statusNode)
@@ -84,13 +77,17 @@ class GameScene: SKScene {
     addChild(toolbarNode)
     
     speedControlNode.delegate = self
+    speedControlNode.alpha = 0
+    speedControlNode.zPosition = 10
     
     endMenuNode.delegate = self
+    endMenuNode.zPosition = 10
     
     menuButton.touchUpInsideClosure = {
       [unowned self] in
       self.view.presentScene(MenuScene(size: size), transition: SKTransition.pushWithDirection(.Left, duration: 0.5).outInPlay())
     }
+    menuButton.zPosition = 20
     addChild(menuButton)
     
     fitToSize()
@@ -104,7 +101,7 @@ class GameScene: SKScene {
         engine.cancelAllTests()
         statusNode.state = .Editing
         gridNode.state = .Editing
-        robotNode.runAction(SKAction.fadeAlphaTo(0, duration: 0.5))
+        robotNode?.runAction(SKAction.fadeAlphaTo(0, duration: 0.5))
         speedControlNode.isEnabled = false
         speedControlNode.runAction(SKAction.sequence([SKAction.fadeAlphaTo(0, duration: 0.5), SKAction.removeFromParent()]))
         if toolbarNode.parent == nil {addChild(toolbarNode)}
@@ -183,41 +180,44 @@ class GameScene: SKScene {
       tickPercent += CGFloat(dt) * gameSpeed
       while tickPercent >= 1.0 {
         tickPercent -= 1.0
-        statusNode.tapeNode.tickComplete()
-        let testResult = grid.testCoord(robotCoord, lastCoord: lastRobotCoord, tape: &tape)
-        lastRobotCoord = robotCoord
-        let tapeLength = tape.length()
-        if tapeLength > lastTapeLength && tapeLength > 0 {
-          statusNode.tapeNode.writeColor(tape[-1].color())
-        }
-        else if tapeLength < lastTapeLength {
-          statusNode.tapeNode.deleteColor()
-        }
-        lastTapeLength = tapeLength
-        switch testResult {
-        case .Accept, .Reject: loadNextTape()
-        case .North: robotCoord.j++
-        case .East: robotCoord.i++
-        case .South: robotCoord.j--
-        case .West: robotCoord.i--
+        if statusNode.tapeNode.state == TapeNode.State.Clearing {
+          loadNextTape()
+        } else if robotCoord == grid.startCoord - 1 {
+          statusNode.tapeNode.tickComplete()
+          lastRobotCoord = robotCoord
+          robotCoord.j++
+        } else if robotCoord == grid.endCoord {
+          statusNode.tapeNode.clearTape()
+          lastRobotCoord = robotCoord
+          robotCoord.j++
+        } else {
+          statusNode.tapeNode.tickComplete()
+          let testResult = grid.testCoord(robotCoord, lastCoord: lastRobotCoord, tape: &tape)
+          let tapeLength = tape.length()
+          if tapeLength > lastTapeLength && tapeLength > 0 {
+            statusNode.tapeNode.writeColor(tape[-1].color())
+          } else if tapeLength < lastTapeLength {
+            statusNode.tapeNode.deleteColor()
+          }
+          lastTapeLength = tapeLength
+          lastRobotCoord = robotCoord
+          switch testResult {
+          case .Accept: println("Oops grid test got to Accept but shouldn't have.")
+          case .Reject: statusNode.tapeNode.clearTape()
+          case .North: robotCoord.j++
+          case .East: robotCoord.i++
+          case .South: robotCoord.j--
+          case .West: robotCoord.i--
+          }
         }
       }
       statusNode.tapeNode.update(tickPercent)
       
       // update robot
-      robotNode.position = CGPoint(
+      robotNode?.position = CGPoint(
         x: CGFloat(lastRobotCoord.i) + CGFloat(tickPercent) * CGFloat(robotCoord.i - lastRobotCoord.i) + 0.5,
         y: CGFloat(lastRobotCoord.j) + CGFloat(tickPercent) * CGFloat(robotCoord.j - lastRobotCoord.j) + 0.5
       )
-      if lastRobotCoord == grid.startCoord {
-        robotNode.alpha = CGFloat(tickPercent)
-      } else if lastRobotCoord == grid.endCoord {
-        robotNode.alpha = 0
-      } else if robotCoord == grid.startCoord || robotCoord == grid.endCoord {
-        robotNode.alpha = CGFloat(1.0 - tickPercent)
-      } else {
-        robotNode.alpha = 1
-      }
     }
     
     // update child nodes
@@ -233,14 +233,28 @@ class GameScene: SKScene {
     currentTapeTestIndex = i
     gameSpeed = 1
     tickPercent = 0
-    robotCoord = grid.startCoordPlusOne
-    lastRobotCoord = grid.startCoord
-    tape = (tapeTestResults[i].input)
-    statusNode.tapeNode.loadTape(tapeTestResults[i].input)
+    if tapeTestResults.isEmpty {
+      tape = ""
+    } else {
+      tape = (tapeTestResults[i].input)
+    }
+    statusNode.tapeNode.loadTape(tape)
     lastTapeLength = tape.length()
+    robotCoord = grid.startCoord
+    lastRobotCoord = grid.startCoord - 1
+    robotNode = SKSpriteNode("robut")
+    robotNode?.size = CGSize(1.25)
+    robotNode?.position = CGPoint(CGFloat(lastRobotCoord.i) + 0.5, CGFloat(lastRobotCoord.j) + 0.5)
+    robotNode?.zPosition = 2
+    robotNode?.alpha = 0
+    robotNode?.runAction(SKAction.fadeAlphaTo(1, duration: 0.1))
+    gridNode.wrapper.addChild(robotNode!)
   }
   
   func loadNextTape() {
+    robotNode?.position = CGPoint(CGFloat(robotCoord.i) + 0.5, CGFloat(robotCoord.j) + 0.5)
+    robotNode?.runAction(SKAction.sequence([SKAction.fadeAlphaTo(0, duration: 1), SKAction.removeFromParent()]))
+    robotNode = nil
     if currentTapeTestIndex >= tapeTestResults.count - 1 {
       if gridTestDidPass {state = .Congratulating}
       else {state = .Editing}
@@ -253,7 +267,7 @@ class GameScene: SKScene {
     speedControlNode.speedLabel.text = ""
     gameSpeed = 32
     if tapeTestResults[currentTapeTestIndex].didLoop {
-      robotNode.runAction(SKAction.sequence([SKAction.waitForDuration(0.5), SKAction.fadeAlphaTo(0, duration: 0.5)]))
+      robotNode?.runAction(SKAction.sequence([SKAction.waitForDuration(0.5), SKAction.fadeAlphaTo(0, duration: 0.5)]))
       runAction(SKAction.waitForDuration(1), completion: {[weak self] in self!.loadNextTape()})
     }
   }

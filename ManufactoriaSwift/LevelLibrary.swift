@@ -51,17 +51,6 @@ struct LevelSetup {
   }
 }
 
-private let BlankLevelSetup = LevelSetup(
-  tag: "blank",
-  instructions: "Level placeholder.",
-  space: GridSpace(5, 5),
-  buttons: [.Blank, .BeltBridge, .PullerBR, .PushersBR],
-  exemplars: ["b", "r"],
-  generationFunction: {n in return generate("br", n)},
-  passFunction: {s in return true}
-)
-
-
 // Helper functions for generating string inputs
 
 private func generate(characters: String, count: Int, filter: ((String) -> (Bool))) -> [String] {
@@ -130,8 +119,8 @@ var LevelLibrary: [LevelSetup] = [
     instructions: "Accept blue: to the exit.\nReject red: to the floor.",
     space: GridSpace(3, 3),
     buttons: [.Blank, .Belt, .PullerBR],
-    exemplars: ["b", "r"],
-    generationFunction: {n in return ["b", "r"]},
+    exemplars: ["r", "b"],
+    generationFunction: {n in return ["r", "b"]},
     passFunction: {string in return string == "b"}
   ),
   
@@ -140,7 +129,7 @@ var LevelLibrary: [LevelSetup] = [
     instructions: "Accept any that begin blue red blue.",
     space: GridSpace(5, 5),
     buttons: [.Blank, .BeltBridge, .PullerBR],
-    exemplars: ["brbr", "rbrb"],
+    exemplars: ["rbrb", "brbr"],
     generationFunction: {n in return generate("br", n)},
     passFunction: {
       s in
@@ -154,7 +143,7 @@ var LevelLibrary: [LevelSetup] = [
     instructions: "Accept three or more blues.",
     space: GridSpace(5, 5),
     buttons: [.Blank, .BeltBridge, .PullerBR],
-    exemplars: ["brbrb", "rbrbr"],
+    exemplars: ["rbrbr", "brbrb"],
     generationFunction: {n in return generate("br", n)},
     passFunction: {
       s in
@@ -169,7 +158,7 @@ var LevelLibrary: [LevelSetup] = [
     instructions: "Reject any red anywhere.",
     space: GridSpace(5, 5),
     buttons: [.Blank, .BeltBridge, .PullerBR],
-    exemplars: ["bbbb", "bbrb"],
+    exemplars: ["bbrb", "bbbb"],
     generationFunction: {n in return generate("br", n)},
     passFunction: {
       s in
@@ -191,5 +180,26 @@ var LevelLibrary: [LevelSetup] = [
       if s.length() > 1 {return s[1 ..< s.length()] + s[0]}
       return s
     }
+  ),
+  
+  LevelSetup(
+    tag: "short",
+    instructions: "For testing.",
+    space: GridSpace(9, 9),
+    buttons: [.Blank, .BeltBridge, .PullerBR, .PullerGY, .PushersBRGY],
+    exemplars: ["brbr", "rrbb"],
+    generationFunction: {n in return ["brgy"]},
+    transformFunction: {s in return s}
+  ),
+  
+  LevelSetup(
+    tag: "long",
+    instructions: "For testing.",
+    space: GridSpace(9, 9),
+    buttons: [.Blank, .BeltBridge, .PullerBR, .PullerGY, .PushersBRGY],
+    exemplars: ["brbr", "rrbb"],
+    generationFunction: {n in return ["brgybrgybrgybrgy"]},
+    transformFunction: {s in return s}
   )
+
 ]

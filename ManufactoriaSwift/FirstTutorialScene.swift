@@ -38,7 +38,7 @@ class FirstTutorialScene: GameScene {
   */
   
   func checkTutorialGrid() -> Bool {
-    var coord = grid.startCoordPlusOne
+    var coord = grid.startCoord + 1
     var lastCoord = grid.startCoord
     var tape: String = ""
     var ticks = 0

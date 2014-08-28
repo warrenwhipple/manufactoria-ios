@@ -158,9 +158,9 @@ class ToolbarNode: SKNode {
           fill1.color = Globals.blueColor
           fill2.color = Globals.redColor
         } else {
-          modes = [.PullerBR, .PullerRB]
-          fill1.color = Globals.blueColor
-          fill2.color = Globals.redColor
+          modes = [.PullerGY, .PullerYG]
+          fill1.color = Globals.greenColor
+          fill2.color = Globals.yellowColor
         }
       case .PushersBR, .PushersBRGY:
         //staticNode = SKSpriteNode("ring")

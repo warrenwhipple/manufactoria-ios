@@ -29,12 +29,12 @@ class CellNode: SKNode {
     bridge.colorBlendFactor = 1
     
     pusher = SKSpriteNode("pusher")
-    pusher.zPosition = 5
+    pusher.zPosition = 3
     
     puller = SKNode()
     pullerLeft = SKSpriteNode("pullerHalf")
     pullerRight = SKSpriteNode("pullerHalf")
-    puller.zPosition = 5
+    puller.zPosition = 3
     pullerLeft.anchorPoint = CGPoint(1, 0.5)
     pullerRight.anchorPoint = CGPoint(1, 0.5)
     pullerRight.xScale = -1
@@ -42,7 +42,7 @@ class CellNode: SKNode {
     puller.addChild(pullerRight)
     
     glowNode = SKSpriteNode(color: Globals.strokeColor, size: Globals.cellPointSize)
-    glowNode.zPosition = 10
+    glowNode.zPosition = 4
     glowNode.alpha = 0
     
     shimmerNode = ShimmerNode(size: Globals.cellPointSize)

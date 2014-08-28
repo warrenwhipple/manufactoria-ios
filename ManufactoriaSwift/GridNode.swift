@@ -36,8 +36,7 @@ class GridNode: SKNode {
   unowned let grid: Grid
   let wrapper = SKNode()
   let cellNodes: [CellNode]
-  let entranceCellNode = CellNode()
-  let exitCellNode = CellNode()
+  let startCellNode, endCellNode: CellNode
   var beltShift: Float = 0.0
   let beltTexture = SKTexture(imageNamed: "belt")
   var clippedBeltTexture = SKTexture()
@@ -45,10 +44,11 @@ class GridNode: SKNode {
   var editCoord = GridCoord(0, 0)
   var editMode = EditMode.Belt
   var bridgeEditMemory: Cell? = nil
+  let bottomMask, topMask: SKSpriteNode
   
   subscript(coord: GridCoord) -> CellNode {
     get {
-      assert(grid.indexIsValidFor(coord), "Index out of range.")
+      assert(grid.space.contains(coord), "Index out of range.")
       return cellNodes[grid.space.columns * coord.j + coord.i]
     }
   }
@@ -59,48 +59,46 @@ class GridNode: SKNode {
     for i in 0..<(grid.space.columns * grid.space.rows) {
       let cellNode = CellNode()
       cellNode.shimmerNode.startMidShimmer()
+      wrapper.addChild(cellNode)
       tempCellNodes.append(cellNode)
     }
-    tempCellNodes.append(entranceCellNode)
-    tempCellNodes.append(exitCellNode)
+    startCellNode = CellNode()
+    startCellNode.applyCell(Cell(type: .Belt, direction: .North))
+    wrapper.addChild(startCellNode)
+    tempCellNodes.append(startCellNode)
+    endCellNode = CellNode()
+    endCellNode.applyCell(Cell(type: .Belt, direction: .North))
+    wrapper.addChild(endCellNode)
+    tempCellNodes.append(endCellNode)
     cellNodes = tempCellNodes
+    
+    topMask = SKSpriteNode("cellFadeMask")
+    topMask.color = Globals.backgroundColor
+    topMask.anchorPoint.y = 0
+    topMask.zPosition = 3
+    topMask.size = CGSize(CGFloat(grid.space.columns + 2), 0.5)
+    let topBlock = SKSpriteNode(color: Globals.backgroundColor, size: CGSize(topMask.size.width, 2.5))
+    topBlock.anchorPoint.y = 0
+    topBlock.position.y = 0.5
+    topMask.addChild(topBlock)
+    topMask.position = CGPoint(0.5 * CGFloat(grid.space.columns), CGFloat(grid.space.rows))
+    wrapper.addChild(topMask)
+    
+    bottomMask = topMask.copy() as SKSpriteNode
+    bottomMask.position = CGPoint(0.5 * CGFloat(grid.space.columns), 0)
+    bottomMask.zRotation = CGFloat(M_PI)
+    wrapper.addChild(bottomMask)
+    
     super.init()
+    
     for i in 0..<grid.space.columns {
       for j in 0..<grid.space.rows {
-        var cellNode = self[GridCoord(i,j)]
-        cellNode.position = CGPoint(CGFloat(i) + 0.5, CGFloat(j) + 0.5)
-        wrapper.addChild(cellNode)
+        self[GridCoord(i,j)].position = CGPoint(CGFloat(i) + 0.5, CGFloat(j) + 0.5)
       }
     }
-    
-    let entranceCellNodeGradient = SKSpriteNode(texture: SKTexture(imageNamed: "beltFadeMask"), color: Globals.backgroundColor, size: Globals.cellPointSize)
-    entranceCellNodeGradient.colorBlendFactor = 1
-    entranceCellNodeGradient.zPosition = 2
-    let exitCellNodeGradient = entranceCellNodeGradient.copy() as SKSpriteNode
-    entranceCellNodeGradient.yScale = -1
-    
-    /*let enterArrow = SKSpriteNode(texture: SKTexture("enterExitArrow"))
-    let exitArrow = SKSpriteNode(texture: SKTexture("enterExitArrow"))
-    enterArrow.size = CGSize(14.0/46.0, 12.0/46.0)
-    exitArrow.size = enterArrow.size
-    enterArrow.anchorPoint = CGPoint(0.5, 0)
-    exitArrow.anchorPoint = CGPoint(0.5, 1)
-    enterArrow.position = CGPoint(CGFloat(grid.space.columns/2) + 0.5, 0)
-    exitArrow.position = CGPoint(CGFloat(grid.space.columns/2) + 0.5, CGFloat(grid.space.rows))
-    enterArrow.alpha = 0.5
-    exitArrow.alpha = 0.5
-    wrapper.addChild(enterArrow)
-    wrapper.addChild(exitArrow)*/
-    
-    entranceCellNode.position = CGPoint(CGFloat(grid.centerColumn) + 0.5, -0.5)
-    entranceCellNode.applyCell(Cell(type: .Belt, direction: .North))
-    entranceCellNode.addChild(entranceCellNodeGradient)
-    wrapper.addChild(entranceCellNode)
-    exitCellNode.position = CGPoint(CGFloat(grid.centerColumn) + 0.5, CGFloat(grid.space.rows) + 0.5)
-    exitCellNode.applyCell(Cell(type: .Belt, direction: .North))
-    exitCellNode.addChild(exitCellNodeGradient)
-    wrapper.addChild(exitCellNode)
-    
+    startCellNode.position = CGPoint(CGFloat(grid.centerColumn) + 0.5, -0.5)
+    endCellNode.position = CGPoint(CGFloat(grid.centerColumn) + 0.5, CGFloat(grid.space.rows) + 0.5)
+
     addChild(wrapper)
   }
   
@@ -170,7 +168,7 @@ class GridNode: SKNode {
     editTouch = touches.anyObject() as? UITouch
     if editTouch == nil {return}
     editCoord = coordForTouch(editTouch!)
-    if grid.indexIsValidFor(editCoord) {
+    if grid.space.contains(editCoord) {
       self[editCoord].isSelected = true
       var cell = grid[editCoord]
       if editMode == .Bridge {
@@ -204,12 +202,12 @@ class GridNode: SKNode {
     var isTouchCell = false
     var editCell: Cell = Cell()
     var touchCell: Cell = Cell()
-    if grid.indexIsValidFor(editCoord) {
+    if grid.space.contains(editCoord) {
       self[editCoord].isSelected = false
       editCell = grid[editCoord]
       isEditCell = true
     }
-    if grid.indexIsValidFor(touchCoord) {
+    if grid.space.contains(touchCoord) {
       self[touchCoord].isSelected = true
       touchCell = grid[touchCoord]
       isTouchCell = true
@@ -291,7 +289,7 @@ class GridNode: SKNode {
   override func touchesEnded(touches: NSSet!, withEvent event: UIEvent!) {
     if editTouch == nil {return}
     if !touches.containsObject(editTouch!) {return}
-    if grid.indexIsValidFor(editCoord) {
+    if grid.space.contains(editCoord) {
       self[editCoord].isSelected = false
     }
     editTouch = nil

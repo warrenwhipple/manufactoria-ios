@@ -9,7 +9,6 @@
 struct GridCoord {
   var i = 0
   var j = 0
-  
   init(_ i: Int, _ j: Int) {
     self.i = i
     self.j = j
@@ -17,16 +16,21 @@ struct GridCoord {
 }
 func == (left: GridCoord, right: GridCoord) -> Bool {return left.i == right.i && left.j == right.j}
 func != (left: GridCoord, right: GridCoord) -> Bool {return left.i != right.i || left.j != right.j}
+func + (left: GridCoord, right: Int) -> GridCoord {return GridCoord(left.i, left.j + right)}
+func - (left: GridCoord, right: Int) -> GridCoord {return GridCoord(left.i, left.j - right)}
 
 struct GridSpace {
   var columns = 0
   var rows = 0
-  
   init(_ columns: Int, _ rows: Int) {
     self.columns = columns
     self.rows = rows
   }
+  func contains(gridCoord: GridCoord) -> Bool {
+    return gridCoord.i>=0 && gridCoord.j>=0 && gridCoord.i<columns && gridCoord.j<rows
+  }
 }
+
 func == (left: GridSpace, right: GridSpace) -> Bool {return left.columns == right.columns && left.rows == right.rows}
 func != (left: GridSpace, right: GridSpace) -> Bool {return left.columns != right.columns || left.rows != right.rows}
 
@@ -36,38 +40,32 @@ enum TickTestResult {
 
 class Grid {
   let space: GridSpace
+  let startCoord, endCoord: GridCoord
   var cells: [Cell]
   var centerColumn: Int {return space.columns / 2}
-  var startCoord: GridCoord {return GridCoord(space.columns / 2, -1)}
-  var startCoordPlusOne: GridCoord {return GridCoord(space.columns / 2, 0)}
-  var endCoord: GridCoord {return GridCoord(space.columns / 2, space.rows)}
-  //var endCoordPlusOne: GridCoord {return GridCoord(space.columns / 2, space.rows + 1)}
-  
-  func indexIsValidFor(coord: GridCoord) -> Bool {
-    return coord.i>=0 && coord.j>=0 && coord.i<space.columns && coord.j<space.rows
-  }
   
   subscript(coord: GridCoord) -> Cell {
     get {
-      assert(indexIsValidFor(coord), "Index out of range.")
+      assert(space.contains(coord), "Index out of range.")
       return cells[space.columns * coord.j + coord.i]
     }
     set {
-      assert(indexIsValidFor(coord), "Index out of range.")
+      assert(space.contains(coord), "Index out of range.")
       cells[space.columns * coord.j + coord.i] = newValue
     }
   }
   
   init(space: GridSpace) {
     self.space = space
+    startCoord = GridCoord(space.columns / 2, -1)
+    endCoord = GridCoord(space.columns / 2, space.rows)
     cells = [Cell](count: space.columns * space.rows, repeatedValue: Cell())
   }
   
   func testCoord(coord: GridCoord, lastCoord: GridCoord, inout tape: String) -> TickTestResult {
     if coord == startCoord {return .North}
     if coord == endCoord {return .Accept}
-    //if coord == endCoordPlusOne {return .Accept}
-    if !indexIsValidFor(coord) {return TickTestResult.Reject}
+    if !space.contains(coord) {return TickTestResult.Reject}
     
     let cell = self[coord]
     switch cell.type {

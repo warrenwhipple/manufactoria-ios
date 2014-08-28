@@ -55,6 +55,7 @@ class StatusNode: SwipeNode {
     didSet{
       label.position = CGPoint(0, round(size.height * (1.0/6.0)))
       tapeNode.position = CGPoint(0, -round(size.height * (1.0/6.0)))
+      tapeNode.width = size.width
       testButton.position = tapeNode.position
     }
   }
