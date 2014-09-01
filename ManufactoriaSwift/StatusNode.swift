@@ -14,13 +14,14 @@ class StatusNode: SwipeNode {
   
   weak var delegate: GameScene?
   let instructionsPage: SKNode
-  let failResultsPage: SKNode
-  
   let label: BreakingLabel
   let testButton: RingButton
   let tapeNode: TapeNode
   let instructions: String
   
+  let failPage: SKNode
+  let failLabel: BreakingLabel
+  var failTapeNode: FailTapeNode?
   
   var thinkingAnimationDone = false
   
@@ -42,13 +43,22 @@ class StatusNode: SwipeNode {
     instructionsPage.addChild(tapeNode)
     instructionsPage.addChild(testButton)
     
-    failResultsPage = SKNode()
+    failLabel = BreakingLabel()
+    failLabel.fontMedium()
+    failLabel.fontColor = Globals.strokeColor
     
-    super.init(pages: [instructionsPage, failResultsPage])
+    failPage = SKNode()
+    failPage.addChild(failLabel)
+    
+    super.init(pages: [instructionsPage, failPage], texture: nil, color: nil, size: CGSizeZero)
     
     tapeNode.delegate = self
-    
+  
     testButton.touchUpInsideClosure = {[unowned self] in self.testButtonPressed()}
+    
+    userInteractionEnabled = false
+    rightArrow.alpha = 0
+    rightArrow.removeActionForKey("fade")
   }
   
   override var size: CGSize {
@@ -57,6 +67,11 @@ class StatusNode: SwipeNode {
       tapeNode.position = CGPoint(0, -round(size.height * (1.0/6.0)))
       tapeNode.width = size.width
       testButton.position = tapeNode.position
+      failLabel.position = label.position
+      failTapeNode?.position = tapeNode.position
+      failTapeNode?.width = tapeNode.width
+      leftArrow.position.y = label.position.y
+      rightArrow.position.y = label.position.y
     }
   }
   
@@ -65,12 +80,15 @@ class StatusNode: SwipeNode {
       if state == oldValue {return}
       switch state {
       case .Editing:
-        changeText(instructions)
+        label.text = instructions
         testButton.removeFromParent()
-        testButton.position = convertPoint(tapeNode.printer.position, fromNode: tapeNode.printer.parent)
+        testButton.position = tapeNode.position
         instructionsPage.addChild(testButton)
-        testButton.runAction(SKAction.moveTo(tapeNode.position, duration: 0.5).ease())
         testButton.state = .Button
+        tapeNode.dotWrapper.alpha = 0
+        goToIndexWithoutSnap(1)
+        failLabel.runAction(SKAction.fadeAlphaTo(1, duration: 0.5))
+        failTapeNode?.runAction(SKAction.fadeAlphaTo(1, duration: 0.25))
         userInteractionEnabled = true
       case .Thinking:
         userInteractionEnabled = false
@@ -82,6 +100,7 @@ class StatusNode: SwipeNode {
       case .Testing:
         testButton.removeFromParent()
         testButton.position = CGPointZero
+        tapeNode.dotWrapper.runAction(SKAction.fadeAlphaTo(1, duration: 0.25))
         tapeNode.printer.addChild(testButton)
       case .Congratulating:
         testButton.state = .Hidden
@@ -115,8 +134,18 @@ class StatusNode: SwipeNode {
   }
   
   func generateFailPageForTestResult(result: TapeTestResult) {
-    // TODO: finish this function
-    
+    if result.didLoop {
+      failLabel.text = label.text
+    } else {
+      failLabel.text = "Robot processed incorrectly:"
+    }
+    failLabel.alpha = 0
+    failTapeNode?.removeFromParent()
+    failTapeNode = FailTapeNode(tape: result.input)
+    failTapeNode?.alpha = 0
+    failTapeNode?.position = tapeNode.position
+    failTapeNode?.width = tapeNode.width
+    failPage.addChild(failTapeNode)
   }
   
   func testButtonPressed() {

@@ -202,7 +202,7 @@ class GameScene: SKScene {
           lastTapeLength = tapeLength
           lastRobotCoord = robotCoord
           switch testResult {
-          case .Accept: println("Oops grid test got to Accept but shouldn't have.")
+          case .Accept: assertionFailure("GamesScene update gridTest should not recieve testReult.Accept")
           case .Reject: statusNode.tapeNode.clearTape()
           case .North: robotCoord.j++
           case .East: robotCoord.i++
@@ -295,6 +295,7 @@ class GameScene: SKScene {
   
   func gridTestDidFailWithTapeTest(result: TapeTestResult) {
     statusNode.changeText(FailComments[Int(arc4random_uniform(UInt32(FailComments.count)))])
+    statusNode.generateFailPageForTestResult(result)
     tapeTestResults = [result]
     thinkingOperationsDone = true
   }

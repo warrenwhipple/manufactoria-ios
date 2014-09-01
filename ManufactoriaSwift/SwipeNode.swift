@@ -8,26 +8,11 @@
 
 import SpriteKit
 
-class SwipeNodeScene: SKScene {
-  required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  
-  override init(size: CGSize) {
-    super.init(size: size)
-    let swipeNode = SwipeNode(pages: [
-      SKSpriteNode("beltButton"),
-      SKSpriteNode("ring"),
-      SKSpriteNode("robut")
-      ])
-    swipeNode.position = CGPoint(0.5 * size.width, 0.5 * size.height)
-    swipeNode.size = size
-    addChild(swipeNode)
-  }
-}
-
 class SwipeNode: SKSpriteNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   
-  let wrapper = SKNode()
+  let wrapper: SKNode
+  let leftArrow, rightArrow: SKSpriteNode
   var touch: UITouch?
   var wrapperMinX: CGFloat = 0.0
   var lastTouchX: CGFloat = 0
@@ -36,6 +21,14 @@ class SwipeNode: SKSpriteNode {
   var lastLastTouchTime: NSTimeInterval = 0
   
   init(pages: [SKNode], texture: SKTexture!, color: UIColor!, size: CGSize) {
+    leftArrow = SKSpriteNode("swipeArrow")
+    leftArrow.anchorPoint.x = 0
+    leftArrow.alpha = 0
+    rightArrow = SKSpriteNode("swipeArrow")
+    rightArrow.anchorPoint.x = 0
+    rightArrow.zRotation = CGFloat(M_PI)
+    if pages.count <= 1 {rightArrow.alpha = 0}
+    wrapper = SKNode()
     self.pages = pages
     super.init(texture: texture, color: color, size: size)
     userInteractionEnabled = true
@@ -44,19 +37,13 @@ class SwipeNode: SKSpriteNode {
       page.position.x = CGFloat(i) * size.width
       wrapper.addChild(page)
     }
+    addChild(leftArrow)
+    addChild(rightArrow)
     addChild(wrapper)
   }
   
-  init(pages: [SKNode]) {
-    self.pages = pages
-    super.init(texture: nil, color: nil, size: CGSizeZero)
-    userInteractionEnabled = true
-    for i in 0 ..< pages.count {
-      let page = pages[i]
-      page.position.x = CGFloat(i) * size.width
-      wrapper.addChild(page)
-    }
-    addChild(wrapper)
+  convenience init(pages: [SKNode]) {
+    self.init(pages: pages, texture: nil, color: nil, size: CGSizeZero)
   }
   
   var pages: [SKNode] {
@@ -84,7 +71,28 @@ class SwipeNode: SKSpriteNode {
       }
       wrapperMinX = -CGFloat(pages.count - 1) * size.width
       snapToClosestWithInitialVelocityX(0)
+      leftArrow.position.x = -0.5 * size.width + 4
+      rightArrow.position.x = 0.5 * size.width - 4
     }
+  }
+  
+  override var userInteractionEnabled: Bool {
+    didSet {
+      if userInteractionEnabled {
+        if touch == nil && size.width != 0 {
+          fadeInArrowsForIndex(Int(round(-wrapper.position.x / size.width)))
+        }
+      } else {
+        let fadeAction = SKAction.fadeAlphaTo(0, duration: 0.25)
+        leftArrow.runAction(fadeAction, withKey: "fade")
+        rightArrow.runAction(fadeAction, withKey: "fade")
+      }
+    }
+  }
+  
+  func goToIndexWithoutSnap(index: Int) {
+    wrapper.removeActionForKey("snap")
+    wrapper.position.x = -CGFloat(index) * size.width
   }
   
   func snapToIndex(index: Int, initialVelocityX: CGFloat) {
@@ -108,6 +116,7 @@ class SwipeNode: SKSpriteNode {
         }
       }
     }
+    if userInteractionEnabled == true {fadeInArrowsForIndex(index)}
   }
   
   func snapToClosestWithInitialVelocityX(initialVelocityX: CGFloat) {
@@ -122,6 +131,16 @@ class SwipeNode: SKSpriteNode {
     snapToIndex(Int(floor(-wrapper.position.x / size.width)), initialVelocityX: initialVelocityX)
   }
   
+  func fadeInArrowsForIndex(index: Int) {
+    let fadeAction = SKAction.fadeAlphaTo(1, duration: 0.25)
+    if index > 0 {
+      leftArrow.runAction(fadeAction, withKey: "fade")
+    }
+    if index < pages.count - 1 {
+      rightArrow.runAction(fadeAction, withKey: "fade")
+    }
+  }
+  
   override func touchesBegan(touches: NSSet!, withEvent event: UIEvent!) {
     if touch != nil {return}
     wrapper.removeActionForKey("snap")
@@ -130,6 +149,9 @@ class SwipeNode: SKSpriteNode {
     lastLastTouchX = lastTouchX
     lastTouchTime = touch!.timestamp
     lastLastTouchTime = lastTouchTime
+    let fadeAction = SKAction.fadeAlphaTo(0, duration: 0.25)
+    leftArrow.runAction(fadeAction, withKey: "fade")
+    rightArrow.runAction(fadeAction, withKey: "fade")
   }
   
   override func touchesMoved(touches: NSSet!, withEvent event: UIEvent!) {

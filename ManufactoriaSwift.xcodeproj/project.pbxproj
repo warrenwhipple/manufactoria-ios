@@ -24,6 +24,7 @@
 		2D7F92321960A14500F04F63 /* belt@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2D7F92311960A14500F04F63 /* belt@2x.png */; };
 		2D849F3619A39EB6008F3D69 /* CoreGraphicsExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D849F3519A39EB6008F3D69 /* CoreGraphicsExtensions.swift */; };
 		2D8C19A3199696A90064B790 /* SwipeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8C19A2199696A90064B790 /* SwipeNode.swift */; };
+		2DC1CD6919AFB75900589B86 /* FailTapeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC1CD6819AFB75900589B86 /* FailTapeNode.swift */; };
 		2DC49131194F45B800053237 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC49130194F45B800053237 /* AppDelegate.swift */; };
 		2DC49135194F45B800053237 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC49134194F45B800053237 /* GameScene.swift */; };
 		2DC49137194F45B800053237 /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC49136194F45B800053237 /* GameViewController.swift */; };
@@ -70,6 +71,7 @@
 		2D7F92311960A14500F04F63 /* belt@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "belt@2x.png"; path = "../../../Documents/ManufactoriaSwift/gameScene/belt@2x.png"; sourceTree = "<group>"; };
 		2D849F3519A39EB6008F3D69 /* CoreGraphicsExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreGraphicsExtensions.swift; sourceTree = "<group>"; };
 		2D8C19A2199696A90064B790 /* SwipeNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwipeNode.swift; sourceTree = "<group>"; };
+		2DC1CD6819AFB75900589B86 /* FailTapeNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FailTapeNode.swift; sourceTree = "<group>"; };
 		2DC4912B194F45B800053237 /* ManufactoriaSwift.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ManufactoriaSwift.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2DC4912F194F45B800053237 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2DC49130194F45B800053237 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -202,6 +204,7 @@
 				2D8C19A2199696A90064B790 /* SwipeNode.swift */,
 				2DCEF7D4198D63960008DA44 /* StatusNode.swift */,
 				2DD23D6B196DB17C00838E96 /* TapeNode.swift */,
+				2DC1CD6819AFB75900589B86 /* FailTapeNode.swift */,
 				2D7F922B195C61FA00F04F63 /* ToolbarNode.swift */,
 				2D5C7318199FE80600D53D0D /* SpeedControlNode.swift */,
 				2D56B80A19AB6C75001C6842 /* EndMenuNode.swift */,
@@ -314,6 +317,7 @@
 				2DC49135194F45B800053237 /* GameScene.swift in Sources */,
 				2D37934519965135000B10EB /* Button.swift in Sources */,
 				2DCEF7D5198D63960008DA44 /* StatusNode.swift in Sources */,
+				2DC1CD6919AFB75900589B86 /* FailTapeNode.swift in Sources */,
 				2D60F5C9198156250032860B /* GameData.swift in Sources */,
 				2DCA18A51985849B00DF3118 /* SpriteKitExtensions.swift in Sources */,
 				2D336E8919534044008E55A9 /* MathFunctions.swift in Sources */,
