@@ -133,12 +133,22 @@ class StatusNode: SwipeNode {
     label.runAction(SKAction.sequence(sequence), withKey: "changeText")
   }
   
-  func generateFailPageForTestResult(result: TapeTestResult) {
-    if result.didLoop {
-      failLabel.text = label.text
-    } else {
-      failLabel.text = "Robot processed incorrectly:"
+  func resetFailPageForTestResult(result: TapeTestResult) {
+    switch result.kind {
+    case .Pass:
+      assertionFailure("StatusNode cannot generate fail page for result.kind.Pass")
+    case .FailLoop:
+      failLabel.text = "This looped."
+    case .FailShouldAccept:
+      failLabel.text = "This should be accepted."
+    case .FailShouldReject:
+      failLabel.text = "This should be rejected."
+    case .FailWrongTransform:
+      failLabel.text = "Wrong output."
+    case .FailDroppedTransform:
+      failLabel.text = "This got dropped."
     }
+    
     failLabel.alpha = 0
     failTapeNode?.removeFromParent()
     failTapeNode = FailTapeNode(tape: result.input)

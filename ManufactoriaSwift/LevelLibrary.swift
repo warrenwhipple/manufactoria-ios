@@ -9,7 +9,7 @@
 import Foundation
 
 typealias GenerationFunction = (Int) -> ([String])
-typealias PassFunction = (String) -> (Bool)
+typealias AcceptFunction = (String) -> (Bool)
 typealias TransformFunction = (String) -> (String)
 
 let PassComments = ["Nice.", "That works.", "Acceptable.", "Pass."]
@@ -23,18 +23,18 @@ struct LevelSetup {
   let buttons: [ToolbarNode.ToolButton.Kind]
   let exemplars: [String]
   let generationFunction: GenerationFunction
-  let passFunction: PassFunction?
+  let acceptFunction: AcceptFunction?
   let transformFunction: TransformFunction?
   
   init(tag: String, instructions: String, space: GridSpace, buttons: [ToolbarNode.ToolButton.Kind], exemplars: [String],
-    generationFunction: GenerationFunction, passFunction: PassFunction) {
+    generationFunction: GenerationFunction, acceptFunction: AcceptFunction) {
       self.tag = tag
       self.instructions = instructions
       self.space = space
       self.buttons = buttons
       self.exemplars = exemplars
       self.generationFunction = generationFunction
-      self.passFunction = passFunction
+      self.acceptFunction = acceptFunction
       self.transformFunction = nil
   }
   
@@ -46,7 +46,7 @@ struct LevelSetup {
       self.buttons = buttons
       self.exemplars = exemplars
       self.generationFunction = generationFunction
-      self.passFunction = nil
+      self.acceptFunction = nil
       self.transformFunction = transformFunction
   }
 }
@@ -54,7 +54,8 @@ struct LevelSetup {
 // Helper functions for generating string inputs
 
 private func generate(characters: String, count: Int, filter: ((String) -> (Bool))) -> [String] {
-  var list: [String] = [""]
+  var list: [String] = []
+  if filter("") {list.append("")}
   if characters == "" {return list}
   var lastLevel = [""]
   var nextLevel: [String] = []
@@ -111,7 +112,7 @@ var LevelLibrary: [LevelSetup] = [
     buttons: [.Blank, .Belt],
     exemplars: [""],
     generationFunction: {n in return [""]},
-    passFunction: {string in return true}
+    acceptFunction: {string in return true}
   ),
   
   LevelSetup(
@@ -121,7 +122,7 @@ var LevelLibrary: [LevelSetup] = [
     buttons: [.Blank, .Belt, .PullerBR],
     exemplars: ["r", "b"],
     generationFunction: {n in return ["r", "b"]},
-    passFunction: {string in return string == "b"}
+    acceptFunction: {string in return string == "b"}
   ),
   
   LevelSetup(
@@ -131,10 +132,25 @@ var LevelLibrary: [LevelSetup] = [
     buttons: [.Blank, .BeltBridge, .PullerBR],
     exemplars: ["rbrb", "brbr"],
     generationFunction: {n in return generate("br", n)},
-    passFunction: {
+    acceptFunction: {
       s in
       if s.length() < 3 {return false}
       return s[0...2] == "brb"
+    }
+  ),
+  
+  LevelSetup(
+    tag: "no R",
+    instructions: "Reject any red anywhere.",
+    space: GridSpace(3, 3),
+    buttons: [.Blank, .BeltBridge, .PullerBR],
+    exemplars: ["bbrb", "bbbb"],
+    generationFunction: {n in return generate("br", n)},
+    acceptFunction: {
+      s in
+      var k = 0
+      for c in s {if c == "r" {return false}}
+      return true
     }
   ),
   
@@ -145,26 +161,11 @@ var LevelLibrary: [LevelSetup] = [
     buttons: [.Blank, .BeltBridge, .PullerBR],
     exemplars: ["rbrbr", "brbrb"],
     generationFunction: {n in return generate("br", n)},
-    passFunction: {
+    acceptFunction: {
       s in
       var k = 0
       for c in s {if c == "b" {if ++k >= 3 {return true}}}
       return false
-    }
-  ),
-  
-  LevelSetup(
-    tag: "no R",
-    instructions: "Reject any red anywhere.",
-    space: GridSpace(5, 5),
-    buttons: [.Blank, .BeltBridge, .PullerBR],
-    exemplars: ["bbrb", "bbbb"],
-    generationFunction: {n in return generate("br", n)},
-    passFunction: {
-      s in
-      var k = 0
-      for c in s {if c == "r" {return false}}
-      return true
     }
   ),
   
@@ -183,23 +184,23 @@ var LevelLibrary: [LevelSetup] = [
   ),
   
   LevelSetup(
-    tag: "short",
-    instructions: "For testing.",
-    space: GridSpace(9, 9),
-    buttons: [.Blank, .BeltBridge, .PullerBR, .PullerGY, .PushersBRGY],
-    exemplars: ["brbr", "rrbb"],
-    generationFunction: {n in return ["brgy"]},
-    transformFunction: {s in return s}
+    tag: "alternating",
+    instructions: "Accept only alternating sequences.",
+    space: GridSpace(7, 7),
+    buttons: [.Blank, .BeltBridge, .PullerBR],
+    exemplars: ["brbrr", "rbrbr"],
+    generationFunction: {n in return generate("br", n, {s in if s.length()<2 {return false}; return true})},
+    acceptFunction: {
+      s in
+      var b = true
+      if s[0] == "r" {b = false}
+      for c in s.from(1) {
+        if b && c == "b" {return false}
+        if !b && c == "r" {return false}
+        b = !b
+      }
+      return true
+    }
   ),
   
-  LevelSetup(
-    tag: "long",
-    instructions: "For testing.",
-    space: GridSpace(9, 9),
-    buttons: [.Blank, .BeltBridge, .PullerBR, .PullerGY, .PushersBRGY],
-    exemplars: ["brbr", "rrbb"],
-    generationFunction: {n in return ["brgybrgybrgybrgy"]},
-    transformFunction: {s in return s}
-  )
-
 ]

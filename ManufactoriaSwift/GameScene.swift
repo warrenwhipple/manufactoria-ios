@@ -8,12 +8,13 @@
 
 import SpriteKit
 
-class GameScene: SKScene {
+class GameScene: SKScene, EngineDelegate {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   enum State {case Editing, Thinking, Testing, Congratulating}
   
   // model objects
   let levelNumber: Int
+  let levelSetup: LevelSetup
   let grid: Grid
   var tapeTestResults: [TapeTestResult] = []
   var currentTapeTestIndex = 0
@@ -45,7 +46,7 @@ class GameScene: SKScene {
   init(size: CGSize, var levelNumber: Int) {
     if levelNumber > LevelLibrary.count - 1 {levelNumber = 0}
     self.levelNumber = levelNumber
-    let levelSetup = LevelLibrary[levelNumber]
+    levelSetup = LevelLibrary[levelNumber]
     grid = Grid(space: levelSetup.space)
     engine = Engine(levelSetup: levelSetup)
     statusNode = StatusNode(instructions: levelSetup.instructions)
@@ -98,7 +99,6 @@ class GameScene: SKScene {
       if state == oldValue {return}
       switch state {
       case .Editing:
-        engine.cancelAllTests()
         statusNode.state = .Editing
         gridNode.state = .Editing
         robotNode?.runAction(SKAction.fadeAlphaTo(0, duration: 0.5))
@@ -115,7 +115,7 @@ class GameScene: SKScene {
         gridNode.state = .Waiting
         toolbarNode.isEnabled = false
         toolbarNode.runAction(SKAction.sequence([SKAction.fadeAlphaTo(0, duration: 0.5), SKAction.removeFromParent()]))
-        engine.queueTestWithGrid(grid)
+        engine.beginGridTest()
       case .Testing:
         loadTape(0)
         statusNode.state = .Testing
@@ -266,7 +266,7 @@ class GameScene: SKScene {
   func skipTape() {
     speedControlNode.speedLabel.text = ""
     gameSpeed = 32
-    if tapeTestResults[currentTapeTestIndex].didLoop {
+    if tapeTestResults[currentTapeTestIndex].kind == TapeTestResult.Kind.FailLoop {
       robotNode?.runAction(SKAction.sequence([SKAction.waitForDuration(0.5), SKAction.fadeAlphaTo(0, duration: 0.5)]))
       runAction(SKAction.waitForDuration(1), completion: {[weak self] in self!.loadNextTape()})
     }
@@ -281,9 +281,18 @@ class GameScene: SKScene {
     loadTape(currentTapeTestIndex)
   }
   
-  func gridTestDidPassWithExemplarTapeTests(exemplarTapeTests: [TapeTestResult]) {
+  func testButtonPressed() {
+    state = .Thinking
+  }
+  
+  // MARK: - Engine Delegate Functions
+  
+  func gridTestPassed() {
     statusNode.changeText(PassComments[Int(arc4random_uniform(UInt32(PassComments.count)))])
-    tapeTestResults = exemplarTapeTests
+    tapeTestResults = []
+    for exemplar in levelSetup.exemplars {
+      tapeTestResults.append(TapeTestResult(input: exemplar, output: nil, kind: .Pass))
+    }
     let gameData = GameData.sharedInstance
     if gameData.levelsComplete < levelNumber + 1 {
       gameData.levelsComplete = levelNumber + 1
@@ -293,22 +302,14 @@ class GameScene: SKScene {
     thinkingOperationsDone = true
   }
   
-  func gridTestDidFailWithTapeTest(result: TapeTestResult) {
+  func gridTestFailedWithResult(result: TapeTestResult) {
     statusNode.changeText(FailComments[Int(arc4random_uniform(UInt32(FailComments.count)))])
-    statusNode.generateFailPageForTestResult(result)
+    statusNode.resetFailPageForTestResult(result)
     tapeTestResults = [result]
     thinkingOperationsDone = true
   }
   
-  func gridTestDidLoopWithTapeTest(result: TapeTestResult) {
-    statusNode.changeText(LoopComments[Int(arc4random_uniform(UInt32(LoopComments.count)))])
-    tapeTestResults = [result]
-    thinkingOperationsDone = true
-  }
-  
-  func testButtonPressed() {
-    state = .Thinking
-  }
+  // MARK: - Touch Delegate Functions
   
   override func touchesBegan(touches: NSSet!, withEvent event: UIEvent!) {
     gridNode.touchesBegan(touches, withEvent: event)

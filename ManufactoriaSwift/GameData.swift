@@ -37,7 +37,6 @@ class GameData: NSObject, NSCoding {
     }
   }
   
-  
   func encodeWithCoder(aCoder: NSCoder)  {
     aCoder.encodeObject(levelsComplete, forKey: "levelsComplete")
   }

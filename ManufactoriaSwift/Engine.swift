@@ -9,161 +9,113 @@
 import Foundation
 
 struct TapeTestResult {
+  enum Kind {
+    case Pass, FailLoop, FailShouldAccept, FailShouldReject, FailWrongTransform, FailDroppedTransform
+  }
   let input: String
   let output: String?
-  let maxTapeLength: Int
-  let didLoop: Bool
-  init(tapeTestOp: TapeTestOp) {
-    input = tapeTestOp.input
-    output = tapeTestOp.output
-    maxTapeLength = tapeTestOp.maxTapeLength
-    didLoop = tapeTestOp.didLoop
-  }
+  let kind: Kind
+}
+
+protocol EngineDelegate: class {
+  var grid: Grid {get}
+  func gridTestPassed()
+  func gridTestFailedWithResult(TapeTestResult)
 }
 
 class Engine {
-  weak var delegate: GameScene?
+  weak var delegate: EngineDelegate!
   let levelSetup: LevelSetup
-  var isTesting = false
-  let queue = NSOperationQueue()
-  var queuedTapeTestCount = 0
-  var passedTapeTestCount = 0
-  var exemplarResults: [TapeTestResult] = []
+  let tapes: [String]
+  let queue: NSOperationQueue
+  var currentTapeTestIndex = 0
   
   init(levelSetup: LevelSetup) {
     self.levelSetup = levelSetup
-    queue.maxConcurrentOperationCount = 1
+    tapes = levelSetup.generationFunction(1000)
+    queue = NSOperationQueue()
   }
   
-  func queueTestWithGrid(grid: Grid) {
-    isTesting = true
-    queuedTapeTestCount = 0
-    passedTapeTestCount = 0
-    exemplarResults = []
-    queue.addOperation(TapeTestQueueOp(queue: queue, grid: grid, levelSetup: levelSetup, delegate: self))
-  }
-  
-  func cancelAllTests() {
-    isTesting = false
+  func beginGridTest() {
+    if tapes.isEmpty {return}
     queue.cancelAllOperations()
-    queuedTapeTestCount = 0
-    passedTapeTestCount = 0
+    currentTapeTestIndex = 0
+    queue.addOperation(TapeTestOp(grid: delegate.grid, input: tapes[0], delegate: self))
   }
   
-  func tapeTestQueuingDidFinishWithCount(count: Int) {
-    if !isTesting {return}
-    queuedTapeTestCount = count
-  }
-  
-  func tapeTestDidEnd(result: TapeTestResult) {
-    if !isTesting {return}
-    
+  func tapeTestOpDidFinish(tapeTestOp: TapeTestOp) {
     //  check for tape test loop
-    if result.didLoop {
-      cancelAllTests()
-      delegate?.gridTestDidLoopWithTapeTest(result)
+    if tapeTestOp.didLoop {
+      gridTestFailedWithResult(TapeTestResult(input: tapeTestOp.input, output: nil, kind: .FailLoop))
       return
     }
-    // check for tape test failure
-    if let passFunction = levelSetup.passFunction {
-      if passFunction(result.input) == (result.output == nil) {
-        cancelAllTests()
-        delegate?.gridTestDidFailWithTapeTest(result)
+    
+    // check for accept/reject tape test failure
+    if let acceptFunction = levelSetup.acceptFunction {
+      let shouldAccept = acceptFunction(tapeTestOp.input)
+      if shouldAccept && tapeTestOp.output == nil {
+        gridTestFailedWithResult(TapeTestResult(input: tapeTestOp.input, output: tapeTestOp.output, kind: .FailShouldAccept))
         return
       }
+      if !shouldAccept && tapeTestOp.output != nil {
+        gridTestFailedWithResult(TapeTestResult(input: tapeTestOp.input, output: tapeTestOp.output, kind: .FailShouldReject))
+        return
+      }
+      
+    // check for transform tape test failure
     } else if let transformFunction = levelSetup.transformFunction {
-      if result.output == nil {
-        cancelAllTests()
-        delegate?.gridTestDidFailWithTapeTest(result)
+      if tapeTestOp.output == nil {
+        gridTestFailedWithResult(TapeTestResult(input: tapeTestOp.input, output: tapeTestOp.output, kind: .FailDroppedTransform))
         return
       }
-      if result.output != nil && (transformFunction(result.input) != result.output!) {
-        cancelAllTests()
-        delegate?.gridTestDidFailWithTapeTest(result)
+      if transformFunction(tapeTestOp.input) != tapeTestOp.output! {
+        gridTestFailedWithResult(TapeTestResult(input: tapeTestOp.input, output: tapeTestOp.output, kind: .FailWrongTransform))
         return
-      }
-    } else {
-      assert(levelSetup.passFunction == nil && levelSetup.transformFunction == nil)
-    }
-    if !isTesting {return}
-    
-    // record max length if one of exemplars
-    let inputString = result.input
-    for exemplarString in levelSetup.exemplars {
-      if inputString == exemplarString {
-        exemplarResults.append(result)
       }
     }
     
-    // if all tests are complete, run exemplars
-    if ++passedTapeTestCount == queuedTapeTestCount {
-      delegate?.gridTestDidPassWithExemplarTapeTests(exemplarResults)
+    // tape test passes
+    // run next test
+    if ++currentTapeTestIndex < tapes.count {
+      queue.addOperation(TapeTestOp(grid: delegate.grid, input: tapes[currentTapeTestIndex], delegate: self))
+      return
     }
+    
+    // if no next test, grid test passes
+    gridTestPassed()
   }
-}
 
-class TapeTestQueueOp: NSOperation {
-  let queue: NSOperationQueue
-  let grid: Grid
-  let levelSetup: LevelSetup
-  weak var delegate: Engine?
-  var queuedTapeTestCount = 0
-  
-  init(queue: NSOperationQueue, grid: Grid, levelSetup: LevelSetup, delegate: Engine?) {
-    self.queue = queue
-    self.grid = grid
-    self.levelSetup = levelSetup
-    self.delegate = delegate
-    super.init()
-    queuePriority = NSOperationQueuePriority.VeryLow
+  func gridTestPassed() {
+    dispatch_async(dispatch_get_main_queue()) {[unowned self] in self.delegate.gridTestPassed()}
   }
   
-  override func main() {
-    autoreleasepool {
-      if self.cancelled {return}
-      let strings = self.levelSetup.generationFunction(Globals.testCount)
-      for string in strings {
-        if self.cancelled {
-          self.queue.cancelAllOperations()
-          return
-        }
-        self.queue.addOperation(TapeTestOp(grid: self.grid, tape: string, delegate: self.delegate))
-      }
-      dispatch_async(dispatch_get_main_queue()) {
-        if self.delegate != nil {self.delegate!.tapeTestQueuingDidFinishWithCount(strings.count)}
-      }
+  func gridTestFailedWithResult(result: TapeTestResult) {
+    dispatch_async(dispatch_get_main_queue()) {[unowned self] in self.delegate.gridTestFailedWithResult(result)}
+  }
+  
+  class TapeTestOp: NSOperation {
+    unowned let delegate: Engine
+    unowned let grid: Grid
+    let input: String
+    var output: String?
+    var tickCount = 0
+    var didLoop = false
+    
+    init(grid: Grid, input: String, delegate: Engine) {
+      self.grid = grid
+      self.input = input
+      self.delegate = delegate
+      super.init()
+      queuePriority = NSOperationQueuePriority.VeryLow
     }
-  }
-}
-
-class TapeTestOp: NSOperation {
-  weak var delegate: Engine?
-  let grid: Grid
-  var tape: String
-  let input: String
-  var output: String?
-  var tickCount = 0
-  var maxTapeLength: Int
-  var didLoop = false
-  
-  init(grid: Grid, tape: String, delegate: Engine?) {
-    self.grid = grid
-    self.tape = tape
-    self.delegate = delegate
-    input = tape
-    maxTapeLength = input.length()
-    super.init()
-    queuePriority = NSOperationQueuePriority.VeryLow
-  }
-  
-  override func main() {
-    autoreleasepool {
+    
+    override func main() {
+      var tape = self.input
       var coord = self.grid.startCoord + 1
       var lastcoord = self.grid.startCoord
       while !self.cancelled {
-        let tickResult = self.grid.testCoord(coord, lastCoord: lastcoord, tape: &self.tape)
+        let tickResult = self.grid.testCoord(coord, lastCoord: lastcoord, tape: &tape)
         self.tickCount++
-        self.maxTapeLength = max(self.maxTapeLength, self.tape.length())
         lastcoord = coord
         switch tickResult {
         case .North: coord.j++
@@ -171,19 +123,16 @@ class TapeTestOp: NSOperation {
         case .South: coord.j--
         case .West: coord.i--
         case .Accept:
-          self.output = self.tape
-          fallthrough
+          self.output = tape
+          self.delegate.tapeTestOpDidFinish(self)
+          return
         case .Reject:
-          dispatch_async(dispatch_get_main_queue()) {
-            if self.delegate != nil {self.delegate!.tapeTestDidEnd(TapeTestResult(tapeTestOp: self))}
-          }
+          self.delegate.tapeTestOpDidFinish(self)
           return
         }
-        if self.tickCount > Globals.loopTickCount || self.maxTapeLength > Globals.loopTapeLength {
+        if self.tickCount >= Globals.loopTickCount || tape.length() >= Globals.loopTapeLength {
           self.didLoop = true
-          dispatch_async(dispatch_get_main_queue()) {
-            if self.delegate != nil {self.delegate!.tapeTestDidEnd(TapeTestResult(tapeTestOp: self))}
-          }
+          self.delegate.tapeTestOpDidFinish(self)
           return
         }
       }
