@@ -29,11 +29,15 @@ enum EditMode {
   }
 }
 
+protocol GridNodeDelegate: class {
+  func editCompleted()
+}
+
 class GridNode: SKNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   enum State {case Editing, Waiting}
   
-  //unowned let grid: Grid
+  weak var delegate: GridNodeDelegate!
   let grid: Grid
   let wrapper = SKNode()
   let cellNodes: [CellNode]

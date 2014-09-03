@@ -8,7 +8,7 @@
 
 import SpriteKit
 
-class GameScene: SKScene, EngineDelegate {
+class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, ToolbarNodeDelegate {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   enum State {case Editing, Thinking, Testing, Congratulating}
   
@@ -65,6 +65,8 @@ class GameScene: SKScene, EngineDelegate {
     super.init(size: size)
     backgroundColor = Globals.backgroundColor
     
+    gridNode.delegate = self
+    
     engine.delegate = self
     
     addChild(gridNode)
@@ -74,6 +76,7 @@ class GameScene: SKScene, EngineDelegate {
     addChild(statusNode)
         
     toolbarNode.delegate = self
+    changeEditMode(toolbarNode.buttonInFocus.modes[toolbarNode.buttonInFocus.modeIndex])
     toolbarNode.zPosition = 10
     addChild(toolbarNode)
     
@@ -154,10 +157,6 @@ class GameScene: SKScene, EngineDelegate {
     statusSwipeNode.size = topGapRect.size
     
     menuButton.position = CGPoint(size.width - 32, size.height - 32)
-  }
-  
-  func changeEditMode(editMode: EditMode) {
-    gridNode.editMode = editMode
   }
   
   override func update(currentTime: NSTimeInterval) {
@@ -287,7 +286,13 @@ class GameScene: SKScene, EngineDelegate {
     state = .Thinking
   }
   
-  // MARK: - Engine Delegate Functions
+  // MARK: - GridNodeDelegate Functions
+  
+  func editCompleted() {
+    println(editCompleted)
+  }
+  
+  // MARK: - EngineDelegate Functions
   
   func gridTestPassed() {
     statusNode.changeText(PassComments[Int(arc4random_uniform(UInt32(PassComments.count)))])
@@ -309,6 +314,18 @@ class GameScene: SKScene, EngineDelegate {
     statusNode.resetFailPageForTestResult(result)
     tapeTestResults = [result]
     thinkingOperationsDone = true
+  }
+  
+  // MARK: - ToolbarNodeDelegate Functions
+  
+  func changeEditMode(editMode: EditMode) {
+    gridNode.editMode = editMode
+  }
+  
+  func undoEdit() {
+  }
+  
+  func redoEdit() {
   }
   
   // MARK: - Touch Delegate Functions

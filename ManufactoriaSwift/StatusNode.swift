@@ -8,11 +8,15 @@
 
 import SpriteKit
 
+protocol StatusNodeDelegate: class {
+  func testButtonPressed()
+}
+
 class StatusNode: SwipeNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   enum State {case Editing, Thinking, Testing, Congratulating}
   
-  weak var delegate: GameScene?
+  weak var delegate: StatusNodeDelegate!
   let instructionsPage: SKNode
   let label: BreakingLabel
   let testButton: RingButton
@@ -52,8 +56,6 @@ class StatusNode: SwipeNode {
     
     super.init(pages: [instructionsPage, failPage], texture: nil, color: nil, size: CGSizeZero)
     
-    tapeNode.delegate = self
-  
     testButton.touchUpInsideClosure = {[unowned self] in self.testButtonPressed()}
     
     userInteractionEnabled = false
@@ -159,6 +161,6 @@ class StatusNode: SwipeNode {
   }
   
   func testButtonPressed() {
-    delegate?.testButtonPressed()
+    delegate.testButtonPressed()
   }
 }

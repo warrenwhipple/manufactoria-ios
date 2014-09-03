@@ -12,7 +12,6 @@ class TapeNode: SKNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   enum State {case Loading, Waiting, Writing, Deleting, Clearing}
   
-  weak var delegate: StatusNode?
   var state: State = .Loading
   let dotWrapper = SKNode()
   var dots: [SKSpriteNode] = []

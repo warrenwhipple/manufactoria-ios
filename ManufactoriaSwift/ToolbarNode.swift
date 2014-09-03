@@ -8,19 +8,31 @@
 
 import SpriteKit
 
+protocol ToolbarNodeDelegate: class {
+  func changeEditMode(editMode: EditMode)
+  func undoEdit()
+  func redoEdit()
+}
+
 class ToolbarNode: SKNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   
-  weak var delegate: GameScene? {
-    didSet {
-      delegate?.changeEditMode(buttonInFocus.modes[buttonInFocus.modeIndex])
-    }
-  }
+  weak var delegate: ToolbarNodeDelegate!
+  let undoButton, redoButton: Button
   let buttons: [ToolButton]
   var buttonInFocus: ToolButton
   let indicator: Indicator
   
   init(buttonKinds: [ToolButton.Kind]) {
+    undoButton = Button()
+    let undoIcon = SKSpriteNode("undoIcon")
+    undoButton.addChild(undoIcon)
+    
+    redoButton = Button()
+    let redoIcon = SKSpriteNode("undoIcon")
+    redoIcon.xScale = -1
+    redoButton.addChild(redoIcon)
+    
     var tempButtons: [ToolButton] = []
     var maxModeCount = 0
     for buttonKind in buttonKinds {
@@ -35,9 +47,16 @@ class ToolbarNode: SKNode {
       buttonInFocus = buttons[0]
     }
     buttonInFocus.isInFocus = true
+    
     indicator = Indicator(initialFocusIndex: 0, initialDotCount: buttonInFocus.modes.count, maxDotCount: maxModeCount)
     
     super.init()
+    
+    undoButton.touchUpInsideClosure = {[unowned self] in self.delegate.undoEdit()}
+    addChild(undoButton)
+    
+    redoButton.touchUpInsideClosure = {[unowned self] in self.delegate.redoEdit()}
+    addChild(redoButton)
     
     for button in buttons {
       button.delegate = self
@@ -48,12 +67,14 @@ class ToolbarNode: SKNode {
     
   var size: CGSize = CGSizeZero {
     didSet {
+      undoButton.position = CGPoint(round(size.width / 3), round(size.height * 2 / 3))
+      redoButton.position = CGPoint(round(size.width * 2 / 3), round(size.height * 2 / 3))
       if buttons.isEmpty {return}
       let spacing = size.width / CGFloat(buttons.count + 1)
       var x: CGFloat = spacing
-      let y = size.height * 0.5
+      let y = round(size.height / 3)
       for button in buttons {
-        button.position = CGPoint(x, y)
+        button.position = CGPoint(round(x), y)
         x += spacing
       }
       indicator.position = CGPoint(buttonInFocus.position.x, buttonInFocus.position.y - 32.0)
@@ -81,7 +102,7 @@ class ToolbarNode: SKNode {
       if button.modes.count > 1 {
         button.cycleMode()
         indicator.focusIndex = button.modeIndex
-        delegate?.changeEditMode(button.modes[button.modeIndex])
+        delegate.changeEditMode(button.modes[button.modeIndex])
       }
     } else { // button != focusedButton
       buttonInFocus = button
@@ -89,7 +110,7 @@ class ToolbarNode: SKNode {
       indicator.currentDotCount = button.modes.count
       indicator.focusIndex = button.modeIndex
       indicator.runAction(SKAction.moveToX(button.position.x, duration: 0.5).ease())
-      delegate?.changeEditMode(button.modes[button.modeIndex])
+      delegate.changeEditMode(button.modes[button.modeIndex])
       for unfocusButton in buttons {
         if unfocusButton != button {
           unfocusButton.isInFocus = false
@@ -104,7 +125,7 @@ class ToolbarNode: SKNode {
     required init(coder: NSCoder) {fatalError("NSCoding not supported")}
     enum Kind {case Blank, Belt, BeltBridge, PullerBR, PullerGY, PushersBR, PushersBRGY}
     
-    weak var delegate: ToolbarNode?
+    weak var delegate: ToolbarNode!
     let kind: Kind
     let staticNode: SKSpriteNode?
     let changeNode: SKSpriteNode?
@@ -206,7 +227,7 @@ class ToolbarNode: SKNode {
     override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
       if touch != nil {return}
       touch = touches.anyObject() as? UITouch
-      delegate?.buttonTouchDown(self)
+      delegate.buttonTouchDown(self)
     }
     
     override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
@@ -221,7 +242,7 @@ class ToolbarNode: SKNode {
       if touch == nil {return}
       if !touches.containsObject(touch!) {return}
       touch = nil
-      delegate?.focusSwitchButtonTouchUpInside(self)
+      delegate.focusSwitchButtonTouchUpInside(self)
     }
     
     override func touchesCancelled(touches: NSSet, withEvent event: UIEvent) {

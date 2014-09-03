@@ -123,7 +123,7 @@ class Grid: NSObject, NSCoding {
     aCoder.encodeObject(toString())
   }
   
-  convenience init(space: GridSpace, fileName: String) {
+  /*convenience init(space: GridSpace, fileName: String) {
     let filePath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
       .stringByAppendingPathComponent(fileName)
     if NSFileManager.defaultManager().fileExistsAtPath(filePath) {
@@ -135,7 +135,7 @@ class Grid: NSObject, NSCoding {
       }
     }
     self.init(space: space)
-  }
+  }*/
   
   func toString() -> String {
     var string = "\(space.columns):"

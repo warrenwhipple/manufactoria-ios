@@ -68,38 +68,6 @@ class Button: SKSpriteNode {
   }
 }
   
-/*
-class Ring: SKNode {
-  required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  let outerDisc: SKSpriteNode
-  let innerDisc: SKSpriteNode
-  let diameter, strokeWidth: CGFloat
-  
-  convenience override init() {
-    self.init(discTexture: SKTexture(imageNamed: "disc50"), diameter: 50, strokeWidth: 1, outerColor: Globals.strokeColor, innerColor: Globals.backgroundColor)
-  }
-  
-  init(discTexture: SKTexture!, diameter: CGFloat, strokeWidth: CGFloat, outerColor: UIColor!, innerColor: UIColor!) {
-    self.diameter = diameter
-    self.strokeWidth = strokeWidth
-    outerDisc = SKSpriteNode(texture: discTexture, color: outerColor, size: CGSize(1))
-    innerDisc = SKSpriteNode(texture: discTexture, color: innerColor, size: CGSize(1))
-    outerDisc.colorBlendFactor = 1
-    innerDisc.colorBlendFactor = 1
-    super.init()
-    addChild(outerDisc)
-    addChild(innerDisc)
-    setScale(1)
-  }
-  
-  override func setScale(scale: CGFloat) {
-    super.setScale(scale)
-    outerDisc.setScale(scale * diameter)
-    innerDisc.setScale(scale * diameter - 2 * strokeWidth / scale)
-  }
-}
-*/
-
 class RingButton: Button {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   enum State {case Button, Hidden, Printer}
