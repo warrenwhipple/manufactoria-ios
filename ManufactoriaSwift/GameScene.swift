@@ -47,7 +47,7 @@ class GameScene: SKScene, EngineDelegate {
     if levelNumber > LevelLibrary.count - 1 {levelNumber = 0}
     self.levelNumber = levelNumber
     levelSetup = LevelLibrary[levelNumber]
-    grid = Grid(space: levelSetup.space)
+    grid = Grid(space: levelSetup.space, fileName: "level\(self.levelNumber)")
     engine = Engine(levelSetup: levelSetup)
     statusNode = StatusNode(instructions: levelSetup.instructions)
     gridNode = GridNode(grid: grid)
@@ -86,6 +86,7 @@ class GameScene: SKScene, EngineDelegate {
     
     menuButton.touchUpInsideClosure = {
       [unowned self] in
+      self.saveGrid()
       self.view.presentScene(MenuScene(size: size), transition: SKTransition.pushWithDirection(.Left, duration: 0.5).outInPlay())
     }
     menuButton.zPosition = 20
@@ -282,7 +283,12 @@ class GameScene: SKScene, EngineDelegate {
   }
   
   func testButtonPressed() {
+    saveGrid()
     state = .Thinking
+  }
+  
+  func saveGrid() {
+    grid.saveToFileName("level\(self.levelNumber)")
   }
   
   // MARK: - Engine Delegate Functions

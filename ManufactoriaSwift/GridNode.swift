@@ -33,7 +33,8 @@ class GridNode: SKNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   enum State {case Editing, Waiting}
   
-  unowned let grid: Grid
+  //unowned let grid: Grid
+  let grid: Grid
   let wrapper = SKNode()
   let cellNodes: [CellNode]
   let startCellNode, endCellNode: CellNode
@@ -94,11 +95,12 @@ class GridNode: SKNode {
     for i in 0..<grid.space.columns {
       for j in 0..<grid.space.rows {
         self[GridCoord(i,j)].position = CGPoint(CGFloat(i) + 0.5, CGFloat(j) + 0.5)
+        self[GridCoord(i,j)].applyCell(grid[GridCoord(i,j)])
       }
     }
-    startCellNode.position = CGPoint(CGFloat(grid.centerColumn) + 0.5, -0.5)
-    endCellNode.position = CGPoint(CGFloat(grid.centerColumn) + 0.5, CGFloat(grid.space.rows) + 0.5)
-
+    startCellNode.position = CGPoint(CGFloat(grid.startCoord.i) + 0.5, CGFloat(grid.startCoord.j) + 0.5)
+    endCellNode.position = CGPoint(CGFloat(grid.endCoord.i) + 0.5, CGFloat(grid.endCoord.j) + 0.5)
+    
     addChild(wrapper)
   }
   

@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Warren Whipple. All rights reserved.
 //
 
+import Foundation
+
 struct GridCoord {
   var i = 0
   var j = 0
@@ -38,11 +40,11 @@ enum TickTestResult {
   case North, East, South, West, Accept, Reject
 }
 
-class Grid {
+class Grid: NSObject, NSCoding {
   let space: GridSpace
-  let startCoord, endCoord: GridCoord
   var cells: [Cell]
-  var centerColumn: Int {return space.columns / 2}
+  var startCoord: GridCoord {return GridCoord(space.columns / 2, -1)}
+  var endCoord: GridCoord {return GridCoord(space.columns / 2, space.rows)}
   
   subscript(coord: GridCoord) -> Cell {
     get {
@@ -55,11 +57,116 @@ class Grid {
     }
   }
   
-  init(space: GridSpace) {
+  override init() {
+    space = GridSpace(0,0)
+    cells = []
+  }
+  
+  init(space: GridSpace, cells: [Cell]) {
     self.space = space
-    startCoord = GridCoord(space.columns / 2, -1)
-    endCoord = GridCoord(space.columns / 2, space.rows)
-    cells = [Cell](count: space.columns * space.rows, repeatedValue: Cell())
+    if space.columns * space.rows == cells.count {
+      self.cells = cells
+    } else {
+      self.cells = [Cell](count: space.columns * space.rows, repeatedValue: Cell())
+    }
+  }
+  
+  convenience init(space: GridSpace) {self.init(space: space, cells: [])}
+  
+  convenience init(string: String) {
+    var tempCells: [Cell] = []
+    let strings = string.split(":")
+    if strings.count != 2 {self.init(); return}
+    let columns = strings[0].toInt()
+    if columns == nil {self.init(); return}
+    if strings[1].length() % (2 * columns!) != 0 {self.init(); return}
+    var even = true
+    var direction = Direction.North
+    for character in strings[1] {
+      if even {
+        switch character {
+        case "e": direction = .East
+        case "s": direction = .South
+        case "w": direction = .West
+        default: direction = .North
+        }
+      } else {
+        var cellType = CellType.Blank
+        switch character {
+        case "i": cellType = .Belt
+        case "x": cellType = .Bridge
+        case "b": cellType = .PusherB
+        case "r": cellType = .PusherR
+        case "g": cellType = .PusherG
+        case "y": cellType = .PusherY
+        case "B": cellType = .PullerBR
+        case "R": cellType = .PullerRB
+        case "G": cellType = .PullerGY
+        case "Y": cellType = .PullerYG
+        default: break
+        }
+        tempCells.append(Cell(type: cellType, direction: direction))
+      }
+      even = !even
+    }
+    self.init(space: GridSpace(columns!, strings[1].length() / (2 * columns!)), cells: tempCells)
+  }
+  
+  required init(coder aDecoder: NSCoder) {
+    let gridString = aDecoder.decodeObject() as String
+    let grid = Grid(string: gridString)
+    space = grid.space
+    cells = grid.cells
+  }
+  
+  func encodeWithCoder(aCoder: NSCoder)  {
+    aCoder.encodeObject(toString())
+  }
+  
+  convenience init(space: GridSpace, fileName: String) {
+    let filePath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
+      .stringByAppendingPathComponent(fileName)
+    if NSFileManager.defaultManager().fileExistsAtPath(filePath) {
+      if let grid = NSKeyedUnarchiver.unarchiveObjectWithFile(filePath) as? Grid {
+        if grid.space == space {
+          self.init(space: grid.space, cells: grid.cells)
+          return
+        }
+      }
+    }
+    self.init(space: space)
+  }
+  
+  func saveToFileName(fileName: String) {
+    let filePath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
+      .stringByAppendingPathComponent(fileName)
+    NSKeyedArchiver.archivedDataWithRootObject(self).writeToFile(filePath, atomically: true)
+  }
+  
+  func toString() -> String {
+    var string = "\(space.columns):"
+    for cell in cells {
+      switch cell.direction {
+      case .North: string += "n"
+      case .East: string += "e"
+      case .South: string += "s"
+      case .West: string += "w"
+      }
+      switch cell.type {
+      case .Blank: string += "o"
+      case .Belt: string += "i"
+      case .Bridge: string += "x"
+      case .PusherB: string += "b"
+      case .PusherR: string += "r"
+      case .PusherG: string += "g"
+      case .PusherY: string += "y"
+      case .PullerBR: string += "B"
+      case .PullerRB: string += "R"
+      case .PullerGY: string += "G"
+      case .PullerYG: string += "Y"
+      }
+    }
+    return string
   }
   
   func testCoord(coord: GridCoord, lastCoord: GridCoord, inout tape: String) -> TickTestResult {
