@@ -15,7 +15,7 @@ class GameScene: SKScene, EngineDelegate {
   // model objects
   let levelNumber: Int
   let levelSetup: LevelSetup
-  let grid: Grid
+  let levelData: LevelData
   var tapeTestResults: [TapeTestResult] = []
   var currentTapeTestIndex = 0
   var tape: String = ""
@@ -47,10 +47,10 @@ class GameScene: SKScene, EngineDelegate {
     if levelNumber > LevelLibrary.count - 1 {levelNumber = 0}
     self.levelNumber = levelNumber
     levelSetup = LevelLibrary[levelNumber]
-    grid = Grid(space: levelSetup.space, fileName: "level\(self.levelNumber)")
+    levelData = LevelData(levelNumber: levelNumber)
     engine = Engine(levelSetup: levelSetup)
     statusNode = StatusNode(instructions: levelSetup.instructions)
-    gridNode = GridNode(grid: grid)
+    gridNode = GridNode(grid: levelData.grid)
     toolbarNode = ToolbarNode(buttonKinds: levelSetup.buttons)
     endMenuNode = EndMenuNode(nextLevelNumber: levelNumber + 1)
     endMenuNode.alpha = 0
@@ -86,7 +86,7 @@ class GameScene: SKScene, EngineDelegate {
     
     menuButton.touchUpInsideClosure = {
       [unowned self] in
-      self.saveGrid()
+      self.levelData.saveWithLevelNumber(self.levelNumber)
       self.view.presentScene(MenuScene(size: size), transition: SKTransition.pushWithDirection(.Left, duration: 0.5).outInPlay())
     }
     menuButton.zPosition = 20
@@ -136,7 +136,7 @@ class GameScene: SKScene, EngineDelegate {
   func fitToSize() {
     gridNode.rect = CGRect(origin: CGPointZero, size: size)
     let gridRect = CGRect(centerX: 0.5 * size.width, centerY: 0.5 * size.height,
-      width: CGFloat(grid.space.columns) * gridNode.wrapper.xScale, height: CGFloat(grid.space.rows) * gridNode.wrapper.yScale)
+      width: CGFloat(levelData.grid.space.columns) * gridNode.wrapper.xScale, height: CGFloat(levelData.grid.space.rows) * gridNode.wrapper.yScale)
     let bottomGapRect = CGRect(x: 0,y: 0,
       width: size.width, height: 0.5 * (size.height - gridRect.size.height))
     let topGapRect = CGRect(x: 0, y: gridRect.maxY,
@@ -183,17 +183,17 @@ class GameScene: SKScene, EngineDelegate {
         tickPercent -= 1.0
         if statusNode.tapeNode.state == TapeNode.State.Clearing {
           loadNextTape()
-        } else if robotCoord == grid.startCoord - 1 {
+        } else if robotCoord == levelData.grid.startCoord - 1 {
           statusNode.tapeNode.tickComplete()
           lastRobotCoord = robotCoord
           robotCoord.j++
-        } else if robotCoord == grid.endCoord {
+        } else if robotCoord == levelData.grid.endCoord {
           statusNode.tapeNode.clearTape()
           lastRobotCoord = robotCoord
           robotCoord.j++
         } else {
           statusNode.tapeNode.tickComplete()
-          let testResult = grid.testCoord(robotCoord, lastCoord: lastRobotCoord, tape: &tape)
+          let testResult = levelData.grid.testCoord(robotCoord, lastCoord: lastRobotCoord, tape: &tape)
           let tapeLength = tape.length()
           if tapeLength > lastTapeLength && tapeLength > 0 {
             statusNode.tapeNode.writeColor(tape[-1].color())
@@ -241,8 +241,8 @@ class GameScene: SKScene, EngineDelegate {
     }
     statusNode.tapeNode.loadTape(tape)
     lastTapeLength = tape.length()
-    robotCoord = grid.startCoord
-    lastRobotCoord = grid.startCoord - 1
+    robotCoord = levelData.grid.startCoord
+    lastRobotCoord = levelData.grid.startCoord - 1
     robotNode = SKSpriteNode("robut")
     robotNode?.size = CGSize(1.25)
     robotNode?.position = CGPoint(CGFloat(lastRobotCoord.i) + 0.5, CGFloat(lastRobotCoord.j) + 0.5)
@@ -283,12 +283,8 @@ class GameScene: SKScene, EngineDelegate {
   }
   
   func testButtonPressed() {
-    saveGrid()
+    levelData.saveWithLevelNumber(levelNumber)
     state = .Thinking
-  }
-  
-  func saveGrid() {
-    grid.saveToFileName("level\(self.levelNumber)")
   }
   
   // MARK: - Engine Delegate Functions

@@ -137,12 +137,6 @@ class Grid: NSObject, NSCoding {
     self.init(space: space)
   }
   
-  func saveToFileName(fileName: String) {
-    let filePath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
-      .stringByAppendingPathComponent(fileName)
-    NSKeyedArchiver.archivedDataWithRootObject(self).writeToFile(filePath, atomically: true)
-  }
-  
   func toString() -> String {
     var string = "\(space.columns):"
     for cell in cells {

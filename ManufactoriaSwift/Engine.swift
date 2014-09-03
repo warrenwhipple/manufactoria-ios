@@ -18,7 +18,7 @@ struct TapeTestResult {
 }
 
 protocol EngineDelegate: class {
-  var grid: Grid {get}
+  var levelData: LevelData {get}
   func gridTestPassed()
   func gridTestFailedWithResult(TapeTestResult)
 }
@@ -40,7 +40,7 @@ class Engine {
     if tapes.isEmpty {return}
     queue.cancelAllOperations()
     currentTapeTestIndex = 0
-    queue.addOperation(TapeTestOp(grid: delegate.grid, input: tapes[0], delegate: self))
+    queue.addOperation(TapeTestOp(grid: delegate.levelData.grid, input: tapes[0], delegate: self))
   }
   
   func tapeTestOpDidFinish(tapeTestOp: TapeTestOp) {
@@ -77,7 +77,7 @@ class Engine {
     // tape test passes
     // run next test
     if ++currentTapeTestIndex < tapes.count {
-      queue.addOperation(TapeTestOp(grid: delegate.grid, input: tapes[currentTapeTestIndex], delegate: self))
+      queue.addOperation(TapeTestOp(grid: delegate.levelData.grid, input: tapes[currentTapeTestIndex], delegate: self))
       return
     }
     

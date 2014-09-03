@@ -38,12 +38,12 @@ class FirstTutorialScene: GameScene {
   */
   
   func checkTutorialGrid() -> Bool {
-    var coord = grid.startCoord + 1
-    var lastCoord = grid.startCoord
+    var coord = levelData.grid.startCoord + 1
+    var lastCoord = levelData.grid.startCoord
     var tape: String = ""
     var ticks = 0
     while ++ticks < 9 {
-      switch grid.testCoord(coord, lastCoord: lastCoord, tape: &tape) {
+      switch levelData.grid.testCoord(coord, lastCoord: lastCoord, tape: &tape) {
       case .Accept: return true
       case .Reject: return false
       case .North: coord.j++
