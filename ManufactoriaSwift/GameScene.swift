@@ -87,7 +87,7 @@ class GameScene: SKScene, EngineDelegate {
     menuButton.touchUpInsideClosure = {
       [unowned self] in
       self.levelData.saveWithLevelNumber(self.levelNumber)
-      self.view.presentScene(MenuScene(size: size), transition: SKTransition.pushWithDirection(.Left, duration: 0.5).outInPlay())
+      self.view?.presentScene(MenuScene(size: size), transition: SKTransition.pushWithDirection(.Left, duration: 0.5).outInPlay())
     }
     menuButton.zPosition = 20
     addChild(menuButton)
@@ -313,19 +313,19 @@ class GameScene: SKScene, EngineDelegate {
   
   // MARK: - Touch Delegate Functions
   
-  override func touchesBegan(touches: NSSet!, withEvent event: UIEvent!) {
+  override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
     gridNode.touchesBegan(touches, withEvent: event)
   }
   
-  override func touchesMoved(touches: NSSet!, withEvent event: UIEvent!) {
+  override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
     gridNode.touchesMoved(touches, withEvent: event)
   }
   
-  override func touchesEnded(touches: NSSet!, withEvent event: UIEvent!) {
+  override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
     gridNode.touchesEnded(touches, withEvent: event)
   }
   
-  override func touchesCancelled(touches: NSSet!, withEvent event: UIEvent!) {
+  override func touchesCancelled(touches: NSSet, withEvent event: UIEvent) {
     gridNode.touchesCancelled(touches, withEvent: event)
   }
 }

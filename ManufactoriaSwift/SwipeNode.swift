@@ -141,7 +141,7 @@ class SwipeNode: SKSpriteNode {
     }
   }
   
-  override func touchesBegan(touches: NSSet!, withEvent event: UIEvent!) {
+  override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
     if touch != nil {return}
     wrapper.removeActionForKey("snap")
     touch = touches.anyObject() as? UITouch
@@ -154,7 +154,7 @@ class SwipeNode: SKSpriteNode {
     rightArrow.runAction(fadeAction, withKey: "fade")
   }
   
-  override func touchesMoved(touches: NSSet!, withEvent event: UIEvent!) {
+  override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
     if touch == nil {return}
     if !touches.containsObject(touch!) {return}
     let touchX = touch!.locationInNode(self).x
@@ -173,7 +173,7 @@ class SwipeNode: SKSpriteNode {
     lastTouchTime = touch!.timestamp
   }
   
-  override func touchesEnded(touches: NSSet!, withEvent event: UIEvent!) {
+  override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
     if touch == nil {return}
     if !touches.containsObject(touch!) {return}
     let touchX = touch!.locationInNode(self).x
@@ -203,7 +203,7 @@ class SwipeNode: SKSpriteNode {
     touch = nil
   }
   
-  override func touchesCancelled(touches: NSSet!, withEvent event: UIEvent!) {
+  override func touchesCancelled(touches: NSSet, withEvent event: UIEvent) {
     touchesEnded(touches, withEvent: event)
   }
 }

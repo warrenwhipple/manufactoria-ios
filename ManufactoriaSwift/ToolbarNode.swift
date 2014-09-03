@@ -176,12 +176,8 @@ class ToolbarNode: SKNode {
       }
       
       super.init(texture: nil, color: nil, size: Globals.cellPointSize)
-      if staticNode != nil {
-        addChild(staticNode)
-      }
-      if changeNode != nil {
-        addChild(changeNode)
-      }
+      if staticNode != nil {addChild(staticNode!)}
+      if changeNode != nil {addChild(changeNode!)}
       userInteractionEnabled = true
       alpha = 0.25
     }
@@ -207,13 +203,13 @@ class ToolbarNode: SKNode {
       }
     }
     
-    override func touchesBegan(touches: NSSet!, withEvent event: UIEvent!) {
+    override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
       if touch != nil {return}
       touch = touches.anyObject() as? UITouch
       delegate?.buttonTouchDown(self)
     }
     
-    override func touchesMoved(touches: NSSet!, withEvent event: UIEvent!) {
+    override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
       if touch == nil {return}
       if !touches.containsObject(touch!) {return}
       if !frame.contains(touch!.locationInNode(parent)) { // if touch moved outside of button
@@ -221,14 +217,14 @@ class ToolbarNode: SKNode {
       }
     }
     
-    override func touchesEnded(touches: NSSet!, withEvent event: UIEvent!) {
+    override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
       if touch == nil {return}
       if !touches.containsObject(touch!) {return}
       touch = nil
       delegate?.focusSwitchButtonTouchUpInside(self)
     }
     
-    override func touchesCancelled(touches: NSSet!, withEvent event: UIEvent!) {
+    override func touchesCancelled(touches: NSSet, withEvent event: UIEvent) {
       touch = nil
     }
   }

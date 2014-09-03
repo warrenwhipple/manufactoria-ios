@@ -29,12 +29,14 @@ class TitleScene: SKScene {
     if gameData.levelsComplete == 0 {
       button.touchUpInsideClosure = {
         [unowned self] in
-        self.view.presentScene(FirstTutorialScene(size: size), transition : SKTransition.pushWithDirection(.Left, duration: 0.5).outInPlay())
+        let transition = SKTransition.pushWithDirection(.Left, duration: 0.5).outInPlay()
+        self.view?.presentScene(FirstTutorialScene(size: size), transition: transition)
       }
     } else {
       button.touchUpInsideClosure = {
         [unowned self] in
-        self.view.presentScene(MenuScene(size: size), transition: SKTransition.pushWithDirection(.Left, duration: 0.5).outInPlay())
+        let transition = SKTransition.pushWithDirection(SKTransitionDirection.Left, duration: 0.5).outInPlay()
+        self.view?.presentScene(MenuScene(size: size), transition: transition)
       }
     }
     addChild(title)

@@ -41,13 +41,13 @@ class Button: SKSpriteNode {
     didSet {if userInteractionEnabled == false {touch = nil}}
   }
   
-  override func touchesBegan(touches: NSSet!, withEvent event: UIEvent!) {
+  override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
     if touch != nil {return}
     touch = touches.anyObject() as? UITouch
     touchDownClosure?()
   }
   
-  override func touchesMoved(touches: NSSet!, withEvent event: UIEvent!) {
+  override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
     if touch == nil {return}
     if !touches.containsObject(touch!) {return}
     if !frame.contains(touch!.locationInNode(parent)) {
@@ -55,14 +55,13 @@ class Button: SKSpriteNode {
     }
   }
   
-  override func touchesEnded(touches: NSSet!, withEvent event: UIEvent!) {
-    if touch == nil {return}
+  override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {    if touch == nil {return}
     if !touches.containsObject(touch!) {return}
     touchUpInsideClosure?()
     touch = nil
   }
   
-  override func touchesCancelled(touches: NSSet!, withEvent event: UIEvent!) {
+  override func touchesCancelled(touches: NSSet, withEvent event: UIEvent) {
     if touch == nil {return}
     if !touches.containsObject(touch!) {return}
     touch = nil

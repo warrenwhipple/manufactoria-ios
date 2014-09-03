@@ -71,14 +71,14 @@ class FirstTutorialScene: GameScene {
     statusNode.testButton.state = .Hidden
   }
   
-  override func touchesBegan(touches: NSSet!, withEvent event: UIEvent!) {
+  override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
     super.touchesBegan(touches, withEvent: event)
     if state == State.Editing {
       hideTestButton()
     }
   }
   
-  override func touchesEnded(touches: NSSet!, withEvent event: UIEvent!) {
+  override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
     super.touchesEnded(touches, withEvent: event)
     if state == State.Editing && checkTutorialGrid() {
       showTestButton()

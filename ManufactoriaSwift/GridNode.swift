@@ -159,7 +159,7 @@ class GridNode: SKNode {
     return GridCoord(Int(floor(position.x)), Int(floor(position.y)))
   }
   
-  override func touchesBegan(touches: NSSet!, withEvent event: UIEvent!) {
+  override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
     if state != .Editing {return}
     if let touchPhase = editTouch?.phase {
       switch touchPhase {
@@ -194,7 +194,7 @@ class GridNode: SKNode {
     }
   }
   
-  override func touchesMoved(touches: NSSet!, withEvent event: UIEvent!) {
+  override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
     if editTouch == nil {return}
     if !touches.containsObject(editTouch!) {return}
     let touchCoord = coordForTouch(editTouch!)
@@ -288,7 +288,7 @@ class GridNode: SKNode {
     bridgeEditMemory = nil
   }
   
-  override func touchesEnded(touches: NSSet!, withEvent event: UIEvent!) {
+  override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
     if editTouch == nil {return}
     if !touches.containsObject(editTouch!) {return}
     if grid.space.contains(editCoord) {
@@ -298,7 +298,7 @@ class GridNode: SKNode {
     bridgeEditMemory = nil
   }
   
-  override func touchesCancelled(touches: NSSet!, withEvent event: UIEvent!) {
+  override func touchesCancelled(touches: NSSet, withEvent event: UIEvent) {
     touchesEnded(touches, withEvent: event)
   }
 }

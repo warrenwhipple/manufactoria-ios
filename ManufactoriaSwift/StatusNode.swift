@@ -155,7 +155,7 @@ class StatusNode: SwipeNode {
     failTapeNode?.alpha = 0
     failTapeNode?.position = tapeNode.position
     failTapeNode?.width = tapeNode.width
-    failPage.addChild(failTapeNode)
+    failPage.addChild(failTapeNode!)
   }
   
   func testButtonPressed() {

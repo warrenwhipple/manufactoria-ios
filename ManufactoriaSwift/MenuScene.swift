@@ -79,8 +79,8 @@ class MenuScene: SKScene {
       
     }
     
-    override func touchesBegan(touches: NSSet!, withEvent event: UIEvent!) {
-      scene.view.presentScene(GameScene(size: scene.view.bounds.size, levelNumber: levelNumber), transition: SKTransition.pushWithDirection(.Right, duration: 0.5).outInPlay())
+    override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
+      scene?.view?.presentScene(GameScene(size: scene!.view!.bounds.size, levelNumber: levelNumber), transition: SKTransition.pushWithDirection(.Right, duration: 0.5).outInPlay())
     }
   }
   
@@ -89,13 +89,13 @@ class MenuScene: SKScene {
     init(levelNumber: Int) {
       super.init(levelNumber: levelNumber, text: "unlock", isEnabled: true)
     }
-    override func touchesBegan(touches: NSSet!, withEvent event: UIEvent!) {
-      scene.view.presentScene(QuestionScene(
+    override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
+      scene?.view?.presentScene(QuestionScene(
         questionText: "Are you sure you want to\nunlock all levels?",
         yesText: "unlock",
         noText: "cancel",
         yesClosure: {
-          [weak view = self.scene.view] in
+          [weak view = self.scene!.view!] in
           if view != nil {
             GameData.sharedInstance.levelsComplete = LevelLibrary.count
             GameData.sharedInstance.save()
@@ -103,12 +103,12 @@ class MenuScene: SKScene {
           }
         },
         noClosure: {
-          [weak view = self.scene.view] in
+          [weak view = self.scene!.view!] in
           if view != nil {
             view!.presentScene(MenuScene(size: view!.bounds.size), transition: SKTransition.pushWithDirection(.Right, duration: 0.5).outInPlay())
           }
         },
-        size: scene.size), transition: SKTransition.pushWithDirection(.Left, duration: 0.5).outInPlay()
+        size: scene!.size), transition: SKTransition.pushWithDirection(.Left, duration: 0.5).outInPlay()
       )
     }
   }
@@ -118,13 +118,13 @@ class MenuScene: SKScene {
     init(levelNumber: Int) {
       super.init(levelNumber: levelNumber, text: "reset", isEnabled: true)
     }
-    override func touchesBegan(touches: NSSet!, withEvent event: UIEvent!) {
-      scene.view.presentScene(QuestionScene(
+    override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
+      scene?.view?.presentScene(QuestionScene(
         questionText: "Are you sure you want to\nerase all progress?",
         yesText: "reset",
         noText: "cancel",
         yesClosure: {
-          [weak view = self.scene.view] in
+          [weak view = self.scene!.view!] in
           if view != nil {
             GameData.sharedInstance.levelsComplete = 0
             GameData.sharedInstance.save()
@@ -132,12 +132,12 @@ class MenuScene: SKScene {
           }
         },
         noClosure: {
-          [weak view = self.scene.view] in
+          [weak view = self.scene!.view!] in
           if view != nil {
             view!.presentScene(MenuScene(size: view!.bounds.size), transition: SKTransition.pushWithDirection(.Right, duration: 0.5).outInPlay())
           }
         },
-        size: scene.size), transition: SKTransition.pushWithDirection(.Left, duration: 0.5).outInPlay()
+        size: scene!.size), transition: SKTransition.pushWithDirection(.Left, duration: 0.5).outInPlay()
       )
     }
   }
