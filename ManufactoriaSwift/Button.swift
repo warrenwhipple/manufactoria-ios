@@ -80,6 +80,10 @@ class SwipeThroughButton: Button {
   var swipeThroughTouch: UITouch?
   var touchBeganPoint: CGPoint = CGPointZero
   
+  override init(texture: SKTexture!, color: UIColor!, size: CGSize) {
+    super.init(texture: texture, color: color, size: size)
+  }
+  
   override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
     if touch == nil && swipeThroughTouch == nil {
       touch = touches.anyObject() as? UITouch
@@ -119,7 +123,7 @@ class SwipeThroughButton: Button {
   }
 }
   
-class RingButton: Button {
+class RingButton: SwipeThroughButton {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   enum State {case Button, Hidden, Printer}
   

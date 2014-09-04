@@ -56,6 +56,7 @@ class StatusNode: SwipeNode {
     
     super.init(pages: [instructionsPage, failPage], texture: nil, color: nil, size: CGSizeZero)
     
+    testButton.swipeThroughDelegate = self
     testButton.touchUpInsideClosure = {[unowned self] in self.testButtonPressed()}
     
     userInteractionEnabled = false
