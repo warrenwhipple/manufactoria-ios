@@ -10,8 +10,9 @@ import Foundation
 
 class LevelData: NSObject, NSCoding {
   let grid: Grid
-  var undoGrids: [Grid]
-  var redoGrids: [Grid]
+  var currentGridString: String
+  var undoStrings: [String]
+  var redoStrings: [String]
   
   init(levelNumber: Int) {
     let space = LevelLibrary[levelNumber].space
@@ -20,16 +21,18 @@ class LevelData: NSObject, NSCoding {
       if let levelData = NSKeyedUnarchiver.unarchiveObjectWithFile(filePath) as? LevelData {
         if levelData.grid.space == space {
           grid = levelData.grid
-          undoGrids = levelData.undoGrids
-          redoGrids = levelData.redoGrids
+          currentGridString = levelData.currentGridString
+          undoStrings = levelData.undoStrings
+          redoStrings = levelData.redoStrings
           super.init()
           return
         }
       }
     }
     grid = Grid(space: space)
-    undoGrids = []
-    redoGrids = []
+    currentGridString = grid.toString()
+    undoStrings = []
+    redoStrings = []
     super.init()
   }
   
@@ -42,17 +45,57 @@ class LevelData: NSObject, NSCoding {
       .stringByAppendingPathComponent("level\(levelNumber)Data")
   }
   
+  func editCompleted() -> Bool {
+    let newGridString = grid.toString()
+    if newGridString != currentGridString {
+      undoStrings.append(currentGridString)
+      currentGridString = newGridString
+      redoStrings = []
+      return true
+    }
+    return false
+  }
+  
+  func undo() -> Bool {
+    if !undoStrings.isEmpty {
+      redoStrings.append(currentGridString)
+      currentGridString = undoStrings.last!
+      undoStrings.removeLast()
+      grid.loadString(currentGridString)
+      return true
+    }
+    return false
+  }
+  
+  func redo() -> Bool {
+    if !redoStrings.isEmpty {
+      undoStrings.append(currentGridString)
+      currentGridString = redoStrings.last!
+      redoStrings.removeLast()
+      grid.loadString(currentGridString)
+      return true
+    }
+    return false
+  }
+  
   // MARK: - NSCoding Methods
   
   required init(coder aDecoder: NSCoder) {
-    grid = aDecoder.decodeObjectForKey("grid") as Grid
-    undoGrids = aDecoder.decodeObjectForKey("undoGrids") as [Grid]
-    redoGrids = aDecoder.decodeObjectForKey("redoGrids") as [Grid]
+    let columns = aDecoder.decodeIntegerForKey("columns")
+    let rows = aDecoder.decodeIntegerForKey("rows")
+    currentGridString = aDecoder.decodeObjectForKey("gridString") as String
+    grid = Grid(space: GridSpace(columns, rows))
+    grid.loadString(currentGridString)
+    undoStrings = aDecoder.decodeObjectForKey("undoStrings") as [String]
+    if undoStrings.isEmpty {undoStrings.append(grid.toString())}
+    redoStrings = aDecoder.decodeObjectForKey("redoStrings") as [String]
   }
   
   func encodeWithCoder(aCoder: NSCoder)  {
-    aCoder.encodeObject(grid, forKey: "grid")
-    aCoder.encodeObject(undoGrids, forKey: "undoGrids")
-    aCoder.encodeObject(redoGrids, forKey: "redoGrids")
+    aCoder.encodeInteger(grid.space.columns, forKey: "columns")
+    aCoder.encodeInteger(grid.space.rows, forKey: "rows")
+    aCoder.encodeObject(currentGridString, forKey: "gridString")
+    aCoder.encodeObject(undoStrings, forKey: "undoStrings")
+    aCoder.encodeObject(redoStrings, forKey: "redoStrings")
   }
 }

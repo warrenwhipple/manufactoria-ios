@@ -8,37 +8,6 @@
 
 import Foundation
 
-extension Array {
-  func first() -> T? {
-    if isEmpty {return nil}
-    return self[0]
-  }
-  mutating func removeFirst() -> T? {
-    if isEmpty {return nil}
-    return removeAtIndex(0)
-  }
-  func last() -> T? {
-    if isEmpty {return nil}
-    return self[count - 1]
-  }
-  mutating func removeLast() -> T? {
-    if isEmpty {return nil}
-    return removeAtIndex(count - 1)
-  }
-  func string() -> String {
-    var string = ""
-    for color in self {
-      switch color as Color {
-      case .Blue: string += "b"
-      case .Red: string += "r"
-      case .Green: string += "g"
-      case .Yellow: string += "y"
-      }
-    }
-    return string
-  }
-}
-
 extension String {
     
   subscript(i: Int) -> Character {

@@ -20,7 +20,7 @@ enum Color {
   }
 }
 
-enum CellType {
+enum CellKind {
   case Blank, Belt, Bridge, PusherB, PusherR, PusherG, PusherY, PullerBR, PullerRB, PullerGY, PullerYG
   func editMode() -> EditMode {
     switch self {
@@ -75,16 +75,8 @@ enum Direction {
   }
 }
 
-struct Cell {
-  var type: CellType = CellType.Blank {
-    didSet {
-      if type == CellType.Blank {
-        direction = Direction.North
-      }
-    }
-  }
+struct Cell: Equatable {
+  var kind: CellKind = .Blank
   var direction = Direction.North
-  
 }
-func == (left: Cell, right: Cell) -> Bool {return left.type == right.type && left.direction == right.direction}
-func != (left: Cell, right: Cell) -> Bool {return left.type != right.type || left.direction != right.direction}
+func == (left: Cell, right: Cell) -> Bool {return left.kind == right.kind && left.direction == right.direction}

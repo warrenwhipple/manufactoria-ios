@@ -144,8 +144,7 @@ class TapeNode: SKNode {
     deletingDot?.removeFromParent()
     deletingDot = nil
     if !dots.isEmpty {
-      deletingDot = dots[0]
-      dots.removeFirst()
+      deletingDot = dots.removeAtIndex(0)      
       state = .Deleting
     } else {
       state = .Waiting

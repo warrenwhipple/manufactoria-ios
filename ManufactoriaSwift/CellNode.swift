@@ -14,8 +14,8 @@ class CellNode: SKNode {
   let belt, bridge, pusher, pullerLeft, pullerRight, glowNode: SKSpriteNode
   let puller: SKNode
   let shimmerNode: ShimmerNode
-  var cell = Cell(type: CellType.Blank, direction: Direction.North)
-  var nextCell = Cell(type: CellType.Blank, direction: Direction.North)
+  var cell = Cell(kind: .Blank, direction: Direction.North)
+  var nextCell = Cell(kind: .Blank, direction: Direction.North)
   var isSelected = false
   
   override init() {
@@ -88,7 +88,7 @@ class CellNode: SKNode {
     bridge.removeFromParent()
     pusher.removeFromParent()
     puller.removeFromParent()
-    switch newCell.type {
+    switch newCell.kind {
     case .Blank: break
     case .Belt: addChild(belt)
     case .Bridge:

@@ -95,6 +95,7 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
     menuButton.zPosition = 20
     addChild(menuButton)
     
+    refreshUndoRedoButtonStatus()
     fitToSize()
   }
   
@@ -286,10 +287,21 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
     state = .Thinking
   }
   
-  // MARK: - GridNodeDelegate Functions
-  
-  func editCompleted() {
-    println(editCompleted)
+  func refreshUndoRedoButtonStatus() {
+    if levelData.undoStrings.isEmpty {
+      toolbarNode.undoButton.userInteractionEnabled = false
+      toolbarNode.undoButton.runAction(SKAction.fadeAlphaTo(0.2, duration: 0.2), withKey: "fade")
+    } else {
+      toolbarNode.undoButton.userInteractionEnabled = true
+      toolbarNode.undoButton.runAction(SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")
+    }
+    if levelData.redoStrings.isEmpty {
+      toolbarNode.redoButton.userInteractionEnabled = false
+      toolbarNode.redoButton.runAction(SKAction.fadeAlphaTo(0.2, duration: 0.2), withKey: "fade")
+    } else {
+      toolbarNode.redoButton.userInteractionEnabled = true
+      toolbarNode.redoButton.runAction(SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")
+    }
   }
   
   // MARK: - EngineDelegate Functions
@@ -316,6 +328,14 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
     thinkingOperationsDone = true
   }
   
+  // MARK: - GridNodeDelegate Functions
+  
+  func editCompleted() {
+    if levelData.editCompleted() {
+      refreshUndoRedoButtonStatus()
+    }
+  }
+  
   // MARK: - ToolbarNodeDelegate Functions
   
   func changeEditMode(editMode: EditMode) {
@@ -323,9 +343,19 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
   }
   
   func undoEdit() {
+    gridNode.cancelAllEdits()
+    if levelData.undo() {
+      gridNode.gridChanged()
+      refreshUndoRedoButtonStatus()
+    }
   }
   
   func redoEdit() {
+    gridNode.cancelAllEdits()
+    if levelData.redo() {
+      gridNode.gridChanged()
+      refreshUndoRedoButtonStatus()
+    }
   }
   
   // MARK: - Touch Delegate Functions

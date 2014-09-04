@@ -8,7 +8,7 @@
 
 import SpriteKit
 
-class SwipeNode: SKSpriteNode {
+class SwipeNode: SKSpriteNode, SwipeThroughButtonDelegate {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   
   let wrapper: SKNode
@@ -86,6 +86,7 @@ class SwipeNode: SKSpriteNode {
         let fadeAction = SKAction.fadeAlphaTo(0, duration: 0.25)
         leftArrow.runAction(fadeAction, withKey: "fade")
         rightArrow.runAction(fadeAction, withKey: "fade")
+        touch = nil
       }
     }
   }
@@ -141,10 +142,8 @@ class SwipeNode: SKSpriteNode {
     }
   }
   
-  override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
-    if touch != nil {return}
+  func touchBegan() {
     wrapper.removeActionForKey("snap")
-    touch = touches.anyObject() as? UITouch
     lastTouchX = touch!.locationInNode(self).x
     lastLastTouchX = lastTouchX
     lastTouchTime = touch!.timestamp
@@ -154,9 +153,7 @@ class SwipeNode: SKSpriteNode {
     rightArrow.runAction(fadeAction, withKey: "fade")
   }
   
-  override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
-    if touch == nil {return}
-    if !touches.containsObject(touch!) {return}
+  func touchMoved() {
     let touchX = touch!.locationInNode(self).x
     let dX = (touchX - lastTouchX)
     let newX = wrapper.position.x + dX
@@ -173,9 +170,7 @@ class SwipeNode: SKSpriteNode {
     lastTouchTime = touch!.timestamp
   }
   
-  override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
-    if touch == nil {return}
-    if !touches.containsObject(touch!) {return}
+  func touchEnded() {
     let touchX = touch!.locationInNode(self).x
     let dX = (touchX - lastTouchX)
     let newX = wrapper.position.x + dX
@@ -203,7 +198,59 @@ class SwipeNode: SKSpriteNode {
     touch = nil
   }
   
+  func touchCancelled() {
+    touchEnded()
+  }
+  
+  // MARK: - SwipeThroughButtonDelegate Methods
+  
+  func swipeThroughTouchMoved(swipeThroughTouch: UITouch) {
+    if userInteractionEnabled {
+      if touch == nil {
+        touch = swipeThroughTouch
+        touchBegan()
+      } else if touch == swipeThroughTouch {
+        touchMoved()
+      }
+    }
+  }
+  
+  func swipeThroughTouchEnded(swipeThroughTouch: UITouch) {
+    if userInteractionEnabled && touch == swipeThroughTouch {
+      touchEnded()
+    }
+  }
+  
+  func swipeThroughTouchCancelled(swipeThroughTouch: UITouch) {
+    if userInteractionEnabled && touch == swipeThroughTouch {
+      touchCancelled()
+    }
+  }
+  
+  // MARK: - Touch Delegate Methods
+  
+  override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
+    if touch == nil {
+      touch = touches.anyObject() as? UITouch
+      touchBegan()
+    }
+  }
+  
+  override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
+    if touch != nil && touches.containsObject(touch!) {
+      touchMoved()
+    }
+  }
+  
+  override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
+    if touch != nil && touches.containsObject(touch!) {
+      touchEnded()
+    }
+  }
+  
   override func touchesCancelled(touches: NSSet, withEvent event: UIEvent) {
-    touchesEnded(touches, withEvent: event)
+    if touch != nil && touches.containsObject(touch!) {
+      touchCancelled()
+    }
   }
 }

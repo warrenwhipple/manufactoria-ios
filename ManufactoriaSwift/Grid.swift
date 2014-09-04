@@ -40,7 +40,7 @@ enum TickTestResult {
   case North, East, South, West, Accept, Reject
 }
 
-class Grid: NSObject, NSCoding {
+class Grid {
   let space: GridSpace
   var cells: [Cell]
   var startCoord: GridCoord {return GridCoord(space.columns / 2, -1)}
@@ -57,88 +57,47 @@ class Grid: NSObject, NSCoding {
     }
   }
   
-  override init() {
-    space = GridSpace(0,0)
-    cells = []
-  }
-  
-  init(space: GridSpace, cells: [Cell]) {
+  init(space: GridSpace) {
     self.space = space
-    if space.columns * space.rows == cells.count {
-      self.cells = cells
-    } else {
-      self.cells = [Cell](count: space.columns * space.rows, repeatedValue: Cell())
-    }
+    self.cells = [Cell](count: space.columns * space.rows, repeatedValue: Cell())
   }
   
-  convenience init(space: GridSpace) {self.init(space: space, cells: [])}
-  
-  convenience init(string: String) {
-    var tempCells: [Cell] = []
-    let strings = string.split(":")
-    if strings.count != 2 {self.init(); return}
-    let columns = strings[0].toInt()
-    if columns == nil {self.init(); return}
-    if strings[1].length() % (2 * columns!) != 0 {self.init(); return}
+  func loadString(string: String) {
+    assert(space.columns * space.rows * 2 == string.length(), "Loading string does not match grid space.")
+    var i = 0
     var even = true
-    var direction = Direction.North
-    for character in strings[1] {
+    for character in string {
       if even {
         switch character {
-        case "e": direction = .East
-        case "s": direction = .South
-        case "w": direction = .West
-        default: direction = .North
+        case "n": cells[i].direction = .North
+        case "e": cells[i].direction = .East
+        case "s": cells[i].direction = .South
+        case "w": cells[i].direction = .West
+        default:  break
         }
       } else {
-        var cellType = CellType.Blank
         switch character {
-        case "i": cellType = .Belt
-        case "x": cellType = .Bridge
-        case "b": cellType = .PusherB
-        case "r": cellType = .PusherR
-        case "g": cellType = .PusherG
-        case "y": cellType = .PusherY
-        case "B": cellType = .PullerBR
-        case "R": cellType = .PullerRB
-        case "G": cellType = .PullerGY
-        case "Y": cellType = .PullerYG
+        case "o": cells[i].kind = .Blank
+        case "i": cells[i].kind = .Belt
+        case "x": cells[i].kind = .Bridge
+        case "b": cells[i].kind = .PusherB
+        case "r": cells[i].kind = .PusherR
+        case "g": cells[i].kind = .PusherG
+        case "y": cells[i].kind = .PusherY
+        case "B": cells[i].kind = .PullerBR
+        case "R": cells[i].kind = .PullerRB
+        case "G": cells[i].kind = .PullerGY
+        case "Y": cells[i].kind = .PullerYG
         default: break
         }
-        tempCells.append(Cell(type: cellType, direction: direction))
+        i++
       }
       even = !even
     }
-    self.init(space: GridSpace(columns!, strings[1].length() / (2 * columns!)), cells: tempCells)
   }
-  
-  required init(coder aDecoder: NSCoder) {
-    let gridString = aDecoder.decodeObject() as String
-    let grid = Grid(string: gridString)
-    space = grid.space
-    cells = grid.cells
-  }
-  
-  func encodeWithCoder(aCoder: NSCoder)  {
-    aCoder.encodeObject(toString())
-  }
-  
-  /*convenience init(space: GridSpace, fileName: String) {
-    let filePath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
-      .stringByAppendingPathComponent(fileName)
-    if NSFileManager.defaultManager().fileExistsAtPath(filePath) {
-      if let grid = NSKeyedUnarchiver.unarchiveObjectWithFile(filePath) as? Grid {
-        if grid.space == space {
-          self.init(space: grid.space, cells: grid.cells)
-          return
-        }
-      }
-    }
-    self.init(space: space)
-  }*/
   
   func toString() -> String {
-    var string = "\(space.columns):"
+    var string = ""
     for cell in cells {
       switch cell.direction {
       case .North: string += "n"
@@ -146,7 +105,7 @@ class Grid: NSObject, NSCoding {
       case .South: string += "s"
       case .West: string += "w"
       }
-      switch cell.type {
+      switch cell.kind {
       case .Blank: string += "o"
       case .Belt: string += "i"
       case .Bridge: string += "x"
@@ -169,7 +128,7 @@ class Grid: NSObject, NSCoding {
     if !space.contains(coord) {return TickTestResult.Reject}
     
     let cell = self[coord]
-    switch cell.type {
+    switch cell.kind {
     case .Blank:
       return TickTestResult.Reject
     case .Belt:

@@ -44,6 +44,12 @@ extension CGRect {
   }
 }
 
+func CGPointDistSq(#p1: CGPoint, #p2: CGPoint) -> CGFloat {
+  let dx = p1.x - p2.x
+  let dy = p1.y - p2.y
+  return dx * dx + dy * dy
+}
+
 func + (left: CGPoint, right: CGPoint) -> CGPoint {return CGPoint(x: left.x + right.x, y: left.y + right.y)}
 func - (left: CGPoint, right: CGPoint) -> CGPoint {return CGPoint(x: left.x - right.x, y: left.y - right.y)}
 func * (left: CGPoint, right: CGFloat) -> CGPoint {return CGPoint(x: left.x * right, y: left.y * right)}

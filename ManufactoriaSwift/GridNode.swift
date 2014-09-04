@@ -11,19 +11,19 @@ import SpriteKit
 
 enum EditMode {
   case Blank, Belt, Bridge, PusherB, PusherR, PusherG, PusherY, PullerBR, PullerRB, PullerGY, PullerYG
-  func cellType() -> CellType? {
+  func cellKind() -> CellKind? {
     switch self {
-    case .Blank: return CellType.Blank
-    case .Belt: return CellType.Belt
-    case .Bridge: return CellType.Bridge
-    case .PusherB: return CellType.PusherB
-    case .PusherR: return CellType.PusherR
-    case .PusherG: return CellType.PusherG
-    case .PusherY: return CellType.PusherY
-    case .PullerBR: return CellType.PullerBR
-    case .PullerRB: return CellType.PullerRB
-    case .PullerGY: return CellType.PullerGY
-    case .PullerYG: return CellType.PullerYG
+    case .Blank: return .Blank
+    case .Belt: return .Belt
+    case .Bridge: return .Bridge
+    case .PusherB: return .PusherB
+    case .PusherR: return .PusherR
+    case .PusherG: return .PusherG
+    case .PusherY: return .PusherY
+    case .PullerBR: return .PullerBR
+    case .PullerRB: return .PullerRB
+    case .PullerGY: return .PullerGY
+    case .PullerYG: return .PullerYG
     default: return nil
     }
   }
@@ -68,11 +68,11 @@ class GridNode: SKNode {
       tempCellNodes.append(cellNode)
     }
     startCellNode = CellNode()
-    startCellNode.applyCell(Cell(type: .Belt, direction: .North))
+    startCellNode.applyCell(Cell(kind: .Belt, direction: .North))
     wrapper.addChild(startCellNode)
     tempCellNodes.append(startCellNode)
     endCellNode = CellNode()
-    endCellNode.applyCell(Cell(type: .Belt, direction: .North))
+    endCellNode.applyCell(Cell(kind: .Belt, direction: .North))
     wrapper.addChild(endCellNode)
     tempCellNodes.append(endCellNode)
     cellNodes = tempCellNodes
@@ -150,6 +150,13 @@ class GridNode: SKNode {
     }
   }
   
+  func gridChanged() {
+    var i = 0
+    for cell in grid.cells {
+      cellNodes[i++].nextCell = cell
+    }
+  }
+  
   func cancelAllEdits() {
     editTouch = nil
     bridgeEditMemory = nil
@@ -180,18 +187,15 @@ class GridNode: SKNode {
       if editMode == .Bridge {
         bridgeEditMemory = cell
       }
-      if editMode.cellType() == cell.type {
-        cell.direction = cell.direction.cw()
-      } else if editMode.cellType() == CellType.Bridge {
-        if cell.type == CellType.Belt {
-          cell.type = .Bridge
+      if let editModeCellKind = editMode.cellKind() {
+        if editModeCellKind == CellKind.Blank {
+          cell.kind = .Blank
+          cell.direction = .North
+        } else if editModeCellKind == cell.kind {
+          cell.direction = cell.direction.cw()
         } else {
-          cell.type = .Belt
+          cell.kind = editModeCellKind
         }
-      } else if let t = editMode.cellType() {
-        cell.type = t
-      } else {
-        cell.type = CellType.Blank
       }
       grid[editCoord] = cell
       self[editCoord].nextCell = cell
@@ -222,7 +226,7 @@ class GridNode: SKNode {
     switch editMode {
     case .Blank:
       if isTouchCell {
-        touchCell.type = .Blank
+        touchCell.kind = .Blank
       }
     case .Bridge:
       if isEditCell {
@@ -239,9 +243,9 @@ class GridNode: SKNode {
         } else if touchCoord.i < editCoord.i {
           newBridgeDirection = .West
         }
-        switch editCell.type {
+        switch editCell.kind {
         case .Blank:
-          editCell.type = .Belt
+          editCell.kind = .Belt
           editCell.direction = newBridgeDirection
         case .Bridge:
           if editCell.direction.flip() == newBridgeDirection {
@@ -251,22 +255,22 @@ class GridNode: SKNode {
           }
         default:
           if editCell.direction == newBridgeDirection {
-            editCell.type = .Belt
+            editCell.kind = .Belt
           } else if editCell.direction.flip() == newBridgeDirection {
-            editCell.type = .Belt
+            editCell.kind = .Belt
             editCell.direction = newBridgeDirection
           } else if editCell.direction.cw() == newBridgeDirection {
-            editCell.type = .Bridge
+            editCell.kind = .Bridge
           } else if editCell.direction.ccw() == newBridgeDirection {
-            editCell.type = .Bridge
+            editCell.kind = .Bridge
             editCell.direction = newBridgeDirection
           }
         }
       }
     default:
       if isEditCell {
-        if let cellType = editMode.cellType() {
-          editCell.type = cellType
+        if let cellKind = editMode.cellKind() {
+          editCell.kind = cellKind
         }
         if touchCoord.j > editCoord.j {
           editCell.direction = .North
@@ -281,10 +285,12 @@ class GridNode: SKNode {
     }
     
     if isEditCell {
+      if editCell.kind == CellKind.Blank {editCell.direction = .North}
       grid[editCoord] = editCell
       self[editCoord].nextCell = editCell
     }
     if isTouchCell {
+      if touchCell.kind == CellKind.Blank {touchCell.direction = .North}
       grid[touchCoord] = touchCell
       self[touchCoord].nextCell = touchCell
     }
@@ -300,6 +306,7 @@ class GridNode: SKNode {
     }
     editTouch = nil
     bridgeEditMemory = nil
+    delegate.editCompleted()
   }
   
   override func touchesCancelled(touches: NSSet, withEvent event: UIEvent) {
