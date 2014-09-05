@@ -157,11 +157,11 @@ class RingButton: SwipeThroughButton {
     
     pressClosure = {
       [unowned self] in
-      self.ringFill.runAction(SKAction.fadeAlphaTo(0.3, duration: 0.2).easeOut(), withKey: "fade")
+      self.ringFill.runAction(SKAction.fadeAlphaTo(0.3, duration: 0.2), withKey: "fade")
     }
     releaseClosure = {
       [unowned self] in
-      self.ringFill.runAction(SKAction.fadeAlphaTo(0, duration: 0.4).easeIn(), withKey: "fade")
+      self.ringFill.runAction(SKAction.fadeAlphaTo(0, duration: 0.4), withKey: "fade")
     }
     
     ring.addChild(ringFill)

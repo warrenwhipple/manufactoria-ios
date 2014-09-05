@@ -60,20 +60,19 @@ class SwipeNode: SKSpriteNode, SwipeThroughButtonDelegate {
     }
   }
   
-  override var size: CGSize {
-    didSet {
-      touch = nil
-      for i in 0 ..< pages.count {
-        pages[i].position.x = CGFloat(i) * size.width
-      }
-      if oldValue.width != 0 {
-        wrapper.position.x *= size.width / oldValue.width
-      }
-      wrapperMinX = -CGFloat(pages.count - 1) * size.width
-      snapToClosestWithInitialVelocityX(0)
-      leftArrow.position.x = -0.5 * size.width + 4
-      rightArrow.position.x = 0.5 * size.width - 4
+  func fitToSize(size: CGSize) {
+    touch = nil
+    for i in 0 ..< pages.count {
+      pages[i].position.x = CGFloat(i) * size.width
     }
+    if self.size.width != 0 {
+      wrapper.position.x *= size.width / self.size.width
+    }
+    wrapperMinX = -CGFloat(pages.count - 1) * size.width
+    snapToClosestWithInitialVelocityX(0)
+    leftArrow.position.x = -0.5 * size.width + 4
+    rightArrow.position.x = 0.5 * size.width - 4
+    self.size = size
   }
   
   override var userInteractionEnabled: Bool {

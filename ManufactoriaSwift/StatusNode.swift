@@ -64,18 +64,17 @@ class StatusNode: SwipeNode {
     rightArrow.removeActionForKey("fade")
   }
   
-  override var size: CGSize {
-    didSet{
-      label.position = CGPoint(0, round(size.height * (1.0/6.0)))
-      tapeNode.position = CGPoint(0, -round(size.height * (1.0/6.0)))
-      tapeNode.width = size.width
-      testButton.position = tapeNode.position
-      failLabel.position = label.position
-      failTapeNode?.position = tapeNode.position
-      failTapeNode?.width = tapeNode.width
-      leftArrow.position.y = label.position.y
-      rightArrow.position.y = label.position.y
-    }
+  override func fitToSize(size: CGSize) {
+    super.fitToSize(size)
+    label.position = CGPoint(0, round(size.height * (1.0/6.0)))
+    tapeNode.position = CGPoint(0, -round(size.height * (1.0/6.0)))
+    tapeNode.width = size.width
+    testButton.position = tapeNode.position
+    failLabel.position = label.position
+    failTapeNode?.position = tapeNode.position
+    failTapeNode?.width = tapeNode.width
+    leftArrow.position.y = label.position.y
+    rightArrow.position.y = label.position.y
   }
   
   var state: State = .Editing {

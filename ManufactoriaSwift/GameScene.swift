@@ -41,8 +41,6 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
   var thinkingOperationsDone = false
   var gridTestDidPass = false
   
-  override var size: CGSize {didSet{fitToSize()}}
-  
   init(size: CGSize, var levelNumber: Int) {
     if levelNumber > LevelLibrary.count - 1 {levelNumber = 0}
     self.levelNumber = levelNumber
@@ -146,17 +144,14 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
     let topGapRect = CGRect(x: 0, y: gridRect.maxY,
       width: size.width, height: bottomGapRect.height)
     
-    toolbarNode.size = bottomGapRect.size
+    toolbarNode.position = bottomGapRect.center
+    toolbarNode.fitToSize(topGapRect.size)
     speedControlNode.position = bottomGapRect.center
     speedControlNode.size = bottomGapRect.size
     endMenuNode.position = bottomGapRect.center
     endMenuNode.size = bottomGapRect.size
     statusNode.position = topGapRect.center
-
-    // ambiguous bug error workaround
-    let statusSwipeNode: SwipeNode = statusNode
-    statusSwipeNode.size = topGapRect.size
-    
+    statusNode.fitToSize(topGapRect.size)
     menuButton.position = CGPoint(size.width - 32, size.height - 32)
   }
   

@@ -20,13 +20,13 @@ struct LevelSetup {
   let tag: String
   let instructions: String
   let space: GridSpace
-  let buttons: [ToolbarNode.ToolButton.Kind]
+  let buttons: [ToolButton.Kind]
   let exemplars: [String]
   let generationFunction: GenerationFunction
   let acceptFunction: AcceptFunction?
   let transformFunction: TransformFunction?
   
-  init(tag: String, instructions: String, space: GridSpace, buttons: [ToolbarNode.ToolButton.Kind], exemplars: [String],
+  init(tag: String, instructions: String, space: GridSpace, buttons: [ToolButton.Kind], exemplars: [String],
     generationFunction: GenerationFunction, acceptFunction: AcceptFunction) {
       self.tag = tag
       self.instructions = instructions
@@ -38,7 +38,7 @@ struct LevelSetup {
       self.transformFunction = nil
   }
   
-  init(tag: String, instructions: String, space: GridSpace, buttons: [ToolbarNode.ToolButton.Kind], exemplars: [String],
+  init(tag: String, instructions: String, space: GridSpace, buttons: [ToolButton.Kind], exemplars: [String],
     generationFunction: GenerationFunction, transformFunction: TransformFunction) {
       self.tag = tag
       self.instructions = instructions

@@ -87,7 +87,6 @@ class LevelData: NSObject, NSCoding {
     grid = Grid(space: GridSpace(columns, rows))
     grid.loadString(currentGridString)
     undoStrings = aDecoder.decodeObjectForKey("undoStrings") as [String]
-    if undoStrings.isEmpty {undoStrings.append(grid.toString())}
     redoStrings = aDecoder.decodeObjectForKey("redoStrings") as [String]
   }
   
