@@ -8,9 +8,8 @@
 
 import SpriteKit
 
-
 enum EditMode {
-  case Blank, Belt, Bridge, PusherB, PusherR, PusherG, PusherY, PullerBR, PullerRB, PullerGY, PullerYG
+  case Blank, Belt, Bridge, PusherB, PusherR, PusherG, PusherY, PullerBR, PullerRB, PullerGY, PullerYG, Select, Move
   func cellKind() -> CellKind? {
     switch self {
     case .Blank: return .Blank
@@ -41,15 +40,18 @@ class GridNode: SKNode {
   let grid: Grid
   let wrapper = SKNode()
   let cellNodes: [CellNode]
-  let startCellNode, endCellNode: CellNode
+  //let startCellNode, endCellNode: CellNode
+  let enterArrow, exitArrow: SKSpriteNode
   var beltShift: Float = 0.0
   let beltTexture = SKTexture(imageNamed: "belt")
   var clippedBeltTexture = SKTexture()
   var editTouch: UITouch?
   var editCoord = GridCoord(0, 0)
-  var editMode = EditMode.Belt
+  var selectShouldUnselect = false
   var bridgeEditMemory: Cell? = nil
-  let bottomMask, topMask: SKSpriteNode
+  //let bottomMask, topMask: SKSpriteNode
+  var liftedGridNode: LiftedGridNode?
+  var moveTouchOffset: CGPoint = CGPointZero
   
   subscript(coord: GridCoord) -> CellNode {
     get {
@@ -67,17 +69,17 @@ class GridNode: SKNode {
       wrapper.addChild(cellNode)
       tempCellNodes.append(cellNode)
     }
-    startCellNode = CellNode()
+    /*startCellNode = CellNode()
     startCellNode.applyCell(Cell(kind: .Belt, direction: .North))
     wrapper.addChild(startCellNode)
     tempCellNodes.append(startCellNode)
     endCellNode = CellNode()
     endCellNode.applyCell(Cell(kind: .Belt, direction: .North))
     wrapper.addChild(endCellNode)
-    tempCellNodes.append(endCellNode)
+    tempCellNodes.append(endCellNode)*/
     cellNodes = tempCellNodes
     
-    topMask = SKSpriteNode("cellFadeMask")
+    /*topMask = SKSpriteNode("cellFadeMask")
     topMask.color = Globals.backgroundColor
     topMask.anchorPoint.y = 0
     topMask.zPosition = 3
@@ -92,7 +94,18 @@ class GridNode: SKNode {
     bottomMask = topMask.copy() as SKSpriteNode
     bottomMask.position = CGPoint(0.5 * CGFloat(grid.space.columns), 0)
     bottomMask.zRotation = CGFloat(M_PI)
-    wrapper.addChild(bottomMask)
+    wrapper.addChild(bottomMask)*/
+    
+    enterArrow = SKSpriteNode("enterExitArrow")
+    enterArrow.setScale(1 / CGFloat(Globals.cellPointSize.width))
+    enterArrow.zPosition = 1
+    enterArrow.position = CGPoint(CGFloat(grid.startCoord.i) + 0.5, CGFloat(grid.startCoord.j) + 1)
+    wrapper.addChild(enterArrow)
+    exitArrow = SKSpriteNode("enterExitArrow")
+    exitArrow.setScale(1 / CGFloat(Globals.cellPointSize.width))
+    exitArrow.zPosition = 1
+    exitArrow.position = CGPoint(CGFloat(grid.endCoord.i) + 0.5, CGFloat(grid.endCoord.j))
+    wrapper.addChild(exitArrow)
     
     super.init()
     
@@ -102,8 +115,8 @@ class GridNode: SKNode {
         self[GridCoord(i,j)].applyCell(grid[GridCoord(i,j)])
       }
     }
-    startCellNode.position = CGPoint(CGFloat(grid.startCoord.i) + 0.5, CGFloat(grid.startCoord.j) + 0.5)
-    endCellNode.position = CGPoint(CGFloat(grid.endCoord.i) + 0.5, CGFloat(grid.endCoord.j) + 0.5)
+    //startCellNode.position = CGPoint(CGFloat(grid.startCoord.i) + 0.5, CGFloat(grid.startCoord.j) + 0.5)
+    //endCellNode.position = CGPoint(CGFloat(grid.endCoord.i) + 0.5, CGFloat(grid.endCoord.j) + 0.5)
     
     addChild(wrapper)
   }
@@ -148,6 +161,28 @@ class GridNode: SKNode {
     for cellNode in cellNodes {
       cellNode.update(dt, clippedBeltTexture: clippedBeltTexture)
     }
+    liftedGridNode?.updateWithClippedBeltTexture(clippedBeltTexture)
+  }
+  
+  var editMode: EditMode = .Belt {
+    didSet {
+      if editMode == oldValue {return}
+      stopCurrentEdit()
+      switch editMode {
+      case .Select, .Move: break
+      default: clearSelection()
+      }
+    }
+  }
+  
+  func stopCurrentEdit() {
+    editTouch = nil
+  }
+  
+  func clearSelection() {
+    for cellNode in cellNodes {
+      cellNode.isSelected = false
+    }
   }
   
   func gridChanged() {
@@ -157,30 +192,50 @@ class GridNode: SKNode {
     }
   }
   
-  func cancelAllEdits() {
-    editTouch = nil
-    bridgeEditMemory = nil
-    for cellNode in cellNodes {
-      cellNode.isSelected = false
-    }
-  }
-  
   func coordForTouch(touch: UITouch) -> GridCoord {
     let position = touch.locationInNode(wrapper)
     return GridCoord(Int(floor(position.x)), Int(floor(position.y)))
   }
   
+  // MARK: Touch Delegate Methods
+  
   override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
     if state != .Editing {return}
-    if let touchPhase = editTouch?.phase {
-      switch touchPhase {
-      case .Began, UITouchPhase.Moved, UITouchPhase.Stationary: return
-      case .Ended, UITouchPhase.Cancelled: cancelAllEdits()
-      }
-    }
+    if editTouch != nil {return}
     editTouch = touches.anyObject() as? UITouch
     if editTouch == nil {return}
+    
+    if editMode == .Move {
+      if liftedGridNode == nil {
+        let liftedGrid = grid
+        var i = 0
+        for cellNode in cellNodes {
+          if !cellNode.isSelected {
+            liftedGrid.cells[i] = Cell()
+          }
+          i++
+        }
+        liftedGridNode = LiftedGridNode(grid: liftedGrid)
+        wrapper.addChild(liftedGridNode!)
+      }
+      liftedGridNode?.removeActionForKey("snap")
+      moveTouchOffset = liftedGridNode!.position - editTouch!.locationInNode(wrapper)
+      return
+    }
+    
     editCoord = coordForTouch(editTouch!)
+    
+    if editMode == .Select {
+      if grid.space.contains(editCoord) {
+        selectShouldUnselect = self[editCoord].isSelected
+        self[editCoord].isSelected = !self[editCoord].isSelected
+      } else {
+        selectShouldUnselect = false
+      }
+      return
+    }
+    
+    bridgeEditMemory = nil
     if grid.space.contains(editCoord) {
       self[editCoord].isSelected = true
       var cell = grid[editCoord]
@@ -205,8 +260,22 @@ class GridNode: SKNode {
   override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
     if editTouch == nil {return}
     if !touches.containsObject(editTouch!) {return}
+    
+    if editMode == .Move {
+      liftedGridNode?.position = editTouch!.locationInNode(wrapper) + moveTouchOffset
+      return
+    }
+    
     let touchCoord = coordForTouch(editTouch!)
     if touchCoord == editCoord {return}
+    
+    if editMode == .Select {
+      if grid.space.contains(touchCoord) {
+        self[touchCoord].isSelected = !selectShouldUnselect
+      }
+      editCoord = touchCoord
+      return
+    }
     
     var isEditCell = false
     var isTouchCell = false
@@ -227,6 +296,8 @@ class GridNode: SKNode {
     case .Blank:
       if isTouchCell {
         touchCell.kind = .Blank
+        touchCell.direction = .North
+        
       }
     case .Bridge:
       if isEditCell {
@@ -285,12 +356,10 @@ class GridNode: SKNode {
     }
     
     if isEditCell {
-      if editCell.kind == CellKind.Blank {editCell.direction = .North}
       grid[editCoord] = editCell
       self[editCoord].nextCell = editCell
     }
     if isTouchCell {
-      if touchCell.kind == CellKind.Blank {touchCell.direction = .North}
       grid[touchCoord] = touchCell
       self[touchCoord].nextCell = touchCell
     }
@@ -301,6 +370,18 @@ class GridNode: SKNode {
   override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
     if editTouch == nil {return}
     if !touches.containsObject(editTouch!) {return}
+    
+    if editMode == .Move {
+      liftedGridNode?.runAction(SKAction.moveTo(CGPoint(round(liftedGridNode!.position.x), round(liftedGridNode!.position.y)), duration: 0.5).easeOut())
+      editTouch = nil
+      return
+    }
+    
+    if editMode == .Select {
+      editTouch = nil
+      return
+    }
+    
     if grid.space.contains(editCoord) {
       self[editCoord].isSelected = false
     }

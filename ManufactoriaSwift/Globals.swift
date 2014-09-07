@@ -15,9 +15,10 @@ struct Globals {
   static let greenColor =          UIColor(hue: 0.40, saturation: 1.0, brightness: 0.85, alpha: 1)
   static let blueColor =           UIColor(hue: 0.60, saturation: 1.0, brightness: 1.0, alpha: 1)
   static let redColor =            UIColor(hue: 0.95, saturation: 1.0, brightness: 1.0, alpha: 1)
-  static let strokeColor =         UIColor(hue: 0.10, saturation: 1.0, brightness: 0.4, alpha: 1)
-  //static let backgroundColor =     UIColor.whiteColor()
-  static let backgroundColor =     UIColor(hue: 0.10, saturation: 0.2, brightness: 1.0, alpha: 1)
+  static let strokeColor =         UIColor(hue: 0.90, saturation: 1.0, brightness: 0.4, alpha: 1)
+  static let highlightColor =      UIColor(hue: 0.90, saturation: 1.0, brightness: 1.0, alpha: 1)
+  static let backgroundColor =     UIColor.whiteColor()
+  //static let backgroundColor =     UIColor(hue: 0.10, saturation: 0.2, brightness: 1.0, alpha: 1)
   static let testCount = 1000
   static let loopTickCount = 10000
   static let loopTapeLength = 500

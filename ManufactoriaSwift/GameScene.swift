@@ -338,7 +338,8 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
   }
   
   func undoEdit() {
-    gridNode.cancelAllEdits()
+    gridNode.stopCurrentEdit()
+    gridNode.clearSelection()
     if levelData.undo() {
       gridNode.gridChanged()
       refreshUndoRedoButtonStatus()
@@ -346,7 +347,8 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
   }
   
   func redoEdit() {
-    gridNode.cancelAllEdits()
+    gridNode.stopCurrentEdit()
+    gridNode.clearSelection()
     if levelData.redo() {
       gridNode.gridChanged()
       refreshUndoRedoButtonStatus()

@@ -41,7 +41,7 @@ class CellNode: SKNode {
     puller.addChild(pullerLeft)
     puller.addChild(pullerRight)
     
-    glowNode = SKSpriteNode(color: Globals.strokeColor, size: Globals.cellPointSize)
+    glowNode = SKSpriteNode(color: Globals.highlightColor, size: Globals.cellPointSize)
     glowNode.zPosition = 4
     glowNode.alpha = 0
     
