@@ -12,6 +12,8 @@ class Button: SKSpriteNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   var pressClosure: (()->())?
   var releaseClosure: (()->())?
+  var enableClosure: (()->())?
+  var disableClosure: (()->())?
   var touchDownClosure: (()->())?
   var touchUpInsideClosure: (()->())?
   
@@ -29,16 +31,39 @@ class Button: SKSpriteNode {
   
   var touch: UITouch? {
     didSet {
-      if (touch != nil) && (oldValue == nil) {
-        pressClosure?()
-      } else if (touch == nil) && (oldValue != nil) {
+      if touch == oldValue {return}
+      if touch == nil {
         releaseClosure?()
+      } else {
+        pressClosure?()
       }
     }
   }
   
   override var userInteractionEnabled: Bool {
-    didSet {if userInteractionEnabled == false {touch = nil}}
+    didSet {
+      if userInteractionEnabled == oldValue {return}
+      if userInteractionEnabled {
+        enableClosure?()
+      } else {
+        touch = nil
+        disableClosure?()
+      }
+    }
+  }
+  
+  func defaultPressColorizeForSprite(sprite: SKSpriteNode) {
+    pressClosure = {sprite.runAction(
+      SKAction.colorizeWithColor(Globals.highlightColor, colorBlendFactor: 1, duration: 0.1), withKey: "colorize")}
+    releaseClosure = {sprite.runAction(
+      SKAction.colorizeWithColor(Globals.strokeColor, colorBlendFactor: 1, duration: 0.2), withKey: "colorize")}
+  }
+  
+  func defaultDisableDimForNode(node: SKNode) {
+    disableClosure = {node.runAction(
+      SKAction.fadeAlphaTo(0.25, duration: 0.2), withKey: "fade")}
+    enableClosure = {node.runAction(
+      SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")}
   }
   
   override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
@@ -56,8 +81,8 @@ class Button: SKSpriteNode {
   
   override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
     if touch != nil && touches.containsObject(touch!) {
-      touchUpInsideClosure?()
       touch = nil
+      touchUpInsideClosure?()
     }
   }
   

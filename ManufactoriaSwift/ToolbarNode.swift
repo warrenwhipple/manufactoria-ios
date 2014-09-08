@@ -12,6 +12,7 @@ protocol ToolbarNodeDelegate: class {
   func changeEditMode(editMode: EditMode)
   func undoEdit()
   func redoEdit()
+  func refreshUndoRedoButtonStatus()
 }
 
 class ToolbarNode: SwipeNode, ToolButtonDelegate {
@@ -19,6 +20,9 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
   
   weak var delegate: ToolbarNodeDelegate!
   let undoButton, redoButton: SwipeThroughButton
+  let undoIcon, redoIcon, confirmIcon: SKSpriteNode
+  let redoConfirmIconsNode: SKNode
+  
   let drawPage, cutPastePage: SKNode
   let drawButtons, cutPasteButtons: [ToolButton]
   var buttonInFocus: ToolButton
@@ -26,13 +30,22 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
   
   init(buttonKinds: [ToolButton.Kind]) {
     undoButton = SwipeThroughButton()
-    let undoIcon = SKSpriteNode("undoIcon")
+    undoIcon = SKSpriteNode("undoIcon")
+    undoButton.defaultPressColorizeForSprite(undoIcon)
+    undoButton.defaultDisableDimForNode(undoIcon)
     undoButton.addChild(undoIcon)
     
     redoButton = SwipeThroughButton()
-    let redoIcon = SKSpriteNode("undoIcon")
+    redoConfirmIconsNode = SKNode()
+    redoIcon = SKSpriteNode("undoIcon")
     redoIcon.xScale = -1
-    redoButton.addChild(redoIcon)
+    confirmIcon = SKSpriteNode("selectConfirmIcon")
+    confirmIcon.alpha = 0
+    redoConfirmIconsNode.addChild(redoIcon)
+    redoConfirmIconsNode.addChild(confirmIcon)
+    redoButton.defaultPressColorizeForSprite(redoIcon)
+    redoButton.defaultDisableDimForNode(redoConfirmIconsNode)
+    redoButton.addChild(redoConfirmIconsNode)
     
     drawPage = SKNode()
     cutPastePage = SKNode()
@@ -47,7 +60,7 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
     }
     drawButtons = tempDrawButtons
 
-    cutPasteButtons = [ToolButton(kind: .Select), ToolButton(kind: .Move)]
+    cutPasteButtons = [ToolButton(kind: .SelectCell), ToolButton(kind: .Move)]
     for button in cutPasteButtons {cutPastePage.addChild(button)}
     
     if drawButtons.count > 1 {
@@ -78,10 +91,14 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
   
   override func fitToSize(size: CGSize) {
     super.fitToSize(size)
+    let buttonSize = CGSize(48)
+    
     leftArrow.position.y = -round(size.height / 6)
     rightArrow.position.y = -round(size.height / 6)
     undoButton.position = CGPoint(-round(size.width / 6), round(size.height / 6))
     redoButton.position = CGPoint(round(size.width / 6), round(size.height / 6))
+    undoButton.size = buttonSize
+    redoButton.size = buttonSize
     
     func spaceButtonArray(buttonArray: [ToolButton]) {
       let spacing = size.width / CGFloat(buttonArray.count + 1)
@@ -90,6 +107,7 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
       for button in buttonArray {
         button.position = CGPoint(round(x - size.width / 2), y)
         x += spacing
+        button.size = buttonSize
       }
     }
     spaceButtonArray(drawButtons)
@@ -112,6 +130,34 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
         }
       }
     }
+  }
+  
+  func gridWasLifted() {
+    undoButton.touch = nil
+    redoButton.touch = nil
+    redoIcon.runAction(SKAction.fadeAlphaTo(0, duration: 0.2), withKey: "fade")
+    confirmIcon.runAction(SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")
+    redoConfirmIconsNode.zRotation += CGFloat(2*M_PI)
+    redoConfirmIconsNode.runAction(SKAction.sequence([
+      SKAction.rotateToAngle(-0.1, duration: 0.2).easeOut(),
+      SKAction.repeatActionForever(SKAction.sequence([
+        SKAction.rotateToAngle(0.1, duration: 0.6).ease(),
+        SKAction.rotateToAngle(-0.1, duration: 0.6).ease(),
+        ]))]), withKey: "rotate")
+    redoButton.defaultPressColorizeForSprite(confirmIcon)
+    undoButton.userInteractionEnabled = true
+    redoButton.userInteractionEnabled = true
+  }
+  
+  func gridWasSetDown() {
+    undoButton.touch = nil
+    redoButton.touch = nil
+    redoIcon.runAction(SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")
+    confirmIcon.runAction(SKAction.fadeAlphaTo(0, duration: 0.2), withKey: "fade")
+    redoConfirmIconsNode.zRotation += CGFloat(2*M_PI)
+    redoConfirmIconsNode.runAction(SKAction.rotateToAngle(0, duration: 0.2).easeOut(), withKey: "rotate")
+    redoButton.defaultPressColorizeForSprite(confirmIcon)
+    delegate.refreshUndoRedoButtonStatus()
   }
   
   // MARK: - ToolButtonDelegate Methods

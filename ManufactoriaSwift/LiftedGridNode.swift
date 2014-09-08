@@ -30,11 +30,12 @@ class LiftedGridNode: SKNode {
           tempNodes.append(node)
           let back = SKSpriteNode(texture: nil, color: Globals.backgroundColor, size: Globals.cellPointSize)
           back.alpha = 0
-          back.runAction(SKAction.fadeAlphaTo(0.8, duration: 0.2))
+          back.runAction(SKAction.fadeAlphaTo(0.8, duration: 0.4))
           node.addChild(back)
           let belt = SKSpriteNode(texture: nil, color: Globals.strokeColor, size: beltSize)
           belt.colorBlendFactor = 1
           tempBeltSprites.append(belt)
+          belt.zPosition = 1
           node.addChild(belt)
           switch cell.kind {
           case .Bridge:
@@ -42,11 +43,39 @@ class LiftedGridNode: SKNode {
             bridge.colorBlendFactor = 1
             bridge.zRotation = CGFloat(-M_PI_2)
             tempBeltSprites.append(bridge)
+            bridge.zPosition = 1
             node.addChild(bridge)
+          case .PusherB, .PusherR, .PusherB, .PusherG:
+            let pusher = SKSpriteNode("pusher")
+            switch cell.kind {
+            case .PusherB: pusher.color = Globals.blueColor
+            case .PusherR: pusher.color = Globals.redColor
+            case .PusherG: pusher.color = Globals.greenColor
+            default:       pusher.color = Globals.yellowColor
+            }
+            pusher.zPosition = 2
+            node.addChild(pusher)
+          case .PullerBR, .PullerRB, .PullerGY,  .PullerYG:
+            let pullerLeft = SKSpriteNode("pullerHalf")
+            let pullerRight = SKSpriteNode("pullerHalf")
+            switch cell.kind {
+            case .PullerBR: pullerLeft.color = Globals.blueColor;   pullerRight.color = Globals.redColor
+            case .PullerBR: pullerLeft.color = Globals.redColor;    pullerRight.color = Globals.blueColor
+            case .PullerBR: pullerLeft.color = Globals.greenColor;  pullerRight.color = Globals.yellowColor
+            default:        pullerLeft.color = Globals.yellowColor; pullerRight.color = Globals.greenColor
+            }
+            pullerLeft.anchorPoint.x = 1
+            pullerRight.anchorPoint.x = 1
+            pullerRight.zRotation = CGFloat(M_PI)
+            pullerLeft.zPosition = 2
+            pullerRight.zPosition = 2
+            node.addChild(pullerLeft)
+            node.addChild(pullerRight)
           default: break
           }
           let select = SKSpriteNode(texture: nil, color: Globals.highlightColor, size: Globals.cellPointSize)
           select.alpha = 0.5
+          select.zPosition = 3
           node.addChild(select)
           switch cell.direction {
           case .North: break

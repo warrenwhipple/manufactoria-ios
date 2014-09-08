@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct GridCoord {
+struct GridCoord: Equatable {
   var i = 0
   var j = 0
   init(_ i: Int, _ j: Int) {
@@ -17,11 +17,12 @@ struct GridCoord {
   }
 }
 func == (left: GridCoord, right: GridCoord) -> Bool {return left.i == right.i && left.j == right.j}
-func != (left: GridCoord, right: GridCoord) -> Bool {return left.i != right.i || left.j != right.j}
+func + (left: GridCoord, right: GridCoord) -> GridCoord {return GridCoord(left.i + right.i, left.j + right.j)}
+func - (left: GridCoord, right: GridCoord) -> GridCoord {return GridCoord(left.i - right.i, left.j - right.j)}
 func + (left: GridCoord, right: Int) -> GridCoord {return GridCoord(left.i, left.j + right)}
 func - (left: GridCoord, right: Int) -> GridCoord {return GridCoord(left.i, left.j - right)}
 
-struct GridSpace {
+struct GridSpace: Equatable {
   var columns = 0
   var rows = 0
   init(_ columns: Int, _ rows: Int) {
@@ -29,12 +30,10 @@ struct GridSpace {
     self.rows = rows
   }
   func contains(gridCoord: GridCoord) -> Bool {
-    return gridCoord.i>=0 && gridCoord.j>=0 && gridCoord.i<columns && gridCoord.j<rows
+    return gridCoord.i >= 0 && gridCoord.j >= 0 && gridCoord.i < columns && gridCoord.j < rows
   }
 }
-
 func == (left: GridSpace, right: GridSpace) -> Bool {return left.columns == right.columns && left.rows == right.rows}
-func != (left: GridSpace, right: GridSpace) -> Bool {return left.columns != right.columns || left.rows != right.rows}
 
 enum TickTestResult {
   case North, East, South, West, Accept, Reject

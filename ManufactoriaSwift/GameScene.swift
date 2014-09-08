@@ -282,23 +282,6 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
     state = .Thinking
   }
   
-  func refreshUndoRedoButtonStatus() {
-    if levelData.undoStrings.isEmpty {
-      toolbarNode.undoButton.userInteractionEnabled = false
-      toolbarNode.undoButton.runAction(SKAction.fadeAlphaTo(0.2, duration: 0.2), withKey: "fade")
-    } else {
-      toolbarNode.undoButton.userInteractionEnabled = true
-      toolbarNode.undoButton.runAction(SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")
-    }
-    if levelData.redoStrings.isEmpty {
-      toolbarNode.redoButton.userInteractionEnabled = false
-      toolbarNode.redoButton.runAction(SKAction.fadeAlphaTo(0.2, duration: 0.2), withKey: "fade")
-    } else {
-      toolbarNode.redoButton.userInteractionEnabled = true
-      toolbarNode.redoButton.runAction(SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")
-    }
-  }
-  
   // MARK: - EngineDelegate Functions
   
   func gridTestPassed() {
@@ -325,6 +308,14 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
   
   // MARK: - GridNodeDelegate Functions
   
+  func gridWasLifted() {
+    toolbarNode.gridWasLifted()
+  }
+  
+  func gridWasSetDown() {
+    toolbarNode.gridWasSetDown()
+  }
+  
   func editCompleted() {
     if levelData.editCompleted() {
       refreshUndoRedoButtonStatus()
@@ -338,23 +329,36 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
   }
   
   func undoEdit() {
-    gridNode.stopCurrentEdit()
-    gridNode.clearSelection()
-    if levelData.undo() {
-      gridNode.gridChanged()
-      refreshUndoRedoButtonStatus()
+    if gridNode.liftedGridNode == nil {
+      gridNode.stopCurrentEdit()
+      gridNode.clearSelection()
+      if levelData.undo() {
+        gridNode.gridChanged()
+        refreshUndoRedoButtonStatus()
+      }
+    } else {
+      gridNode.cancelGridLift()
     }
   }
   
   func redoEdit() {
-    gridNode.stopCurrentEdit()
-    gridNode.clearSelection()
-    if levelData.redo() {
-      gridNode.gridChanged()
-      refreshUndoRedoButtonStatus()
+    if gridNode.liftedGridNode == nil {
+      gridNode.stopCurrentEdit()
+      gridNode.clearSelection()
+      if levelData.redo() {
+        gridNode.gridChanged()
+        refreshUndoRedoButtonStatus()
+      }
+    } else {
+      gridNode.setDownGrid()
     }
   }
   
+  func refreshUndoRedoButtonStatus() {
+    toolbarNode.undoButton.userInteractionEnabled = !levelData.undoStrings.isEmpty
+    toolbarNode.redoButton.userInteractionEnabled = !levelData.redoStrings.isEmpty
+  }
+    
   // MARK: - Touch Delegate Functions
   
   override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {

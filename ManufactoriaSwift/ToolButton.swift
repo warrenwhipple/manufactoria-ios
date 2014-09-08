@@ -14,7 +14,7 @@ protocol ToolButtonDelegate: class {
 
 class ToolButton: SwipeThroughButton {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  enum Kind {case Blank, Belt, BeltBridge, PullerBR, PullerGY, PushersBR, PushersBRGY, Select, Move}
+  enum Kind {case Blank, Belt, BeltBridge, PullerBR, PullerGY, PushersBR, PushersBRGY, SelectCell, Move}
   
   weak var toolButtonDelegate: ToolButtonDelegate!
   let kind: Kind
@@ -73,20 +73,12 @@ class ToolButton: SwipeThroughButton {
       } else {
         modes = [.PusherB, .PusherR, .PusherG, .PusherY]
       }
-    case .Select:
-      modes = [.Select]
-      let label = SKLabelNode()
-      label.fontColor = Globals.strokeColor
-      label.fontMedium()
-      label.text = "select"
-      staticNode = label
+    case .SelectCell:
+      modes = [.SelectCell]
+      staticNode = SKSpriteNode("selectCellIcon")
     case .Move:
       modes = [.Move]
-      let label = SKLabelNode()
-      label.fontColor = Globals.strokeColor
-      label.fontMedium()
-      label.text = "move"
-      staticNode = label
+      staticNode = SKSpriteNode("selectMoveIcon")
     }
     
     super.init(texture: nil, color: nil, size: Globals.cellPointSize)
@@ -115,7 +107,7 @@ class ToolButton: SwipeThroughButton {
     }
     changeNode?.removeAllActions()
     switch kind {
-    case .Blank, .Belt, .Select, .Move: break
+    case .Blank, .Belt, .SelectCell, .Move: break
     case .BeltBridge:
       if modeIndex == 0 {changeNode?.runAction(SKAction.rotateToAngle(0, duration: 0.25))}
       else {changeNode?.runAction(SKAction.rotateToAngle(CGFloat(-M_PI_2), duration: 0.25).ease())}
