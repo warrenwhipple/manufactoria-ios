@@ -20,30 +20,30 @@ struct LevelSetup {
   let tag: String
   let instructions: String
   let space: GridSpace
-  let buttons: [ToolButton.Kind]
+  let editModes: [EditMode]
   let exemplars: [String]
   let generationFunction: GenerationFunction
   let acceptFunction: AcceptFunction?
   let transformFunction: TransformFunction?
   
-  init(tag: String, instructions: String, space: GridSpace, buttons: [ToolButton.Kind], exemplars: [String],
+  init(tag: String, instructions: String, space: GridSpace, editModes: [EditMode], exemplars: [String],
     generationFunction: GenerationFunction, acceptFunction: AcceptFunction) {
       self.tag = tag
       self.instructions = instructions
       self.space = space
-      self.buttons = buttons
+      self.editModes = editModes
       self.exemplars = exemplars
       self.generationFunction = generationFunction
       self.acceptFunction = acceptFunction
       self.transformFunction = nil
   }
   
-  init(tag: String, instructions: String, space: GridSpace, buttons: [ToolButton.Kind], exemplars: [String],
+  init(tag: String, instructions: String, space: GridSpace, editModes: [EditMode], exemplars: [String],
     generationFunction: GenerationFunction, transformFunction: TransformFunction) {
       self.tag = tag
       self.instructions = instructions
       self.space = space
-      self.buttons = buttons
+      self.editModes = editModes
       self.exemplars = exemplars
       self.generationFunction = generationFunction
       self.acceptFunction = nil
@@ -109,7 +109,7 @@ var LevelLibrary: [LevelSetup] = [
     tag: "↑",
     instructions: "Connect the entrance and exit.",
     space: GridSpace(3, 3),
-    buttons: [.Blank, .Belt],
+    editModes: [],
     exemplars: [""],
     generationFunction: {n in return [""]},
     acceptFunction: {string in return true}
@@ -119,7 +119,7 @@ var LevelLibrary: [LevelSetup] = [
     tag: "    B",
     instructions: "Accept blue: to the exit.\nReject red: to the floor.",
     space: GridSpace(3, 3),
-    buttons: [.Blank, .Belt, .PullerBR],
+    editModes: [.PullerBR],
     exemplars: ["r", "b"],
     generationFunction: {n in return ["r", "b"]},
     acceptFunction: {string in return string == "b"}
@@ -129,7 +129,7 @@ var LevelLibrary: [LevelSetup] = [
     tag: "BRB...    ",
     instructions: "Accept any that begin blue red blue.",
     space: GridSpace(5, 5),
-    buttons: [.Blank, .BeltBridge, .PullerBR],
+    editModes: [.Bridge, .PullerBR],
     exemplars: ["rbrb", "brbr"],
     generationFunction: {n in return generate("br", n)},
     acceptFunction: {
@@ -143,7 +143,7 @@ var LevelLibrary: [LevelSetup] = [
     tag: "no R",
     instructions: "Reject any red anywhere.",
     space: GridSpace(3, 3),
-    buttons: [.Blank, .BeltBridge, .PullerBR],
+    editModes: [.Bridge, .PullerBR],
     exemplars: ["bbrb", "bbbb"],
     generationFunction: {n in return generate("br", n)},
     acceptFunction: {
@@ -158,7 +158,7 @@ var LevelLibrary: [LevelSetup] = [
     tag: ">= 3B",
     instructions: "Accept three or more blues.",
     space: GridSpace(5, 5),
-    buttons: [.Blank, .BeltBridge, .PullerBR],
+    editModes: [.Bridge, .PullerBR],
     exemplars: ["rbrbr", "brbrb"],
     generationFunction: {n in return generate("br", n)},
     acceptFunction: {
@@ -173,7 +173,7 @@ var LevelLibrary: [LevelSetup] = [
     tag: "first last",
     instructions: "Move the first color to the end.",
     space: GridSpace(5, 5),
-    buttons: [.Blank, .BeltBridge, .PullerBR, .PushersBR],
+    editModes: [.PullerBR, .PusherB, .PusherR],
     exemplars: ["brbr", "rrbb"],
     generationFunction: {n in return generate("br", n)},
     transformFunction: {
@@ -187,7 +187,7 @@ var LevelLibrary: [LevelSetup] = [
     tag: "alternating",
     instructions: "Accept only alternating sequences.",
     space: GridSpace(7, 7),
-    buttons: [.Blank, .BeltBridge, .PullerBR],
+    editModes: [.Bridge, .PullerBR],
     exemplars: ["brbrr", "rbrbr"],
     generationFunction: {n in return generate("br", n, {s in if s.length()<2 {return false}; return true})},
     acceptFunction: {

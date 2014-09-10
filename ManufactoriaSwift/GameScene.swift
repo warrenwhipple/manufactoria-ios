@@ -49,7 +49,7 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
     engine = Engine(levelSetup: levelSetup)
     statusNode = StatusNode(instructions: levelSetup.instructions)
     gridNode = GridNode(grid: levelData.grid)
-    toolbarNode = ToolbarNode(buttonKinds: levelSetup.buttons)
+    toolbarNode = ToolbarNode(editModes: levelSetup.editModes)
     endMenuNode = EndMenuNode(nextLevelNumber: levelNumber + 1)
     endMenuNode.alpha = 0
     
@@ -74,7 +74,7 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
     addChild(statusNode)
         
     toolbarNode.delegate = self
-    changeEditMode(toolbarNode.buttonInFocus.modes[toolbarNode.buttonInFocus.modeIndex])
+    changeEditMode(toolbarNode.buttonInFocus.editMode)
     toolbarNode.zPosition = 10
     addChild(toolbarNode)
     

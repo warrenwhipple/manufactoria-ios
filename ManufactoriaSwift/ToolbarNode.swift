@@ -26,9 +26,8 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
   let drawPage, cutPastePage: SKNode
   let drawButtons, cutPasteButtons: [ToolButton]
   var buttonInFocus: ToolButton
-  let indicator: ToolIndicator
   
-  init(buttonKinds: [ToolButton.Kind]) {
+  init(editModes: [EditMode]) {
     undoButton = SwipeThroughButton()
     undoIcon = SKSpriteNode("undoIcon")
     undoButton.defaultPressColorizeForSprite(undoIcon)
@@ -51,16 +50,25 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
     cutPastePage = SKNode()
     
     var tempDrawButtons: [ToolButton] = []
-    var maxModeCount = 0
-    for buttonKind in buttonKinds {
-      let newButton = ToolButton(kind: buttonKind)
-      maxModeCount = max(maxModeCount, newButton.modes.count)
-      tempDrawButtons.append(newButton)
-      drawPage.addChild(newButton)
+    tempDrawButtons.append(BlankButton())
+    if contains(editModes, .Bridge) {tempDrawButtons.append(BeltBridgeButton())}
+    else {tempDrawButtons.append(BeltButton())}
+    if contains(editModes, .PullerBR) || contains(editModes, .PullerRB) {
+      tempDrawButtons.append(PullerButton(kind: .PullerBR))}
+    if contains(editModes, .PullerGY) || contains(editModes, .PullerYG) {
+      tempDrawButtons.append(PullerButton(kind: .PullerGY))}
+    var pusherKinds: [EditMode] = []
+    for editMode in editModes {
+      switch editMode {
+      case .PusherB, .PusherR, .PusherG, .PusherY: pusherKinds.append(editMode)
+      default: break
+      }
     }
+    if !pusherKinds.isEmpty {tempDrawButtons.append(PusherButton(kinds: pusherKinds))}
     drawButtons = tempDrawButtons
-
-    cutPasteButtons = [ToolButton(kind: .SelectCell), ToolButton(kind: .Move)]
+    for button in drawButtons {drawPage.addChild(button)}
+    
+    cutPasteButtons = [SelectBoxMoveButton(), SelectCellButton()]
     for button in cutPasteButtons {cutPastePage.addChild(button)}
     
     if drawButtons.count > 1 {
@@ -69,8 +77,6 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
       buttonInFocus = drawButtons[0]
     }
     buttonInFocus.isInFocus = true
-    
-    indicator = ToolIndicator(initialFocusIndex: 0, initialDotCount: buttonInFocus.modes.count, maxDotCount: maxModeCount)
     
     super.init(pages: [drawPage, cutPastePage], texture: nil, color: nil, size: CGSizeZero)
     
@@ -86,7 +92,6 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
       button.swipeThroughDelegate = self
       button.toolButtonDelegate = self
     }
-    drawPage.addChild(indicator)
   }
   
   override func fitToSize(size: CGSize) {
@@ -112,8 +117,6 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
     }
     spaceButtonArray(drawButtons)
     spaceButtonArray(cutPasteButtons)
-    
-    indicator.position = CGPoint(buttonInFocus.position.x, buttonInFocus.position.y - 32.0)
   }
   
   var isEnabled: Bool = true {
@@ -164,25 +167,12 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
   
   func toolButtonActivated(button: ToolButton) {
     if button == buttonInFocus {
-      if button.modes.count > 1 {
-        button.cycleMode()
-        indicator.focusIndex = button.modeIndex
-        delegate.changeEditMode(button.modes[button.modeIndex])
-      }
-    } else { // button != focusedButton
-      buttonInFocus = button
+      delegate.changeEditMode(button.cycleEditMode())
+    } else {
+      buttonInFocus.isInFocus = false
       button.isInFocus = true
-      indicator.currentDotCount = button.modes.count
-      indicator.focusIndex = button.modeIndex
-      var indicatorX = button.position.x
-      if contains(cutPasteButtons, button) {indicatorX += size.width}
-      indicator.runAction(SKAction.moveToX(indicatorX, duration: 0.5).ease())
-      delegate.changeEditMode(button.modes[button.modeIndex])
-      for unfocusButton in drawButtons + cutPasteButtons {
-        if unfocusButton != button {
-          unfocusButton.isInFocus = false
-        }
-      }
+      buttonInFocus = button
+      delegate.changeEditMode(button.editMode)
     }
   }
 }
