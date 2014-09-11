@@ -53,9 +53,9 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
     cutPastePage = SKNode()
     
     var tempDrawButtons: [ToolButton] = []
-    tempDrawButtons.append(BlankButton())
+    tempDrawButtons.append(ToolButton(editMode: .Blank, iconOffNamed: "blankIconOff", iconOnNamed: "blankIconOn"))
     if contains(editModes, .Bridge) {tempDrawButtons.append(BeltBridgeButton())}
-    else {tempDrawButtons.append(BeltButton())}
+    else {tempDrawButtons.append(ToolButton(editMode: .Belt, iconOffNamed: "beltIconOff", iconOnNamed: "beltIconOn"))}
     if contains(editModes, .PullerBR) || contains(editModes, .PullerRB) {
       tempDrawButtons.append(PullerButton(kind: .PullerBR))}
     if contains(editModes, .PullerGY) || contains(editModes, .PullerYG) {
@@ -71,7 +71,10 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
     drawButtons = tempDrawButtons
     for button in drawButtons {drawPage.addChild(button)}
     
-    cutPasteButtons = [SelectBoxMoveButton(), SelectCellButton()]
+    cutPasteButtons = [
+      ToolButton(editMode: .Move, iconOffNamed: "selectMoveIconOff", iconOnNamed: "selectMoveIconOn"),
+      ToolButton(editMode: .SelectCell, iconOffNamed: "selectCellIconOff", iconOnNamed: "selectCellIconOn")
+    ]
     for button in cutPasteButtons {cutPastePage.addChild(button)}
     
     if drawButtons.count > 1 {

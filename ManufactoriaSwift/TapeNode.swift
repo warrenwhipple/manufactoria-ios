@@ -18,11 +18,13 @@ class TapeNode: SKNode {
   var deletingDot: SKSpriteNode?
   let dotTexture = SKTexture(imageNamed: "dot")
   let dotSpacing: CGFloat
-  let printer = SKNode()
+  let printer = SKSpriteNode("printer")
   var width: CGFloat = 0
   
   override init() {
     dotSpacing = dotTexture.size().width * 1.25
+    printer.setScale(0)
+    printer.zPosition = 1
     super.init()
     addChild(printer)
     addChild(dotWrapper)

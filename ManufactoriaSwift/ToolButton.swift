@@ -20,11 +20,39 @@ class ToolButton: SwipeThroughButton {
   
   override init() {
     editMode = .Blank
-    isInFocus = false
     super.init()
     touchUpInsideClosure = {[unowned self] in self.toolButtonDelegate.toolButtonActivated(self)}
     pressClosure = {[unowned self] in if !self.isInFocus {self.focusClosure?()}}
     releaseClosure = {[unowned self] in if !self.isInFocus {self.unfocusClosure?()}}
+  }
+  
+  init(editMode: EditMode, iconOff: SKNode, iconOn: SKNode) {
+    self.editMode = editMode
+    super.init()
+    touchUpInsideClosure = {[unowned self] in self.toolButtonDelegate.toolButtonActivated(self)}
+    pressClosure = {[unowned self] in if !self.isInFocus {self.focusClosure?()}}
+    releaseClosure = {[unowned self] in if !self.isInFocus {self.unfocusClosure?()}}
+    iconOn.alpha = 0
+    iconOn.zPosition = iconOff.zPosition + 1
+    addChild(iconOff)
+    addChild(iconOn)
+    let fadeOutAction = SKAction.fadeAlphaTo(0, duration: 0.2)
+    let fadeInAction = SKAction.fadeAlphaTo(1, duration: 0.2)
+    focusClosure = {
+      iconOff.runAction(fadeOutAction, withKey: "fade")
+      iconOn.runAction(fadeInAction, withKey: "fade")
+    }
+    unfocusClosure = {
+      iconOff.runAction(fadeInAction, withKey: "fade")
+      iconOn.runAction(fadeOutAction, withKey: "fade")
+    }
+  }
+  
+  convenience init(editMode: EditMode, iconOffNamed: String, iconOnNamed: String) {
+    let iconOff = SKSpriteNode(iconOffNamed)
+    let iconOn = SKSpriteNode(iconOnNamed)
+    iconOn.color = Globals.highlightColor
+    self.init(editMode: editMode, iconOff: iconOff, iconOn: iconOn)
   }
 
   var isInFocus: Bool = false {
@@ -40,48 +68,8 @@ class ToolButton: SwipeThroughButton {
     return editMode
   }
   
-  func defaultToolAnimationWithIconOffNamed(iconOffNamed: String, iconOnNamed: String) -> (SKSpriteNode, SKSpriteNode) {
-    let iconOff = SKSpriteNode(iconOffNamed)
-    let iconOn = SKSpriteNode(iconOnNamed)
-    iconOn.color = Globals.highlightColor
-    iconOn.zPosition = 1
-    iconOn.alpha = 0
-    addChild(iconOff)
-    addChild(iconOn)
-    let fadeOutAction = SKAction.fadeAlphaTo(0, duration: 0.2)
-    let fadeInAction = SKAction.fadeAlphaTo(1, duration: 0.2)
-    focusClosure = {
-      iconOff.runAction(fadeOutAction, withKey: "fade")
-      iconOn.runAction(fadeInAction, withKey: "fade")
-    }
-    unfocusClosure = {
-      iconOff.runAction(fadeInAction, withKey: "fade")
-      iconOn.runAction(fadeOutAction, withKey: "fade")
-    }
-    return (iconOff, iconOn)
-  }
 }
 
-class BlankButton: ToolButton {
-  required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  
-  override init() {
-    super.init()
-    editMode = .Blank
-    defaultToolAnimationWithIconOffNamed("blankIconOff", iconOnNamed: "blankIconOn")
-  }
-}
-
-class BeltButton: ToolButton {
-  required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  
-  override init() {
-    super.init()
-    editMode = .Belt
-    let belt = SKSpriteNode("beltIconOff")
-    defaultToolAnimationWithIconOffNamed("beltIconOff", iconOnNamed: "beltIconOn")
-  }
-}
 
 class BeltBridgeButton: ToolButton {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
@@ -162,27 +150,5 @@ class PusherButton: ToolButton {
     editMode = .PusherB
     let pusher = SKSpriteNode("pusher")
     addChild(pusher)
-  }
-}
-
-class SelectBoxMoveButton: ToolButton {
-  required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  
-  override init() {
-    super.init()
-    editMode = .Move
-    let icon = SKSpriteNode("selectMoveIconOff")
-    addChild(icon)
-  }
-}
-
-class SelectCellButton: ToolButton {
-  required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  
-  override init() {
-    super.init()
-    editMode = .SelectCell
-    let icon = SKSpriteNode("selectCellIconOff")
-    addChild(icon)
   }
 }

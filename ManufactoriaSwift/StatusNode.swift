@@ -124,7 +124,10 @@ class StatusNode: SwipeNode {
         testButton.userInteractionEnabled = true
         testButton.position = rightButtonPoint
         instructionsPage.addChild(testButton)
+        tapeNode.dotWrapper.removeActionForKey("fade")
         tapeNode.dotWrapper.alpha = 0
+        tapeNode.printer.removeActionForKey("scale")
+        tapeNode.printer.setScale(0)
         goToIndexWithoutSnap(1)
         failLabel.runAction(SKAction.fadeAlphaTo(1, duration: 0.5))
         failTapeNode?.runAction(SKAction.fadeAlphaTo(1, duration: 0.25))
@@ -144,8 +147,9 @@ class StatusNode: SwipeNode {
           ]), withKey: "move")
         runAction(SKAction.waitForDuration(0), completion: {[unowned self] in self.thinkingAnimationDone = true})
         changeText("")
+        tapeNode.printer.runAction(SKAction.scaleTo(1, duration: 0.2), withKey: "scale")
       case .Testing:
-        tapeNode.dotWrapper.runAction(SKAction.fadeAlphaTo(1, duration: 0.25))
+        tapeNode.dotWrapper.runAction(SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")
       case .Congratulating:
         menuButton.userInteractionEnabled = true
         menuButton.position = leftButtonExitPoint
@@ -155,6 +159,7 @@ class StatusNode: SwipeNode {
         nextButton.position = rightButtonExitPoint
         instructionsPage.addChild(nextButton)
         nextButton.runAction(SKAction.moveTo(rightButtonPoint, duration: 0.6).easeOut(), withKey: "move")
+        tapeNode.printer.runAction(SKAction.scaleTo(0, duration: 0.2), withKey: "scale")
       }
     }
   }
