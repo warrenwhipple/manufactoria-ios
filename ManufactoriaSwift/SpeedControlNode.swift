@@ -20,10 +20,10 @@ class SpeedControlNode: SKNode {
   
   override init() {
     let buttonSize = CGSize(64)
-    let backIcon = SKSpriteNode("skipIcon")
-    let slowerIcon = SKSpriteNode("speedIcon")
-    let fasterIcon = SKSpriteNode("speedIcon")
-    let skipIcon = SKSpriteNode("skipIcon")
+    let backIcon = SKSpriteNode("skipIconOff")
+    let slowerIcon = SKSpriteNode("speedIconOff")
+    let fasterIcon = SKSpriteNode("speedIconOff")
+    let skipIcon = SKSpriteNode("skipIconOff")
     backIcon.xScale = -1
     slowerIcon.xScale = -1
     backButton = Button(size: buttonSize)

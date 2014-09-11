@@ -79,7 +79,7 @@ class BeltButton: ToolButton {
   override init() {
     super.init()
     editMode = .Belt
-    let belt = SKSpriteNode("beltButton")
+    let belt = SKSpriteNode("beltIconOff")
     defaultToolAnimationWithIconOffNamed("beltIconOff", iconOnNamed: "beltIconOn")
   }
 }
@@ -172,7 +172,7 @@ class SelectBoxMoveButton: ToolButton {
   override init() {
     super.init()
     editMode = .Move
-    let icon = SKSpriteNode("selectMoveIcon")
+    let icon = SKSpriteNode("selectMoveIconOff")
     addChild(icon)
   }
 }
@@ -183,7 +183,7 @@ class SelectCellButton: ToolButton {
   override init() {
     super.init()
     editMode = .SelectCell
-    let icon = SKSpriteNode("selectCellIcon")
+    let icon = SKSpriteNode("selectCellIconOff")
     addChild(icon)
   }
 }
