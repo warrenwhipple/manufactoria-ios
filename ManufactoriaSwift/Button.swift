@@ -13,10 +13,29 @@ class Button: SKSpriteNode {
   var pressClosure, releaseClosure, enableClosure, disableClosure, touchDownClosure, touchUpInsideClosure: (()->())?
   
   override init(texture: SKTexture!, color: UIColor!, size: CGSize) {
-    super.init(texture: texture, color: color, size: size)
+    super.init(texture: nil, color: nil, size: size)
     userInteractionEnabled = true
   }
   
+  init(iconOffNamed: String, iconOnNamed: String) {
+    let iconOff = SKSpriteNode(iconOffNamed)
+    let iconOn = SKSpriteNode(iconOnNamed)
+    iconOn.color = Globals.highlightColor
+    iconOn.zPosition = 1
+    iconOn.alpha = 0
+    super.init(texture: nil, color: nil, size: CGSize(48))
+    let fadeOut = SKAction.fadeAlphaTo(0, duration: 0.2)
+    let fadeIn = SKAction.fadeAlphaTo(1, duration: 0.2)
+    pressClosure = {
+      iconOff.runAction(fadeOut, withKey: "fade")
+      iconOn.runAction(fadeIn, withKey: "fade")
+    }
+    releaseClosure = {
+      iconOff.runAction(fadeIn, withKey: "fade")
+      iconOn.runAction(fadeOut, withKey: "fade")
+    }
+  }
+
   convenience override init() {self.init(texture: nil, color: nil, size: CGSizeZero)}
   
   var touch: UITouch? {
