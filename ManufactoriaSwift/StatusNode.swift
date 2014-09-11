@@ -10,6 +10,8 @@ import SpriteKit
 
 protocol StatusNodeDelegate: class {
   func testButtonPressed()
+  func menuButtonPressed()
+  func nextButtonPressed()
 }
 
 class StatusNode: SwipeNode {
@@ -19,7 +21,11 @@ class StatusNode: SwipeNode {
   weak var delegate: StatusNodeDelegate!
   let instructionsPage: SKNode
   let label: BreakingLabel
-  let testButton: SwipeThroughButton
+  let testButton, menuButton, nextButton: SwipeThroughButton
+  var leftButtonPoint = CGPointZero
+  var rightButtonPoint = CGPointZero
+  var leftButtonExitPoint = CGPointZero
+  var rightButtonExitPoint = CGPointZero
   let tapeNode: TapeNode
   let instructions: String
   
@@ -39,13 +45,14 @@ class StatusNode: SwipeNode {
 
     tapeNode = TapeNode()
     
-    testButton = SwipeThroughButton()
-    testButton.addChild(SKSpriteNode("playIconOn"))
-    testButton.zPosition = 10
+    testButton = SwipeThroughButton(iconOffNamed: "playIconOff", iconOnNamed: "playIconOn")
+    menuButton = SwipeThroughButton(iconOffNamed: "blankIconOff", iconOnNamed: "blankIconOn")
+    nextButton = SwipeThroughButton(iconOffNamed: "speedIconOff", iconOnNamed: "speedIconOn")
     
     instructionsPage = SKNode()
     instructionsPage.addChild(label)
     instructionsPage.addChild(tapeNode)
+    instructionsPage.addChild(menuButton)
     instructionsPage.addChild(testButton)
     
     failLabel = BreakingLabel()
@@ -58,8 +65,13 @@ class StatusNode: SwipeNode {
     super.init(pages: [instructionsPage, failPage], texture: nil, color: nil, size: CGSizeZero)
     
     testButton.swipeThroughDelegate = self
-    testButton.touchUpInsideClosure = {[unowned self] in self.testButtonPressed()}
+    testButton.touchUpInsideClosure = {[unowned self] in self.delegate.testButtonPressed()}
+    menuButton.swipeThroughDelegate = self
+    menuButton.touchUpInsideClosure = {[unowned self] in self.delegate.menuButtonPressed()}
+    nextButton.swipeThroughDelegate = self
+    nextButton.touchUpInsideClosure = {[unowned self] in self.delegate.nextButtonPressed()}
     
+    // can't swipe at first
     userInteractionEnabled = false
     rightArrow.alpha = 0
     rightArrow.removeActionForKey("fade")
@@ -67,10 +79,25 @@ class StatusNode: SwipeNode {
   
   override func fitToSize(size: CGSize) {
     super.fitToSize(size)
-    label.position = CGPoint(0, roundPix(size.height * (1.0/6.0)))
-    tapeNode.position = CGPoint(0, -roundPix(size.height * (1.0/6.0)))
+    let iconSize = Globals.iconRoughSize
+    let buttonTouchHeight = min(iconSize.height * 2, size.height / 2)
+    let yCenters = distributionForChildren(count: 2, childSize: iconSize.height, parentSize: size.height)
+    let buttonXCenters = distributionForChildren(count: 2, childSize: iconSize.width, parentSize: size.width)
+    leftButtonPoint = CGPoint(buttonXCenters[0], yCenters[0])
+    rightButtonPoint = CGPoint(buttonXCenters[1], yCenters[0])
+    leftButtonExitPoint = CGPoint(-size.width - iconSize.width, yCenters[0])
+    rightButtonExitPoint = CGPoint(size.width + iconSize.width, yCenters[0])
+    
+    menuButton.position = leftButtonPoint
+    menuButton.size = CGSize(iconSize.width * 2, buttonTouchHeight)
+    testButton.position = rightButtonPoint
+    testButton.size = menuButton.size
+    nextButton.position = rightButtonExitPoint
+    nextButton.size = menuButton.size
+    
+    label.position = CGPoint(0, yCenters[1])
+    tapeNode.position = CGPoint(0, yCenters[0])
     tapeNode.width = size.width
-    testButton.position = tapeNode.position
     failLabel.position = label.position
     failTapeNode?.position = tapeNode.position
     failTapeNode?.width = tapeNode.width
@@ -84,8 +111,12 @@ class StatusNode: SwipeNode {
       switch state {
       case .Editing:
         label.text = instructions
+        menuButton.userInteractionEnabled = true
+        menuButton.position = leftButtonPoint
+        instructionsPage.addChild(menuButton)
         testButton.userInteractionEnabled = true
-        testButton.alpha = 1
+        testButton.position = rightButtonPoint
+        instructionsPage.addChild(testButton)
         tapeNode.dotWrapper.alpha = 0
         goToIndexWithoutSnap(1)
         failLabel.runAction(SKAction.fadeAlphaTo(1, duration: 0.5))
@@ -94,14 +125,29 @@ class StatusNode: SwipeNode {
       case .Thinking:
         userInteractionEnabled = false
         thinkingAnimationDone = false
+        menuButton.userInteractionEnabled = false
+        menuButton.runAction(SKAction.sequence([
+          SKAction.moveTo(leftButtonExitPoint, duration: 0.6).easeIn(),
+          SKAction.removeFromParent()
+          ]), withKey: "move")
         testButton.userInteractionEnabled = false
-        testButton.alpha = 0
-        runAction(SKAction.waitForDuration(0.75), completion: {[weak self] in self!.thinkingAnimationDone = true})
+        testButton.runAction(SKAction.sequence([
+          SKAction.moveTo(rightButtonExitPoint, duration: 0.6).easeIn(),
+          SKAction.removeFromParent()
+          ]), withKey: "move")
+        runAction(SKAction.waitForDuration(0), completion: {[unowned self] in self.thinkingAnimationDone = true})
         changeText("")
       case .Testing:
         tapeNode.dotWrapper.runAction(SKAction.fadeAlphaTo(1, duration: 0.25))
       case .Congratulating:
-        break
+        menuButton.userInteractionEnabled = true
+        menuButton.position = leftButtonExitPoint
+        instructionsPage.addChild(menuButton)
+        menuButton.runAction(SKAction.moveTo(leftButtonPoint, duration: 0.6).easeOut(), withKey: "move")
+        nextButton.userInteractionEnabled = true
+        nextButton.position = rightButtonExitPoint
+        instructionsPage.addChild(nextButton)
+        nextButton.runAction(SKAction.moveTo(rightButtonPoint, duration: 0.6).easeOut(), withKey: "move")
       }
     }
   }
@@ -154,9 +200,5 @@ class StatusNode: SwipeNode {
     failTapeNode?.position = tapeNode.position
     failTapeNode?.width = tapeNode.width
     failPage.addChild(failTapeNode!)
-  }
-  
-  func testButtonPressed() {
-    delegate.testButtonPressed()
   }
 }

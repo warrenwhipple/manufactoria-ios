@@ -22,12 +22,10 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
   let engine: Engine
   
   // view objects
-  let menuButton: Button
   let statusNode: StatusNode
   let gridNode: GridNode
   let toolbarNode: ToolbarNode
   let speedControlNode = SpeedControlNode()
-  let endMenuNode: EndMenuNode
   var robotNode: SKSpriteNode?
   
   // variables
@@ -50,15 +48,6 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
     statusNode = StatusNode(instructions: levelSetup.instructions)
     gridNode = GridNode(grid: levelData.grid)
     toolbarNode = ToolbarNode(editModes: levelSetup.editModes)
-    endMenuNode = EndMenuNode(nextLevelNumber: levelNumber + 1)
-    endMenuNode.alpha = 0
-    
-    menuButton = Button(texture: nil, color: nil, size: CGSize(48))
-    menuButton.zPosition = 100
-    let menuIcon = MenuIcon(size: CGSize(16))
-    menuIcon.shimmerNodes[3].removeFromParent()
-    menuIcon.position = CGPoint(24, 24)
-    menuButton.addChild(menuIcon)
     
     super.init(size: size)
     backgroundColor = Globals.backgroundColor
@@ -81,17 +70,6 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
     speedControlNode.delegate = self
     speedControlNode.alpha = 0
     speedControlNode.zPosition = 10
-    
-    endMenuNode.delegate = self
-    endMenuNode.zPosition = 10
-    
-    menuButton.touchUpInsideClosure = {
-      [unowned self] in
-      self.levelData.saveWithLevelNumber(self.levelNumber)
-      self.view?.presentScene(MenuScene(size: size), transition: SKTransition.pushWithDirection(.Left, duration: 0.5).outInPlay())
-    }
-    menuButton.zPosition = 20
-    addChild(menuButton)
     
     refreshUndoRedoButtonStatus()
     fitToSize()
@@ -129,8 +107,6 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
         statusNode.state = .Congratulating
         speedControlNode.isEnabled = false
         speedControlNode.runAction(SKAction.sequence([SKAction.fadeAlphaTo(0, duration: 0.5), SKAction.removeFromParent()]))
-        if endMenuNode.parent == nil {addChild(endMenuNode)}
-        endMenuNode.runAction(SKAction.fadeAlphaTo(1, duration: 0.5))
       }
     }
   }
@@ -148,11 +124,8 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
     toolbarNode.fitToSize(topGapRect.size)
     speedControlNode.position = bottomGapRect.center
     speedControlNode.size = bottomGapRect.size
-    endMenuNode.position = bottomGapRect.center
-    endMenuNode.size = bottomGapRect.size
     statusNode.position = topGapRect.center
     statusNode.fitToSize(topGapRect.size)
-    menuButton.position = CGPoint(size.width - 32, size.height - 32)
   }
   
   override func update(currentTime: NSTimeInterval) {
@@ -277,9 +250,22 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
     loadTape(currentTapeTestIndex)
   }
   
+  // MARK: - StatusNodeDelegate Functions
+  
   func testButtonPressed() {
     levelData.saveWithLevelNumber(levelNumber)
     state = .Thinking
+  }
+  
+  func menuButtonPressed() {
+    levelData.saveWithLevelNumber(levelNumber)
+    view?.presentScene(MenuScene(size: size), transition: SKTransition.pushWithDirection(.Right, duration: 0.5).outInPlay())
+  }
+  
+  func nextButtonPressed() {
+    scene?.view?.presentScene(
+      GameScene(size: self.scene!.size, levelNumber: levelNumber + 1),
+      transition: SKTransition.pushWithDirection(SKTransitionDirection.Left, duration: 0.5).outInPlay())
   }
   
   // MARK: - EngineDelegate Functions

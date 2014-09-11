@@ -80,7 +80,7 @@ class MenuScene: SKScene {
     }
     
     override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
-      scene?.view?.presentScene(GameScene(size: scene!.view!.bounds.size, levelNumber: levelNumber), transition: SKTransition.pushWithDirection(.Right, duration: 0.5).outInPlay())
+      scene?.view?.presentScene(GameScene(size: scene!.view!.bounds.size, levelNumber: levelNumber), transition: SKTransition.pushWithDirection(.Left, duration: 0.5).outInPlay())
     }
   }
   

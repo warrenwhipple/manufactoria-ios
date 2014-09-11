@@ -46,13 +46,15 @@ class EndMenuNode: SKNode {
       let transition = SKTransition.pushWithDirection(SKTransitionDirection.Left, duration: 0.5).outInPlay()
       self.scene?.view?.presentScene(MenuScene(size: self.scene!.size), transition: transition)
     }
+    /*
     nextButton.touchUpInsideClosure = {
       [unowned self] in
-      if self.delegate != nil {self.delegate!.menuButton.alpha = 0}
+      //if self.delegate != nil {self.delegate!.menuButton.alpha = 0}
       self.scene?.view?.presentScene(
         GameScene(size: self.scene!.size, levelNumber: nextLevelNumber),
         transition: SKTransition.pushWithDirection(SKTransitionDirection.Left, duration: 0.5).outInPlay())
     }
+    */
 
     addChild(menuButton)
     addChild(nextButton)
