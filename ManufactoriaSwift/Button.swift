@@ -24,6 +24,9 @@ class Button: SKSpriteNode {
     iconOn.zPosition = 1
     iconOn.alpha = 0
     super.init(texture: nil, color: nil, size: CGSize(48))
+    userInteractionEnabled = true
+    addChild(iconOff)
+    addChild(iconOn)
     let fadeOut = SKAction.fadeAlphaTo(0, duration: 0.2)
     let fadeIn = SKAction.fadeAlphaTo(1, duration: 0.2)
     pressClosure = {
@@ -114,6 +117,10 @@ class SwipeThroughButton: Button {
   
   init() {
     super.init(texture: nil, color: nil, size: CGSize(48))
+  }
+  
+  override init(iconOffNamed: String, iconOnNamed: String) {
+    super.init(iconOffNamed: iconOffNamed, iconOnNamed: iconOnNamed)
   }
   
   override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {

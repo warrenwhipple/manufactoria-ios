@@ -21,8 +21,7 @@ class TitleScene: SKScene {
     title.verticalAlignmentMode = .Center
     title.text = "Manufactoria"
     title.position = CGPoint(size.width * 0.5, size.height * 0.5 + 40)
-    button = Button(texture: nil, color: nil, size: CGSize(48))
-    button.addChild(SKSpriteNode("playIconOn"))
+    button = Button(iconOffNamed: "playIconOff", iconOnNamed: "playIconOn")
     button.position = CGPoint(size.width * 0.5, size.height * 0.5 - 40)
     button.size = size * 2
     super.init(size: size)

@@ -20,7 +20,7 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
   
   weak var delegate: ToolbarNodeDelegate!
   let undoButton, redoButton: SwipeThroughButton
-  let undoIcon, redoIcon, confirmIcon: SKSpriteNode
+  let redoIcon, confirmIcon: SKSpriteNode
   let redoConfirmIconsNode: SKNode
   
   let drawPage, cutPastePage: SKNode
@@ -28,15 +28,11 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
   var buttonInFocus: ToolButton
   
   init(editModes: [EditMode]) {
-    undoButton = SwipeThroughButton()
-    undoIcon = SKSpriteNode("undoIcon")
-    undoButton.defaultPressColorizeForSprite(undoIcon)
-    undoButton.defaultDisableDimForNode(undoIcon)
-    undoButton.addChild(undoIcon)
+    undoButton = SwipeThroughButton(iconOffNamed: "undoIconOff", iconOnNamed: "undoIconOn")
     
     redoButton = SwipeThroughButton()
     redoConfirmIconsNode = SKNode()
-    redoIcon = SKSpriteNode("undoIcon")
+    redoIcon = SKSpriteNode("undoIconOff")
     redoIcon.xScale = -1
     confirmIcon = SKSpriteNode("selectConfirmIcon")
     confirmIcon.alpha = 0
