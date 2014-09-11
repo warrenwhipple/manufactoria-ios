@@ -79,7 +79,7 @@ class SwipeNode: SKSpriteNode, SwipeThroughButtonDelegate {
     didSet {
       if userInteractionEnabled {
         if touch == nil && size.width != 0 {
-          fadeInArrowsForIndex(Int(roundPix(-wrapper.position.x / size.width)))
+          fadeInArrowsForIndex(Int(round(-wrapper.position.x / size.width)))
         }
       } else {
         let fadeAction = SKAction.fadeAlphaTo(0, duration: 0.25)
@@ -120,7 +120,7 @@ class SwipeNode: SKSpriteNode, SwipeThroughButtonDelegate {
   }
   
   func snapToClosestWithInitialVelocityX(initialVelocityX: CGFloat) {
-    snapToIndex(Int(roundPix(-wrapper.position.x / size.width)), initialVelocityX: initialVelocityX)
+    snapToIndex(Int(round(-wrapper.position.x / size.width)), initialVelocityX: initialVelocityX)
   }
   
   func snapLeftWithInitialVelocityX(initialVelocityX: CGFloat) {

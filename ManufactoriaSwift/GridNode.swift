@@ -162,7 +162,7 @@ class GridNode: SKNode {
   
   func setDownGrid() {
     if liftedGridNode == nil {return}
-    let settingDownGridOrigin = GridCoord(Int(roundPix(liftedGridNode!.position.x)), Int(roundPix(liftedGridNode!.position.y)))
+    let settingDownGridOrigin = GridCoord(Int(round(liftedGridNode!.position.x)), Int(round(liftedGridNode!.position.y)))
     let liftedGrid = liftedGridNode!.grid
     for i in 0 ..< grid.space.columns {
       for j in 0 ..< grid.space.rows {
@@ -420,7 +420,7 @@ class GridNode: SKNode {
     if !touches.containsObject(editTouch!) {return}
     
     if editMode == .Move {
-      liftedGridNode?.runAction(SKAction.moveTo(CGPoint(roundPix(liftedGridNode!.position.x), roundPix(liftedGridNode!.position.y)), duration: 0.2).easeOut(), withKey: "move")
+      liftedGridNode?.runAction(SKAction.moveTo(CGPoint(round(liftedGridNode!.position.x), round(liftedGridNode!.position.y)), duration: 0.2).easeOut(), withKey: "move")
       editTouch = nil
       return
     }

@@ -45,8 +45,15 @@ class StatusNode: SwipeNode {
 
     tapeNode = TapeNode()
     
+    /*
+    let menuIconOff = MenuIcon(size: Globals.iconRoughSize)
+    let menuIconOn = MenuIcon(size: Globals.iconRoughSize)
+    for shimmerNode in menuIconOn.shimmerNodes {shimmerNode.color = Globals.highlightColor}
+    menuButton = SwipeThroughButton(iconOff: menuIconOff, iconOn: menuIconOn)
+    */
+    
+    menuButton = SwipeThroughButton(iconOffNamed: "cancelIconOff", iconOnNamed: "cancelIconOn")
     testButton = SwipeThroughButton(iconOffNamed: "playIconOff", iconOnNamed: "playIconOn")
-    menuButton = SwipeThroughButton(iconOffNamed: "blankIconOff", iconOnNamed: "blankIconOn")
     nextButton = SwipeThroughButton(iconOffNamed: "speedIconOff", iconOnNamed: "speedIconOn")
     
     instructionsPage = SKNode()
