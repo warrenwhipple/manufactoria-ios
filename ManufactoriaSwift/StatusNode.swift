@@ -19,7 +19,7 @@ class StatusNode: SwipeNode {
   weak var delegate: StatusNodeDelegate!
   let instructionsPage: SKNode
   let label: BreakingLabel
-  let testButton: RingButton
+  let testButton: SwipeThroughButton
   let tapeNode: TapeNode
   let instructions: String
   
@@ -39,7 +39,8 @@ class StatusNode: SwipeNode {
 
     tapeNode = TapeNode()
     
-    testButton = RingButton(icon: SKSpriteNode("playIcon"), state: .Button)
+    testButton = SwipeThroughButton(texture: nil, color: nil, size: CGSize(48))
+    testButton.addChild(SKSpriteNode("playIconOn"))
     testButton.zPosition = 10
     
     instructionsPage = SKNode()
@@ -83,10 +84,8 @@ class StatusNode: SwipeNode {
       switch state {
       case .Editing:
         label.text = instructions
-        testButton.removeFromParent()
-        testButton.position = tapeNode.position
-        instructionsPage.addChild(testButton)
-        testButton.state = .Button
+        testButton.userInteractionEnabled = true
+        testButton.alpha = 1
         tapeNode.dotWrapper.alpha = 0
         goToIndexWithoutSnap(1)
         failLabel.runAction(SKAction.fadeAlphaTo(1, duration: 0.5))
@@ -95,17 +94,14 @@ class StatusNode: SwipeNode {
       case .Thinking:
         userInteractionEnabled = false
         thinkingAnimationDone = false
-        testButton.state = .Printer
-        testButton.runAction(SKAction.moveTo(tapeNode.position, duration: 0.5))
+        testButton.userInteractionEnabled = false
+        testButton.alpha = 0
         runAction(SKAction.waitForDuration(0.75), completion: {[weak self] in self!.thinkingAnimationDone = true})
         changeText("")
       case .Testing:
-        testButton.removeFromParent()
-        testButton.position = CGPointZero
         tapeNode.dotWrapper.runAction(SKAction.fadeAlphaTo(1, duration: 0.25))
-        tapeNode.printer.addChild(testButton)
       case .Congratulating:
-        testButton.state = .Hidden
+        break
       }
     }
   }

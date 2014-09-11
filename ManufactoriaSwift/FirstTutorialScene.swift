@@ -15,7 +15,6 @@ class FirstTutorialScene: GameScene {
   init(size: CGSize) {
     super.init(size: size, levelNumber: 0)
     statusNode.testButton.alpha = 0
-    statusNode.testButton.state = .Hidden
     toolbarNode.removeFromParent()
   }
     
@@ -43,14 +42,13 @@ class FirstTutorialScene: GameScene {
     testButtonIsHidden = false
     statusNode.label.runAction(SKAction.fadeAlphaTo(0, duration: 1))
     statusNode.testButton.alpha = 1
-    statusNode.testButton.state = .Button
   }
   
   func hideTestButton() {
     if testButtonIsHidden {return}
     testButtonIsHidden = true
     statusNode.label.runAction(SKAction.fadeAlphaTo(1, duration: 1))
-    statusNode.testButton.state = .Hidden
+    statusNode.testButton.alpha = 0
   }
   
   override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
