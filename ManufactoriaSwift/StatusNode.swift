@@ -67,8 +67,8 @@ class StatusNode: SwipeNode {
   
   override func fitToSize(size: CGSize) {
     super.fitToSize(size)
-    label.position = CGPoint(0, round(size.height * (1.0/6.0)))
-    tapeNode.position = CGPoint(0, -round(size.height * (1.0/6.0)))
+    label.position = CGPoint(0, roundPix(size.height * (1.0/6.0)))
+    tapeNode.position = CGPoint(0, -roundPix(size.height * (1.0/6.0)))
     tapeNode.width = size.width
     testButton.position = tapeNode.position
     failLabel.position = label.position

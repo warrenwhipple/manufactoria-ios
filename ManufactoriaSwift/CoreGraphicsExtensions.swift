@@ -8,6 +8,20 @@
 
 import CoreGraphics
 
+func roundPix(x: CGFloat) -> CGFloat {
+  return round(x * 2) * 0.5
+}
+
+func distributionForChildren(#count: Int, #childSize: CGFloat, #parentSize: CGFloat) -> [CGFloat] {
+  let spacing = (parentSize - CGFloat(count) * childSize) / CGFloat(count + 1) + childSize
+  let offset = -0.5 * CGFloat(count - 1) * spacing
+  var centers: [CGFloat] = []
+  for i in 0 ..< count {
+    centers.append(roundPix(offset + CGFloat(i) * spacing))
+  }
+  return centers
+}
+
 extension CGSize {
   init(_ square: CGFloat) {
     width = square

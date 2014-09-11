@@ -42,11 +42,3 @@ func easeInOut(t: CGFloat) -> CGFloat {
   let tt = t*t;
   return 3*tt - 2*tt*t
 }
-
-func distributionForChildren(#count: Int, #childSize: CGFloat, #parentSize: CGFloat) -> [CGFloat] {
-  let spacing = (parentSize - CGFloat(count) * childSize) / CGFloat(count + 1) + childSize
-  let offset = -0.5 * CGFloat(count - 1) * spacing
-  var centers: [CGFloat] = []
-  for i in 0 ..< count {centers.append(offset + CGFloat(i) * spacing)}
-  return centers
-}
