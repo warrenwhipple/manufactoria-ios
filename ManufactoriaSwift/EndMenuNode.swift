@@ -18,11 +18,10 @@ class EndMenuNode: SKNode {
   let nextLabel: SKLabelNode
   
   init(nextLevelNumber: Int) {
-    let buttonSize = CGSize(80)
     let nextIcon = SKSpriteNode("playIcon")
     let menuIcon = MenuIcon(size: CGSize(nextIcon.size.width))
-    menuButton = Button(size: buttonSize)
-    nextButton = Button(size: buttonSize)
+    menuButton = Button(texture: nil, color: nil, size: CGSize(80))
+    nextButton = Button(texture: nil, color: nil, size: CGSize(80))
     menuButton.addChild(menuIcon)
     nextButton.addChild(nextIcon)
     menuLabel = SKLabelNode()

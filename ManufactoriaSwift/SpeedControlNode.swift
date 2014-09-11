@@ -19,17 +19,16 @@ class SpeedControlNode: SKNode {
   let speedLabel: SKLabelNode
   
   override init() {
-    let buttonSize = CGSize(64)
     let backIcon = SKSpriteNode("skipIconOff")
     let slowerIcon = SKSpriteNode("speedIconOff")
     let fasterIcon = SKSpriteNode("speedIconOff")
     let skipIcon = SKSpriteNode("skipIconOff")
     backIcon.xScale = -1
     slowerIcon.xScale = -1
-    backButton = Button(size: buttonSize)
-    slowerButton = Button(size: buttonSize)
-    fasterButton = Button(size: buttonSize)
-    skipButton = Button(size: buttonSize)
+    backButton = Button(texture: nil, color: nil, size: CGSize(48))
+    slowerButton = Button(texture: nil, color: nil, size: CGSize(48))
+    fasterButton = Button(texture: nil, color: nil, size: CGSize(48))
+    skipButton = Button(texture: nil, color: nil, size: CGSize(48))
     backButton.addChild(backIcon)
     slowerButton.addChild(slowerIcon)
     fasterButton.addChild(fasterIcon)

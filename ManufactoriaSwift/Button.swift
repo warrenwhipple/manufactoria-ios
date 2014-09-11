@@ -18,7 +18,6 @@ class Button: SKSpriteNode {
   }
   
   convenience override init() {self.init(texture: nil, color: nil, size: CGSizeZero)}
-  convenience init(size: CGSize) {self.init(texture: nil, color: nil, size: size)}
   
   var touch: UITouch? {
     didSet {
