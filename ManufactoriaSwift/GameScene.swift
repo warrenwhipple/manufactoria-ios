@@ -53,7 +53,7 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
     endMenuNode = EndMenuNode(nextLevelNumber: levelNumber + 1)
     endMenuNode.alpha = 0
     
-    menuButton = Button(color: nil, size: CGSize(64))
+    menuButton = Button(texture: nil, color: nil, size: CGSize(48))
     menuButton.zPosition = 100
     let menuIcon = MenuIcon(size: CGSize(16))
     menuIcon.shimmerNodes[3].removeFromParent()
