@@ -18,11 +18,10 @@ class ToolButton: SwipeThroughButton {
   var editMode: EditMode
   var focusClosure, unfocusClosure: (()->())?
   
-  init() {
+  override init() {
     editMode = .Blank
     isInFocus = false
-    super.init(texture: nil, color: nil, size: CGSizeZero)
-    size = CGSize(48)
+    super.init()
     touchUpInsideClosure = {[unowned self] in self.toolButtonDelegate.toolButtonActivated(self)}
     pressClosure = {[unowned self] in if !self.isInFocus {self.focusClosure?()}}
     releaseClosure = {[unowned self] in if !self.isInFocus {self.unfocusClosure?()}}

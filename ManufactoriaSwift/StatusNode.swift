@@ -39,7 +39,7 @@ class StatusNode: SwipeNode {
 
     tapeNode = TapeNode()
     
-    testButton = SwipeThroughButton(texture: nil, color: nil, size: CGSize(48))
+    testButton = SwipeThroughButton()
     testButton.addChild(SKSpriteNode("playIconOn"))
     testButton.zPosition = 10
     

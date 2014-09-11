@@ -98,8 +98,8 @@ class SwipeThroughButton: Button {
   var swipeThroughTouch: UITouch?
   var touchBeganPoint: CGPoint = CGPointZero
   
-  override init(texture: SKTexture!, color: UIColor!, size: CGSize) {
-    super.init(texture: texture, color: color, size: size)
+  init() {
+    super.init(texture: nil, color: nil, size: CGSize(48))
   }
   
   override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
