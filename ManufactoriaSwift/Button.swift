@@ -17,10 +17,7 @@ class Button: SKSpriteNode {
     userInteractionEnabled = true
   }
   
-  init(iconOffNamed: String, iconOnNamed: String) {
-    let iconOff = SKSpriteNode(iconOffNamed)
-    let iconOn = SKSpriteNode(iconOnNamed)
-    iconOn.color = Globals.highlightColor
+  init(iconOff: SKNode, iconOn: SKNode) {
     iconOn.zPosition = 1
     iconOn.alpha = 0
     super.init(texture: nil, color: nil, size: CGSize(48))
@@ -37,6 +34,13 @@ class Button: SKSpriteNode {
       iconOff.runAction(fadeIn, withKey: "fade")
       iconOn.runAction(fadeOut, withKey: "fade")
     }
+  }
+  
+  convenience init(iconOffNamed: String, iconOnNamed: String) {
+    let iconOff = SKSpriteNode(iconOffNamed)
+    let iconOn = SKSpriteNode(iconOnNamed)
+    iconOn.color = Globals.highlightColor
+    self.init(iconOff: iconOff, iconOn: iconOn)
   }
 
   convenience override init() {self.init(texture: nil, color: nil, size: CGSizeZero)}
@@ -119,8 +123,15 @@ class SwipeThroughButton: Button {
     super.init(texture: nil, color: nil, size: CGSize(48))
   }
   
-  override init(iconOffNamed: String, iconOnNamed: String) {
-    super.init(iconOffNamed: iconOffNamed, iconOnNamed: iconOnNamed)
+  override init(iconOff: SKNode, iconOn: SKNode) {
+    super.init(iconOff: iconOff, iconOn: iconOn)
+  }
+  
+  convenience init(iconOffNamed: String, iconOnNamed: String) {
+    let iconOff = SKSpriteNode(iconOffNamed)
+    let iconOn = SKSpriteNode(iconOnNamed)
+    iconOn.color = Globals.highlightColor
+    self.init(iconOff: iconOff, iconOn: iconOn)
   }
   
   override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
