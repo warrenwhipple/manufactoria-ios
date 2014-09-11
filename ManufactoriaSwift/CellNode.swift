@@ -19,11 +19,11 @@ class CellNode: SKNode {
   var isSelected = false
   
   override init() {
-    belt = SKSpriteNode(color: Globals.strokeColor, size: Globals.beltPointSize)
+    belt = SKSpriteNode(color: Globals.strokeColor, size: Globals.beltSize)
     belt.zPosition = 1
     belt.colorBlendFactor = 1
 
-    bridge = SKSpriteNode(color: Globals.strokeColor, size: Globals.beltPointSize)
+    bridge = SKSpriteNode(color: Globals.strokeColor, size: Globals.beltSize)
     bridge.zPosition = 1
     bridge.zRotation = CGFloat(-M_PI_2)
     bridge.colorBlendFactor = 1
@@ -41,14 +41,14 @@ class CellNode: SKNode {
     puller.addChild(pullerLeft)
     puller.addChild(pullerRight)
     
-    glowNode = SKSpriteNode(color: Globals.highlightColor, size: Globals.cellPointSize)
+    glowNode = SKSpriteNode(color: Globals.highlightColor, size: Globals.cellSize)
     glowNode.zPosition = 4
     glowNode.alpha = 0
     
-    shimmerNode = ShimmerNode(size: Globals.cellPointSize)
+    shimmerNode = ShimmerNode(size: Globals.cellSize)
 
     super.init()
-    self.setScale(1 / Globals.cellPointSize.width)
+    self.setScale(1 / Globals.cellSize.width)
     
     addChild(glowNode)
     addChild(shimmerNode)

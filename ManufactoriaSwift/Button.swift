@@ -67,10 +67,10 @@ class Button: SKSpriteNode {
       }
     }
   }
-  
-  func defaultDisableDimForNode(node: SKNode) {
-    disableClosure = {node.runAction(SKAction.fadeAlphaTo(0.2, duration: 0.2), withKey: "fade")}
-    enableClosure = {node.runAction(SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")}
+
+  func generateDefaultDisableDimClosuresForSelf() {
+    disableClosure = {[unowned self] in self.runAction(SKAction.fadeAlphaTo(0.2, duration: 0.2), withKey: "fade")}
+    enableClosure = {[unowned self] in self.runAction(SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")}
   }
   
   override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {

@@ -28,6 +28,7 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
   
   init(editModes: [EditMode]) {
     undoButton = SwipeThroughButton(iconOffNamed: "undoIconOff", iconOnNamed: "undoIconOn")
+    undoButton.generateDefaultDisableDimClosuresForSelf()
     redoIconOff = SKSpriteNode("undoIconOff")
     redoIconOff.xScale = -1
     redoIconOn = SKSpriteNode("undoIconOn")
@@ -46,6 +47,7 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
     redoConfirmIconsOn.addChild(redoIconOn)
     redoConfirmIconsOn.addChild(confirmIconOn)
     redoButton = SwipeThroughButton(iconOff: redoConfirmIconsOff, iconOn: redoConfirmIconsOn)
+    redoButton.generateDefaultDisableDimClosuresForSelf()
     
     drawPage = SKNode()
     cutPastePage = SKNode()
@@ -97,27 +99,29 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
   
   override func fitToSize(size: CGSize) {
     super.fitToSize(size)
-    let buttonSize = CGSize(48)
-    
-    leftArrow.position.y = -round(size.height / 6)
-    rightArrow.position.y = -round(size.height / 6)
-    undoButton.position = CGPoint(-round(size.width / 6), round(size.height / 6))
-    redoButton.position = CGPoint(round(size.width / 6), round(size.height / 6))
-    undoButton.size = buttonSize
-    redoButton.size = buttonSize
-    
-    func spaceButtonArray(buttonArray: [ToolButton]) {
-      let spacing = size.width / CGFloat(buttonArray.count + 1)
-      var x: CGFloat = spacing
-      let y = -round(size.height / 6)
-      for button in buttonArray {
-        button.position = CGPoint(round(x - size.width / 2), y)
-        x += spacing
-        button.size = buttonSize
-      }
+    let iconSize = Globals.iconRoughSize
+    let buttonTouchHeight = min(iconSize.height * 2, size.height / 2)
+    let undoRedoButtonTouchWidth = min(iconSize.width * 2, size.width / 2)
+    let drawButtonTouchWidth = min(iconSize.width * 2, size.width / CGFloat(drawButtons.count))
+    let cutPasteButtonTouchWidth = min(iconSize.width * 2, size.width / CGFloat(cutPasteButtons.count))
+    let buttonYCenters = distributionForChildren(count: 2, childSize: iconSize.height, parentSize: size.height)
+    let undoRedoButtonXCenters = distributionForChildren(count: 2, childSize: iconSize.width, parentSize: size.width)
+    let drawButtonXCenters = distributionForChildren(count: drawButtons.count, childSize: iconSize.width, parentSize: size.width)
+    let cutPasteButtonXCenters = distributionForChildren(count: cutPasteButtons.count, childSize: iconSize.width, parentSize: size.width)
+    undoButton.position = CGPoint(undoRedoButtonXCenters[0], buttonYCenters[1])
+    undoButton.size = CGSize(undoRedoButtonTouchWidth, buttonTouchHeight)
+    redoButton.position = CGPoint(undoRedoButtonXCenters[1], buttonYCenters[1])
+    redoButton.size = CGSize(undoRedoButtonTouchWidth, buttonTouchHeight)
+    var i = 0
+    for button in drawButtons {
+      button.position = CGPoint(drawButtonXCenters[i++], buttonYCenters[0])
+      button.size = CGSize(drawButtonTouchWidth, buttonTouchHeight)
     }
-    spaceButtonArray(drawButtons)
-    spaceButtonArray(cutPasteButtons)
+    i = 0
+    for button in cutPasteButtons {
+      button.position = CGPoint(cutPasteButtonXCenters[i++], buttonYCenters[0])
+      button.size = CGSize(cutPasteButtonTouchWidth, buttonTouchHeight)
+    }
   }
   
   var isEnabled: Bool = true {

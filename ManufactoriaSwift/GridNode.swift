@@ -71,12 +71,12 @@ class GridNode: SKNode {
     cellNodes = tempCellNodes
     
     enterArrow = SKSpriteNode("enterExitArrow")
-    enterArrow.setScale(1 / CGFloat(Globals.cellPointSize.width))
+    enterArrow.setScale(1 / CGFloat(Globals.cellSize.width))
     enterArrow.zPosition = 20
     enterArrow.position = CGPoint(CGFloat(grid.startCoord.i) + 0.5, CGFloat(grid.startCoord.j) + 1)
     wrapper.addChild(enterArrow)
     exitArrow = SKSpriteNode("enterExitArrow")
-    exitArrow.setScale(1 / CGFloat(Globals.cellPointSize.width))
+    exitArrow.setScale(1 / CGFloat(Globals.cellSize.width))
     exitArrow.zPosition = 20
     exitArrow.position = CGPoint(CGFloat(grid.endCoord.i) + 0.5, CGFloat(grid.endCoord.j))
     wrapper.addChild(exitArrow)
