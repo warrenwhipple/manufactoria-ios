@@ -68,13 +68,6 @@ class Button: SKSpriteNode {
     }
   }
   
-  func defaultPressColorizeForSprite(sprite: SKSpriteNode) {
-      pressClosure = {sprite.runAction(SKAction.colorizeWithColor(
-        Globals.highlightColor, colorBlendFactor: 1, duration: 0.2), withKey: "colorize")}
-      releaseClosure = {sprite.runAction(SKAction.colorizeWithColor(
-        Globals.strokeColor, colorBlendFactor: 1, duration: 0.2), withKey: "colorize")}
-  }
-  
   func defaultDisableDimForNode(node: SKNode) {
     disableClosure = {node.runAction(SKAction.fadeAlphaTo(0.2, duration: 0.2), withKey: "fade")}
     enableClosure = {node.runAction(SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")}
