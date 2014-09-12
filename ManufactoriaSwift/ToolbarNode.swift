@@ -24,7 +24,7 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
   
   let drawPage, cutPastePage: SKNode
   let drawButtons, cutPasteButtons: [ToolButton]
-  var buttonInFocus: ToolButton
+  var buttonInFocus, lastDrawButton, lastCutPasteButton: ToolButton
   
   init(editModes: [EditMode]) {
     undoButton = SwipeThroughButton(iconOffNamed: "undoIconOff", iconOnNamed: "undoIconOn")
@@ -83,6 +83,9 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
       buttonInFocus = drawButtons[0]
     }
     buttonInFocus.isInFocus = true
+    
+    lastDrawButton = buttonInFocus
+    lastCutPasteButton = cutPasteButtons[0]
     
     super.init(pages: [drawPage, cutPastePage], texture: nil, color: nil, size: CGSizeZero)
     
@@ -170,6 +173,27 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
     redoButton.zRotation += CGFloat(2*M_PI)
     redoButton.runAction(SKAction.rotateToAngle(0, duration: 0.2), withKey: "rotate")
     delegate.refreshUndoRedoButtonStatus()
+  }
+  
+  override func snapToIndex(index: Int, initialVelocityX: CGFloat) {
+    super.snapToIndex(index, initialVelocityX: initialVelocityX)
+    if index == 0 {
+      if buttonInFocus != lastDrawButton {
+        buttonInFocus.isInFocus = false
+        lastCutPasteButton = buttonInFocus
+        buttonInFocus = lastDrawButton
+        buttonInFocus.isInFocus = true
+        delegate.changeEditMode(buttonInFocus.editMode)
+      }
+    } else if index == 1 {
+      if buttonInFocus != lastCutPasteButton {
+        buttonInFocus.isInFocus = false
+        lastDrawButton = buttonInFocus
+        buttonInFocus = lastCutPasteButton
+        buttonInFocus.isInFocus = true
+        delegate.changeEditMode(buttonInFocus.editMode)
+      }
+    }
   }
   
   // MARK: - ToolButtonDelegate Methods
