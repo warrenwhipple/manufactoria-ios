@@ -20,7 +20,7 @@ class Button: SKSpriteNode {
   init(iconOff: SKNode, iconOn: SKNode) {
     iconOn.zPosition = iconOff.zPosition + 1
     iconOn.alpha = 0
-    super.init(texture: nil, color: UIColor.lightGrayColor(), size: CGSize(48))
+    super.init(texture: nil, color: nil, size: CGSize(48))
     userInteractionEnabled = true
     addChild(iconOff)
     addChild(iconOn)

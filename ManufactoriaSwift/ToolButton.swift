@@ -131,24 +131,102 @@ class BeltBridgeButton: ToolButton {
 
 class PullerButton: ToolButton {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
+  var spinNode = SKNode()
   
   init(kind: EditMode) {
-    super.init()
-    editMode = kind
-    let pullerHalfLeft = SKSpriteNode("pullerHalf")
-    let pullerHalfRight = SKSpriteNode("pullerHalf")
-    addChild(pullerHalfLeft)
-    addChild(pullerHalfRight)
+    let leftIconOff = SKSpriteNode("pullerHalfOutline")
+    leftIconOff.anchorPoint.x = 1
+    let rightIconOff = SKSpriteNode("pullerHalfOutline")
+    rightIconOff.anchorPoint.x = 1
+    rightIconOff.zRotation = CGFloat(M_PI)
+    leftIconOff.addChild(rightIconOff)
+    let leftIconOn = SKSpriteNode("pullerHalf")
+    leftIconOn.anchorPoint.x = 1
+    let rightIconOn = SKSpriteNode("pullerHalf")
+    rightIconOn.anchorPoint.x = 1
+    rightIconOn.zRotation = CGFloat(M_PI)
+    leftIconOn.addChild(rightIconOn)
+    super.init(editMode: kind, iconOff: leftIconOff, iconOn: leftIconOn)
+    leftIconOff.removeFromParent()
+    leftIconOn.removeFromParent()
+    spinNode.addChild(leftIconOff)
+    spinNode.addChild(leftIconOn)
+    addChild(spinNode)
+    switch kind {
+    case .PullerBR, .PullerRB:
+      editMode = .PullerBR
+      leftIconOff.color = Globals.blueColor
+      rightIconOff.color = Globals.redColor
+    default:
+      editMode = .PullerGY
+      leftIconOff.color = Globals.greenColor
+      rightIconOff.color = Globals.yellowColor
+    }
+    leftIconOn.color = leftIconOff.color
+    rightIconOn.color = rightIconOff.color
+  }
+  
+  override func cycleEditMode() -> EditMode {
+    if editMode == EditMode.PullerBR || editMode == EditMode.PullerGY {
+      spinNode.runAction(SKAction.rotateToAngle(CGFloat(-M_PI), duration: 0.2).ease(), withKey: "rotate")
+    } else {
+      spinNode.zRotation += CGFloat(2 * M_PI)
+      spinNode.runAction(SKAction.rotateToAngle(0, duration: 0.2).ease(), withKey: "rotate")
+    }
+    switch editMode {
+    case .PullerBR: editMode = .PullerRB
+    case .PullerRB: editMode = .PullerBR
+    case .PullerGY: editMode = .PullerYG
+    default:        editMode = .PullerRB
+    }
+    return editMode
   }
 }
 
 class PusherButton: ToolButton {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
+  var editModes: [EditMode]
+  var editModeIndex = 0
+  let iconOff = SKSpriteNode("pusherOutline")
+  let iconOn = SKSpriteNode("pusher")
+  let newIconOn = SKSpriteNode("pusher")
   
   init(kinds: [EditMode]) {
-    super.init()
-    editMode = .PusherB
-    let pusher = SKSpriteNode("pusher")
-    addChild(pusher)
+    assert(!kinds.isEmpty, "PusherButton must init with at least one kind")
+    editModes = kinds
+    super.init(editMode: editModes[0], iconOff: iconOff, iconOn: iconOn)
+    newIconOn.setScale(0)
+    iconOn.addChild(newIconOn)
+    switch editMode {
+    case .PusherB: iconOff.color = Globals.blueColor
+    case .PusherR: iconOff.color = Globals.redColor
+    case .PusherG: iconOff.color = Globals.greenColor
+    default:       iconOff.color = Globals.yellowColor
+    }
+    iconOn.color = iconOff.color
   }
+  
+  override func cycleEditMode() -> EditMode {
+    if ++editModeIndex >= editModes.count {editModeIndex = 0}
+    editMode = editModes[editModeIndex]
+    var newColor: UIColor!
+    switch editMode {
+    case .PusherB: newColor = Globals.blueColor
+    case .PusherR: newColor = Globals.redColor
+    case .PusherG: newColor = Globals.greenColor
+    default:       newColor = Globals.yellowColor
+    }
+    newIconOn.setScale(0)
+    newIconOn.color = newColor
+    newIconOn.runAction(SKAction.sequence([
+      SKAction.scaleTo(1, duration: 0.2).easeOut(),
+      SKAction.runBlock({
+        [unowned self] in
+        self.iconOff.color = newColor
+        self.iconOn.color = newColor
+        self.newIconOn.setScale(0)
+      })]), withKey: "scale")
+    return editMode
+  }
+
 }
