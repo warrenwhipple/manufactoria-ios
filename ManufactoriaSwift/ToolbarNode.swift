@@ -216,4 +216,10 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
   func clearSelection() {
     delegate.clearSelection()
   }
+  
+  func selectBoxMoveButtonModeChanged() {
+    if buttonInFocus == selectBoxMoveButton {
+      delegate.changeEditMode(buttonInFocus.editMode)
+    }
+  }
 }

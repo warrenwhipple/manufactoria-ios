@@ -300,6 +300,7 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
   
   func gridWasSetDown() {
     toolbarNode.gridWasSetDown()
+    gridSelectionChanged()
   }
   
   func editCompleted() {
@@ -359,6 +360,8 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
   
   func clearSelection() {
     gridNode.clearSelection()
+    let selectBoxMoveButtonToolButton: ToolButton = toolbarNode.selectBoxMoveButton
+    selectBoxMoveButtonToolButton.editMode = .SelectBox
   }
     
   // MARK: - Touch Delegate Functions

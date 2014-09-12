@@ -11,6 +11,7 @@ import SpriteKit
 protocol ToolButtonDelegate: class {
   func toolButtonActivated(ToolButton)
   func clearSelection()
+  func selectBoxMoveButtonModeChanged()
 }
 
 class ToolButton: SwipeThroughButton {
@@ -21,8 +22,8 @@ class ToolButton: SwipeThroughButton {
   var indicator: SKNode?
   var multiIndicator: MultiIndicator?
   
-  override init() {
-    editMode = .Blank
+  init(editMode: EditMode) {
+    self.editMode = editMode
     super.init()
     touchUpInsideClosure = {[unowned self] in self.toolButtonDelegate.toolButtonActivated(self)}
     pressClosure = {[unowned self] in if !self.isInFocus {self.focusClosure?()}}
@@ -125,9 +126,8 @@ class BeltBridgeButton: ToolButton {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   let spinNode = SKNode()
   
-  override init() {
-    super.init()
-    editMode = .Belt
+  init() {
+    super.init(editMode: .Belt)
     let beltIconOff = SKSpriteNode("beltIconOff")
     let beltIconOn = SKSpriteNode("beltIconOn")
     beltIconOn.color = Globals.highlightColor
@@ -303,9 +303,8 @@ class SelectBoxMoveButton: ToolButton {
   let moveOverlay = SKSpriteNode("selectMoveIconOverlay")
   var multiIndicatorX: CGFloat = 0
   
-  override init() {
-    super.init()
-    editMode = .SelectBox
+  init() {
+    super.init(editMode: .SelectBox)
     
     let iconOff = SKSpriteNode("selectIconOff")
     addChild(iconOff)
@@ -343,19 +342,7 @@ class SelectBoxMoveButton: ToolButton {
       self.boxOverlay.runAction(strokeColorAction, withKey: "colorize")
       self.moveOverlay.runAction(strokeColorAction, withKey: "colorize")
     }
-    generateMultiIndicatorWithCount(2)
-    multiIndicator?.index = 1
-    multiIndicatorX = multiIndicator!.dots[1].position.x
-    multiIndicator?.dots[0].position.x = 0
-    multiIndicator?.dots[1].position.x = 0
-  }
-  
-  override func cycleEditMode() -> EditMode {
-    if editMode == .Move {
-      toolButtonDelegate.clearSelection()
-      editMode = .SelectBox
-    }
-    return editMode
+    generateSimpleIndicator()
   }
   
   override var editMode: EditMode {
@@ -364,14 +351,11 @@ class SelectBoxMoveButton: ToolButton {
       if editMode == .Move {
         boxOverlay.runAction(SKAction.scaleTo(0, duration: 0.2), withKey: "scale")
         moveOverlay.runAction(SKAction.scaleTo(1, duration: 0.2), withKey: "scale")
-        multiIndicator?.dots[0].runAction(SKAction.moveToX(-multiIndicatorX, duration: 0.2), withKey: "move")
-        multiIndicator?.dots[1].runAction(SKAction.moveToX(multiIndicatorX, duration: 0.2), withKey: "move")
       } else {
         boxOverlay.runAction(SKAction.scaleTo(1, duration: 0.2), withKey: "scale")
         moveOverlay.runAction(SKAction.scaleTo(0, duration: 0.2), withKey: "scale")
-        multiIndicator?.dots[0].runAction(SKAction.moveToX(0, duration: 0.2), withKey: "move")
-        multiIndicator?.dots[1].runAction(SKAction.moveToX(0, duration: 0.2), withKey: "move")
       }
+      toolButtonDelegate.selectBoxMoveButtonModeChanged()
     }
   }
 }
