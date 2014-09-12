@@ -10,6 +10,7 @@ import SpriteKit
 
 protocol ToolButtonDelegate: class {
   func toolButtonActivated(ToolButton)
+  func clearSelection()
 }
 
 class ToolButton: SwipeThroughButton {
@@ -294,5 +295,83 @@ class PusherButton: ToolButton {
     multiIndicator?.index = editModeIndex
     return editMode
   }
+}
 
+class SelectBoxMoveButton: ToolButton {
+  required init(coder: NSCoder) {fatalError("NSCoding not supported")}
+  let boxOverlay = SKSpriteNode("selectBoxIconOverlay")
+  let moveOverlay = SKSpriteNode("selectMoveIconOverlay")
+  var multiIndicatorX: CGFloat = 0
+  
+  override init() {
+    super.init()
+    editMode = .SelectBox
+    
+    let iconOff = SKSpriteNode("selectIconOff")
+    addChild(iconOff)
+    
+    let iconOn = SKSpriteNode("selectIconOn")
+    iconOn.color = Globals.highlightColor
+    iconOn.alpha = 0
+    iconOn.zPosition = 1
+    addChild(iconOn)
+    
+    boxOverlay.color = Globals.highlightColor
+    boxOverlay.zPosition = 2
+    addChild(boxOverlay)
+    
+    moveOverlay.color = Globals.highlightColor
+    moveOverlay.zPosition = 2
+    moveOverlay.setScale(0)
+    addChild(moveOverlay)
+    
+    let fadeOutAction = SKAction.fadeAlphaTo(0, duration: 0.2)
+    let fadeInAction = SKAction.fadeAlphaTo(1, duration: 0.2)
+    let strokeColorAction = SKAction.colorizeWithColor(Globals.strokeColor, colorBlendFactor: 1, duration: 0.2)
+    let backgroundColorAction = SKAction.colorizeWithColor(Globals.backgroundColor, colorBlendFactor: 1, duration: 0.2)
+    focusClosure = {
+      [unowned self] in
+      iconOff.runAction(fadeOutAction, withKey: "fade")
+      iconOn.runAction(fadeInAction, withKey: "fade")
+      self.boxOverlay.runAction(backgroundColorAction, withKey: "colorize")
+      self.moveOverlay.runAction(backgroundColorAction, withKey: "colorize")
+    }
+    unfocusClosure = {
+      [unowned self] in
+      iconOff.runAction(fadeInAction, withKey: "fade")
+      iconOn.runAction(fadeOutAction, withKey: "fade")
+      self.boxOverlay.runAction(strokeColorAction, withKey: "colorize")
+      self.moveOverlay.runAction(strokeColorAction, withKey: "colorize")
+    }
+    generateMultiIndicatorWithCount(2)
+    multiIndicator?.index = 1
+    multiIndicatorX = multiIndicator!.dots[1].position.x
+    multiIndicator?.dots[0].position.x = 0
+    multiIndicator?.dots[1].position.x = 0
+  }
+  
+  override func cycleEditMode() -> EditMode {
+    if editMode == .Move {
+      toolButtonDelegate.clearSelection()
+      editMode = .SelectBox
+    }
+    return editMode
+  }
+  
+  override var editMode: EditMode {
+    didSet {
+      if editMode == oldValue {return}
+      if editMode == .Move {
+        boxOverlay.runAction(SKAction.scaleTo(0, duration: 0.2), withKey: "scale")
+        moveOverlay.runAction(SKAction.scaleTo(1, duration: 0.2), withKey: "scale")
+        multiIndicator?.dots[0].runAction(SKAction.moveToX(-multiIndicatorX, duration: 0.2), withKey: "move")
+        multiIndicator?.dots[1].runAction(SKAction.moveToX(multiIndicatorX, duration: 0.2), withKey: "move")
+      } else {
+        boxOverlay.runAction(SKAction.scaleTo(1, duration: 0.2), withKey: "scale")
+        moveOverlay.runAction(SKAction.scaleTo(0, duration: 0.2), withKey: "scale")
+        multiIndicator?.dots[0].runAction(SKAction.moveToX(0, duration: 0.2), withKey: "move")
+        multiIndicator?.dots[1].runAction(SKAction.moveToX(0, duration: 0.2), withKey: "move")
+      }
+    }
+  }
 }

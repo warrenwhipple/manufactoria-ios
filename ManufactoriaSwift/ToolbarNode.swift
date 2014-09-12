@@ -13,6 +13,7 @@ protocol ToolbarNodeDelegate: class {
   func undoEdit()
   func redoEdit()
   func refreshUndoRedoButtonStatus()
+  func clearSelection()
 }
 
 class ToolbarNode: SwipeNode, ToolButtonDelegate {
@@ -23,6 +24,7 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
   let redoIconOff, redoIconOn, confirmIconOff, confirmIconOn: SKSpriteNode
   
   let drawPage, cutPastePage: SKNode
+  let selectBoxMoveButton = SelectBoxMoveButton()
   let drawButtons, cutPasteButtons: [ToolButton]
   var buttonInFocus, lastDrawButton, lastCutPasteButton: ToolButton
   
@@ -72,8 +74,9 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
     for button in drawButtons {drawPage.addChild(button)}
     
     cutPasteButtons = [
-      ToolButton(editMode: .SelectBox, iconOffNamed: "selectMoveIconOff", iconOnNamed: "selectMoveIconOn"),
-      ToolButton(editMode: .Move, iconOffNamed: "selectMoveIconOff", iconOnNamed: "selectMoveIconOn"),
+      //ToolButton(editMode: .SelectBox, iconOffNamed: "selectBoxIconOff", iconOnNamed: "selectBoxIconOn"),
+      //ToolButton(editMode: .Move, iconOffNamed: "selectMoveIconOff", iconOnNamed: "selectMoveIconOn"),
+      selectBoxMoveButton,
       ToolButton(editMode: .SelectCell, iconOffNamed: "selectCellIconOff", iconOnNamed: "selectCellIconOn")
     ]
     for button in cutPasteButtons {cutPastePage.addChild(button)}
@@ -208,5 +211,9 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
       buttonInFocus = button
       delegate.changeEditMode(button.editMode)
     }
+  }
+  
+  func clearSelection() {
+    delegate.clearSelection()
   }
 }

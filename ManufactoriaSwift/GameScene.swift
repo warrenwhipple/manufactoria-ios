@@ -308,6 +308,18 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
     }
   }
   
+  func gridSelectionChanged() {
+    // ambiguity bug workaround
+    let selectBoxMoveButtonToolButton: ToolButton = toolbarNode.selectBoxMoveButton
+    for cellNode in gridNode.cellNodes {
+      if cellNode.isSelected {
+        selectBoxMoveButtonToolButton.editMode = .Move
+        return
+      }
+    }
+    selectBoxMoveButtonToolButton.editMode = .SelectBox
+  }
+  
   // MARK: - ToolbarNodeDelegate Functions
   
   func changeEditMode(editMode: EditMode) {
@@ -343,6 +355,10 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
   func refreshUndoRedoButtonStatus() {
     toolbarNode.undoButton.userInteractionEnabled = !levelData.undoStrings.isEmpty
     toolbarNode.redoButton.userInteractionEnabled = !levelData.redoStrings.isEmpty
+  }
+  
+  func clearSelection() {
+    gridNode.clearSelection()
   }
     
   // MARK: - Touch Delegate Functions

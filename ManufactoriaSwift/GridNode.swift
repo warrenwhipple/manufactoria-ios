@@ -32,6 +32,7 @@ protocol GridNodeDelegate: class {
   func editCompleted()
   func gridWasLifted()
   func gridWasSetDown()
+  func gridSelectionChanged()
 }
 
 class GridNode: SKNode {
@@ -460,6 +461,7 @@ class GridNode: SKNode {
         i++
       }
       editTouch = nil
+      delegate.gridSelectionChanged()
       return
     }
     
