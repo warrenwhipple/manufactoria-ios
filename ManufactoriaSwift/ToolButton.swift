@@ -17,6 +17,8 @@ class ToolButton: SwipeThroughButton {
   weak var toolButtonDelegate: ToolButtonDelegate!
   var editMode: EditMode
   var focusClosure, unfocusClosure: (()->())?
+  var indicator: SKNode?
+  var multiIndicator: MultiIndicator?
   
   override init() {
     editMode = .Blank
@@ -53,11 +55,14 @@ class ToolButton: SwipeThroughButton {
     let iconOn = SKSpriteNode(iconOnNamed)
     iconOn.color = Globals.highlightColor
     self.init(editMode: editMode, iconOff: iconOff, iconOn: iconOn)
+    generateSimpleIndicator()
   }
 
   var isInFocus: Bool = false {
     didSet {
       if isInFocus == oldValue {return}
+      if isInFocus {indicator?.runAction(SKAction.scaleTo(1, duration: 0.2))}
+      else {indicator?.runAction(SKAction.scaleTo(0, duration: 0.2))}
       if touch != nil {return}
       if isInFocus {focusClosure?()}
       else {unfocusClosure?()}
@@ -68,15 +73,58 @@ class ToolButton: SwipeThroughButton {
     return editMode
   }
   
+  func generateSimpleIndicator() {
+    let indicatorSprite = SKSpriteNode("indicator")
+    indicatorSprite.color = Globals.highlightColor
+    indicatorSprite.position.y = -0.75 * Globals.iconRoughSize.height
+    indicatorSprite.setScale(0)
+    addChild(indicatorSprite)
+    indicator = indicatorSprite
+  }
+  
+  func generateMultiIndicatorWithCount(count: Int) {
+    multiIndicator = MultiIndicator(count: count)
+    multiIndicator!.position.y = -0.75 * Globals.iconRoughSize.height
+    multiIndicator!.setScale(0)
+    addChild(multiIndicator!)
+    indicator = multiIndicator!
+  }
+  
+  class MultiIndicator: SKNode {
+    required init(coder: NSCoder) {fatalError("NSCoding not supported")}
+    let dots: [SKSpriteNode] = []
+    init(count: Int) {
+      assert(count >= 2, "MultiIndicator must init with a count >= 2")
+      super.init()
+      let dotTexture = SKTexture(imageNamed: "indicator")
+      let spacing = 2 * dotTexture.size().width
+      let offset = -0.5 * CGFloat(count - 1) * spacing
+      for i in 0 ..< count {
+        let dot = SKSpriteNode(texture: dotTexture)
+        dot.colorBlendFactor = 1
+        dot.color = Globals.highlightColor
+        if i > 0 {dot.alpha = 0.2}
+        dot.position.x = offset + CGFloat(i) * spacing
+        addChild(dot)
+        dots.append(dot)
+      }
+    }
+    var index: Int = 0 {
+      didSet {
+        assert(index <= dots.count, "Index out of range")
+        if index == oldValue {return}
+        dots[oldValue].runAction(SKAction.fadeAlphaTo(0.2, duration: 0.2))
+        dots[index].runAction(SKAction.fadeAlphaTo(1, duration: 0.2))
+      }
+    }
+  }
 }
-
 
 class BeltBridgeButton: ToolButton {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  let bridgeSpinNode: SKNode
+  let spinNode = SKNode()
   
   override init() {
-    bridgeSpinNode = SKNode()
     super.init()
     editMode = .Belt
     let beltIconOff = SKSpriteNode("beltIconOff")
@@ -91,11 +139,11 @@ class BeltBridgeButton: ToolButton {
     bridgeIconOn.color = Globals.highlightColor
     bridgeIconOn.zPosition = 1
     bridgeIconOn.alpha = 0
-    bridgeSpinNode.zPosition = 2
-    bridgeSpinNode.alpha = 0
-    bridgeSpinNode.addChild(bridgeIconOff)
-    bridgeSpinNode.addChild(bridgeIconOn)
-    addChild(bridgeSpinNode)
+    spinNode.zPosition = 2
+    spinNode.alpha = 0
+    spinNode.addChild(bridgeIconOff)
+    spinNode.addChild(bridgeIconOn)
+    addChild(spinNode)
     let fadeOutAction = SKAction.fadeAlphaTo(0, duration: 0.2)
     let fadeInAction = SKAction.fadeAlphaTo(1, duration: 0.2)
     focusClosure = {
@@ -110,19 +158,22 @@ class BeltBridgeButton: ToolButton {
       bridgeIconOff.runAction(fadeInAction, withKey: "fade")
       bridgeIconOn.runAction(fadeOutAction, withKey: "fade")
     }
+    generateMultiIndicatorWithCount(2)
   }
   
   override func cycleEditMode() -> EditMode {
     if editMode == EditMode.Belt {
-      bridgeSpinNode.alpha = 1
-      bridgeSpinNode.runAction(SKAction.rotateToAngle(CGFloat(-M_PI_2), duration: 0.2).ease(), withKey: "rotate")
+      spinNode.alpha = 1
+      spinNode.runAction(SKAction.rotateToAngle(CGFloat(-M_PI_2), duration: 0.2).ease(), withKey: "rotate")
+      multiIndicator?.index = 1
       editMode = .Bridge
       return .Bridge
     } else {
-      bridgeSpinNode.runAction(SKAction.sequence([
+      spinNode.runAction(SKAction.sequence([
         SKAction.rotateToAngle(0, duration: 0.2).ease(),
         SKAction.fadeAlphaTo(0, duration: 0)
         ]), withKey: "rotate")
+      multiIndicator?.index = 0
       editMode = .Belt
       return .Belt
     }
@@ -164,14 +215,17 @@ class PullerButton: ToolButton {
     }
     leftIconOn.color = leftIconOff.color
     rightIconOn.color = rightIconOff.color
+    generateMultiIndicatorWithCount(2)
   }
   
   override func cycleEditMode() -> EditMode {
     if editMode == EditMode.PullerBR || editMode == EditMode.PullerGY {
       spinNode.runAction(SKAction.rotateToAngle(CGFloat(-M_PI), duration: 0.2).ease(), withKey: "rotate")
+      multiIndicator?.index = 1
     } else {
       spinNode.zRotation += CGFloat(2 * M_PI)
       spinNode.runAction(SKAction.rotateToAngle(0, duration: 0.2).ease(), withKey: "rotate")
+      multiIndicator?.index = 0
     }
     switch editMode {
     case .PullerBR: editMode = .PullerRB
@@ -204,6 +258,17 @@ class PusherButton: ToolButton {
     default:       iconOff.color = Globals.yellowColor
     }
     iconOn.color = iconOff.color
+    generateMultiIndicatorWithCount(editModes.count)
+    var i = 0
+    for editMode in editModes {
+      switch editMode {
+      case .PusherB: multiIndicator?.dots[i].color = Globals.blueColor
+      case .PusherR: multiIndicator?.dots[i].color = Globals.redColor
+      case .PusherG: multiIndicator?.dots[i].color = Globals.greenColor
+      default:       multiIndicator?.dots[i].color = Globals.yellowColor
+      }
+      i++
+    }
   }
   
   override func cycleEditMode() -> EditMode {
@@ -226,6 +291,7 @@ class PusherButton: ToolButton {
         self.iconOn.color = newColor
         self.newIconOn.setScale(0)
       })]), withKey: "scale")
+    multiIndicator?.index = editModeIndex
     return editMode
   }
 
