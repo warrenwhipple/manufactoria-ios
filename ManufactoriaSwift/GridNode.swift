@@ -9,7 +9,7 @@
 import SpriteKit
 
 enum EditMode {
-  case Blank, Belt, Bridge, PusherB, PusherR, PusherG, PusherY, PullerBR, PullerRB, PullerGY, PullerYG, SelectCell, Move
+  case Blank, Belt, Bridge, PusherB, PusherR, PusherG, PusherY, PullerBR, PullerRB, PullerGY, PullerYG, SelectCell, Move, SelectBox
   func cellKind() -> CellKind? {
     switch self {
     case .Blank: return .Blank
@@ -49,6 +49,7 @@ class GridNode: SKNode {
   var editTouch: UITouch?
   var editCoord = GridCoord(0, 0)
   var selectShouldUnselect = false
+  var selectBoxStartCoord = GridCoord(0, 0)
   var bridgeEditMemory: Cell? = nil
   var moveTouchOffset: CGPoint = CGPointZero
   
@@ -273,6 +274,14 @@ class GridNode: SKNode {
     
     editCoord = coordForTouch(editTouch!)
     
+    if editMode == .SelectBox {
+      selectBoxStartCoord = editCoord
+      if grid.space.contains(editCoord) {
+        self[editCoord].isSelected = true
+      }
+      return
+    }
+    
     if editMode == .SelectCell {
       if grid.space.contains(editCoord) {
         selectShouldUnselect = self[editCoord].isSelected
@@ -316,6 +325,23 @@ class GridNode: SKNode {
     
     let touchCoord = coordForTouch(editTouch!)
     if touchCoord == editCoord {return}
+    
+    if editMode == .SelectBox {
+      let left = min(selectBoxStartCoord.i, touchCoord.i)
+      let right = max(selectBoxStartCoord.i, touchCoord.i)
+      let bottom = min(selectBoxStartCoord.j, touchCoord.j)
+      let top = max(selectBoxStartCoord.j, touchCoord.j)
+      for j in 0 ..< grid.space.rows {
+        for i in 0 ..< grid.space.columns {
+          if i >= left && i <= right && j >= bottom && j <= top {
+            self[GridCoord(i,j)].isSelected = true
+          } else {
+            self[GridCoord(i,j)].isSelected = false
+          }
+        }
+      }
+      return
+    }
     
     if editMode == .SelectCell {
       if grid.space.contains(touchCoord) {
@@ -425,7 +451,7 @@ class GridNode: SKNode {
       return
     }
     
-    if editMode == .SelectCell {
+    if editMode == .SelectBox || editMode == .SelectCell {
       var i = 0
       for cellNode in cellNodes {
         if cellNode.isSelected && grid.cells[i].kind == .Blank {

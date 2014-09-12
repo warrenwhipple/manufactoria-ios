@@ -72,6 +72,7 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
     for button in drawButtons {drawPage.addChild(button)}
     
     cutPasteButtons = [
+      ToolButton(editMode: .SelectBox, iconOffNamed: "selectMoveIconOff", iconOnNamed: "selectMoveIconOn"),
       ToolButton(editMode: .Move, iconOffNamed: "selectMoveIconOff", iconOnNamed: "selectMoveIconOn"),
       ToolButton(editMode: .SelectCell, iconOffNamed: "selectCellIconOff", iconOnNamed: "selectCellIconOn")
     ]
