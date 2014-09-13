@@ -321,6 +321,11 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
     selectBoxMoveButtonToolButton.editMode = .SelectBox
   }
   
+  func gridSelectionDidClear() {
+    let selectBoxMoveButtonToolButton: ToolButton = toolbarNode.selectBoxMoveButton
+    selectBoxMoveButtonToolButton.editMode = .SelectBox
+  }
+  
   // MARK: - ToolbarNodeDelegate Functions
   
   func changeEditMode(editMode: EditMode) {

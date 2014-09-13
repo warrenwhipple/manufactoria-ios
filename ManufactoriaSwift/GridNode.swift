@@ -33,6 +33,7 @@ protocol GridNodeDelegate: class {
   func gridWasLifted()
   func gridWasSetDown()
   func gridSelectionChanged()
+  func gridSelectionDidClear()
 }
 
 class GridNode: SKNode {
@@ -142,6 +143,7 @@ class GridNode: SKNode {
     didSet {
       if editMode == oldValue {return}
       stopCurrentEdit()
+      if editMode != .Move && liftedGridNode != nil {cancelGridLift()}
       switch editMode {
       case .SelectCell, .Move: break
       default: clearSelection()
@@ -222,6 +224,7 @@ class GridNode: SKNode {
     for cellNode in cellNodes {
       cellNode.isSelected = false
     }
+    delegate.gridSelectionDidClear()
   }
   
   func gridChanged() {
