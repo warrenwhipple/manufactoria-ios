@@ -53,7 +53,8 @@ class GridNode: SKNode {
   var selectShouldUnselect = false
   var selectBoxStartCoord = GridCoord(0, 0)
   var bridgeEditMemory: Cell? = nil
-  var moveTouchOffset: CGPoint = CGPointZero
+  var moveTouchOffset = CGPointZero
+  var moveTouchBeganTimeStamp: NSTimeInterval = 0
   
   subscript(coord: GridCoord) -> CellNode {
     get {
@@ -295,6 +296,7 @@ class GridNode: SKNode {
       if liftedGridNode != nil {
         liftedGridNode?.removeActionForKey("snap")
         moveTouchOffset = liftedGridNode!.position - editTouch!.locationInNode(wrapper)
+        moveTouchBeganTimeStamp = editTouch!.timestamp
       }
       return
     }
@@ -473,7 +475,15 @@ class GridNode: SKNode {
     if !touches.containsObject(editTouch!) {return}
     
     if editMode == .Move {
-      liftedGridNode?.runAction(SKAction.moveTo(CGPoint(round(liftedGridNode!.position.x), round(liftedGridNode!.position.y)), duration: 0.2).easeOut(), withKey: "move")
+      if editTouch!.timestamp - moveTouchBeganTimeStamp < 0.5 {
+        let touchPoint = editTouch!.locationInNode(wrapper)
+        if touchPoint.x > 0 && touchPoint.y > 0 && touchPoint.x < CGFloat(grid.space.columns) && touchPoint.y < CGFloat(grid.space.rows) {
+          liftedGridNode?.rotateCWAroundTouch(editTouch!)
+          editTouch = nil
+          return
+        }
+      }
+      liftedGridNode?.snapToNearestCoord()
       editTouch = nil
       return
     }

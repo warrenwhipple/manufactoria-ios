@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Warren Whipple. All rights reserved.
 //
 
-import Foundation
+import SpriteKit
 
 struct GridCoord: Equatable {
   var i = 0
@@ -15,6 +15,8 @@ struct GridCoord: Equatable {
     self.i = i
     self.j = j
   }
+  var point: CGPoint {return CGPoint(x: CGFloat(i), y: CGFloat(j))}
+  var centerPoint: CGPoint {return CGPoint(x: CGFloat(i) + 0.5, y: CGFloat(j) + 0.5)}
 }
 func == (left: GridCoord, right: GridCoord) -> Bool {return left.i == right.i && left.j == right.j}
 func + (left: GridCoord, right: GridCoord) -> GridCoord {return GridCoord(left.i + right.i, left.j + right.j)}

@@ -14,6 +14,9 @@ class LiftedGridNode: SKNode {
   let grid: Grid
   let nodes: [SKNode]
   let beltSprites: [SKSpriteNode]
+  let wrapper = SKSpriteNode()
+  let wrapperWrapper = SKSpriteNode()
+  var direction = Direction.North
   
   init(grid: Grid) {
     self.grid = grid
@@ -83,6 +86,7 @@ class LiftedGridNode: SKNode {
           case .West: node.zRotation = CGFloat(M_PI_2)
           case .South: node.zRotation = CGFloat(M_PI)
           }
+          wrapper.addChild(node)
         }
       }
     }
@@ -90,10 +94,68 @@ class LiftedGridNode: SKNode {
     beltSprites = tempBeltSprites
     super.init()
     self.zPosition = 5
-    for node in nodes {self.addChild(node)}
+    wrapperWrapper.addChild(wrapper)
+    addChild(wrapperWrapper)
+  }
+  
+  func nearestCoord() -> GridCoord {
+    let wrapperPoint = convertPoint(wrapper.position, fromNode: wrapper)
+    return GridCoord(Int(round(wrapperPoint.x)), Int(round(wrapperPoint.y)))
   }
   
   func updateWithClippedBeltTexture(clippedBeltTexture: SKTexture) {
     for beltSprite in beltSprites {beltSprite.texture = clippedBeltTexture}
+  }
+  
+  func snapToNearestCoord() {
+    runAction(SKAction.moveTo(CGPoint(round(position.x), round(position.y)), duration: 0.2).easeOut(), withKey: "move")
+  }
+  
+  func rotateCWAroundTouch(touch: UITouch) {
+    zeroWrapperPositions()
+    let touchPoint = touch.locationInNode(self)
+    let rotationPoint = convertPoint(touchPoint, fromNode: wrapperWrapper)
+    
+    println()
+    print("start origin:    ")
+    println(position)
+    print("touch point:     ")
+    println(touchPoint)
+    print("rotation point:  ")
+    println(rotationPoint)
+    
+    wrapperWrapper.position = rotationPoint
+    wrapper.position = rotationPoint.mirror
+    var newAngle: CGFloat = 0
+    switch direction {
+    case .North:
+      newAngle = CGFloat(-M_PI_4)
+      direction = .East
+    case .East:
+      newAngle = CGFloat(-M_PI)
+      direction = .South
+    case .South:
+      newAngle = CGFloat(-1.5 * M_PI)
+      direction = .West
+    case .West:
+      wrapperWrapper.zRotation += CGFloat(2 * M_PI)
+      direction = .North
+    }
+    wrapperWrapper.runAction(SKAction.sequence([
+      SKAction.rotateToAngle(newAngle, duration: 1).easeOut(),
+      SKAction.runBlock({
+        [unowned self] in
+        self.zeroWrapperPositions()
+        print("end origin:      ")
+        println(self.position)
+      })
+      ]), withKey: "rotate")
+  }
+  
+  func zeroWrapperPositions() {
+    let wrapperPoint = position + convertPoint(wrapper.position, fromNode: wrapperWrapper)
+    position = wrapperPoint
+    wrapperWrapper.position = CGPointZero
+    wrapper.position = CGPointZero
   }
 }

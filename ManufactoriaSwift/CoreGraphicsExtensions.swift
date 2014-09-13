@@ -45,6 +45,7 @@ extension CGPoint {
     self.x = x
     self.y = y
   }
+  var mirror: CGPoint {return CGPoint(x: -x, y: -y)}
 }
 
 extension CGRect {
