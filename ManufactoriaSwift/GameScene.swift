@@ -300,7 +300,7 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
   
   func gridWasSetDown() {
     toolbarNode.gridWasSetDown()
-    gridSelectionChanged()
+    gridNode.gridSelectionChanged()
   }
   
   func editCompleted() {
@@ -309,19 +309,12 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
     }
   }
   
-  func gridSelectionChanged() {
-    // ambiguity bug workaround
+  func gridWasSelected() {
     let selectBoxMoveButtonToolButton: ToolButton = toolbarNode.selectBoxMoveButton
-    for cellNode in gridNode.cellNodes {
-      if cellNode.isSelected {
-        selectBoxMoveButtonToolButton.editMode = .Move
-        return
-      }
-    }
-    selectBoxMoveButtonToolButton.editMode = .SelectBox
+    selectBoxMoveButtonToolButton.editMode = .Move
   }
   
-  func gridSelectionDidClear() {
+  func gridWasUnselected() {
     let selectBoxMoveButtonToolButton: ToolButton = toolbarNode.selectBoxMoveButton
     selectBoxMoveButtonToolButton.editMode = .SelectBox
   }

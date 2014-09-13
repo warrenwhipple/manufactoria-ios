@@ -32,8 +32,8 @@ protocol GridNodeDelegate: class {
   func editCompleted()
   func gridWasLifted()
   func gridWasSetDown()
-  func gridSelectionChanged()
-  func gridSelectionDidClear()
+  func gridWasSelected()
+  func gridWasUnselected()
 }
 
 class GridNode: SKNode {
@@ -224,7 +224,7 @@ class GridNode: SKNode {
     for cellNode in cellNodes {
       cellNode.isSelected = false
     }
-    delegate.gridSelectionDidClear()
+    gridIsSelected = false
   }
   
   func gridChanged() {
@@ -232,6 +232,29 @@ class GridNode: SKNode {
     for cell in grid.cells {
       cellNodes[i++].nextCell = cell
     }
+  }
+  
+  var gridIsSelected: Bool = false {
+    didSet {
+      if gridIsSelected == oldValue {return}
+      if gridIsSelected {
+        delegate.gridWasSelected()
+      } else {
+        delegate.gridWasUnselected()
+      }
+    }
+  }
+  
+  func gridSelectionChanged() {
+    for j in 0 ..< grid.space.rows {
+      for i in 0 ..< grid.space.columns {
+        if self[GridCoord(i, j)].isSelected {
+          gridIsSelected = true
+          return
+        }
+      }
+    }
+    gridIsSelected = false
   }
   
   func coordForTouch(touch: UITouch) -> GridCoord {
@@ -464,7 +487,7 @@ class GridNode: SKNode {
         i++
       }
       editTouch = nil
-      delegate.gridSelectionChanged()
+      gridSelectionChanged()
       return
     }
     
