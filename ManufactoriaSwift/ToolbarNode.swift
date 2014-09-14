@@ -21,7 +21,7 @@ protocol ToolbarNodeDelegate: class {
 
 class ToolbarNode: SwipeNode, ToolButtonDelegate {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  enum State {case Drawing, Selecting}
+  enum State {case Drawing, Selecting, Disabled}
   
   weak var delegate: ToolbarNodeDelegate!
   let drawPage = SKNode()
@@ -147,8 +147,47 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
   var state: State = .Drawing {
     didSet {
       if state == oldValue {return}
-      // TODO: write
-      println("toolbarNode.state changed")
+      switch state {
+      case .Drawing:
+        undoDrawButton.userInteractionEnabled = !undoQueueIsEmpty
+        redoDrawButton.userInteractionEnabled = !redoQueueIsEmpty
+        undoSelectionButton.userInteractionEnabled = !undoQueueIsEmpty
+        redoSelectionButton.userInteractionEnabled = !redoQueueIsEmpty
+        cancelButton.userInteractionEnabled = false
+        confirmButton.userInteractionEnabled = false
+        undoSelectionButton.setScale(1)
+        redoSelectionButton.setScale(1)
+        cancelButton.setScale(0)
+        confirmButton.setScale(0)
+        flipXButton.userInteractionEnabled = false
+        flipYButton.userInteractionEnabled = false
+        for button in drawToolButtons + selectionToolButtons {
+          button.userInteractionEnabled = true
+        }
+      case .Selecting:
+        undoDrawButton.userInteractionEnabled = !undoQueueIsEmpty
+        redoDrawButton.userInteractionEnabled = !redoQueueIsEmpty
+        undoSelectionButton.userInteractionEnabled = false
+        redoSelectionButton.userInteractionEnabled = false
+        cancelButton.userInteractionEnabled = true
+        confirmButton.userInteractionEnabled = true
+        undoSelectionButton.setScale(0)
+        redoSelectionButton.setScale(0)
+        cancelButton.setScale(1)
+        confirmButton.setScale(1)
+        flipXButton.userInteractionEnabled = true
+        flipYButton.userInteractionEnabled = true
+        for button in drawToolButtons + selectionToolButtons {
+          button.userInteractionEnabled = true
+        }
+      case .Disabled:
+        for button in drawQuickButtons + selectionQuickButtons {
+          button.userInteractionEnabled = false
+        }
+        for button in drawToolButtons + selectionToolButtons {
+          button.userInteractionEnabled = false
+        }
+      }
     }
   }
   
