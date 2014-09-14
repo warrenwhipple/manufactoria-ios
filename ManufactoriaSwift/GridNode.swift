@@ -276,6 +276,7 @@ class GridNode: SKNode {
           liftedGridNode = LiftedGridNode(grid: liftedGrid)
           liftedGridOrigin = GridCoord(0, 0)
           wrapper.addChild(liftedGridNode!)
+          delegate.gridWasEdited()
         }
       }
       if liftedGridNode != nil {
