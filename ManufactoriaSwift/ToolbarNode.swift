@@ -164,6 +164,11 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
         for button in drawToolButtons + selectionToolButtons {
           button.userInteractionEnabled = true
         }
+        if buttonInFocus == selectBoxMoveButton {
+          // ambiguity bug workaround
+          (selectBoxMoveButton as ToolButton).editMode = .SelectBox
+          delegate.changeEditMode(.SelectBox)
+        }
       case .Selecting:
         undoDrawButton.userInteractionEnabled = !undoQueueIsEmpty
         redoDrawButton.userInteractionEnabled = !redoQueueIsEmpty
@@ -179,6 +184,11 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
         flipYButton.userInteractionEnabled = true
         for button in drawToolButtons + selectionToolButtons {
           button.userInteractionEnabled = true
+        }
+        if buttonInFocus == selectBoxMoveButton {
+          // ambiguity bug workaround
+          (selectBoxMoveButton as ToolButton).editMode = .Move
+          delegate.changeEditMode(.Move)
         }
       case .Disabled:
         for button in drawQuickButtons + selectionQuickButtons {
@@ -243,12 +253,5 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
   
   func clearSelection() {
     delegate.cancelSelection()
-  }
-  
-  // TODO: move this function into state.didSet
-  func selectBoxMoveButtonModeChanged() {
-    if buttonInFocus == selectBoxMoveButton {
-      delegate.changeEditMode(buttonInFocus.editMode)
-    }
   }
 }

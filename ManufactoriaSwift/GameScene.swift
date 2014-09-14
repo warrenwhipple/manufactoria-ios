@@ -292,15 +292,6 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
   
   // MARK: - GridNodeDelegate Functions
   
-  func gridWasLifted() {
-    toolbarNode.state = .Selecting
-  }
-  
-  func gridWasSetDown() {
-    toolbarNode.state = .Drawing
-    gridNode.gridSelectionChanged()
-  }
-  
   func editCompleted() {
     if levelData.editCompleted() {
       refreshUndoRedoButtonStatus()
@@ -308,13 +299,11 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
   }
   
   func gridWasSelected() {
-    let selectBoxMoveButtonToolButton: ToolButton = toolbarNode.selectBoxMoveButton
-    selectBoxMoveButtonToolButton.editMode = .Move
+    toolbarNode.state = .Selecting
   }
   
   func gridWasUnselected() {
-    let selectBoxMoveButtonToolButton: ToolButton = toolbarNode.selectBoxMoveButton
-    selectBoxMoveButtonToolButton.editMode = .SelectBox
+    toolbarNode.state = .Drawing
   }
   
   // MARK: - ToolbarNodeDelegate Functions
@@ -324,40 +313,29 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
   }
   
   func undoEdit() {
-    if gridNode.liftedGridNode == nil {
-      gridNode.stopCurrentEdit()
-      gridNode.clearSelection()
-      if levelData.undo() {
-        gridNode.gridChanged()
-        refreshUndoRedoButtonStatus()
-      }
-    } else {
-      gridNode.cancelGridLift()
+    gridNode.editTouch = nil
+    if levelData.undo() {
+      gridNode.gridChanged()
+      refreshUndoRedoButtonStatus()
     }
   }
   
   func redoEdit() {
-    // TODO: move confirm function action to confirmSelection() function
-    if gridNode.liftedGridNode == nil {
-      gridNode.stopCurrentEdit()
-      gridNode.clearSelection()
-      if levelData.redo() {
-        gridNode.gridChanged()
-        refreshUndoRedoButtonStatus()
-      }
-    } else {
-      gridNode.setDownGrid()
+    gridNode.editTouch = nil
+    if levelData.redo() {
+      gridNode.gridChanged()
+      refreshUndoRedoButtonStatus()
     }
   }
   
   func cancelSelection() {
-    // TODO: finish
-    println("gameScene.cancelSelection()")
+    gridNode.cancelSelection()
+    toolbarNode.state = .Drawing
   }
   
   func confirmSelection() {
-    // TODO: finish
-    println("gameScene.confirmSelection()")
+    gridNode.setDownGrid()
+    toolbarNode.state = .Drawing
   }
   
   func flipXSelection() {
@@ -375,13 +353,6 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
     toolbarNode.redoQueueIsEmpty = levelData.redoStrings.isEmpty
   }
   
-  func clearSelection() {
-    // TODO: remove this in favor of cancelSelection() function
-    gridNode.clearSelection()
-    let selectBoxMoveButtonToolButton: ToolButton = toolbarNode.selectBoxMoveButton
-    selectBoxMoveButtonToolButton.editMode = .SelectBox
-  }
-    
   // MARK: - Touch Delegate Functions
   
   override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {

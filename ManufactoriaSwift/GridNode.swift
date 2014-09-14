@@ -30,8 +30,7 @@ enum EditMode {
 
 protocol GridNodeDelegate: class {
   func editCompleted()
-  func gridWasLifted()
-  func gridWasSetDown()
+  func undoEdit()
   func gridWasSelected()
   func gridWasUnselected()
 }
@@ -53,6 +52,7 @@ class GridNode: SKNode {
   var selectShouldUnselect = false
   var selectBoxStartCoord = GridCoord(0, 0)
   var bridgeEditMemory: Cell? = nil
+  var liftedGridNode: LiftedGridNode?
   var moveTouchOffset = CGPointZero
   var moveTouchBeganTimeStamp: NSTimeInterval = 0
   var moveTouchBeganPoint = CGPointZero
@@ -144,23 +144,10 @@ class GridNode: SKNode {
   var editMode: EditMode = .Belt {
     didSet {
       if editMode == oldValue {return}
-      stopCurrentEdit()
-      if editMode != .Move && liftedGridNode != nil {cancelGridLift()}
-      switch editMode {
-      case .SelectCell, .Move: break
-      default: clearSelection()
-      }
-    }
-  }
-  
-  var liftedGridNode: LiftedGridNode? {
-    didSet {
-      if liftedGridNode == oldValue {return}
-      if liftedGridNode == nil {
-        delegate.gridWasSetDown()
-      } else {
-        delegate.gridWasLifted()
-      }
+      editTouch = nil
+      if editMode == .Move {return}
+      if editMode == .SelectCell && liftedGridNode == nil {return}
+      cancelSelection()
     }
   }
   
@@ -198,46 +185,22 @@ class GridNode: SKNode {
     }
     liftedGridNode?.removeFromParent()
     liftedGridNode = nil
-    delegate.editCompleted()
   }
   
   var liftedGridOrigin: GridCoord?
   
-  func cancelGridLift() {
-    if liftedGridNode == nil {return}
-    if liftedGridOrigin == nil {
+  func cancelSelection() {
+    if liftedGridNode == nil {
+      for cellNode in cellNodes {
+        cellNode.isSelected = false
+      }
+    } else if liftedGridOrigin == nil {
       liftedGridNode?.runAction(SKAction.sequence([SKAction.fadeAlphaTo(0, duration: 0.2), SKAction.removeFromParent()]))
       liftedGridNode = nil
     } else {
-      let liftedGrid = liftedGridNode!.grid
-      for i in 0 ..< grid.space.columns {
-        for j in 0 ..< grid.space.rows {
-          let cellCoord = GridCoord(i, j)
-          let liftedCellCoord = cellCoord - liftedGridOrigin!
-          if liftedGrid.space.contains(liftedCellCoord) {
-            let liftedCell = liftedGrid[liftedCellCoord]
-            if liftedCell.kind != .Blank {
-              grid[cellCoord] = liftedCell
-              let cellNode = self[cellCoord]
-              cellNode.applyCell(liftedCell)
-              cellNode.glowNode.alpha = 0.5
-              cellNode.isSelected = true
-            }
-          }
-        }
-      }
-      liftedGridNode?.removeFromParent()
+      liftedGridNode?.runAction(SKAction.sequence([SKAction.fadeAlphaTo(0, duration: 0.2), SKAction.removeFromParent()]))
       liftedGridNode = nil
-    }
-  }
-  
-  func stopCurrentEdit() {
-    editTouch = nil
-  }
-  
-  func clearSelection() {
-    for cellNode in cellNodes {
-      cellNode.isSelected = false
+      delegate.undoEdit()
     }
     gridIsSelected = false
   }

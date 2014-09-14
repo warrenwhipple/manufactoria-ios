@@ -10,8 +10,6 @@ import SpriteKit
 
 protocol ToolButtonDelegate: class {
   func toolButtonActivated(ToolButton)
-  func clearSelection()
-  func selectBoxMoveButtonModeChanged()
 }
 
 class ToolButton: SwipeThroughButton {
@@ -355,7 +353,6 @@ class SelectBoxMoveButton: ToolButton {
         boxOverlay.runAction(SKAction.scaleTo(1, duration: 0.2), withKey: "scale")
         moveOverlay.runAction(SKAction.scaleTo(0, duration: 0.2), withKey: "scale")
       }
-      toolButtonDelegate.selectBoxMoveButtonModeChanged()
     }
   }
 }
