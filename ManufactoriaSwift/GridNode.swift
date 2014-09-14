@@ -29,10 +29,10 @@ enum EditMode {
 }
 
 protocol GridNodeDelegate: class {
-  func editCompleted()
-  func undoEdit()
+  func gridWasEdited()
   func gridWasSelected()
   func gridWasUnselected()
+  func liftedGridWasRemovedWithCancel()
 }
 
 class GridNode: SKNode {
@@ -151,8 +151,12 @@ class GridNode: SKNode {
     }
   }
   
-  func setDownGrid() {
-    if liftedGridNode == nil {return}
+  func confirmSelection() {
+    if liftedGridNode == nil {
+      for cellNode in cellNodes {
+        cellNode.isSelected = false
+      }
+    } else {
     let settingDownGridPoint = wrapper.convertPoint(liftedGridNode!.wrapper.position, fromNode: liftedGridNode!)
     let settingDownGridOrigin = GridCoord(Int(round(settingDownGridPoint.x)), Int(round(settingDownGridPoint.y)))
     let liftedGrid = liftedGridNode!.grid
@@ -185,6 +189,8 @@ class GridNode: SKNode {
     }
     liftedGridNode?.removeFromParent()
     liftedGridNode = nil
+    }
+    delegate.gridWasUnselected()
   }
   
   var liftedGridOrigin: GridCoord?
@@ -200,9 +206,9 @@ class GridNode: SKNode {
     } else {
       liftedGridNode?.runAction(SKAction.sequence([SKAction.fadeAlphaTo(0, duration: 0.2), SKAction.removeFromParent()]))
       liftedGridNode = nil
-      delegate.undoEdit()
+      delegate.liftedGridWasRemovedWithCancel()
     }
-    gridIsSelected = false
+    delegate.gridWasUnselected()
   }
   
   func gridChanged() {
@@ -212,6 +218,7 @@ class GridNode: SKNode {
     }
   }
   
+  /*
   var gridIsSelected: Bool = false {
     didSet {
       if gridIsSelected == oldValue {return}
@@ -222,17 +229,18 @@ class GridNode: SKNode {
       }
     }
   }
+*/
   
   func gridSelectionChanged() {
     for j in 0 ..< grid.space.rows {
       for i in 0 ..< grid.space.columns {
         if self[GridCoord(i, j)].isSelected {
-          gridIsSelected = true
+          delegate.gridWasSelected()
           return
         }
       }
     }
-    gridIsSelected = false
+    delegate.gridWasUnselected()
   }
   
   func coordForTouch(touch: UITouch) -> GridCoord {
@@ -484,7 +492,7 @@ class GridNode: SKNode {
     }
     editTouch = nil
     bridgeEditMemory = nil
-    delegate.editCompleted()
+    delegate.gridWasEdited()
   }
   
   override func touchesCancelled(touches: NSSet, withEvent event: UIEvent) {

@@ -63,7 +63,7 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
     addChild(statusNode)
         
     toolbarNode.delegate = self
-    changeEditMode(toolbarNode.buttonInFocus.editMode)
+    gridNode.editMode = toolbarNode.buttonInFocus.editMode
     toolbarNode.zPosition = 10
     addChild(toolbarNode)
     
@@ -292,7 +292,7 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
   
   // MARK: - GridNodeDelegate Functions
   
-  func editCompleted() {
+  func gridWasEdited() {
     if levelData.editCompleted() {
       refreshUndoRedoButtonStatus()
     }
@@ -306,10 +306,15 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
     toolbarNode.state = .Drawing
   }
   
+  func liftedGridWasRemovedWithCancel() {
+    undoEdit()
+  }
+  
   // MARK: - ToolbarNodeDelegate Functions
   
-  func changeEditMode(editMode: EditMode) {
-    gridNode.editMode = editMode
+  var editMode: EditMode {
+    get {return gridNode.editMode}
+    set {gridNode.editMode = newValue}
   }
   
   func undoEdit() {
@@ -330,12 +335,10 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
   
   func cancelSelection() {
     gridNode.cancelSelection()
-    toolbarNode.state = .Drawing
   }
   
   func confirmSelection() {
-    gridNode.setDownGrid()
-    toolbarNode.state = .Drawing
+    gridNode.confirmSelection()
   }
   
   func flipXSelection() {

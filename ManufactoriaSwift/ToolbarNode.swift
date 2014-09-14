@@ -9,7 +9,7 @@
 import SpriteKit
 
 protocol ToolbarNodeDelegate: class {
-  func changeEditMode(editMode: EditMode)
+  var editMode: EditMode {get set}
   func undoEdit()
   func redoEdit()
   func cancelSelection()
@@ -116,6 +116,11 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
       button.toolButtonDelegate = self
       selectionPage.addChild(button)
     }
+    
+    cancelButton.userInteractionEnabled = false
+    confirmButton.userInteractionEnabled = false
+    flipXButton.userInteractionEnabled = false
+    flipYButton.userInteractionEnabled = false
   }
   
   override func fitToSize(size: CGSize) {
@@ -164,11 +169,8 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
         for button in drawToolButtons + selectionToolButtons {
           button.userInteractionEnabled = true
         }
-        if buttonInFocus == selectBoxMoveButton {
-          // ambiguity bug workaround
-          (selectBoxMoveButton as ToolButton).editMode = .SelectBox
-          delegate.changeEditMode(.SelectBox)
-        }
+        (selectBoxMoveButton as ToolButton).editMode = .SelectBox // ambiguity bug workaround
+        if delegate.editMode == .Move {delegate.editMode = .SelectBox}
       case .Selecting:
         undoDrawButton.userInteractionEnabled = !undoQueueIsEmpty
         redoDrawButton.userInteractionEnabled = !redoQueueIsEmpty
@@ -185,11 +187,8 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
         for button in drawToolButtons + selectionToolButtons {
           button.userInteractionEnabled = true
         }
-        if buttonInFocus == selectBoxMoveButton {
-          // ambiguity bug workaround
-          (selectBoxMoveButton as ToolButton).editMode = .Move
-          delegate.changeEditMode(.Move)
-        }
+        (selectBoxMoveButton as ToolButton).editMode = .Move // ambiguity bug workaround
+        if delegate.editMode == .SelectBox {delegate.editMode = .Move}
       case .Disabled:
         for button in drawQuickButtons + selectionQuickButtons {
           button.userInteractionEnabled = false
@@ -209,7 +208,7 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
         lastSelectionToolButton = buttonInFocus
         buttonInFocus = lastDrawToolButton
         buttonInFocus.isInFocus = true
-        delegate.changeEditMode(buttonInFocus.editMode)
+        delegate.editMode = buttonInFocus.editMode
       }
     } else if index == 1 {
       if buttonInFocus != lastSelectionToolButton {
@@ -217,7 +216,7 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
         lastDrawToolButton = buttonInFocus
         buttonInFocus = lastSelectionToolButton
         buttonInFocus.isInFocus = true
-        delegate.changeEditMode(buttonInFocus.editMode)
+        delegate.editMode = buttonInFocus.editMode
       }
     }
   }
@@ -242,12 +241,12 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
   
   func toolButtonActivated(button: ToolButton) {
     if button == buttonInFocus {
-      delegate.changeEditMode(button.cycleEditMode())
+      delegate.editMode = button.cycleEditMode()
     } else {
       buttonInFocus.isInFocus = false
       button.isInFocus = true
       buttonInFocus = button
-      delegate.changeEditMode(button.editMode)
+      delegate.editMode = button.editMode
     }
   }
   
