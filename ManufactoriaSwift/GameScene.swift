@@ -87,14 +87,12 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
         speedControlNode.runAction(SKAction.sequence([SKAction.fadeAlphaTo(0, duration: 0.5), SKAction.removeFromParent()]))
         if toolbarNode.parent == nil {addChild(toolbarNode)}
         toolbarNode.runAction(SKAction.fadeAlphaTo(1, duration: 0.5))
-        toolbarNode.isEnabled = true
       case .Thinking:
         statusNode.state = .Thinking
         statusNode.thinkingAnimationDone = false
         thinkingOperationsDone = false
         gridTestDidPass = false
         gridNode.state = .Waiting
-        toolbarNode.isEnabled = false
         toolbarNode.runAction(SKAction.sequence([SKAction.fadeAlphaTo(0, duration: 0.5), SKAction.removeFromParent()]))
         engine.beginGridTest()
       case .Testing:
@@ -295,11 +293,11 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
   // MARK: - GridNodeDelegate Functions
   
   func gridWasLifted() {
-    toolbarNode.gridWasLifted()
+    toolbarNode.state = .Selecting
   }
   
   func gridWasSetDown() {
-    toolbarNode.gridWasSetDown()
+    toolbarNode.state = .Drawing
     gridNode.gridSelectionChanged()
   }
   
@@ -339,6 +337,7 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
   }
   
   func redoEdit() {
+    // TODO: move confirm function action to confirmSelection() function
     if gridNode.liftedGridNode == nil {
       gridNode.stopCurrentEdit()
       gridNode.clearSelection()
@@ -351,12 +350,33 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
     }
   }
   
+  func cancelSelection() {
+    // TODO: finish
+    println("gameScene.cancelSelection()")
+  }
+  
+  func confirmSelection() {
+    // TODO: finish
+    println("gameScene.confirmSelection()")
+  }
+  
+  func flipXSelection() {
+    // TODO: finish
+    println("gameScene.flipXSelection()")
+  }
+  
+  func flipYSelection() {
+    // TODO: finish
+    println("gameScene.flipYSelection()")
+  }
+  
   func refreshUndoRedoButtonStatus() {
-    toolbarNode.undoButton.userInteractionEnabled = !levelData.undoStrings.isEmpty
-    toolbarNode.redoButton.userInteractionEnabled = !levelData.redoStrings.isEmpty
+    toolbarNode.undoQueueIsEmpty = levelData.undoStrings.isEmpty
+    toolbarNode.redoQueueIsEmpty = levelData.redoStrings.isEmpty
   }
   
   func clearSelection() {
+    // TODO: remove this in favor of cancelSelection() function
     gridNode.clearSelection()
     let selectBoxMoveButtonToolButton: ToolButton = toolbarNode.selectBoxMoveButton
     selectBoxMoveButtonToolButton.editMode = .SelectBox

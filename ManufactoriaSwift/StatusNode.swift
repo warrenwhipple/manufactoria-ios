@@ -52,7 +52,7 @@ class StatusNode: SwipeNode {
     menuButton = SwipeThroughButton(iconOff: menuIconOff, iconOn: menuIconOn)
     */
     
-    menuButton = SwipeThroughButton(iconOffNamed: "cancelIconOff", iconOnNamed: "cancelIconOn")
+    menuButton = SwipeThroughButton(iconOffNamed: "menuIconOff", iconOnNamed: "menuIconOn")
     testButton = SwipeThroughButton(iconOffNamed: "playIconOff", iconOnNamed: "playIconOn")
     nextButton = SwipeThroughButton(iconOffNamed: "speedIconOff", iconOnNamed: "speedIconOn")
     

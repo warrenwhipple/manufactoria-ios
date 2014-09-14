@@ -12,56 +12,45 @@ protocol ToolbarNodeDelegate: class {
   func changeEditMode(editMode: EditMode)
   func undoEdit()
   func redoEdit()
+  func cancelSelection()
+  func confirmSelection()
+  func flipXSelection()
+  func flipYSelection()
   func refreshUndoRedoButtonStatus()
-  func clearSelection()
 }
 
 class ToolbarNode: SwipeNode, ToolButtonDelegate {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
+  enum State {case Drawing, Selecting}
   
   weak var delegate: ToolbarNodeDelegate!
-  let undoButton, redoButton: SwipeThroughButton
-  let redoIconOff, redoIconOn, confirmIconOff, confirmIconOn: SKSpriteNode
-  
-  let drawPage, cutPastePage: SKNode
+  let drawPage = SKNode()
+  let selectionPage = SKNode()
+  let undoDrawButton = SwipeThroughButton(iconOffNamed: "undoIconOff", iconOnNamed: "undoIconOn")
+  let redoDrawButton = SwipeThroughButton(iconOffNamed: "undoIconOff", iconOnNamed: "undoIconOn")
+  let undoSelectionButton = SwipeThroughButton(iconOffNamed: "undoIconOff", iconOnNamed: "undoIconOn")
+  let redoSelectionButton = SwipeThroughButton(iconOffNamed: "undoIconOff", iconOnNamed: "undoIconOn")
+  let cancelButton = SwipeThroughButton(iconOffNamed: "cancelIconOff", iconOnNamed: "cancelIconOn")
+  let confirmButton = SwipeThroughButton(iconOffNamed: "confirmIconOff", iconOnNamed: "confirmIconOn")
+  let flipXButton = SwipeThroughButton(iconOffNamed: "flipIconOff", iconOnNamed: "flipIconOn")
+  let flipYButton = SwipeThroughButton(iconOffNamed: "flipIconOff", iconOnNamed: "flipIconOn")
   let selectBoxMoveButton = SelectBoxMoveButton()
-  let drawButtons, cutPasteButtons: [ToolButton]
-  var buttonInFocus, lastDrawButton, lastCutPasteButton: ToolButton
+  let drawQuickButtons, selectionQuickButtons: [SwipeThroughButton]
+  let drawToolButtons, selectionToolButtons: [ToolButton]
+  var buttonInFocus, lastDrawToolButton, lastSelectionToolButton: ToolButton
   
   init(editModes: [EditMode]) {
-    undoButton = SwipeThroughButton(iconOffNamed: "undoIconOff", iconOnNamed: "undoIconOn")
-    undoButton.generateDefaultDisableDimClosuresForSelf()
-    redoIconOff = SKSpriteNode("undoIconOff")
-    redoIconOff.xScale = -1
-    redoIconOn = SKSpriteNode("undoIconOn")
-    redoIconOn.xScale = -1
-    redoIconOn.color = Globals.highlightColor
-    confirmIconOff = SKSpriteNode("confirmIconOff")
-    confirmIconOff.alpha = 0
-    confirmIconOn = SKSpriteNode("confirmIconOn")
-    confirmIconOn.alpha = 0
-    confirmIconOn.color = Globals.highlightColor
-    let redoConfirmIconsOff = SKNode()
-    redoConfirmIconsOff.addChild(redoIconOff)
-    redoConfirmIconsOff.addChild(confirmIconOff)
-    let redoConfirmIconsOn = SKNode()
-    redoConfirmIconsOn.alpha = 0
-    redoConfirmIconsOn.addChild(redoIconOn)
-    redoConfirmIconsOn.addChild(confirmIconOn)
-    redoButton = SwipeThroughButton(iconOff: redoConfirmIconsOff, iconOn: redoConfirmIconsOn)
-    redoButton.generateDefaultDisableDimClosuresForSelf()
+    drawQuickButtons = [undoDrawButton, redoDrawButton]
+    selectionQuickButtons = [undoSelectionButton, redoSelectionButton, cancelButton, confirmButton, flipXButton, flipYButton]
     
-    drawPage = SKNode()
-    cutPastePage = SKNode()
-    
-    var tempDrawButtons: [ToolButton] = []
-    tempDrawButtons.append(ToolButton(editMode: .Blank, iconOffNamed: "blankIconOff", iconOnNamed: "blankIconOn"))
-    if contains(editModes, .Bridge) {tempDrawButtons.append(BeltBridgeButton())}
-    else {tempDrawButtons.append(ToolButton(editMode: .Belt, iconOffNamed: "beltIconOff", iconOnNamed: "beltIconOn"))}
+    var tempDrawToolButtons: [ToolButton] = []
+    tempDrawToolButtons.append(ToolButton(editMode: .Blank, iconOffNamed: "blankIconOff", iconOnNamed: "blankIconOn"))
+    if contains(editModes, .Bridge) {tempDrawToolButtons.append(BeltBridgeButton())}
+    else {tempDrawToolButtons.append(ToolButton(editMode: .Belt, iconOffNamed: "beltIconOff", iconOnNamed: "beltIconOn"))}
     if contains(editModes, .PullerBR) || contains(editModes, .PullerRB) {
-      tempDrawButtons.append(PullerButton(kind: .PullerBR))}
+      tempDrawToolButtons.append(PullerButton(kind: .PullerBR))}
     if contains(editModes, .PullerGY) || contains(editModes, .PullerYG) {
-      tempDrawButtons.append(PullerButton(kind: .PullerGY))}
+      tempDrawToolButtons.append(PullerButton(kind: .PullerGY))}
     var pusherKinds: [EditMode] = []
     for editMode in editModes {
       switch editMode {
@@ -69,41 +58,63 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
       default: break
       }
     }
-    if !pusherKinds.isEmpty {tempDrawButtons.append(PusherButton(kinds: pusherKinds))}
-    drawButtons = tempDrawButtons
-    for button in drawButtons {drawPage.addChild(button)}
+    if !pusherKinds.isEmpty {tempDrawToolButtons.append(PusherButton(kinds: pusherKinds))}
+    drawToolButtons = tempDrawToolButtons
     
-    cutPasteButtons = [
-      //ToolButton(editMode: .SelectBox, iconOffNamed: "selectBoxIconOff", iconOnNamed: "selectBoxIconOn"),
-      //ToolButton(editMode: .Move, iconOffNamed: "selectMoveIconOff", iconOnNamed: "selectMoveIconOn"),
+    selectionToolButtons = [
       selectBoxMoveButton,
       ToolButton(editMode: .SelectCell, iconOffNamed: "selectCellIconOff", iconOnNamed: "selectCellIconOn")
     ]
-    for button in cutPasteButtons {cutPastePage.addChild(button)}
     
-    if drawButtons.count > 1 {
-      buttonInFocus = drawButtons[1]
+    if drawToolButtons.count > 1 {
+      buttonInFocus = drawToolButtons[1]
     } else {
-      buttonInFocus = drawButtons[0]
+      buttonInFocus = drawToolButtons[0]
     }
     buttonInFocus.isInFocus = true
     
-    lastDrawButton = buttonInFocus
-    lastCutPasteButton = cutPasteButtons[0]
+    lastDrawToolButton = buttonInFocus
+    lastSelectionToolButton = selectionToolButtons[0]
     
-    super.init(pages: [drawPage, cutPastePage], texture: nil, color: nil, size: CGSizeZero)
+    super.init(pages: [drawPage, selectionPage], texture: nil, color: nil, size: CGSizeZero)
     
-    undoButton.swipeThroughDelegate = self
-    undoButton.touchUpInsideClosure = {[unowned self] in self.delegate.undoEdit()}
-    addChild(undoButton)
+    for node in redoDrawButton.children {(node as SKNode).xScale = -1}
+    for node in redoSelectionButton.children {(node as SKNode).xScale = -1}
+    cancelButton.setScale(0)
+    confirmButton.setScale(0)
+    for node in flipYButton.children {(node as SKNode).zRotation = CGFloat(M_PI_2)}
     
-    redoButton.swipeThroughDelegate = self
-    redoButton.touchUpInsideClosure = {[unowned self] in self.delegate.redoEdit()}
-    addChild(redoButton)
+    undoDrawButton.touchUpInsideClosure = {[unowned self] in self.delegate.undoEdit()}
+    redoDrawButton.touchUpInsideClosure = {[unowned self] in self.delegate.redoEdit()}
+    undoSelectionButton.touchUpInsideClosure = {[unowned self] in self.delegate.undoEdit()}
+    redoSelectionButton.touchUpInsideClosure = {[unowned self] in self.delegate.redoEdit()}
+    cancelButton.touchUpInsideClosure = {[unowned self] in self.delegate.cancelSelection()}
+    confirmButton.touchUpInsideClosure = {[unowned self] in self.delegate.confirmSelection()}
+    flipXButton.touchUpInsideClosure = {[unowned self] in self.delegate.flipXSelection()}
+    flipYButton.touchUpInsideClosure = {[unowned self] in self.delegate.flipYSelection()}
     
-    for button in drawButtons + cutPasteButtons {
+    for button in drawQuickButtons {
+      button.generateDefaultDisableDimClosuresForSelf()
+      button.swipeThroughDelegate = self
+      drawPage.addChild(button)
+    }
+    
+    for button in selectionQuickButtons {
+      button.generateDefaultDisableDimClosuresForSelf()
+      button.swipeThroughDelegate = self
+      selectionPage.addChild(button)
+    }
+    
+    for button in drawToolButtons {
       button.swipeThroughDelegate = self
       button.toolButtonDelegate = self
+      drawPage.addChild(button)
+    }
+    
+    for button in selectionToolButtons {
+      button.swipeThroughDelegate = self
+      button.toolButtonDelegate = self
+      selectionPage.addChild(button)
     }
   }
   
@@ -111,92 +122,70 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
     super.fitToSize(size)
     let iconSize = Globals.iconRoughSize
     let buttonTouchHeight = min(iconSize.height * 2, size.height / 2)
-    let undoRedoButtonTouchWidth = min(iconSize.width * 2, size.width / 2)
-    let drawButtonTouchWidth = min(iconSize.width * 2, size.width / CGFloat(drawButtons.count))
-    let cutPasteButtonTouchWidth = min(iconSize.width * 2, size.width / CGFloat(cutPasteButtons.count))
-    let buttonYCenters = distributionForChildren(count: 2, childSize: iconSize.height, parentSize: size.height)
-    let undoRedoButtonXCenters = distributionForChildren(count: 2, childSize: iconSize.width, parentSize: size.width)
-    let drawButtonXCenters = distributionForChildren(count: drawButtons.count, childSize: iconSize.width, parentSize: size.width)
-    let cutPasteButtonXCenters = distributionForChildren(count: cutPasteButtons.count, childSize: iconSize.width, parentSize: size.width)
-    undoButton.position = CGPoint(undoRedoButtonXCenters[0], buttonYCenters[1])
-    undoButton.size = CGSize(undoRedoButtonTouchWidth, buttonTouchHeight)
-    redoButton.position = CGPoint(undoRedoButtonXCenters[1], buttonYCenters[1])
-    redoButton.size = CGSize(undoRedoButtonTouchWidth, buttonTouchHeight)
-    var i = 0
-    for button in drawButtons {
-      button.position = CGPoint(drawButtonXCenters[i++], buttonYCenters[0])
-      button.size = CGSize(drawButtonTouchWidth, buttonTouchHeight)
-    }
-    i = 0
-    for button in cutPasteButtons {
-      button.position = CGPoint(cutPasteButtonXCenters[i++], buttonYCenters[0])
-      button.size = CGSize(cutPasteButtonTouchWidth, buttonTouchHeight)
-    }
-  }
-  
-  var isEnabled: Bool = true {
-    didSet {
-      if isEnabled == oldValue {return}
-      if isEnabled == true {
-        for button in drawButtons + cutPasteButtons {
-          button.userInteractionEnabled = true
-        }
-      } else {
-        for button in drawButtons + cutPasteButtons {
-          button.userInteractionEnabled = false
-          button.touch = nil
-        }
+    func distributeButtons(buttons: [SwipeThroughButton]) {
+      let buttonTouchWidth = min(iconSize.width * 2, size.width / CGFloat(buttons.count))
+      let buttonXCenters = distributionForChildren(count: buttons.count, childSize: iconSize.width, parentSize: size.width)
+      var i = 0
+      for button in buttons {
+        button.position.x = CGFloat(buttonXCenters[i++])
+        button.size = CGSize(buttonTouchWidth, buttonTouchHeight)
       }
     }
+    distributeButtons(drawQuickButtons)
+    distributeButtons(drawToolButtons)
+    distributeButtons([undoSelectionButton, redoSelectionButton, flipXButton, flipYButton])
+    distributeButtons(selectionToolButtons)
+    let buttonYCenters = distributionForChildren(count: 2, childSize: iconSize.height, parentSize: size.height)
+    for button in drawQuickButtons + selectionQuickButtons {button.position.y = buttonYCenters[1]}
+    for button in drawToolButtons + selectionToolButtons {button.position.y = buttonYCenters[0]}
+    cancelButton.position.x = undoSelectionButton.position.x
+    cancelButton.size = undoSelectionButton.size
+    confirmButton.position.x = redoSelectionButton.position.x
+    confirmButton.size = redoSelectionButton.size
   }
   
-  func gridWasLifted() {
-    undoButton.touch = nil
-    redoButton.touch = nil
-    let fadeOut = SKAction.fadeAlphaTo(0, duration: 0.2)
-    let fadeIn = SKAction.fadeAlphaTo(1, duration: 0.2)
-    redoIconOff.runAction(fadeOut, withKey: "fade")
-    redoIconOn.runAction(fadeOut, withKey: "fade")
-    confirmIconOff.runAction(fadeIn, withKey: "fade")
-    confirmIconOn.runAction(fadeIn, withKey: "fade")
-    redoButton.zRotation += CGFloat(2*M_PI)
-    redoButton.runAction(SKAction.rotateToAngle(0, duration: 0.2), withKey: "rotate")
-    undoButton.userInteractionEnabled = true
-    redoButton.userInteractionEnabled = true
-  }
-  
-  func gridWasSetDown() {
-    undoButton.touch = nil
-    redoButton.touch = nil
-    let fadeOut = SKAction.fadeAlphaTo(0, duration: 0.2)
-    let fadeIn = SKAction.fadeAlphaTo(1, duration: 0.2)
-    redoIconOff.runAction(fadeIn, withKey: "fade")
-    redoIconOn.runAction(fadeIn, withKey: "fade")
-    confirmIconOff.runAction(fadeOut, withKey: "fade")
-    confirmIconOn.runAction(fadeOut, withKey: "fade")
-    redoButton.zRotation += CGFloat(2*M_PI)
-    redoButton.runAction(SKAction.rotateToAngle(0, duration: 0.2), withKey: "rotate")
-    delegate.refreshUndoRedoButtonStatus()
+  var state: State = .Drawing {
+    didSet {
+      if state == oldValue {return}
+      // TODO: write
+      println("toolbarNode.state changed")
+    }
   }
   
   override func snapToIndex(index: Int, initialVelocityX: CGFloat) {
     super.snapToIndex(index, initialVelocityX: initialVelocityX)
     if index == 0 {
-      if buttonInFocus != lastDrawButton {
+      if buttonInFocus != lastDrawToolButton {
         buttonInFocus.isInFocus = false
-        lastCutPasteButton = buttonInFocus
-        buttonInFocus = lastDrawButton
+        lastSelectionToolButton = buttonInFocus
+        buttonInFocus = lastDrawToolButton
         buttonInFocus.isInFocus = true
         delegate.changeEditMode(buttonInFocus.editMode)
       }
     } else if index == 1 {
-      if buttonInFocus != lastCutPasteButton {
+      if buttonInFocus != lastSelectionToolButton {
         buttonInFocus.isInFocus = false
-        lastDrawButton = buttonInFocus
-        buttonInFocus = lastCutPasteButton
+        lastDrawToolButton = buttonInFocus
+        buttonInFocus = lastSelectionToolButton
         buttonInFocus.isInFocus = true
         delegate.changeEditMode(buttonInFocus.editMode)
       }
+    }
+  }
+  
+  var undoQueueIsEmpty: Bool = true {
+    didSet {
+      if undoQueueIsEmpty == oldValue {return}
+      undoDrawButton.userInteractionEnabled = !undoQueueIsEmpty
+      if state == .Drawing {undoSelectionButton.userInteractionEnabled = !undoQueueIsEmpty}
+    }
+  }
+  
+  var redoQueueIsEmpty: Bool = true {
+    didSet {
+      if redoQueueIsEmpty == oldValue {return}
+      redoDrawButton.userInteractionEnabled = !redoQueueIsEmpty
+      if state == .Drawing {redoSelectionButton.userInteractionEnabled = !redoQueueIsEmpty}
     }
   }
   
@@ -214,9 +203,10 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
   }
   
   func clearSelection() {
-    delegate.clearSelection()
+    delegate.cancelSelection()
   }
   
+  // TODO: move this function into state.didSet
   func selectBoxMoveButtonModeChanged() {
     if buttonInFocus == selectBoxMoveButton {
       delegate.changeEditMode(buttonInFocus.editMode)

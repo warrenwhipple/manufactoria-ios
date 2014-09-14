@@ -164,19 +164,30 @@ class GridNode: SKNode {
     }
   }
   
-  var liftedGridOrigin: GridCoord?
-  
   func setDownGrid() {
     if liftedGridNode == nil {return}
-    let settingDownGridOrigin = GridCoord(Int(round(liftedGridNode!.position.x)), Int(round(liftedGridNode!.position.y)))
+    let settingDownGridPoint = wrapper.convertPoint(liftedGridNode!.wrapper.position, fromNode: liftedGridNode!)
+    let settingDownGridOrigin = GridCoord(Int(round(settingDownGridPoint.x)), Int(round(settingDownGridPoint.y)))
     let liftedGrid = liftedGridNode!.grid
     for i in 0 ..< grid.space.columns {
       for j in 0 ..< grid.space.rows {
         let cellCoord = GridCoord(i, j)
-        let liftedCellCoord = cellCoord - settingDownGridOrigin
+        var liftedCellCoord = cellCoord - settingDownGridOrigin
+        switch liftedGridNode!.direction {
+        case .North: break
+        case .East: liftedCellCoord = GridCoord(-liftedCellCoord.j - 1, liftedCellCoord.i)
+        case .South: liftedCellCoord = GridCoord(-liftedCellCoord.i - 1, -liftedCellCoord.j - 1)
+        case .West: liftedCellCoord = GridCoord(liftedCellCoord.j, -liftedCellCoord.i - 1)
+        }
         if liftedGrid.space.contains(liftedCellCoord) {
-          let liftedCell = liftedGrid[liftedCellCoord]
+          var liftedCell = liftedGrid[liftedCellCoord]
           if liftedCell.kind != .Blank {
+            switch liftedGridNode!.direction {
+            case .North: break
+            case .East: liftedCell.direction = liftedCell.direction.cw()
+            case .South: liftedCell.direction = liftedCell.direction.flip()
+            case .West: liftedCell.direction = liftedCell.direction.ccw()
+            }
             grid[cellCoord] = liftedCell
             let cellNode = self[cellCoord]
             cellNode.applyCell(liftedCell)
@@ -189,6 +200,8 @@ class GridNode: SKNode {
     liftedGridNode = nil
     delegate.editCompleted()
   }
+  
+  var liftedGridOrigin: GridCoord?
   
   func cancelGridLift() {
     if liftedGridNode == nil {return}
