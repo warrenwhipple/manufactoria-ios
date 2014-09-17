@@ -12,35 +12,23 @@ class SpeedControlNode: SKNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   
   weak var delegate: GameScene?
-  let backButton: Button
-  let slowerButton: Button
-  let fasterButton: Button
-  let skipButton: Button
-  let speedLabel: SKLabelNode
+  let backButton = Button(iconOffNamed: "skipIconOff", iconOnNamed: "skipIconOn")
+  let slowerButton = Button(iconOffNamed: "speedIconOff", iconOnNamed: "speedIconOn")
+  let fasterButton = Button(iconOffNamed: "speedIconOff", iconOnNamed: "speedIconOn")
+  let skipButton = Button(iconOffNamed: "skipIconOff", iconOnNamed: "skipIconOn")
+  let speedLabel = SKLabelNode()
   
   override init() {
-    let backIcon = SKSpriteNode("skipIconOff")
-    let slowerIcon = SKSpriteNode("speedIconOff")
-    let fasterIcon = SKSpriteNode("speedIconOff")
-    let skipIcon = SKSpriteNode("skipIconOff")
-    backIcon.xScale = -1
-    slowerIcon.xScale = -1
-    backButton = Button(texture: nil, color: nil, size: CGSize(48))
-    slowerButton = Button(texture: nil, color: nil, size: CGSize(48))
-    fasterButton = Button(texture: nil, color: nil, size: CGSize(48))
-    skipButton = Button(texture: nil, color: nil, size: CGSize(48))
-    backButton.addChild(backIcon)
-    slowerButton.addChild(slowerIcon)
-    fasterButton.addChild(fasterIcon)
-    skipButton.addChild(skipIcon)
-    speedLabel = SKLabelNode()
+    super.init()
+    
+    for child in backButton.children {(child as SKNode).xScale = -1}
+    for child in slowerButton.children {(child as SKNode).xScale = -1}
+
     speedLabel.fontMedium()
     speedLabel.fontColor = Globals.strokeColor
     speedLabel.horizontalAlignmentMode = .Center
     speedLabel.verticalAlignmentMode = .Center
-    speedLabel.text = ""
-    
-    super.init()
+    speedLabel.text = "1X"
     
     slowerButton.touchDownClosure = {
       [unowned self] in
@@ -76,15 +64,12 @@ class SpeedControlNode: SKNode {
   
   var size: CGSize = CGSizeZero {
     didSet {
-      let nodes: [SKNode] = [backButton, slowerButton, speedLabel, fasterButton, skipButton]
-      let buttonWidth = size.width / 5.0
-      var i = 0
-      for node in nodes {
-        node.position.x = (CGFloat(i++) + 0.5) * buttonWidth - 0.5 * size.width
-        if node != speedLabel {
-          (node as Button).size = CGSize(buttonWidth)
-        }
-      }
+      let positions = distributionForChildren(count: 5, childSize: Globals.iconRoughSize.width, parentSize: size.width)
+      backButton.position.x = positions[0]
+      slowerButton.position.x = positions[1]
+      speedLabel.position.x = positions[2]
+      fasterButton.position.x = positions[3]
+      skipButton.position.x = positions[4]
     }
   }
   

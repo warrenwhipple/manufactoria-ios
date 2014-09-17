@@ -190,7 +190,7 @@ var LevelLibrary: [LevelSetup] = [
     instructions: "Move the first color to the end.",
     space: GridSpace(5),
     editModes: [.PullerBR, .PusherB, .PusherR],
-    exemplars: ["brbr", "rrbb"],
+    exemplars: ["brbr"],
     generationFunction: {n in return generate("br", n, {$0 != ""})},
     transformFunction: {s in
       if s.length() > 1 {return s[1 ..< s.length()] + s[0]}

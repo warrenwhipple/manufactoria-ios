@@ -45,13 +45,6 @@ class StatusNode: SwipeNode {
 
     tapeNode = TapeNode()
     
-    /*
-    let menuIconOff = MenuIcon(size: Globals.iconRoughSize)
-    let menuIconOn = MenuIcon(size: Globals.iconRoughSize)
-    for shimmerNode in menuIconOn.shimmerNodes {shimmerNode.color = Globals.highlightColor}
-    menuButton = SwipeThroughButton(iconOff: menuIconOff, iconOn: menuIconOn)
-    */
-    
     menuButton = SwipeThroughButton(iconOffNamed: "menuIconOff", iconOnNamed: "menuIconOn")
     testButton = SwipeThroughButton(iconOffNamed: "playIconOff", iconOnNamed: "playIconOn")
     nextButton = SwipeThroughButton(iconOffNamed: "speedIconOff", iconOnNamed: "speedIconOn")
@@ -129,8 +122,8 @@ class StatusNode: SwipeNode {
         tapeNode.printer.removeActionForKey("scale")
         tapeNode.printer.setScale(0)
         goToIndexWithoutSnap(1)
-        failLabel.runAction(SKAction.fadeAlphaTo(1, duration: 0.5))
-        failTapeNode?.runAction(SKAction.fadeAlphaTo(1, duration: 0.25))
+        failLabel.runAction(SKAction.fadeAlphaTo(1, duration: 0.2))
+        failTapeNode?.runAction(SKAction.fadeAlphaTo(1, duration: 0.2))
         userInteractionEnabled = true
       case .Thinking:
         userInteractionEnabled = false
@@ -151,12 +144,13 @@ class StatusNode: SwipeNode {
       case .Testing:
         tapeNode.dotWrapper.runAction(SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")
       case .Congratulating:
+        label.runAction(SKAction.fadeAlphaTo(0, duration: 0.2))
         menuButton.userInteractionEnabled = true
-        menuButton.position = leftButtonExitPoint
+        menuButton.position = CGPoint(leftButtonExitPoint.x, 0)
         instructionsPage.addChild(menuButton)
         menuButton.runAction(SKAction.moveTo(leftButtonPoint, duration: 0.6).easeOut(), withKey: "move")
         nextButton.userInteractionEnabled = true
-        nextButton.position = rightButtonExitPoint
+        nextButton.position = CGPoint(rightButtonExitPoint.x, 0)
         instructionsPage.addChild(nextButton)
         nextButton.runAction(SKAction.moveTo(rightButtonPoint, duration: 0.6).easeOut(), withKey: "move")
         tapeNode.printer.runAction(SKAction.scaleTo(0, duration: 0.2), withKey: "scale")
