@@ -11,6 +11,7 @@ import SpriteKit
 class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, ToolbarNodeDelegate {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   enum State {case Editing, Thinking, Testing, Congratulating}
+  enum RobotState {case Entering, Testing, Exiting, Falling}
   
   // model objects
   let levelNumber: Int
@@ -27,6 +28,7 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
   let toolbarNode: ToolbarNode
   let speedControlNode = SpeedControlNode()
   var robotNode: SKSpriteNode?
+  var robotState: RobotState = .Entering
   
   // variables
   var gameSpeed: CGFloat = 0
@@ -82,7 +84,7 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
       case .Editing:
         statusNode.state = .Editing
         gridNode.state = .Editing
-        robotNode?.runAction(SKAction.fadeAlphaTo(0, duration: 0.5))
+        robotNode?.runAction(SKAction.sequence([SKAction.fadeAlphaTo(0, duration: 1), SKAction.removeFromParent()]))
         speedControlNode.isEnabled = false
         speedControlNode.runAction(SKAction.sequence([SKAction.fadeAlphaTo(0, duration: 0.5), SKAction.removeFromParent()]))
         if toolbarNode.parent == nil {addChild(toolbarNode)}
@@ -142,22 +144,23 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
     }
     
     if state == .Testing {
-      
-      // execute ellapsed ticks
       tickPercent += CGFloat(dt) * gameSpeed
-      while tickPercent >= 1.0 {
-        tickPercent -= 1.0
-        if statusNode.tapeNode.state == TapeNode.State.Clearing {
-          loadNextTape()
-        } else if robotCoord == levelData.grid.startCoord - 1 {
+      switch robotState {
+      case .Entering:
+        if tickPercent >= 1 {
+          tickPercent -= 1
           statusNode.tapeNode.tickComplete()
-          lastRobotCoord = robotCoord
-          robotCoord.j++
-        } else if robotCoord == levelData.grid.endCoord {
-          statusNode.tapeNode.clearTape()
-          lastRobotCoord = robotCoord
-          robotCoord.j++
+          //robotNode?.alpha = 1
+          robotNode?.setScale(1 / gridNode.wrapper.xScale)
+          robotState = .Testing
+          fallthrough
         } else {
+          //robotNode?.alpha = tickPercent
+          robotNode?.setScale(tickPercent / gridNode.wrapper.xScale)
+        }
+      case .Testing:
+        while tickPercent >= 1 {
+          tickPercent -= 1
           statusNode.tapeNode.tickComplete()
           let testResult = levelData.grid.testCoord(robotCoord, lastCoord: lastRobotCoord, tape: &tape)
           let tapeLength = tape.length()
@@ -168,23 +171,48 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
           }
           lastTapeLength = tapeLength
           lastRobotCoord = robotCoord
+          var fallthroughRobotStateSwitch = false
           switch testResult {
-          case .Accept: assertionFailure("GamesScene update gridTest should not recieve testReult.Accept")
-          case .Reject: statusNode.tapeNode.clearTape()
+          case .Accept:
+            statusNode.tapeNode.clearTape()
+            robotNode?.setScale(1 / gridNode.wrapper.xScale)
+            robotNode?.position = CGPoint(x: CGFloat(robotCoord.i) + 0.5,y: CGFloat(robotCoord.j) + 0.5)
+            robotState = .Exiting
+            fallthroughRobotStateSwitch = true
+          case .Reject:
+            statusNode.tapeNode.clearTape()
+            robotNode?.setScale(1 / gridNode.wrapper.xScale)
+            robotNode?.position = CGPoint(x: CGFloat(robotCoord.i) + 0.5,y: CGFloat(robotCoord.j) + 0.5)
+            robotState = .Falling
+            fallthroughRobotStateSwitch = true
           case .North: robotCoord.j++
           case .East: robotCoord.i++
           case .South: robotCoord.j--
           case .West: robotCoord.i--
           }
+          if fallthroughRobotStateSwitch {fallthrough}
+        }
+        robotNode?.position = CGPoint(
+          x: CGFloat(lastRobotCoord.i) + CGFloat(tickPercent) * CGFloat(robotCoord.i - lastRobotCoord.i) + 0.5,
+          y: CGFloat(lastRobotCoord.j) + CGFloat(tickPercent) * CGFloat(robotCoord.j - lastRobotCoord.j) + 0.5
+        )
+      case .Exiting:
+        if robotState == .Falling {fallthrough}
+        if tickPercent >= 1 {
+          loadNextTape()
+        } else {
+          //robotNode?.alpha = 1 - tickPercent
+          robotNode?.setScale((1 - tickPercent) / gridNode.wrapper.xScale)
+        }
+      case .Falling:
+        if tickPercent >= 1 {
+          loadNextTape()
+        } else {
+          //robotNode?.alpha = 1 - tickPercent
+          robotNode?.setScale((1 - tickPercent) / gridNode.wrapper.xScale)
         }
       }
       statusNode.tapeNode.update(tickPercent)
-      
-      // update robot
-      robotNode?.position = CGPoint(
-        x: CGFloat(lastRobotCoord.i) + CGFloat(tickPercent) * CGFloat(robotCoord.i - lastRobotCoord.i) + 0.5,
-        y: CGFloat(lastRobotCoord.j) + CGFloat(tickPercent) * CGFloat(robotCoord.j - lastRobotCoord.j) + 0.5
-      )
     }
     
     // update child nodes
@@ -207,14 +235,15 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
     }
     statusNode.tapeNode.loadTape(tape)
     lastTapeLength = tape.length()
-    robotCoord = levelData.grid.startCoord
-    lastRobotCoord = levelData.grid.startCoord - 1
+    robotState = .Entering
+    robotCoord = levelData.grid.startCoord + 1
+    lastRobotCoord = levelData.grid.startCoord
     robotNode = SKSpriteNode("robut")
-    robotNode?.size = CGSize(1.25)
     robotNode?.position = CGPoint(CGFloat(lastRobotCoord.i) + 0.5, CGFloat(lastRobotCoord.j) + 0.5)
     robotNode?.zPosition = 2
-    robotNode?.alpha = 0
-    robotNode?.runAction(SKAction.fadeAlphaTo(1, duration: 0.1))
+    //robotNode?.setScale(1 / gridNode.wrapper.xScale)
+    //robotNode?.alpha = 0
+    robotNode?.setScale(0)
     gridNode.wrapper.addChild(robotNode!)
   }
   
