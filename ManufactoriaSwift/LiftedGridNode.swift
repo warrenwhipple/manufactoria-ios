@@ -63,8 +63,8 @@ class LiftedGridNode: SKNode {
             let pullerRight = SKSpriteNode("pullerHalf")
             switch cell.kind {
             case .PullerBR: pullerLeft.color = Globals.blueColor;   pullerRight.color = Globals.redColor
-            case .PullerBR: pullerLeft.color = Globals.redColor;    pullerRight.color = Globals.blueColor
-            case .PullerBR: pullerLeft.color = Globals.greenColor;  pullerRight.color = Globals.yellowColor
+            case .PullerRB: pullerLeft.color = Globals.redColor;    pullerRight.color = Globals.blueColor
+            case .PullerGY: pullerLeft.color = Globals.greenColor;  pullerRight.color = Globals.yellowColor
             default:        pullerLeft.color = Globals.yellowColor; pullerRight.color = Globals.greenColor
             }
             pullerLeft.anchorPoint.x = 1

@@ -36,6 +36,12 @@ class LevelData: NSObject, NSCoding {
     super.init()
   }
   
+  class func resetDataForAllLevels() {
+    for i in 0 ..< LevelLibrary.count {
+      NSFileManager.defaultManager().removeItemAtPath(filePathForLevelNumber(i), error: nil)
+    }
+  }
+  
   func saveWithLevelNumber(levelNumber: Int) {
     NSKeyedArchiver.archivedDataWithRootObject(self).writeToFile(LevelData.filePathForLevelNumber(levelNumber), atomically: true)
   }

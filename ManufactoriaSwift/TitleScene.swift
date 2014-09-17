@@ -26,7 +26,7 @@ class TitleScene: SKScene {
     button.size = size * 2
     super.init(size: size)
     backgroundColor = Globals.backgroundColor
-    if gameData.levelsComplete == 0 {
+    if gameData.levelsComplete == -1 {
       button.touchUpInsideClosure = {
         [unowned self] in
         let transition = SKTransition.pushWithDirection(.Left, duration: 0.5).outInPlay()

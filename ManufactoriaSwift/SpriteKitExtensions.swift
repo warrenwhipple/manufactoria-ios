@@ -54,13 +54,13 @@ extension SKTransition {
 }
 
 extension SKLabelNode {
-  //func fontSmall()  {fontSize = 16; fontName = "HelveticaNeue-Light"}
+  func fontSmall()  {fontSize = 14; fontName = "HelveticaNeue-Light"}
   func fontMedium() {fontSize = 17; fontName = "HelveticaNeue-Light"}
   func fontLarge()  {fontSize = 28; fontName = "HelveticaNeue-Thin"}
 }
 
 extension BreakingLabel {
-  //func fontSmall()  {fontSize = 16; fontName = "HelveticaNeue-Light"}
+  func fontSmall()  {fontSize = 14; fontName = "HelveticaNeue-Light"}
   func fontMedium() {fontSize = 17; fontName = "HelveticaNeue-Light"}
   func fontLarge()  {fontSize = 28; fontName = "HelveticaNeue-Thin"}
 }

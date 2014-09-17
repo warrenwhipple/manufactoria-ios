@@ -32,21 +32,24 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
   let redoSelectionButton = SwipeThroughButton(iconOffNamed: "undoIconOff", iconOnNamed: "undoIconOn")
   let cancelButton = SwipeThroughButton(iconOffNamed: "cancelIconOff", iconOnNamed: "cancelIconOn")
   let confirmButton = SwipeThroughButton(iconOffNamed: "confirmIconOff", iconOnNamed: "confirmIconOn")
-  let flipXButton = SwipeThroughButton(iconOffNamed: "flipIconOff", iconOnNamed: "flipIconOn")
-  let flipYButton = SwipeThroughButton(iconOffNamed: "flipIconOff", iconOnNamed: "flipIconOn")
   let selectBoxMoveButton = SelectBoxMoveButton()
   let drawQuickButtons, selectionQuickButtons: [SwipeThroughButton]
   let drawToolButtons, selectionToolButtons: [ToolButton]
   var buttonInFocus, lastDrawToolButton, lastSelectionToolButton: ToolButton
+  var undoCancelSwapper, redoConfirmSwapper: ButtonSwapper
   
   init(editModes: [EditMode]) {
     drawQuickButtons = [undoDrawButton, redoDrawButton]
-    selectionQuickButtons = [undoSelectionButton, redoSelectionButton, cancelButton, confirmButton, flipXButton, flipYButton]
+    selectionQuickButtons = [undoSelectionButton, redoSelectionButton, cancelButton, confirmButton]
+    undoCancelSwapper = ButtonSwapper(buttons: [undoSelectionButton, cancelButton],
+      rotateRadians: CGFloat(2*M_PI), liftZPosition: 2)
+    redoConfirmSwapper = ButtonSwapper(buttons: [redoSelectionButton, confirmButton],
+      rotateRadians: CGFloat(-2*M_PI), liftZPosition: 2)
     
-    var tempDrawToolButtons: [ToolButton] = []
-    tempDrawToolButtons.append(ToolButton(editMode: .Blank, iconOffNamed: "blankIconOff", iconOnNamed: "blankIconOn"))
-    if contains(editModes, .Bridge) {tempDrawToolButtons.append(BeltBridgeButton())}
-    else {tempDrawToolButtons.append(ToolButton(editMode: .Belt, iconOffNamed: "beltIconOff", iconOnNamed: "beltIconOn"))}
+    var tempDrawToolButtons: [ToolButton] = [
+      ToolButton(editMode: .Blank, iconOffNamed: "blankIconOff", iconOnNamed: "blankIconOn"),
+      BeltBridgeButton()
+    ]
     if contains(editModes, .PullerBR) || contains(editModes, .PullerRB) {
       tempDrawToolButtons.append(PullerButton(kind: .PullerBR))}
     if contains(editModes, .PullerGY) || contains(editModes, .PullerYG) {
@@ -80,9 +83,6 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
     
     for node in redoDrawButton.children {(node as SKNode).xScale = -1}
     for node in redoSelectionButton.children {(node as SKNode).xScale = -1}
-    cancelButton.setScale(0)
-    confirmButton.setScale(0)
-    for node in flipYButton.children {(node as SKNode).zRotation = CGFloat(M_PI_2)}
     
     undoDrawButton.touchUpInsideClosure = {[unowned self] in self.delegate.undoEdit()}
     redoDrawButton.touchUpInsideClosure = {[unowned self] in self.delegate.redoEdit()}
@@ -90,8 +90,6 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
     redoSelectionButton.touchUpInsideClosure = {[unowned self] in self.delegate.redoEdit()}
     cancelButton.touchUpInsideClosure = {[unowned self] in self.delegate.cancelSelection()}
     confirmButton.touchUpInsideClosure = {[unowned self] in self.delegate.confirmSelection()}
-    flipXButton.touchUpInsideClosure = {[unowned self] in self.delegate.flipXSelection()}
-    flipYButton.touchUpInsideClosure = {[unowned self] in self.delegate.flipYSelection()}
     
     for button in drawQuickButtons {
       button.generateDefaultDisableDimClosuresForSelf()
@@ -102,8 +100,9 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
     for button in selectionQuickButtons {
       button.generateDefaultDisableDimClosuresForSelf()
       button.swipeThroughDelegate = self
-      selectionPage.addChild(button)
     }
+    selectionPage.addChild(undoCancelSwapper)
+    selectionPage.addChild(redoConfirmSwapper)
     
     for button in drawToolButtons {
       button.swipeThroughDelegate = self
@@ -119,15 +118,13 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
     
     cancelButton.userInteractionEnabled = false
     confirmButton.userInteractionEnabled = false
-    flipXButton.userInteractionEnabled = false
-    flipYButton.userInteractionEnabled = false
   }
   
   override func fitToSize(size: CGSize) {
     super.fitToSize(size)
     let iconSize = Globals.iconRoughSize
     let buttonTouchHeight = min(iconSize.height * 2, size.height / 2)
-    func distributeButtons(buttons: [SwipeThroughButton]) {
+    func distributeButtons(buttons: [Button]) {
       let buttonTouchWidth = min(iconSize.width * 2, size.width / CGFloat(buttons.count))
       let buttonXCenters = distributionForChildren(count: buttons.count, childSize: iconSize.width, parentSize: size.width)
       var i = 0
@@ -138,14 +135,19 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
     }
     distributeButtons(drawQuickButtons)
     distributeButtons(drawToolButtons)
-    distributeButtons([undoSelectionButton, redoSelectionButton, flipXButton, flipYButton])
+    distributeButtons([undoSelectionButton, redoSelectionButton])
     distributeButtons(selectionToolButtons)
     let buttonYCenters = distributionForChildren(count: 2, childSize: iconSize.height, parentSize: size.height)
     for button in drawQuickButtons + selectionQuickButtons {button.position.y = buttonYCenters[1]}
     for button in drawToolButtons + selectionToolButtons {button.position.y = buttonYCenters[0]}
-    cancelButton.position.x = undoSelectionButton.position.x
+    
+    undoCancelSwapper.position = undoSelectionButton.position
+    redoConfirmSwapper.position = redoSelectionButton.position
+    undoSelectionButton.position = CGPointZero
+    redoSelectionButton.position = CGPointZero
+    cancelButton.position = CGPointZero
+    confirmButton.position = CGPointZero
     cancelButton.size = undoSelectionButton.size
-    confirmButton.position.x = redoSelectionButton.position.x
     confirmButton.size = redoSelectionButton.size
   }
   
@@ -160,12 +162,8 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
         redoSelectionButton.userInteractionEnabled = !redoQueueIsEmpty
         cancelButton.userInteractionEnabled = false
         confirmButton.userInteractionEnabled = false
-        undoSelectionButton.setScale(1)
-        redoSelectionButton.setScale(1)
-        cancelButton.setScale(0)
-        confirmButton.setScale(0)
-        flipXButton.userInteractionEnabled = false
-        flipYButton.userInteractionEnabled = false
+        undoCancelSwapper.index = 0
+        redoConfirmSwapper.index = 0
         for button in drawToolButtons + selectionToolButtons {
           button.userInteractionEnabled = true
         }
@@ -178,12 +176,8 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
         redoSelectionButton.userInteractionEnabled = false
         cancelButton.userInteractionEnabled = true
         confirmButton.userInteractionEnabled = true
-        undoSelectionButton.setScale(0)
-        redoSelectionButton.setScale(0)
-        cancelButton.setScale(1)
-        confirmButton.setScale(1)
-        flipXButton.userInteractionEnabled = true
-        flipYButton.userInteractionEnabled = true
+        undoCancelSwapper.index = 1
+        redoConfirmSwapper.index = 1
         for button in drawToolButtons + selectionToolButtons {
           button.userInteractionEnabled = true
         }

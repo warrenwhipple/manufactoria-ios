@@ -53,16 +53,16 @@ class MenuScene: SKScene {
   class LevelButton: SKNode {
     required init(coder: NSCoder) {fatalError("NSCoding not supported")}
     let levelNumber: Int
-    let label: SKLabelNode
+    let label: BreakingLabel
     let shimmerNode: ShimmerNode
     var touch: UITouch?
     
     init(levelNumber: Int, text: String, isEnabled: Bool) {
       self.levelNumber = levelNumber
       
-      label = SKLabelNode()
+      label = BreakingLabel()
       if isEnabled {
-        label.fontMedium()
+        label.fontSmall()
         label.verticalAlignmentMode = .Center
         label.fontColor = Globals.strokeColor
         label.text = text
@@ -126,8 +126,8 @@ class MenuScene: SKScene {
         yesClosure: {
           [weak view = self.scene!.view!] in
           if view != nil {
-            GameData.sharedInstance.levelsComplete = 0
-            GameData.sharedInstance.save()
+            GameData.sharedInstance.resetAllGameData()
+            LevelData.resetDataForAllLevels()
             view!.presentScene(TitleScene(size: view!.bounds.size), transition: SKTransition.fadeWithColor(Globals.strokeColor, duration: 3).outInPlay())
           }
         },

@@ -31,6 +31,10 @@ struct GridSpace: Equatable {
     self.columns = columns
     self.rows = rows
   }
+  init(_ square: Int) {
+    self.columns = square
+    self.rows = square
+  }
   func contains(gridCoord: GridCoord) -> Bool {
     return gridCoord.i >= 0 && gridCoord.j >= 0 && gridCoord.i < columns && gridCoord.j < rows
   }
