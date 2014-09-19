@@ -8,7 +8,7 @@
 
 import SpriteKit
 
-class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, ToolbarNodeDelegate {
+class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, ToolbarNodeDelegate, SpeedControlNodeDelegate {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   enum State {case Editing, Thinking, Testing, Congratulating}
   enum RobotState {case Entering, Testing, Exiting, Falling}
@@ -202,6 +202,7 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
       case .Exiting:
         if robotState == .Falling {fallthrough}
         if tickPercent >= 1 {
+          robotNode?.setScale(0)
           loadNextTape()
         } else {
           //robotNode?.alpha = 1 - tickPercent
@@ -209,6 +210,7 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
         }
       case .Falling:
         if tickPercent >= 1 {
+          robotNode?.setScale(0)
           loadNextTape()
         } else {
           //robotNode?.alpha = 1 - tickPercent
@@ -228,6 +230,10 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
   }
   
   func loadTape(i: Int) {
+    robotNode?.runAction(SKAction.sequence([
+      SKAction.fadeAlphaTo(0, duration: 0.5),
+      SKAction.removeFromParent()
+      ]))
     currentTapeTestIndex = i
     gameSpeed = 1
     tickPercent = 0
@@ -262,23 +268,6 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
     }
   }
 
-  func skipTape() {
-    gameSpeed = 32
-    if tapeTestResults[currentTapeTestIndex].kind == TapeTestResult.Kind.FailLoop {
-      robotNode?.runAction(SKAction.sequence([SKAction.waitForDuration(0.5), SKAction.fadeAlphaTo(0, duration: 0.5)]))
-      runAction(SKAction.waitForDuration(1), completion: {[weak self] in self!.loadNextTape()})
-    }
-  }
-  
-  func loadLastTape() {
-    if currentTapeTestIndex == 0 {loadResetTape()}
-    else {loadTape(currentTapeTestIndex - 1)}
-  }
-  
-  func loadResetTape() {
-    loadTape(currentTapeTestIndex)
-  }
-  
   // MARK: - StatusNodeDelegate Functions
   
   func testButtonPressed() {
@@ -385,6 +374,32 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
   func refreshUndoRedoButtonStatus() {
     toolbarNode.undoQueueIsEmpty = levelData.undoStrings.isEmpty
     toolbarNode.redoQueueIsEmpty = levelData.redoStrings.isEmpty
+  }
+  
+  // MARK: - SpeedControlNodeDelegate Functions {
+  
+  func backButtonPressed() {
+    loadTape(currentTapeTestIndex)
+  }
+  
+  func slowerButtonPressed() {
+    gameSpeed *= 0.5
+  }
+  
+  func fasterButtonPressed() {
+    gameSpeed *= 2
+  }
+  
+  func skipButtonPressed() {
+    gameSpeed = 32
+    if tapeTestResults[currentTapeTestIndex].kind == TapeTestResult.Kind.FailLoop {
+      robotNode?.runAction(SKAction.sequence([
+        SKAction.waitForDuration(0.5),
+        SKAction.fadeAlphaTo(0, duration: 0.5),
+        SKAction.removeFromParent()
+        ]))
+      runAction(SKAction.waitForDuration(1), completion: {[weak self] in self!.loadNextTape()})
+    }
   }
   
   // MARK: - Touch Delegate Functions

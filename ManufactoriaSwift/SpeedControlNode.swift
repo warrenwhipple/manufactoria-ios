@@ -8,10 +8,18 @@
 
 import SpriteKit
 
+protocol SpeedControlNodeDelegate: class {
+  func backButtonPressed()
+  func slowerButtonPressed()
+  func fasterButtonPressed()
+  func skipButtonPressed()
+}
+
 class SpeedControlNode: SKNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   
-  weak var delegate: GameScene?
+  weak var delegate: SpeedControlNodeDelegate!
+  
   let backButton = Button(iconOffNamed: "skipIconOff", iconOnNamed: "skipIconOn")
   let slowerButton = Button(iconOffNamed: "speedIconOff", iconOnNamed: "speedIconOn")
   let fasterButton = Button(iconOffNamed: "speedIconOff", iconOnNamed: "speedIconOn")
@@ -32,30 +40,10 @@ class SpeedControlNode: SKNode {
     speedLabel.text = "1X"
     */
     
-    slowerButton.touchDownClosure = {
-      [unowned self] in
-      if self.delegate != nil && self.delegate!.gameSpeed > 0.25 {
-        self.delegate!.gameSpeed *= 0.5
-      }
-    }
-    fasterButton.touchDownClosure = {
-      [unowned self] in
-      if self.delegate != nil && self.delegate!.gameSpeed < 32 {
-        self.delegate!.gameSpeed *= 2
-      }
-    }
-    backButton.touchDownClosure = {
-      [unowned self] in
-      if self.delegate != nil {
-        self.delegate!.loadLastTape()
-      }
-    }
-    skipButton.touchDownClosure = {
-      [unowned self] in
-      if self.delegate != nil {
-        self.delegate!.skipTape()
-      }
-    }
+    backButton.touchDownClosure = {[unowned self] in self.delegate.backButtonPressed()}
+    slowerButton.touchDownClosure = {[unowned self] in self.delegate.slowerButtonPressed()}
+    fasterButton.touchDownClosure = {[unowned self] in self.delegate.fasterButtonPressed()}
+    skipButton.touchDownClosure = {[unowned self] in self.delegate.skipButtonPressed()}
     
     addChild(backButton)
     addChild(slowerButton)
