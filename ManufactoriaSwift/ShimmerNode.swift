@@ -70,36 +70,3 @@ class ShimmerNode: SKSpriteNode {
       ]), withKey: "shimmer")
   }
 }
-
-class MenuIcon: SKNode {
-  required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  
-  let shimmerNodes: [ShimmerNode]
-  var size: CGSize {
-    didSet {
-      
-    }
-  }
-  
-  init(size: CGSize) {
-    self.size = size
-    shimmerNodes = [ShimmerNode(), ShimmerNode(), ShimmerNode(), ShimmerNode()]
-    super.init()
-    for shimmerNode in shimmerNodes {
-      shimmerNode.alphaMin = 0.25
-      shimmerNode.alphaMax = 0.50
-      shimmerNode.shimmerSpeed = 4
-      shimmerNode.startMidShimmer()
-      addChild(shimmerNode)
-    }
-    fitToSize()
-  }
-  
-  private func fitToSize() {
-    for shimmerNode in shimmerNodes {shimmerNode.size = size * 0.5}
-    shimmerNodes[0].position = CGPoint(size.width * 0.25, size.height * 0.25)
-    shimmerNodes[1].position = CGPoint(-size.width * 0.25, size.height * 0.25)
-    shimmerNodes[2].position = CGPoint(size.width * 0.25, -size.height * 0.25)
-    shimmerNodes[3].position = CGPoint(-size.width * 0.25, -size.height * 0.25)
-  }
-}

@@ -74,6 +74,7 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
     speedControlNode.zPosition = 10
     
     refreshUndoRedoButtonStatus()
+    
     fitToSize()
   }
   
@@ -111,6 +112,8 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
     }
   }
   
+  override var size: CGSize {didSet{if size != oldValue {fitToSize()}}}
+  
   func fitToSize() {
     gridNode.rect = CGRect(origin: CGPointZero, size: size)
     let gridRect = CGRect(centerX: 0.5 * size.width, centerY: 0.5 * size.height,
@@ -121,11 +124,11 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
       width: size.width, height: bottomGapRect.height)
     
     toolbarNode.position = bottomGapRect.center
-    toolbarNode.fitToSize(topGapRect.size)
+    toolbarNode.size = topGapRect.size
     speedControlNode.position = bottomGapRect.center
     speedControlNode.size = bottomGapRect.size
     statusNode.position = topGapRect.center
-    statusNode.fitToSize(topGapRect.size)
+    statusNode.size = topGapRect.size
   }
   
   override func update(currentTime: NSTimeInterval) {
@@ -260,7 +263,6 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
   }
 
   func skipTape() {
-    speedControlNode.speedLabel.text = ""
     gameSpeed = 32
     if tapeTestResults[currentTapeTestIndex].kind == TapeTestResult.Kind.FailLoop {
       robotNode?.runAction(SKAction.sequence([SKAction.waitForDuration(0.5), SKAction.fadeAlphaTo(0, duration: 0.5)]))

@@ -108,18 +108,18 @@ class GridNode: SKNode {
     }
   }
   
-  var size: CGSize = CGSizeZero {
-    didSet {
-      let maxCellWidth = size.width / CGFloat(grid.space.columns)
-      let maxCellHeight = size.height / CGFloat(grid.space.rows)
-      let maxCellSize: CGFloat = 46.0
-      var cellSize = min(maxCellWidth, maxCellHeight, maxCellSize)
-      if cellSize > maxCellSize - 0.5 {cellSize = maxCellSize} // if close, let overlap
-      cellSize = round(cellSize)
-      let gridSize = CGSize(cellSize * CGFloat(grid.space.columns), cellSize * CGFloat(grid.space.rows))
-      wrapper.position = CGPoint((size.width - gridSize.width) * 0.5, (size.height - gridSize.height) * 0.5)
-      wrapper.setScale(cellSize)
-    }
+  var size: CGSize = CGSizeZero {didSet {if size != oldValue {fitToSize()}}}
+  
+  func fitToSize() {
+    let maxCellWidth = size.width / CGFloat(grid.space.columns)
+    let maxCellHeight = size.height / CGFloat(grid.space.rows)
+    let maxCellSize: CGFloat = 46.0
+    var cellSize = min(maxCellWidth, maxCellHeight, maxCellSize)
+    if cellSize > maxCellSize - 0.5 {cellSize = maxCellSize} // if close, let overlap
+    cellSize = round(cellSize)
+    let gridSize = CGSize(cellSize * CGFloat(grid.space.columns), cellSize * CGFloat(grid.space.rows))
+    wrapper.position = CGPoint((size.width - gridSize.width) * 0.5, (size.height - gridSize.height) * 0.5)
+    wrapper.setScale(cellSize)
   }
   
   var state: State = .Editing {
@@ -129,7 +129,7 @@ class GridNode: SKNode {
       case .Editing:
         break
       case .Waiting:
-        break
+        cancelSelection()
       }
     }
   }

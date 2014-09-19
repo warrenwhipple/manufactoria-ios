@@ -12,7 +12,6 @@ class TapeNode: SKNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   enum State {case Loading, Waiting, Writing, Deleting, Clearing}
   
-  var state: State = .Loading
   let dotWrapper = SKNode()
   var dots: [SKSpriteNode] = []
   var deletingDot: SKSpriteNode?
@@ -30,20 +29,37 @@ class TapeNode: SKNode {
     addChild(dotWrapper)
   }
   
+  var state: State = .Loading
+  
   func update(tickPercent: CGFloat) {
     switch state {
     case .Loading:
-      let ease = easeInOut(tickPercent)
-      let offsetX = -0.5 * CGFloat(dots.count) * ease
-      let tapeSpacing = min(dotSpacing, (width - dotSpacing) / CGFloat(dots.count))
-      var i = 0
-      for dot in dots {dot.position.x = tapeSpacing * (CGFloat(i++) * ease + offsetX)}
-      printer.position.x = tapeSpacing * (CGFloat(i) * ease + offsetX)
+      if tickPercent < 0.5 {
+        let ease = easeInOut(2 * tickPercent)
+        for dot in dots {
+          dot.position.x = 0
+          dot.setScale(ease)
+        }
+        printer.position.x = 0
+      } else {
+        let ease = easeInOut(2 * tickPercent - 1)
+        let offsetX = -0.5 * CGFloat(dots.count) * ease
+        let tapeSpacing = min(dotSpacing, (width - dotSpacing) / CGFloat(dots.count))
+        var i = 0
+        for dot in dots {
+          dot.position.x = tapeSpacing * (CGFloat(i++) * ease + offsetX)
+          dot.setScale(1)
+        }
+        printer.position.x = tapeSpacing * (CGFloat(i) * ease + offsetX)
+      }
     case .Waiting:
       let offsetX = -0.5 * CGFloat(dots.count)
       let tapeSpacing = min(dotSpacing, (width - dotSpacing) / CGFloat(dots.count))
       var i = 0
-      for dot in dots {dot.position.x = tapeSpacing * (CGFloat(i++) + offsetX)}
+      for dot in dots {
+        dot.position.x = tapeSpacing * (CGFloat(i++) + offsetX)
+        dot.setScale(1)
+      }
       printer.position.x = tapeSpacing * (CGFloat(i) + offsetX)
     case .Writing:
       if tickPercent < 0.5 {
@@ -51,7 +67,10 @@ class TapeNode: SKNode {
         let offsetX = -0.5 * CGFloat(dots.count - 1)
         let tapeSpacing = min(dotSpacing, (width - dotSpacing) / CGFloat(dots.count - 1))
         var i = 0
-        for dot in dots {dot.position.x = tapeSpacing * (CGFloat(i++) + offsetX)}
+        for dot in dots {
+          dot.position.x = tapeSpacing * (CGFloat(i++) + offsetX)
+          dot.setScale(1)
+        }
         if let lastDot = dots.last {lastDot.alpha = ease}
         printer.position.x = tapeSpacing * (CGFloat(i - 1) + offsetX)
       } else {
@@ -60,7 +79,10 @@ class TapeNode: SKNode {
         let offsetX = -0.5 * (easeLeft * CGFloat(dots.count - 1) + ease * CGFloat(dots.count))
         let tapeSpacing = easeLeft * min(dotSpacing, (width - dotSpacing) / CGFloat(dots.count - 1)) + ease * min(dotSpacing, (width - dotSpacing) / CGFloat(dots.count))
         var i = 0
-        for dot in dots {dot.position.x = tapeSpacing * (CGFloat(i++) + offsetX)}
+        for dot in dots {
+          dot.position.x = tapeSpacing * (CGFloat(i++) + offsetX)
+          dot.setScale(1)
+        }
         printer.position.x = tapeSpacing * ((easeLeft * CGFloat(i - 1) + ease * CGFloat(i)) + offsetX)
       }
     case .Deleting:
@@ -68,9 +90,15 @@ class TapeNode: SKNode {
         let easeLeft = 1 - easeInOut(2 * tickPercent)
         let offsetX = -0.5 * CGFloat(dots.count + 1)
         let tapeSpacing = min(dotSpacing, (width - dotSpacing) / CGFloat(dots.count + 1))
-        if let dot = deletingDot {dot.position.x = tapeSpacing * offsetX; dot.setScale(easeLeft)}
+        if let dot = deletingDot {
+          dot.position.x = tapeSpacing * offsetX
+          dot.setScale(easeLeft)
+        }
         var i = 1
-        for dot in dots {dot.position.x = tapeSpacing * (CGFloat(i++) + offsetX)}
+        for dot in dots {
+          dot.position.x = tapeSpacing * (CGFloat(i++) + offsetX)
+          dot.setScale(1)
+        }
         printer.position.x = tapeSpacing * (CGFloat(i) + offsetX)
       } else {
         let ease = easeInOut(2 * tickPercent - 1)
@@ -79,16 +107,31 @@ class TapeNode: SKNode {
         let offsetX = -0.5 * (easeLeft * CGFloat(dots.count - 1) + ease * CGFloat(dots.count))
         let tapeSpacing = easeLeft * min(dotSpacing, (width - dotSpacing) / CGFloat(dots.count + 1)) + ease * min(dotSpacing, (width - dotSpacing) / CGFloat(dots.count))
         var i = 0
-        for dot in dots {dot.position.x = tapeSpacing * (CGFloat(i++) + offsetX)}
+        for dot in dots {
+          dot.position.x = tapeSpacing * (CGFloat(i++) + offsetX)
+          dot.setScale(1)
+        }
         printer.position.x = tapeSpacing * (CGFloat(i) + offsetX)
+        printer.setScale(1)
       }
     case .Clearing:
-      let easeLeft = 1 - easeInOut(tickPercent)
-      let offsetX = -0.5 * CGFloat(dots.count) * easeLeft
-      var i = 0
-      let tapeSpacing = min(dotSpacing, (width - dotSpacing) / CGFloat(dots.count))
-      for dot in dots {dot.position.x = tapeSpacing * (CGFloat(i++) * easeLeft + offsetX)}
-      printer.position.x = tapeSpacing * (CGFloat(i) * easeLeft + offsetX)
+      if tickPercent < 0.5 {
+        let easeLeft = 1 - easeInOut(2 * tickPercent)
+        let offsetX = -0.5 * CGFloat(dots.count) * easeLeft
+        var i = 0
+        let tapeSpacing = min(dotSpacing, (width - dotSpacing) / CGFloat(dots.count))
+        for dot in dots {
+          dot.position.x = tapeSpacing * (CGFloat(i++) * easeLeft + offsetX)
+        }
+        printer.position.x = tapeSpacing * (CGFloat(i) * easeLeft + offsetX)
+      } else {
+        let easeLeft = 1 - easeInOut(2 * tickPercent - 1)
+        for dot in dots {
+          dot.position.x = 0
+          dot.setScale(easeLeft)
+        }
+        printer.position.x = 0
+      }
     }
   }
   
@@ -124,6 +167,7 @@ class TapeNode: SKNode {
       let dot = SKSpriteNode(texture: dotTexture)
       dot.color = character.color().uiColor()
       dot.colorBlendFactor = 1
+      dot.setScale(0)
       dotWrapper.addChild(dot)
       dots.append(dot)
     }
@@ -137,6 +181,7 @@ class TapeNode: SKNode {
     let dot = SKSpriteNode(texture: dotTexture)
     dot.color = color.uiColor()
     dot.colorBlendFactor = 1
+    dot.setScale(0)
     dots.append(dot)
     dotWrapper.addChild(dot)
     state = .Writing

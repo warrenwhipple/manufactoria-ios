@@ -37,6 +37,8 @@ class MenuScene: SKScene {
     fitToSize()
   }
   
+  override var size: CGSize {didSet{if size != oldValue {fitToSize()}}}  
+  
   func fitToSize() {
     let buttonSize = CGSize(size.width / 4, size.height / 7)
     var i = 0

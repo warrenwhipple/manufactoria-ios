@@ -16,7 +16,7 @@ class SpeedControlNode: SKNode {
   let slowerButton = Button(iconOffNamed: "speedIconOff", iconOnNamed: "speedIconOn")
   let fasterButton = Button(iconOffNamed: "speedIconOff", iconOnNamed: "speedIconOn")
   let skipButton = Button(iconOffNamed: "skipIconOff", iconOnNamed: "skipIconOn")
-  let speedLabel = SKLabelNode()
+  //let speedLabel = SKLabelNode()
   
   override init() {
     super.init()
@@ -24,11 +24,13 @@ class SpeedControlNode: SKNode {
     for child in backButton.children {(child as SKNode).xScale = -1}
     for child in slowerButton.children {(child as SKNode).xScale = -1}
 
+    /*
     speedLabel.fontMedium()
     speedLabel.fontColor = Globals.strokeColor
     speedLabel.horizontalAlignmentMode = .Center
     speedLabel.verticalAlignmentMode = .Center
     speedLabel.text = "1X"
+    */
     
     slowerButton.touchDownClosure = {
       [unowned self] in
@@ -59,18 +61,18 @@ class SpeedControlNode: SKNode {
     addChild(slowerButton)
     addChild(fasterButton)
     addChild(skipButton)
-    addChild(speedLabel)
+    //addChild(speedLabel)
   }
   
-  var size: CGSize = CGSizeZero {
-    didSet {
-      let positions = distributionForChildren(count: 5, childSize: Globals.iconRoughSize.width, parentSize: size.width)
-      backButton.position.x = positions[0]
-      slowerButton.position.x = positions[1]
-      speedLabel.position.x = positions[2]
-      fasterButton.position.x = positions[3]
-      skipButton.position.x = positions[4]
-    }
+  var size: CGSize = CGSizeZero {didSet{if size != oldValue {fitToSize()}}}
+
+  func fitToSize() {
+    let positions = distributionForChildren(count: 4, childSize: Globals.iconRoughSize.width, parentSize: size.width)
+    backButton.position.x = positions[0]
+    slowerButton.position.x = positions[1]
+    //speedLabel.position.x = positions[2]
+    fasterButton.position.x = positions[2]
+    skipButton.position.x = positions[3]
   }
   
   var isEnabled: Bool = false {

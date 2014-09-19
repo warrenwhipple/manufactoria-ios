@@ -20,10 +20,7 @@ class TitleScene: SKScene {
     title.fontColor = Globals.strokeColor
     title.verticalAlignmentMode = .Center
     title.text = "Manufactoria"
-    title.position = CGPoint(size.width * 0.5, size.height * 0.5 + 40)
     button = Button(iconOffNamed: "playIconOff", iconOnNamed: "playIconOn")
-    button.position = CGPoint(size.width * 0.5, size.height * 0.5 - 40)
-    button.size = size * 2
     super.init(size: size)
     backgroundColor = Globals.backgroundColor
     if gameData.levelsComplete == -1 {
@@ -41,5 +38,14 @@ class TitleScene: SKScene {
     }
     addChild(title)
     addChild(button)
+    fitToSize()
+  }
+  
+  override var size: CGSize {didSet{if size != oldValue {fitToSize()}}}
+  
+  func fitToSize() {
+    title.position = CGPoint(size.width * 0.5, size.height * 0.5 + 40)
+    button.position = CGPoint(size.width * 0.5, size.height * 0.5 - 40)
+    button.size = size * 2
   }
 }

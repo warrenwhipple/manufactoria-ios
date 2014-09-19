@@ -10,17 +10,16 @@ import SpriteKit
 
 class QuestionScene: SKScene {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  
+  let questionLabel = BreakingLabel()
+  let yesButton = Button(texture: nil, color: nil, size: CGSize(80))
+  let noButton = Button(texture: nil, color: nil, size: CGSize(80))
+
   init(questionText: String, yesText: String, noText: String, yesClosure: (()->()), noClosure: (()->()), size: CGSize) {
-    let midX = size.width * 0.5
-    let midY = size.height * 0.5
     
-    let questionLabel = BreakingLabel()
     questionLabel.fontMedium()
     questionLabel.fontColor = Globals.strokeColor
     questionLabel.verticalAlignmentMode = SKLabelVerticalAlignmentMode.Bottom
     questionLabel.text = questionText
-    questionLabel.position = CGPoint(midX, midY + questionLabel.lineHeight * questionLabel.fontSize)
     
     let yesLabel = BreakingLabel()
     yesLabel.fontMedium()
@@ -32,14 +31,10 @@ class QuestionScene: SKScene {
     noLabel.fontColor = Globals.strokeColor
     noLabel.text = noText
         
-    let yesButton = Button(texture: nil, color: nil, size: CGSize(80))
     yesButton.touchUpInsideClosure = yesClosure
-    yesButton.position = CGPoint(midX - 70, midY - 40)
     yesButton.addChild(yesLabel)
     
-    let noButton = Button(texture: nil, color: nil, size: CGSize(80))
     noButton.touchUpInsideClosure = noClosure
-    noButton.position = CGPoint(midX + 70, midY - 40)
     noButton.addChild(noLabel)
     
     super.init(size: size)
@@ -48,5 +43,17 @@ class QuestionScene: SKScene {
     addChild(questionLabel)
     addChild(yesButton)
     addChild(noButton)
+    
+    fitToSize()
+  }
+  
+  override var size: CGSize {didSet{if size != oldValue {fitToSize()}}}
+  
+  func fitToSize() {
+    let midX = size.width * 0.5
+    let midY = size.height * 0.5
+    questionLabel.position = CGPoint(midX, midY + questionLabel.lineHeight * questionLabel.fontSize)
+    yesButton.position = CGPoint(midX - 70, midY - 40)
+    noButton.position = CGPoint(midX + 70, midY - 40)
   }
 }

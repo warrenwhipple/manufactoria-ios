@@ -120,8 +120,8 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
     confirmButton.userInteractionEnabled = false
   }
   
-  override func fitToSize(size: CGSize) {
-    super.fitToSize(size)
+  override func fitToSize() {
+    super.fitToSize()
     let iconSize = Globals.iconRoughSize
     let buttonTouchHeight = min(iconSize.height * 2, size.height / 2)
     func distributeButtons(buttons: [Button]) {
