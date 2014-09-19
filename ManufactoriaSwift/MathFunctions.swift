@@ -42,3 +42,12 @@ func easeInOut(t: CGFloat) -> CGFloat {
   let tt = t*t;
   return 3*tt - 2*tt*t
 }
+
+func easeIn(t: CGFloat) -> CGFloat {
+  return t*t
+}
+
+func easeOut(t: CGFloat) -> CGFloat {
+  let tt = t*t;
+  return 3*tt - 2*tt*t
+}

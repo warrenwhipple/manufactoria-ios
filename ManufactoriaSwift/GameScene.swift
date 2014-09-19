@@ -152,38 +152,37 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
       case .Entering:
         if tickPercent >= 1 {
           tickPercent -= 1
-          statusNode.tapeNode.tickComplete()
-          //robotNode?.alpha = 1
+          statusNode.tapeNode.state = .Waiting
           robotNode?.setScale(1 / gridNode.wrapper.xScale)
           robotState = .Testing
           fallthrough
         } else {
-          //robotNode?.alpha = tickPercent
           robotNode?.setScale(tickPercent / gridNode.wrapper.xScale)
         }
       case .Testing:
         while tickPercent >= 1 {
           tickPercent -= 1
-          statusNode.tapeNode.tickComplete()
           let testResult = levelData.grid.testCoord(robotCoord, lastCoord: lastRobotCoord, tape: &tape)
           let tapeLength = tape.length()
           if tapeLength > lastTapeLength && tapeLength > 0 {
             statusNode.tapeNode.writeColor(tape[-1].color())
           } else if tapeLength < lastTapeLength {
             statusNode.tapeNode.deleteColor()
+          } else {
+            statusNode.tapeNode.state = .Waiting
           }
           lastTapeLength = tapeLength
           lastRobotCoord = robotCoord
           var fallthroughRobotStateSwitch = false
           switch testResult {
           case .Accept:
-            statusNode.tapeNode.clearTape()
+            statusNode.tapeNode.state = .Exiting
             robotNode?.setScale(1 / gridNode.wrapper.xScale)
             robotNode?.position = CGPoint(x: CGFloat(robotCoord.i) + 0.5,y: CGFloat(robotCoord.j) + 0.5)
             robotState = .Exiting
             fallthroughRobotStateSwitch = true
           case .Reject:
-            statusNode.tapeNode.clearTape()
+            statusNode.tapeNode.state = .Exiting
             robotNode?.setScale(1 / gridNode.wrapper.xScale)
             robotNode?.position = CGPoint(x: CGFloat(robotCoord.i) + 0.5,y: CGFloat(robotCoord.j) + 0.5)
             robotState = .Falling
