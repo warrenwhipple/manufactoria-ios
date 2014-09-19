@@ -39,7 +39,7 @@ func randBool() -> Bool {
 }
 
 func easeInOut(t: CGFloat) -> CGFloat {
-  let tt = t*t;
+  let tt = t*t
   return 3*tt - 2*tt*t
 }
 
@@ -48,6 +48,5 @@ func easeIn(t: CGFloat) -> CGFloat {
 }
 
 func easeOut(t: CGFloat) -> CGFloat {
-  let tt = t*t;
-  return 3*tt - 2*tt*t
+  return -t*(t-2)
 }

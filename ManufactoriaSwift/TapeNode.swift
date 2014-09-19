@@ -87,8 +87,13 @@ class TapeNode: SKNode {
   func update(tickPercent: CGFloat) {
     switch state {
     case .OffScreen, .Waiting: break
-    case .Entering: break
-      // TODO: this
+    case .Entering:
+      let easeLeft = 1 - easeOut(tickPercent)
+      let offsetX = -0.5 * CGFloat(dots.count)
+      let tapeSpacing = min(dotSpacing, (width - dotSpacing) / CGFloat(dots.count))
+      var i = 0
+      for dot in dots {dot.position.x = tapeSpacing * (CGFloat(i++) + offsetX) - width * easeLeft}
+      printer.position.x = max(0, tapeSpacing * (CGFloat(i) + offsetX) - width * easeLeft)
     case .Writing:
       if tickPercent < 0.5 {
         let ease = easeInOut(2 * tickPercent)
@@ -112,11 +117,12 @@ class TapeNode: SKNode {
       }
     case .Deleting:
       if tickPercent < 0.5 {
-        let easeLeft = 1 - easeInOut(2 * tickPercent)
+        let ease = easeInOut(2 * tickPercent)
         let offsetX = -0.5 * CGFloat(dots.count + 1)
         let tapeSpacing = min(dotSpacing, (width - dotSpacing) / CGFloat(dots.count + 1))
         deletingDot?.position.x = tapeSpacing * offsetX
-        deletingDot?.setScale(easeLeft)
+        deletingDot?.setScale(1 + ease)
+        deletingDot?.alpha = (1 - ease)
         var i = 1
         for dot in dots {
           dot.position.x = tapeSpacing * (CGFloat(i++) + offsetX)
@@ -127,7 +133,8 @@ class TapeNode: SKNode {
         let easeLeft = 1 - ease
         let offsetX = -0.5 * (easeLeft * CGFloat(dots.count - 1) + ease * CGFloat(dots.count))
         let tapeSpacing = easeLeft * min(dotSpacing, (width - dotSpacing) / CGFloat(dots.count + 1)) + ease * min(dotSpacing, (width - dotSpacing) / CGFloat(dots.count))
-        deletingDot?.setScale(0)
+        deletingDot?.setScale(2)
+        deletingDot?.alpha = 0
         var i = 0
         for dot in dots {
           dot.position.x = tapeSpacing * (CGFloat(i++) + offsetX)
@@ -136,8 +143,13 @@ class TapeNode: SKNode {
         printer.position.x = tapeSpacing * (CGFloat(i) + offsetX)
         printer.setScale(1)
       }
-    case .Exiting: break
-      // TODO: this
+    case .Exiting:
+      let ease = easeIn(tickPercent)
+      let offsetX = -0.5 * CGFloat(dots.count)
+      let tapeSpacing = min(dotSpacing, (width - dotSpacing) / CGFloat(dots.count))
+      var i = 0
+      for dot in dots {dot.position.x = tapeSpacing * (CGFloat(i++) + offsetX) - width * ease}
+      printer.position.x = max(0, tapeSpacing * (CGFloat(i) + offsetX) - width * ease)
     }
   }
   

@@ -242,6 +242,7 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
       tape = (tapeTestResults[i].input)
     }
     statusNode.tapeNode.loadTape(tape)
+    statusNode.tapeNode.state = .Entering
     lastTapeLength = tape.length()
     robotState = .Entering
     robotCoord = levelData.grid.startCoord + 1
@@ -249,8 +250,6 @@ class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, 
     robotNode = SKSpriteNode("robut")
     robotNode?.position = CGPoint(CGFloat(lastRobotCoord.i) + 0.5, CGFloat(lastRobotCoord.j) + 0.5)
     robotNode?.zPosition = 2
-    //robotNode?.setScale(1 / gridNode.wrapper.xScale)
-    //robotNode?.alpha = 0
     robotNode?.setScale(0)
     gridNode.wrapper.addChild(robotNode!)
   }
