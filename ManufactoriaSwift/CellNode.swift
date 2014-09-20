@@ -8,10 +8,15 @@
 
 import SpriteKit
 
+private var pointSize: CGFloat?
+private var sizeString: String?
+private var beltTexture, beltHalfTexture, pusherTexture, pullerHalfTexture, enterExitArrowTexture: SKTexture?
+
 class CellNode: SKNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   
   let belt, bridge, pusher, pullerLeft, pullerRight, glowNode: SKSpriteNode
+  let enterExitArrow: SKSpriteNode?
   let puller: SKNode
   let shimmerNode: ShimmerNode
   var cell = Cell(kind: .Blank, direction: Direction.North)
@@ -19,39 +24,94 @@ class CellNode: SKNode {
   var isSelected = false
   
   override init() {
-    belt = SKSpriteNode(color: Globals.strokeColor, size: Globals.beltSize)
+    belt = SKSpriteNode()
     belt.zPosition = 1
     belt.colorBlendFactor = 1
+    belt.color = Globals.strokeColor
 
-    bridge = SKSpriteNode(color: Globals.strokeColor, size: Globals.beltSize)
+    bridge = SKSpriteNode()
     bridge.zPosition = 1
     bridge.zRotation = CGFloat(-M_PI_2)
     bridge.colorBlendFactor = 1
+    belt.color = Globals.strokeColor
     
-    pusher = SKSpriteNode("pusher")
+    pusher = SKSpriteNode()
     pusher.zPosition = 3
+    pusher.colorBlendFactor = 1
     
     puller = SKNode()
-    pullerLeft = SKSpriteNode("pullerHalf")
-    pullerRight = SKSpriteNode("pullerHalf")
+    pullerLeft = SKSpriteNode()
+    pullerRight = SKSpriteNode()
     puller.zPosition = 3
     pullerLeft.anchorPoint = CGPoint(1, 0.5)
     pullerRight.anchorPoint = CGPoint(1, 0.5)
-    pullerRight.xScale = -1
+    pullerRight.zRotation = CGFloat(M_PI)
+    pullerLeft.colorBlendFactor = 1
+    pullerRight.colorBlendFactor = 1
     puller.addChild(pullerLeft)
     puller.addChild(pullerRight)
     
-    glowNode = SKSpriteNode(color: Globals.highlightColor, size: Globals.cellSize)
+    glowNode = SKSpriteNode()
+    glowNode.color = Globals.highlightColor
     glowNode.zPosition = 4
     glowNode.alpha = 0
     
-    shimmerNode = ShimmerNode(size: Globals.cellSize)
+    shimmerNode = ShimmerNode()
 
     super.init()
-    self.setScale(1 / Globals.cellSize.width)
     
     addChild(glowNode)
     addChild(shimmerNode)
+  }
+  
+  class func loadSharedTexturesForPointSize(newPointSize: CGFloat) -> SKTexture {
+    if newPointSize == pointSize {return beltTexture ?? SKTexture()}
+    pointSize = newPointSize
+    println(newPointSize)
+    if pointSize > 46 {
+      sizeString = "64"
+    } else if pointSize > 36 {
+      sizeString = "46"
+    } else if pointSize > 29 {
+      sizeString = "36"
+    } else {
+      sizeString = "29"
+    }
+    beltTexture = SKTexture(imageNamed: "belt" + sizeString!)
+    beltHalfTexture = SKTexture(rect: CGRect(x: 0, y: 0, width: 1, height: 0.5), inTexture: beltTexture!)
+    pusherTexture = SKTexture(imageNamed: "pusher" + sizeString!)
+    pullerHalfTexture = SKTexture(imageNamed: "pullerHalf" + sizeString!)
+    enterExitArrowTexture = SKTexture(imageNamed: "enterExitArrow" + sizeString!)
+    return beltTexture ?? SKTexture()
+  }
+  
+  class func unloadSharedTextures() {
+    pointSize = nil
+    sizeString = nil
+    beltTexture = nil
+    beltHalfTexture = nil
+    pusherTexture = nil
+    pullerHalfTexture = nil
+    enterExitArrowTexture = nil
+  }
+  
+  func assignSharedTextures() {
+    if pointSize == nil {return}
+    belt.texture = beltHalfTexture!
+    belt.size = beltHalfTexture!.size()
+    bridge.texture = beltHalfTexture!
+    bridge.size = beltHalfTexture!.size()
+    pusher.texture = pusherTexture!
+    pusher.size = pusherTexture!.size()
+    pullerLeft.texture = pullerHalfTexture!
+    pullerLeft.size = pullerHalfTexture!.size()
+    pullerRight.texture = pullerHalfTexture!
+    pullerRight.size = pullerHalfTexture!.size()
+    enterExitArrow?.texture = enterExitArrowTexture!
+    enterExitArrow?.size = enterExitArrowTexture!.size()
+    glowNode.size = CGSize(pointSize!)
+    shimmerNode.size = CGSize(pointSize!)
+    self.setScale(1 / pointSize!)
   }
   
   func update(dt: NSTimeInterval, clippedBeltTexture: SKTexture) {

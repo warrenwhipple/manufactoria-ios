@@ -113,8 +113,6 @@ class StatusNode: SwipeNode {
     failLabel.position = label.position
     failTapeNode?.position = tapeNode.position
     failTapeNode?.width = tapeNode.width
-    leftArrow.position.y = label.position.y
-    rightArrow.position.y = label.position.y
   }
   
   var state: State = .Editing {

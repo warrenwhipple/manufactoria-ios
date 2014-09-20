@@ -22,7 +22,6 @@
 		2D60F5C9198156250032860B /* GameData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D60F5C8198156250032860B /* GameData.swift */; };
 		2D62A46119929CC7002CD03F /* Globals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D62A46019929CC7002CD03F /* Globals.swift */; };
 		2D7F922C195C61FA00F04F63 /* ToolbarNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7F922B195C61FA00F04F63 /* ToolbarNode.swift */; };
-		2D7F92321960A14500F04F63 /* belt@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2D7F92311960A14500F04F63 /* belt@2x.png */; };
 		2D849F3619A39EB6008F3D69 /* CoreGraphicsExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D849F3519A39EB6008F3D69 /* CoreGraphicsExtensions.swift */; };
 		2D8C19A3199696A90064B790 /* SwipeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8C19A2199696A90064B790 /* SwipeNode.swift */; };
 		2DC0167719CCCA50003D922A /* belt36@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2DC0167619CCCA50003D922A /* belt36@2x.png */; };
@@ -76,7 +75,6 @@
 		2D60F5C8198156250032860B /* GameData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameData.swift; sourceTree = "<group>"; };
 		2D62A46019929CC7002CD03F /* Globals.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Globals.swift; sourceTree = "<group>"; };
 		2D7F922B195C61FA00F04F63 /* ToolbarNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToolbarNode.swift; sourceTree = "<group>"; };
-		2D7F92311960A14500F04F63 /* belt@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "belt@2x.png"; path = "../../../Documents/ManufactoriaSwift/gameScene/belt@2x.png"; sourceTree = "<group>"; };
 		2D849F3519A39EB6008F3D69 /* CoreGraphicsExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreGraphicsExtensions.swift; sourceTree = "<group>"; };
 		2D8C19A2199696A90064B790 /* SwipeNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwipeNode.swift; sourceTree = "<group>"; };
 		2DC0167619CCCA50003D922A /* belt36@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "belt36@2x.png"; path = "../../../Documents/ManufactoriaSwift/gameScene/belt36@2x.png"; sourceTree = "<group>"; };
@@ -129,7 +127,6 @@
 		2D9A097A195643680007F6A4 /* Images */ = {
 			isa = PBXGroup;
 			children = (
-				2D7F92311960A14500F04F63 /* belt@2x.png */,
 				2DC0167A19CCCEBE003D922A /* belt29@2x.png */,
 				2DC0167619CCCA50003D922A /* belt36@2x.png */,
 				2DC0167E19CDCD66003D922A /* belt46@2x.png */,
@@ -322,7 +319,6 @@
 				2DC0167B19CCCEBE003D922A /* belt29@2x.png in Resources */,
 				2DC4913A194F45B800053237 /* Main.storyboard in Resources */,
 				2D1CC15D195B59C000579575 /* gameScene.atlas in Resources */,
-				2D7F92321960A14500F04F63 /* belt@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

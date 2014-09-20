@@ -19,8 +19,10 @@ class MenuScene: SKScene {
     for i in 0 ..< LevelLibrary.count {
       tempLevelButtons.append(LevelButton(levelNumber: i, text: LevelLibrary[i].tag, isEnabled: i <= gameData.levelsComplete))
     }
-    if tempLevelButtons.count < 26 {
-      for i in tempLevelButtons.count ..< 26 {
+    var totalButtons = 26
+    if IPAD {totalButtons = 33}
+    if tempLevelButtons.count < totalButtons {
+      for i in tempLevelButtons.count ..< totalButtons {
         tempLevelButtons.append(LevelButton(levelNumber: i, text: "", isEnabled: false))
       }
     }
@@ -40,13 +42,19 @@ class MenuScene: SKScene {
   override var size: CGSize {didSet{if size != oldValue {fitToSize()}}}  
   
   func fitToSize() {
-    let buttonSize = CGSize(size.width / 4, size.height / 7)
+    var columns = 4
+    if IPAD {columns = 5}
+    let buttonWidth = size.width / CGFloat(columns)
+    let rows = Int(round(size.height / buttonWidth))
+    let buttonHeight = size.height / CGFloat(rows)
+    
+    let buttonSize = CGSize(buttonWidth, buttonHeight)
     var i = 0
     for levelButton in levelButtons {
       levelButton.shimmerNode.size = buttonSize
       levelButton.position = CGPoint(
-        x: (CGFloat(i % 4) + 0.5) * buttonSize.width,
-        y: -(CGFloat(i / 4) + 0.5) * buttonSize.height
+        x: (CGFloat(i % columns) + 0.5) * buttonWidth,
+        y: -(CGFloat(i / columns) + 0.5) * buttonHeight
       )
       i++
     }

@@ -116,13 +116,16 @@ class GridNode: SKNode {
   func fitToSize() {
     let maxCellWidth = size.width / CGFloat(grid.space.columns)
     let maxCellHeight = size.height / CGFloat(grid.space.rows)
-    let maxCellSize: CGFloat = 46.0
+    var maxCellSize: CGFloat = 46
+    if IPAD {maxCellSize = 64}
     var cellSize = min(maxCellWidth, maxCellHeight, maxCellSize)
     if cellSize > maxCellSize - 0.5 {cellSize = maxCellSize} // if close, let overlap
     cellSize = round(cellSize)
     let gridSize = CGSize(cellSize * CGFloat(grid.space.columns), cellSize * CGFloat(grid.space.rows))
     wrapper.position = CGPoint((size.width - gridSize.width) * 0.5, (size.height - gridSize.height) * 0.5)
     wrapper.setScale(cellSize)
+    beltTexture = CellNode.loadSharedTexturesForPointSize(cellSize)
+    for cellNode in cellNodes {cellNode.assignSharedTextures()}
   }
   
   var state: State = .Editing {
