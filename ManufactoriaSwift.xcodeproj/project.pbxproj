@@ -25,6 +25,11 @@
 		2D7F92321960A14500F04F63 /* belt@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2D7F92311960A14500F04F63 /* belt@2x.png */; };
 		2D849F3619A39EB6008F3D69 /* CoreGraphicsExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D849F3519A39EB6008F3D69 /* CoreGraphicsExtensions.swift */; };
 		2D8C19A3199696A90064B790 /* SwipeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8C19A2199696A90064B790 /* SwipeNode.swift */; };
+		2DC0167719CCCA50003D922A /* belt36@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2DC0167619CCCA50003D922A /* belt36@2x.png */; };
+		2DC0167B19CCCEBE003D922A /* belt29@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2DC0167A19CCCEBE003D922A /* belt29@2x.png */; };
+		2DC0167D19CDC32E003D922A /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2DC0167C19CDC32E003D922A /* Media.xcassets */; };
+		2DC0168019CDCD66003D922A /* belt46@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2DC0167E19CDCD66003D922A /* belt46@2x.png */; };
+		2DC0168119CDCD66003D922A /* belt64@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2DC0167F19CDCD66003D922A /* belt64@2x.png */; };
 		2DC1CD6919AFB75900589B86 /* FailTapeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC1CD6819AFB75900589B86 /* FailTapeNode.swift */; };
 		2DC49131194F45B800053237 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC49130194F45B800053237 /* AppDelegate.swift */; };
 		2DC49135194F45B800053237 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC49134194F45B800053237 /* GameScene.swift */; };
@@ -74,6 +79,11 @@
 		2D7F92311960A14500F04F63 /* belt@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "belt@2x.png"; path = "../../../Documents/ManufactoriaSwift/gameScene/belt@2x.png"; sourceTree = "<group>"; };
 		2D849F3519A39EB6008F3D69 /* CoreGraphicsExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreGraphicsExtensions.swift; sourceTree = "<group>"; };
 		2D8C19A2199696A90064B790 /* SwipeNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwipeNode.swift; sourceTree = "<group>"; };
+		2DC0167619CCCA50003D922A /* belt36@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "belt36@2x.png"; path = "../../../Documents/ManufactoriaSwift/gameScene/belt36@2x.png"; sourceTree = "<group>"; };
+		2DC0167A19CCCEBE003D922A /* belt29@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "belt29@2x.png"; path = "../../../Documents/ManufactoriaSwift/gameScene/belt29@2x.png"; sourceTree = "<group>"; };
+		2DC0167C19CDC32E003D922A /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
+		2DC0167E19CDCD66003D922A /* belt46@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "belt46@2x.png"; path = "../../../Documents/ManufactoriaSwift/gameScene/belt46@2x.png"; sourceTree = "<group>"; };
+		2DC0167F19CDCD66003D922A /* belt64@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "belt64@2x.png"; path = "../../../Documents/ManufactoriaSwift/gameScene/belt64@2x.png"; sourceTree = "<group>"; };
 		2DC1CD6819AFB75900589B86 /* FailTapeNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FailTapeNode.swift; sourceTree = "<group>"; };
 		2DC4912B194F45B800053237 /* ManufactoriaSwift.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ManufactoriaSwift.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2DC4912F194F45B800053237 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -120,6 +130,10 @@
 			isa = PBXGroup;
 			children = (
 				2D7F92311960A14500F04F63 /* belt@2x.png */,
+				2DC0167A19CCCEBE003D922A /* belt29@2x.png */,
+				2DC0167619CCCA50003D922A /* belt36@2x.png */,
+				2DC0167E19CDCD66003D922A /* belt46@2x.png */,
+				2DC0167F19CDCD66003D922A /* belt64@2x.png */,
 				2D1CC15B195B59C000579575 /* gameScene.atlas */,
 			);
 			name = Images;
@@ -166,6 +180,7 @@
 				2DC49151194F4BEB00053237 /* GameScene */,
 				2D9A097A195643680007F6A4 /* Images */,
 				2DC4913B194F45B800053237 /* Images.xcassets */,
+				2DC0167C19CDC32E003D922A /* Media.xcassets */,
 				2DC4912E194F45B800053237 /* Supporting Files */,
 			);
 			path = ManufactoriaSwift;
@@ -300,6 +315,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				2DC4913C194F45B800053237 /* Images.xcassets in Resources */,
+				2DC0167719CCCA50003D922A /* belt36@2x.png in Resources */,
+				2DC0167D19CDC32E003D922A /* Media.xcassets in Resources */,
+				2DC0168119CDCD66003D922A /* belt64@2x.png in Resources */,
+				2DC0168019CDCD66003D922A /* belt46@2x.png in Resources */,
+				2DC0167B19CCCEBE003D922A /* belt29@2x.png in Resources */,
 				2DC4913A194F45B800053237 /* Main.storyboard in Resources */,
 				2D1CC15D195B59C000579575 /* gameScene.atlas in Resources */,
 				2D7F92321960A14500F04F63 /* belt@2x.png in Resources */,

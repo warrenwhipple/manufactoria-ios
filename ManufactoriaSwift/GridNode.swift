@@ -45,8 +45,8 @@ class GridNode: SKNode {
   let cellNodes: [CellNode]
   let enterArrow, exitArrow: SKSpriteNode
   var beltShift: Float = 0.0
-  let beltTexture = SKTexture(imageNamed: "belt")
-  var clippedBeltTexture = SKTexture()
+  var beltTexture: SKTexture
+  var clippedBeltTexture: SKTexture
   var editTouch: UITouch?
   var editCoord = GridCoord(0, 0)
   var selectShouldUnselect = false
@@ -85,6 +85,9 @@ class GridNode: SKNode {
     exitArrow.zPosition = 20
     exitArrow.position = CGPoint(CGFloat(grid.endCoord.i) + 0.5, CGFloat(grid.endCoord.j))
     wrapper.addChild(exitArrow)
+    
+    beltTexture = SKTexture(imageNamed: "belt")
+    clippedBeltTexture = SKTexture(rect: CGRect(x: 0, y: 0.5, width: 1, height: 0.5), inTexture: beltTexture)
     
     super.init()
     

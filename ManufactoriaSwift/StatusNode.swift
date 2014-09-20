@@ -28,13 +28,13 @@ class StatusNode: SwipeNode {
   var rightButtonPoint = CGPointZero
   var leftButtonExitPoint = CGPointZero
   var rightButtonExitPoint = CGPointZero
+  var menuButtonLabel = SKLabelNode()
+  var nextButtonLabel = SKLabelNode()
   let tapeNode = TapeNode()
   let instructions: String
-  
   let failPage = SKNode()
   let failLabel = BreakingLabel()
   var failTapeNode: FailTapeNode?
-  
   var thinkingAnimationDone = false
   
   init(instructions: String) {
@@ -56,12 +56,32 @@ class StatusNode: SwipeNode {
     
     super.init(pages: [instructionsPage, failPage], texture: nil, color: nil, size: CGSizeZero)
     
+    tapeNode.printer.setScale(0)
+    
     testButton.swipeThroughDelegate = self
     testButton.touchUpInsideClosure = {[unowned self] in self.delegate.testButtonPressed()}
     menuButton.swipeThroughDelegate = self
     menuButton.touchUpInsideClosure = {[unowned self] in self.delegate.menuButtonPressed()}
     nextButton.swipeThroughDelegate = self
     nextButton.touchUpInsideClosure = {[unowned self] in self.delegate.nextButtonPressed()}
+    
+    menuButtonLabel.fontMedium()
+    menuButtonLabel.fontColor = Globals.strokeColor
+    menuButtonLabel.verticalAlignmentMode = .Center
+    menuButtonLabel.horizontalAlignmentMode = .Right
+    menuButtonLabel.position.x = -Globals.iconRoughSize.width
+    menuButtonLabel.alpha = 0
+    menuButtonLabel.runAction(SKAction.sequence([SKAction.waitForDuration(3), SKAction.fadeAlphaTo(1, duration: 1)]))
+    menuButtonLabel.text = "menu"
+
+    nextButtonLabel.fontMedium()
+    nextButtonLabel.fontColor = Globals.strokeColor
+    nextButtonLabel.verticalAlignmentMode = .Center
+    nextButtonLabel.horizontalAlignmentMode = .Left
+    nextButtonLabel.position.x = Globals.iconRoughSize.width
+    nextButtonLabel.alpha = 0
+    nextButtonLabel.runAction(SKAction.sequence([SKAction.waitForDuration(3), SKAction.fadeAlphaTo(1, duration: 1)]))
+    nextButtonLabel.text = "next"
     
     // can't swipe at first
     userInteractionEnabled = false
@@ -137,10 +157,12 @@ class StatusNode: SwipeNode {
         label.runAction(SKAction.fadeAlphaTo(0, duration: 0.2))
         menuButton.userInteractionEnabled = true
         menuButton.position = CGPoint(leftButtonExitPoint.x, 0)
+        menuButton.addChild(menuButtonLabel)
         instructionsPage.addChild(menuButton)
         menuButton.runAction(SKAction.moveToX(leftButtonPoint.x, duration: 0.6).easeOut(), withKey: "move")
         nextButton.userInteractionEnabled = true
         nextButton.position = CGPoint(rightButtonExitPoint.x, 0)
+        nextButton.addChild(nextButtonLabel)
         instructionsPage.addChild(nextButton)
         nextButton.runAction(SKAction.moveToX(rightButtonPoint.x, duration: 0.6).easeOut(), withKey: "move")
         tapeNode.unloadTape()

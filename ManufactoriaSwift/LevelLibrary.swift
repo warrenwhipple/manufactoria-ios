@@ -136,7 +136,7 @@ var LevelLibrary: [LevelSetup] = [
   
   LevelSetup(
     tag: "B",
-    instructions: "Accept blue: to the exit.\nReject red: to the floor.",
+    instructions: "Accept blue: Transport to the exit.\nReject red: Dump on the floor.",
     space: GridSpace(3),
     editModes: [.PullerBR],
     exemplars: ["r", "b"],

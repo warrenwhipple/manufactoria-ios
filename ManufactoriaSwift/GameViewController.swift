@@ -9,6 +9,8 @@
 import UIKit
 import SpriteKit
 
+let IPAD: Bool = UIDevice.currentDevice().userInterfaceIdiom == .Pad
+
 class GameViewController: UIViewController {
   
   override func viewDidLoad() {
