@@ -38,7 +38,7 @@ class ManufactoriaScene: SKScene {
   
   func transitionToGameSceneWithLevelNumber(levelNumber: Int) {
     if levelNumber == 0 && GameData.sharedInstance.levelsComplete == 0 {
-      view?.presentScene(FirstTutorialScene(size: view!.bounds.size),
+      view?.presentScene(BeltTutorialScene(size: view!.bounds.size),
         transition: SKTransition.pushWithDirection(.Left, duration: 0.5).outInPlay())
     } else {
       view?.presentScene(GameScene(size: view!.bounds.size, levelNumber: levelNumber),

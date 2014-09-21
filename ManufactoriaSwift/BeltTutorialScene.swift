@@ -1,5 +1,5 @@
 //
-//  FirstTutorialScene.swift
+//  BeltTutorialScene.swift
 //  ManufactoriaSwift
 //
 //  Created by Warren Whipple on 8/15/14.
@@ -8,14 +8,21 @@
 
 import SpriteKit
 
-class FirstTutorialScene: GameScene {
+class BeltTutorialScene: GameScene {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   var testButtonIsHidden = true
   
   init(size: CGSize) {
     super.init(size: size, levelNumber: 0)
+    statusNode.menuButton.removeFromParent()
     statusNode.testButton.alpha = 0
     toolbarNode.removeFromParent()
+  }
+  
+  override func fitToSize() {
+    super.fitToSize()
+    statusNode.label.position = CGPointZero
+    statusNode.testButton.position = CGPointZero
   }
     
   func checkTutorialGrid() -> Bool {
@@ -40,15 +47,19 @@ class FirstTutorialScene: GameScene {
   func showTestButton() {
     if !testButtonIsHidden {return}
     testButtonIsHidden = false
-    statusNode.label.runAction(SKAction.fadeAlphaTo(0, duration: 1))
-    statusNode.testButton.alpha = 1
+    statusNode.label.runAction(SKAction.fadeAlphaTo(0, duration: 0.2), withKey: "fade")
+    statusNode.testButton.runAction(SKAction.sequence([
+      SKAction.fadeAlphaTo(1, duration: 0.2)
+      ]), withKey: "fade")
   }
   
   func hideTestButton() {
     if testButtonIsHidden {return}
     testButtonIsHidden = true
-    statusNode.label.runAction(SKAction.fadeAlphaTo(1, duration: 1))
-    statusNode.testButton.alpha = 0
+    statusNode.label.runAction(SKAction.sequence([
+      SKAction.fadeAlphaTo(1, duration: 0.2)
+      ]), withKey: "fade")
+    statusNode.testButton.runAction(SKAction.fadeAlphaTo(0, duration: 0.2), withKey: "fade")
   }
   
   override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {

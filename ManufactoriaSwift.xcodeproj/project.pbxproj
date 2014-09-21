@@ -11,7 +11,7 @@
 		2D15929A19514B4900A96BCC /* GridNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D15929919514B4900A96BCC /* GridNode.swift */; };
 		2D15929C19514B5400A96BCC /* CellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D15929B19514B5400A96BCC /* CellNode.swift */; };
 		2D1CC15D195B59C000579575 /* gameScene.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 2D1CC15B195B59C000579575 /* gameScene.atlas */; };
-		2D2D26AB199E610D00EC4A45 /* FirstTutorialScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2D26AA199E610D00EC4A45 /* FirstTutorialScene.swift */; };
+		2D2D26AB199E610D00EC4A45 /* BeltTutorialScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2D26AA199E610D00EC4A45 /* BeltTutorialScene.swift */; };
 		2D336E8919534044008E55A9 /* MathFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D336E8819534044008E55A9 /* MathFunctions.swift */; };
 		2D37934519965135000B10EB /* Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D37934419965135000B10EB /* Button.swift */; };
 		2D4729CD19BB91110072E52D /* LiftedGridNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4729CC19BB91110072E52D /* LiftedGridNode.swift */; };
@@ -65,7 +65,7 @@
 		2D15929919514B4900A96BCC /* GridNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridNode.swift; sourceTree = "<group>"; };
 		2D15929B19514B5400A96BCC /* CellNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CellNode.swift; sourceTree = "<group>"; };
 		2D1CC15B195B59C000579575 /* gameScene.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; name = gameScene.atlas; path = ../../../Documents/ManufactoriaSwift/gameScene/gameScene.atlas; sourceTree = "<group>"; };
-		2D2D26AA199E610D00EC4A45 /* FirstTutorialScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FirstTutorialScene.swift; sourceTree = "<group>"; };
+		2D2D26AA199E610D00EC4A45 /* BeltTutorialScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BeltTutorialScene.swift; sourceTree = "<group>"; };
 		2D336E8819534044008E55A9 /* MathFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MathFunctions.swift; sourceTree = "<group>"; };
 		2D37934419965135000B10EB /* Button.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
 		2D4729CC19BB91110072E52D /* LiftedGridNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LiftedGridNode.swift; sourceTree = "<group>"; };
@@ -215,7 +215,7 @@
 			isa = PBXGroup;
 			children = (
 				2DC49134194F45B800053237 /* GameScene.swift */,
-				2D2D26AA199E610D00EC4A45 /* FirstTutorialScene.swift */,
+				2D2D26AA199E610D00EC4A45 /* BeltTutorialScene.swift */,
 				2DC4915C194F621A00053237 /* Grid.swift */,
 				2D15929919514B4900A96BCC /* GridNode.swift */,
 				2D4729CC19BB91110072E52D /* LiftedGridNode.swift */,
@@ -360,7 +360,7 @@
 				2D62A46119929CC7002CD03F /* Globals.swift in Sources */,
 				2DD23D6E196F0BF900838E96 /* LevelLibrary.swift in Sources */,
 				2D5C7319199FE80600D53D0D /* SpeedControlNode.swift in Sources */,
-				2D2D26AB199E610D00EC4A45 /* FirstTutorialScene.swift in Sources */,
+				2D2D26AB199E610D00EC4A45 /* BeltTutorialScene.swift in Sources */,
 				2D60F5C7198041BD0032860B /* TitleScene.swift in Sources */,
 				2DC4915F194F671F00053237 /* Cell.swift in Sources */,
 				2DD23D71196F223E00838E96 /* MenuScene.swift in Sources */,

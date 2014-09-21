@@ -126,7 +126,7 @@ var LevelLibrary: [LevelSetup] = [
   
   LevelSetup(
     tag: "all",
-    instructions: "Connect the entrance and exit.",
+    instructions: "Connect the entrance to the exit.",
     space: GridSpace(3),
     editModes: [],
     exemplars: [""],
@@ -136,7 +136,7 @@ var LevelLibrary: [LevelSetup] = [
   
   LevelSetup(
     tag: "B",
-    instructions: "Accept blue: Transport to the exit.\nReject red: Dump on the floor.",
+    instructions: "Accept blue: Send to the exit.\nReject red: Dump on the floor.",
     space: GridSpace(3),
     editModes: [.PullerBR],
     exemplars: ["r", "b"],
