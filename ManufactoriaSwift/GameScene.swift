@@ -8,7 +8,7 @@
 
 import SpriteKit
 
-class GameScene: SKScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, ToolbarNodeDelegate, SpeedControlNodeDelegate {
+class GameScene: ManufactoriaScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, ToolbarNodeDelegate, SpeedControlNodeDelegate {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   enum State {case Editing, Thinking, Testing, Congratulating}
   enum RobotState {case Entering, Testing, Exiting, Falling}

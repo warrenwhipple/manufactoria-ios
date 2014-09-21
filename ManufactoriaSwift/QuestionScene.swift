@@ -8,33 +8,28 @@
 
 import SpriteKit
 
-class QuestionScene: SKScene {
+class QuestionScene: ManufactoriaScene {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   let questionLabel = BreakingLabel()
+  let yesLabel = BreakingLabel()
+  let noLabel = BreakingLabel()
   let yesButton = Button(texture: nil, color: nil, size: CGSize(80))
   let noButton = Button(texture: nil, color: nil, size: CGSize(80))
 
-  init(questionText: String, yesText: String, noText: String, yesClosure: (()->()), noClosure: (()->()), size: CGSize) {
+  override init(size: CGSize) {
     
     questionLabel.fontMedium()
     questionLabel.fontColor = Globals.strokeColor
     questionLabel.verticalAlignmentMode = SKLabelVerticalAlignmentMode.Bottom
-    questionLabel.text = questionText
     
-    let yesLabel = BreakingLabel()
     yesLabel.fontMedium()
     yesLabel.fontColor = Globals.strokeColor
-    yesLabel.text = yesText
     
-    let noLabel = BreakingLabel()
     noLabel.fontMedium()
     noLabel.fontColor = Globals.strokeColor
-    noLabel.text = noText
-        
-    yesButton.touchUpInsideClosure = yesClosure
+    
     yesButton.addChild(yesLabel)
     
-    noButton.touchUpInsideClosure = noClosure
     noButton.addChild(noLabel)
     
     super.init(size: size)
@@ -55,5 +50,43 @@ class QuestionScene: SKScene {
     questionLabel.position = CGPoint(midX, midY + questionLabel.lineHeight * questionLabel.fontSize)
     yesButton.position = CGPoint(midX - 70, midY - 40)
     noButton.position = CGPoint(midX + 70, midY - 40)
+  }
+}
+
+class ResetScene: QuestionScene {
+  required init(coder: NSCoder) {fatalError("NSCoding not supported")}
+  override init(size: CGSize) {
+    super.init(size: size)
+    questionLabel.text = "Are you sure you want to\nerase all progress?"
+    yesLabel.text = "reset"
+    noLabel.text = "cancel"
+    yesButton.touchUpInsideClosure = {
+      [unowned self] in
+      GameData.sharedInstance.resetAllGameData()
+      LevelData.resetDataForAllLevels()
+      self.transitionToTitleScene()
+    }
+    noButton.touchUpInsideClosure = {
+      self.transitionToMenuScene()
+    }
+  }
+}
+
+class UnlockScene: QuestionScene {
+  required init(coder: NSCoder) {fatalError("NSCoding not supported")}
+  override init(size: CGSize) {
+    super.init(size: size)
+    questionLabel.text = "Are you sure you want to\nunlock all levels?"
+    yesLabel.text = "unlock"
+    noLabel.text = "cancel"
+    yesButton.touchUpInsideClosure = {
+      [unowned self] in
+      GameData.sharedInstance.levelsComplete = LevelLibrary.count
+      GameData.sharedInstance.save()
+      self.transitionToMenuScene()
+    }
+    noButton.touchUpInsideClosure = {
+      self.transitionToMenuScene()
+    }
   }
 }

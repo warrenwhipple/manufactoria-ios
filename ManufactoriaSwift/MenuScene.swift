@@ -8,7 +8,7 @@
 
 import SpriteKit
 
-class MenuScene: SKScene {
+class MenuScene: ManufactoriaScene {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   let wrapper = SKNode()
   let levelButtons: [LevelButton]
@@ -90,7 +90,7 @@ class MenuScene: SKScene {
     }
     
     override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
-      scene?.view?.presentScene(GameScene(size: scene!.view!.bounds.size, levelNumber: levelNumber), transition: SKTransition.pushWithDirection(.Left, duration: 0.5).outInPlay())
+      println("level \(levelNumber) scene")
     }
   }
   
@@ -100,26 +100,7 @@ class MenuScene: SKScene {
       super.init(levelNumber: levelNumber, text: "unlock", isEnabled: true)
     }
     override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
-      scene?.view?.presentScene(QuestionScene(
-        questionText: "Are you sure you want to\nunlock all levels?",
-        yesText: "unlock",
-        noText: "cancel",
-        yesClosure: {
-          [weak view = self.scene!.view!] in
-          if view != nil {
-            GameData.sharedInstance.levelsComplete = LevelLibrary.count
-            GameData.sharedInstance.save()
-            view!.presentScene(MenuScene(size: view!.bounds.size), transition: SKTransition.pushWithDirection(.Right, duration: 0.5).outInPlay())
-          }
-        },
-        noClosure: {
-          [weak view = self.scene!.view!] in
-          if view != nil {
-            view!.presentScene(MenuScene(size: view!.bounds.size), transition: SKTransition.pushWithDirection(.Right, duration: 0.5).outInPlay())
-          }
-        },
-        size: scene!.size), transition: SKTransition.pushWithDirection(.Left, duration: 0.5).outInPlay()
-      )
+      println("unlock scene")
     }
   }
   
@@ -129,26 +110,7 @@ class MenuScene: SKScene {
       super.init(levelNumber: levelNumber, text: "reset", isEnabled: true)
     }
     override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
-      scene?.view?.presentScene(QuestionScene(
-        questionText: "Are you sure you want to\nerase all progress?",
-        yesText: "reset",
-        noText: "cancel",
-        yesClosure: {
-          [weak view = self.scene!.view!] in
-          if view != nil {
-            GameData.sharedInstance.resetAllGameData()
-            LevelData.resetDataForAllLevels()
-            view!.presentScene(TitleScene(size: view!.bounds.size), transition: SKTransition.fadeWithColor(Globals.strokeColor, duration: 3).outInPlay())
-          }
-        },
-        noClosure: {
-          [weak view = self.scene!.view!] in
-          if view != nil {
-            view!.presentScene(MenuScene(size: view!.bounds.size), transition: SKTransition.pushWithDirection(.Right, duration: 0.5).outInPlay())
-          }
-        },
-        size: scene!.size), transition: SKTransition.pushWithDirection(.Left, duration: 0.5).outInPlay()
-      )
+      println("reset scene")
     }
   }
 }

@@ -8,7 +8,7 @@
 
 import SpriteKit
 
-class TitleScene: SKScene {
+class TitleScene: ManufactoriaScene {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   let gameData = GameData.sharedInstance
   let title: SKLabelNode
@@ -23,18 +23,10 @@ class TitleScene: SKScene {
     button = Button(iconOffNamed: "playIconOff", iconOnNamed: "playIconOn")
     super.init(size: size)
     backgroundColor = Globals.backgroundColor
-    if gameData.levelsComplete == -1 {
-      button.touchUpInsideClosure = {
-        [unowned self] in
-        let transition = SKTransition.pushWithDirection(.Left, duration: 0.5).outInPlay()
-        self.view?.presentScene(FirstTutorialScene(size: size), transition: transition)
-      }
+    if gameData.levelsComplete == 0 {
+      button.touchUpInsideClosure = {[unowned self] in self.transitionToGameSceneWithLevelNumber(0)}
     } else {
-      button.touchUpInsideClosure = {
-        [unowned self] in
-        let transition = SKTransition.pushWithDirection(SKTransitionDirection.Left, duration: 0.5).outInPlay()
-        self.view?.presentScene(MenuScene(size: size), transition: transition)
-      }
+      button.touchUpInsideClosure = {[unowned self] in self.transitionToMenuScene()}
     }
     addChild(title)
     addChild(button)

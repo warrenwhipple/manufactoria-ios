@@ -29,6 +29,7 @@
 		2DC0167D19CDC32E003D922A /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2DC0167C19CDC32E003D922A /* Media.xcassets */; };
 		2DC0168019CDCD66003D922A /* belt46@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2DC0167E19CDCD66003D922A /* belt46@2x.png */; };
 		2DC0168119CDCD66003D922A /* belt64@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2DC0167F19CDCD66003D922A /* belt64@2x.png */; };
+		2DC0168319CEF41D003D922A /* ManufactoriaScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC0168219CEF41D003D922A /* ManufactoriaScene.swift */; };
 		2DC1CD6919AFB75900589B86 /* FailTapeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC1CD6819AFB75900589B86 /* FailTapeNode.swift */; };
 		2DC49131194F45B800053237 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC49130194F45B800053237 /* AppDelegate.swift */; };
 		2DC49135194F45B800053237 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC49134194F45B800053237 /* GameScene.swift */; };
@@ -82,6 +83,7 @@
 		2DC0167C19CDC32E003D922A /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
 		2DC0167E19CDCD66003D922A /* belt46@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "belt46@2x.png"; path = "../../../Documents/ManufactoriaSwift/gameScene/belt46@2x.png"; sourceTree = "<group>"; };
 		2DC0167F19CDCD66003D922A /* belt64@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "belt64@2x.png"; path = "../../../Documents/ManufactoriaSwift/gameScene/belt64@2x.png"; sourceTree = "<group>"; };
+		2DC0168219CEF41D003D922A /* ManufactoriaScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ManufactoriaScene.swift; sourceTree = "<group>"; };
 		2DC1CD6819AFB75900589B86 /* FailTapeNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FailTapeNode.swift; sourceTree = "<group>"; };
 		2DC4912B194F45B800053237 /* ManufactoriaSwift.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ManufactoriaSwift.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2DC4912F194F45B800053237 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -171,6 +173,7 @@
 				2DD23D6D196F0BF900838E96 /* LevelLibrary.swift */,
 				2D37934419965135000B10EB /* Button.swift */,
 				2D5E583E19A5265500F10DD3 /* ShimmerNode.swift */,
+				2DC0168219CEF41D003D922A /* ManufactoriaScene.swift */,
 				2D60F5C6198041BD0032860B /* TitleScene.swift */,
 				2DD23D70196F223E00838E96 /* MenuScene.swift */,
 				2DCA18A61985AA0200DF3118 /* QuestionScene.swift */,
@@ -362,6 +365,7 @@
 				2DC4915F194F671F00053237 /* Cell.swift in Sources */,
 				2DD23D71196F223E00838E96 /* MenuScene.swift in Sources */,
 				2D03B93A197EB89700715176 /* SwiftExtensions.swift in Sources */,
+				2DC0168319CEF41D003D922A /* ManufactoriaScene.swift in Sources */,
 				2D5E583F19A5265500F10DD3 /* ShimmerNode.swift in Sources */,
 				2DD23D731974730F00838E96 /* Engine.swift in Sources */,
 				2DCA18A71985AA0200DF3118 /* QuestionScene.swift in Sources */,
