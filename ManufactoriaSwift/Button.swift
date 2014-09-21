@@ -67,7 +67,7 @@ class Button: SKSpriteNode {
       }
     }
   }
-
+  
   func generateDefaultDisableDimClosuresForSelf() {
     disableClosure = {[unowned self] in self.runAction(SKAction.fadeAlphaTo(0.2, duration: 0.2), withKey: "fade")}
     enableClosure = {[unowned self] in self.runAction(SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")}

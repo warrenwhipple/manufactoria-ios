@@ -33,7 +33,7 @@ class CellNode: SKNode {
     bridge.zPosition = 1
     bridge.zRotation = CGFloat(-M_PI_2)
     bridge.colorBlendFactor = 1
-    belt.color = Globals.strokeColor
+    bridge.color = Globals.strokeColor
     
     pusher = SKSpriteNode()
     pusher.zPosition = 3
@@ -67,7 +67,6 @@ class CellNode: SKNode {
   class func loadSharedTexturesForPointSize(newPointSize: CGFloat) -> SKTexture {
     if newPointSize == pointSize {return beltTexture ?? SKTexture()}
     pointSize = newPointSize
-    println(newPointSize)
     if pointSize > 46 {
       sizeString = "64"
     } else if pointSize > 36 {

@@ -10,36 +10,60 @@ import SpriteKit
 
 class MenuScene: ManufactoriaScene {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  let wrapper = SKNode()
-  let levelButtons: [LevelButton]
+  var buttons: [Button] = []
+  var shimmerNodes: [ShimmerNode] = []
+  var glowNodes: [SKSpriteNode] = []
   
   override init(size: CGSize) {
-    var tempLevelButtons: [LevelButton] = []
-    let gameData = GameData.sharedInstance
-    for i in 0 ..< LevelLibrary.count {
-      tempLevelButtons.append(LevelButton(levelNumber: i, text: LevelLibrary[i].tag, isEnabled: i <= gameData.levelsComplete))
-    }
-    var totalButtons = 26
-    if IPAD {totalButtons = 33}
-    if tempLevelButtons.count < totalButtons {
-      for i in tempLevelButtons.count ..< totalButtons {
-        tempLevelButtons.append(LevelButton(levelNumber: i, text: "", isEnabled: false))
-      }
-    }
-    tempLevelButtons.append(UnlockButton(levelNumber: LevelLibrary.count))
-    tempLevelButtons.append(ResetButton(levelNumber: LevelLibrary.count + 1))
-    levelButtons = tempLevelButtons
-    
     super.init(size: size)
-    
     backgroundColor = Globals.backgroundColor
-    wrapper.position.y = size.height
-    wrapper.addChildren(levelButtons)
-    addChild(wrapper)
+    let gameData = GameData.sharedInstance
+    var totalButtons = 28
+    if IPAD {totalButtons = 35}
+    
+    for i in 0 ..< totalButtons {
+      let button = Button()
+      let shimmerNode = ShimmerNode()
+      shimmerNode.startMidShimmer()
+      button.addChild(shimmerNode)
+      shimmerNodes.append(shimmerNode)
+      if i == totalButtons - 2 {
+        button.addChild(buttonLabel("unlock"))
+        button.touchUpInsideClosure = {[unowned self] in self.transitionToUnlockScene()}
+      } else if i == totalButtons - 1 {
+        button.addChild(buttonLabel("reset"))
+        button.touchUpInsideClosure = {[unowned self] in self.transitionToResetScene()}
+      } else if i < LevelLibrary.count && i <= gameData.levelsComplete {
+        button.addChild(buttonLabel(LevelLibrary[i].tag))
+        button.touchUpInsideClosure = {[unowned self] in self.transitionToGameSceneWithLevelNumber(i)}
+      } else {
+        button.userInteractionEnabled = false
+      }
+      if button.userInteractionEnabled {
+        let glowNode = SKSpriteNode()
+        glowNode.color = Globals.highlightColor
+        glowNode.alpha = 0
+        glowNodes.append(glowNode)
+        button.addChild(glowNode)
+        button.pressClosure = {glowNode.runAction(SKAction.fadeAlphaTo(0.2, duration: 0.2), withKey: "fade")}
+        button.releaseClosure = {glowNode.runAction(SKAction.fadeAlphaTo(0, duration: 0.2), withKey: "fade")}
+      }
+      buttons.append(button)
+      addChild(button)
+    }
     fitToSize()
   }
   
-  override var size: CGSize {didSet{if size != oldValue {fitToSize()}}}  
+  func buttonLabel(text: String) -> BreakingLabel {
+    let label = BreakingLabel()
+    label.fontSmall()
+    label.verticalAlignmentMode = .Center
+    label.fontColor = Globals.strokeColor
+    label.text = text
+    return label
+  }
+  
+  override var size: CGSize {didSet{if size != oldValue {fitToSize()}}}
   
   func fitToSize() {
     var columns = 4
@@ -50,67 +74,15 @@ class MenuScene: ManufactoriaScene {
     
     let buttonSize = CGSize(buttonWidth, buttonHeight)
     var i = 0
-    for levelButton in levelButtons {
-      levelButton.shimmerNode.size = buttonSize
-      levelButton.position = CGPoint(
+    for button in buttons {
+      button.position = CGPoint(
         x: (CGFloat(i % columns) + 0.5) * buttonWidth,
-        y: -(CGFloat(i / columns) + 0.5) * buttonHeight
+        y: size.height - (CGFloat(i / columns) + 0.5) * buttonHeight
       )
+      button.size = buttonSize
       i++
     }
-  }
-  
-  class LevelButton: SKNode {
-    required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-    let levelNumber: Int
-    let label: BreakingLabel
-    let shimmerNode: ShimmerNode
-    var touch: UITouch?
-    
-    init(levelNumber: Int, text: String, isEnabled: Bool) {
-      self.levelNumber = levelNumber
-      
-      label = BreakingLabel()
-      if isEnabled {
-        label.fontSmall()
-        label.verticalAlignmentMode = .Center
-        label.fontColor = Globals.strokeColor
-        label.text = text
-      }
-      
-      shimmerNode = ShimmerNode()
-      shimmerNode.zPosition = 1
-      shimmerNode.startMidShimmer()
-
-      super.init()
-      userInteractionEnabled = isEnabled
-      addChild(label)
-      addChild(shimmerNode)
-      
-    }
-    
-    override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
-      println("level \(levelNumber) scene")
-    }
-  }
-  
-  class UnlockButton: LevelButton {
-    required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-    init(levelNumber: Int) {
-      super.init(levelNumber: levelNumber, text: "unlock", isEnabled: true)
-    }
-    override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
-      println("unlock scene")
-    }
-  }
-  
-  class ResetButton: LevelButton {
-    required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-    init(levelNumber: Int) {
-      super.init(levelNumber: levelNumber, text: "reset", isEnabled: true)
-    }
-    override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
-      println("reset scene")
-    }
+    for shimmerNode in shimmerNodes {shimmerNode.size = buttonSize}
+    for glowNode in glowNodes {glowNode.size = buttonSize}
   }
 }
