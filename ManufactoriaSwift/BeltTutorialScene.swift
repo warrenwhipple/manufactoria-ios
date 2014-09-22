@@ -14,15 +14,18 @@ class BeltTutorialScene: GameScene {
   
   init(size: CGSize) {
     super.init(size: size, levelNumber: 0)
-    statusNode.menuButton.removeFromParent()
-    statusNode.testButton.alpha = 0
-    toolbarNode.removeFromParent()
+    toolbarNode.userInteractionEnabled = false
+    toolbarNode.undoCancelSwapper.removeFromParent()
+    toolbarNode.redoConfirmSwapper.removeFromParent()
+    for button in toolbarNode.drawToolButtons {button.removeFromParent()}
+    toolbarNode.robotButton.disableClosure = nil
+    toolbarNode.robotButton.enableClosure = nil
+    toolbarNode.robotButton.userInteractionEnabled = false
+    toolbarNode.robotButton.alpha = 0
   }
   
   override func fitToSize() {
     super.fitToSize()
-    statusNode.label.position = CGPointZero
-    statusNode.testButton.position = CGPointZero
   }
     
   func checkTutorialGrid() -> Bool {
@@ -47,19 +50,15 @@ class BeltTutorialScene: GameScene {
   func showTestButton() {
     if !testButtonIsHidden {return}
     testButtonIsHidden = false
-    statusNode.label.runAction(SKAction.fadeAlphaTo(0, duration: 0.2), withKey: "fade")
-    statusNode.testButton.runAction(SKAction.sequence([
-      SKAction.fadeAlphaTo(1, duration: 0.2)
-      ]), withKey: "fade")
+    statusNode.instructionsLabel.runAction(SKAction.fadeAlphaTo(0, duration: 0.4), withKey: "fade")
+    toolbarNode.robotButton.userInteractionEnabled = true
   }
   
   func hideTestButton() {
     if testButtonIsHidden {return}
     testButtonIsHidden = true
-    statusNode.label.runAction(SKAction.sequence([
-      SKAction.fadeAlphaTo(1, duration: 0.2)
-      ]), withKey: "fade")
-    statusNode.testButton.runAction(SKAction.fadeAlphaTo(0, duration: 0.2), withKey: "fade")
+    statusNode.instructionsLabel.runAction(SKAction.fadeAlphaTo(1, duration: 0.4), withKey: "fade")
+    toolbarNode.robotButton.userInteractionEnabled = false
   }
   
   override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {

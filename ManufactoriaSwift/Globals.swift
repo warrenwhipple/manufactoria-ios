@@ -12,6 +12,7 @@ struct Globals {
   static let cellSize = CGSize(SKTexture(imageNamed: "belt").size().height * 0.5)
   static let beltSize = CGSize(SKTexture(imageNamed: "belt").size().width, SKTexture(imageNamed: "belt").size().height * 0.5)
   static let iconRoughSize = CGSize(36)
+  static let buttonTouchSize = CGSize(72)
   static let yellowColor =         UIColor(hue: 0.15, saturation: 1.0, brightness: 0.9, alpha: 1)
   static let greenColor =          UIColor(hue: 0.40, saturation: 1.0, brightness: 0.85, alpha: 1)
   static let blueColor =           UIColor(hue: 0.60, saturation: 1.0, brightness: 1.0, alpha: 1)

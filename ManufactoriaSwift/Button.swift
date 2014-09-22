@@ -20,7 +20,7 @@ class Button: SKSpriteNode {
   init(iconOff: SKNode, iconOn: SKNode) {
     iconOn.zPosition = iconOff.zPosition + 1
     iconOn.alpha = 0
-    super.init(texture: nil, color: nil, size: CGSize(48))
+    super.init(texture: nil, color: nil, size: Globals.buttonTouchSize)
     userInteractionEnabled = true
     addChild(iconOff)
     addChild(iconOn)
@@ -137,7 +137,7 @@ class SwipeThroughButton: Button {
   
   override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
     if touch != nil && touches.containsObject(touch!)
-      && CGPointDistSq(p1: touch!.locationInView(touch!.view), p2: touchBeganPoint) >= 100 {
+      && CGPointDistSq(p1: touch!.locationInView(touch!.view), p2: touchBeganPoint) >= 15*15 {
         swipeThroughTouch = touch
         touch = nil
         swipeThroughDelegate?.swipeThroughTouchMoved(swipeThroughTouch!)

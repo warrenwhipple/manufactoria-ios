@@ -17,6 +17,7 @@ protocol ToolbarNodeDelegate: class {
   func flipXSelection()
   func flipYSelection()
   func refreshUndoRedoButtonStatus()
+  func testButtonPressed()
 }
 
 class ToolbarNode: SwipeNode, ToolButtonDelegate {
@@ -26,24 +27,22 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
   weak var delegate: ToolbarNodeDelegate!
   let drawPage = SKNode()
   let selectionPage = SKNode()
-  let undoDrawButton = SwipeThroughButton(iconOffNamed: "undoIconOff", iconOnNamed: "undoIconOn")
-  let redoDrawButton = SwipeThroughButton(iconOffNamed: "undoIconOff", iconOnNamed: "undoIconOn")
-  let undoSelectionButton = SwipeThroughButton(iconOffNamed: "undoIconOff", iconOnNamed: "undoIconOn")
-  let redoSelectionButton = SwipeThroughButton(iconOffNamed: "undoIconOff", iconOnNamed: "undoIconOn")
+  let undoButton = SwipeThroughButton(iconOffNamed: "undoIconOff", iconOnNamed: "undoIconOn")
+  let redoButton = SwipeThroughButton(iconOffNamed: "undoIconOff", iconOnNamed: "undoIconOn")
   let cancelButton = SwipeThroughButton(iconOffNamed: "cancelIconOff", iconOnNamed: "cancelIconOn")
   let confirmButton = SwipeThroughButton(iconOffNamed: "confirmIconOff", iconOnNamed: "confirmIconOn")
+  let robotButton = SwipeThroughButton(iconOffNamed: "robotOff64", iconOnNamed: "robotOn64")
   let selectBoxMoveButton = SelectBoxMoveButton()
-  let drawQuickButtons, selectionQuickButtons: [SwipeThroughButton]
+  let quickButtons: [SwipeThroughButton]
   let drawToolButtons, selectionToolButtons: [ToolButton]
   var buttonInFocus, lastDrawToolButton, lastSelectionToolButton: ToolButton
   var undoCancelSwapper, redoConfirmSwapper: ButtonSwapper
   
   init(editModes: [EditMode]) {
-    drawQuickButtons = [undoDrawButton, redoDrawButton]
-    selectionQuickButtons = [undoSelectionButton, redoSelectionButton, cancelButton, confirmButton]
-    undoCancelSwapper = ButtonSwapper(buttons: [undoSelectionButton, cancelButton],
+    quickButtons = [undoButton, redoButton, cancelButton, confirmButton, robotButton]
+    undoCancelSwapper = ButtonSwapper(buttons: [undoButton, cancelButton],
       rotateRadians: CGFloat(2*M_PI), liftZPosition: 2)
-    redoConfirmSwapper = ButtonSwapper(buttons: [redoSelectionButton, confirmButton],
+    redoConfirmSwapper = ButtonSwapper(buttons: [redoButton, confirmButton],
       rotateRadians: CGFloat(-2*M_PI), liftZPosition: 2)
     
     var tempDrawToolButtons: [ToolButton] = [
@@ -81,28 +80,21 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
     
     super.init(pages: [drawPage, selectionPage], texture: nil, color: nil, size: CGSizeZero)
     
-    for node in redoDrawButton.children {(node as SKNode).xScale = -1}
-    for node in redoSelectionButton.children {(node as SKNode).xScale = -1}
+    for node in redoButton.children {(node as SKNode).xScale = -1}
     
-    undoDrawButton.touchUpInsideClosure = {[unowned self] in self.delegate.undoEdit()}
-    redoDrawButton.touchUpInsideClosure = {[unowned self] in self.delegate.redoEdit()}
-    undoSelectionButton.touchUpInsideClosure = {[unowned self] in self.delegate.undoEdit()}
-    redoSelectionButton.touchUpInsideClosure = {[unowned self] in self.delegate.redoEdit()}
+    undoButton.touchUpInsideClosure = {[unowned self] in self.delegate.undoEdit()}
+    redoButton.touchUpInsideClosure = {[unowned self] in self.delegate.redoEdit()}
     cancelButton.touchUpInsideClosure = {[unowned self] in self.delegate.cancelSelection()}
     confirmButton.touchUpInsideClosure = {[unowned self] in self.delegate.confirmSelection()}
+    robotButton.touchUpInsideClosure = {[unowned self] in self.delegate.testButtonPressed()}
     
-    for button in drawQuickButtons {
-      button.generateDefaultDisableDimClosuresForSelf()
-      button.swipeThroughDelegate = self
-      drawPage.addChild(button)
-    }
-    
-    for button in selectionQuickButtons {
+    for button in quickButtons {
       button.generateDefaultDisableDimClosuresForSelf()
       button.swipeThroughDelegate = self
     }
-    selectionPage.addChild(undoCancelSwapper)
-    selectionPage.addChild(redoConfirmSwapper)
+    addChild(undoCancelSwapper)
+    addChild(redoConfirmSwapper)
+    addChild(robotButton)
     
     for button in drawToolButtons {
       button.swipeThroughDelegate = self
@@ -117,13 +109,13 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
     }
     
     cancelButton.userInteractionEnabled = false
-    confirmButton.userInteractionEnabled = false
+    confirmButton.userInteractionEnabled = false    
   }
   
   override func fitToSize() {
     super.fitToSize()
     let iconSize = Globals.iconRoughSize
-    let buttonTouchHeight = min(iconSize.height * 2, size.height / 2)
+    var buttonTouchHeight = min(iconSize.height * 2, size.height / 2)
     func distributeButtons(buttons: [Button]) {
       let buttonTouchWidth = min(iconSize.width * 2, size.width / CGFloat(buttons.count))
       let buttonXCenters = distributionForChildren(count: buttons.count, childSize: iconSize.width, parentSize: size.width)
@@ -133,22 +125,21 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
         button.size = CGSize(buttonTouchWidth, buttonTouchHeight)
       }
     }
-    distributeButtons(drawQuickButtons)
+    distributeButtons([undoButton, robotButton, redoButton])
     distributeButtons(drawToolButtons)
-    distributeButtons([undoSelectionButton, redoSelectionButton])
     distributeButtons(selectionToolButtons)
     let buttonYCenters = distributionForChildren(count: 2, childSize: iconSize.height, parentSize: size.height)
-    for button in drawQuickButtons + selectionQuickButtons {button.position.y = buttonYCenters[1]}
+    for button in quickButtons {button.position.y = buttonYCenters[1]}
     for button in drawToolButtons + selectionToolButtons {button.position.y = buttonYCenters[0]}
     
-    undoCancelSwapper.position = undoSelectionButton.position
-    redoConfirmSwapper.position = redoSelectionButton.position
-    undoSelectionButton.position = CGPointZero
-    redoSelectionButton.position = CGPointZero
+    undoCancelSwapper.position = undoButton.position
+    redoConfirmSwapper.position = redoButton.position
+    undoButton.position = CGPointZero
+    redoButton.position = CGPointZero
     cancelButton.position = CGPointZero
     confirmButton.position = CGPointZero
-    cancelButton.size = undoSelectionButton.size
-    confirmButton.size = redoSelectionButton.size
+    cancelButton.size = undoButton.size
+    confirmButton.size = redoButton.size
   }
   
   var state: State = .Drawing {
@@ -156,12 +147,11 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
       if state == oldValue {return}
       switch state {
       case .Drawing:
-        undoDrawButton.userInteractionEnabled = !undoQueueIsEmpty
-        redoDrawButton.userInteractionEnabled = !redoQueueIsEmpty
-        undoSelectionButton.userInteractionEnabled = !undoQueueIsEmpty
-        redoSelectionButton.userInteractionEnabled = !redoQueueIsEmpty
+        undoButton.userInteractionEnabled = !undoQueueIsEmpty
+        redoButton.userInteractionEnabled = !redoQueueIsEmpty
         cancelButton.userInteractionEnabled = false
         confirmButton.userInteractionEnabled = false
+        robotButton.userInteractionEnabled = true
         undoCancelSwapper.index = 0
         redoConfirmSwapper.index = 0
         for button in drawToolButtons + selectionToolButtons {
@@ -170,12 +160,11 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
         (selectBoxMoveButton as ToolButton).editMode = .SelectBox // ambiguity bug workaround
         if delegate.editMode == .Move {delegate.editMode = .SelectBox}
       case .Selecting:
-        undoDrawButton.userInteractionEnabled = !undoQueueIsEmpty
-        redoDrawButton.userInteractionEnabled = !redoQueueIsEmpty
-        undoSelectionButton.userInteractionEnabled = false
-        redoSelectionButton.userInteractionEnabled = false
+        undoButton.userInteractionEnabled = false
+        redoButton.userInteractionEnabled = false
         cancelButton.userInteractionEnabled = true
         confirmButton.userInteractionEnabled = true
+        robotButton.userInteractionEnabled = true
         undoCancelSwapper.index = 1
         redoConfirmSwapper.index = 1
         for button in drawToolButtons + selectionToolButtons {
@@ -184,12 +173,8 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
         (selectBoxMoveButton as ToolButton).editMode = .Move // ambiguity bug workaround
         if delegate.editMode == .SelectBox {delegate.editMode = .Move}
       case .Disabled:
-        for button in drawQuickButtons + selectionQuickButtons {
-          button.userInteractionEnabled = false
-        }
-        for button in drawToolButtons + selectionToolButtons {
-          button.userInteractionEnabled = false
-        }
+        for button in quickButtons {button.userInteractionEnabled = false}
+        for button in drawToolButtons + selectionToolButtons {button.userInteractionEnabled = false}
       }
     }
   }
@@ -218,16 +203,14 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
   var undoQueueIsEmpty: Bool = true {
     didSet {
       if undoQueueIsEmpty == oldValue {return}
-      undoDrawButton.userInteractionEnabled = !undoQueueIsEmpty
-      if state == .Drawing {undoSelectionButton.userInteractionEnabled = !undoQueueIsEmpty}
+      if state == .Drawing {undoButton.userInteractionEnabled = !undoQueueIsEmpty}
     }
   }
   
   var redoQueueIsEmpty: Bool = true {
     didSet {
       if redoQueueIsEmpty == oldValue {return}
-      redoDrawButton.userInteractionEnabled = !redoQueueIsEmpty
-      if state == .Drawing {redoSelectionButton.userInteractionEnabled = !redoQueueIsEmpty}
+      if state == .Drawing {redoButton.userInteractionEnabled = !redoQueueIsEmpty}
     }
   }
   

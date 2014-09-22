@@ -18,7 +18,7 @@ class ManufactoriaScene: SKScene {
   func transitionToTitleScene() {
     view?.presentScene(
       TitleScene(size: view!.bounds.size),
-      transition: SKTransition.fadeWithColor(Globals.strokeColor, duration: 3).outInPlay())
+      transition: SKTransition.fadeWithColor(Globals.highlightColor, duration: 1).outInPlay())
   }
   
   func transitionToMenuScene() {
@@ -40,7 +40,10 @@ class ManufactoriaScene: SKScene {
     if levelNumber == 0 && GameData.sharedInstance.levelsComplete == 0 {
       view?.presentScene(BeltTutorialScene(size: view!.bounds.size),
         transition: SKTransition.pushWithDirection(.Left, duration: 0.5).outInPlay())
-    } else {
+    } else if levelNumber == 1 && GameData.sharedInstance.levelsComplete == 1 {
+      view?.presentScene(SortTutorialScene(size: view!.bounds.size),
+        transition: SKTransition.pushWithDirection(.Left, duration: 0.5).outInPlay())
+    } else{
       view?.presentScene(GameScene(size: view!.bounds.size, levelNumber: levelNumber),
         transition: SKTransition.pushWithDirection(.Left, duration: 0.5).outInPlay())
     }

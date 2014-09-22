@@ -8,7 +8,7 @@
 
 import SpriteKit
 
-class GameScene: ManufactoriaScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, ToolbarNodeDelegate, SpeedControlNodeDelegate {
+class GameScene: ManufactoriaScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, ToolbarNodeDelegate, SpeedControlNodeDelegate, CongratulationsMenuDelegate {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   enum State {case Editing, Thinking, Testing, Congratulating}
   enum RobotState {case Entering, Testing, Exiting, Falling}
@@ -27,6 +27,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, StatusNodeDelegate, Engine
   let gridNode: GridNode
   let toolbarNode: ToolbarNode
   let speedControlNode = SpeedControlNode()
+  let congratulationsMenu = CongratulationsMenu()
   var robotNode: SKSpriteNode?
   var robotState: RobotState = .Entering
   
@@ -73,6 +74,10 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, StatusNodeDelegate, Engine
     speedControlNode.alpha = 0
     speedControlNode.zPosition = 10
     
+    congratulationsMenu.delegate = self
+    congratulationsMenu.alpha = 0
+    congratulationsMenu.zPosition = 10
+    
     refreshUndoRedoButtonStatus()
     
     fitToSize()
@@ -85,29 +90,49 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, StatusNodeDelegate, Engine
       case .Editing:
         statusNode.state = .Editing
         gridNode.state = .Editing
-        robotNode?.runAction(SKAction.sequence([SKAction.fadeAlphaTo(0, duration: 1), SKAction.removeFromParent()]))
+        robotNode?.runAction(SKAction.sequence([
+          SKAction.fadeAlphaTo(0, duration: 1),
+          SKAction.removeFromParent()
+          ]), withKey: "fade")
         speedControlNode.isEnabled = false
-        speedControlNode.runAction(SKAction.sequence([SKAction.fadeAlphaTo(0, duration: 0.5), SKAction.removeFromParent()]))
+        speedControlNode.runAction(SKAction.sequence([
+          SKAction.fadeAlphaTo(0, duration: 0.2),
+          SKAction.removeFromParent()
+          ]), withKey: "fade")
         if toolbarNode.parent == nil {addChild(toolbarNode)}
-        toolbarNode.runAction(SKAction.fadeAlphaTo(1, duration: 0.5))
+        toolbarNode.runAction(SKAction.sequence([
+          SKAction.waitForDuration(0.2),
+          SKAction.fadeAlphaTo(1, duration: 0.2)
+          ]), withKey: "fade")
       case .Thinking:
         statusNode.state = .Thinking
         statusNode.thinkingAnimationDone = false
         thinkingOperationsDone = false
         gridTestDidPass = false
         gridNode.state = .Waiting
-        toolbarNode.runAction(SKAction.sequence([SKAction.fadeAlphaTo(0, duration: 0.5), SKAction.removeFromParent()]))
+        toolbarNode.runAction(SKAction.sequence([
+          SKAction.fadeAlphaTo(0, duration: 0.5),
+          SKAction.removeFromParent()
+          ]), withKey: "fade")
         engine.beginGridTest()
       case .Testing:
         loadTape(0)
         statusNode.state = .Testing
         if speedControlNode.parent == nil {addChild(speedControlNode)}
-        speedControlNode.runAction(SKAction.fadeAlphaTo(1, duration: 0.5))
+        speedControlNode.runAction(SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")
         speedControlNode.isEnabled = true
       case .Congratulating:
         statusNode.state = .Congratulating
         speedControlNode.isEnabled = false
-        speedControlNode.runAction(SKAction.sequence([SKAction.fadeAlphaTo(0, duration: 0.5), SKAction.removeFromParent()]))
+        speedControlNode.runAction(SKAction.sequence([
+          SKAction.fadeAlphaTo(0, duration: 0.2),
+          SKAction.removeFromParent()
+          ]), withKey: "fade")
+        addChild(congratulationsMenu)
+        congratulationsMenu.runAction(SKAction.sequence([
+          SKAction.waitForDuration(0.2),
+          SKAction.fadeAlphaTo(1, duration: 0.2)
+          ]), withKey: "fade")
       }
     }
   }
@@ -123,12 +148,14 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, StatusNodeDelegate, Engine
     let topGapRect = CGRect(x: 0, y: gridRect.maxY,
       width: size.width, height: bottomGapRect.height)
     
+    statusNode.position = topGapRect.center
+    statusNode.size = topGapRect.size
     toolbarNode.position = bottomGapRect.center
     toolbarNode.size = topGapRect.size
     speedControlNode.position = bottomGapRect.center
     speedControlNode.size = bottomGapRect.size
-    statusNode.position = topGapRect.center
-    statusNode.size = topGapRect.size
+    congratulationsMenu.position = bottomGapRect.center
+    congratulationsMenu.size = bottomGapRect.size
   }
   
   override func update(currentTime: NSTimeInterval) {
@@ -247,7 +274,8 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, StatusNodeDelegate, Engine
     robotState = .Entering
     robotCoord = levelData.grid.startCoord + 1
     lastRobotCoord = levelData.grid.startCoord
-    robotNode = SKSpriteNode("robut")
+    robotNode = SKSpriteNode("robotOn64")
+    //robotNode?.color = Globals.highlightColor
     robotNode?.position = CGPoint(CGFloat(lastRobotCoord.i) + 0.5, CGFloat(lastRobotCoord.j) + 0.5)
     robotNode?.zPosition = 2
     robotNode?.setScale(0)
@@ -275,19 +303,18 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, StatusNodeDelegate, Engine
   
   func menuButtonPressed() {
     levelData.saveWithLevelNumber(levelNumber)
-    view?.presentScene(MenuScene(size: size), transition: SKTransition.pushWithDirection(.Right, duration: 0.5).outInPlay())
+    transitionToMenuScene()
   }
   
   func nextButtonPressed() {
-    scene?.view?.presentScene(
-      GameScene(size: self.scene!.size, levelNumber: levelNumber + 1),
-      transition: SKTransition.pushWithDirection(SKTransitionDirection.Left, duration: 0.5).outInPlay())
+    transitionToGameSceneWithLevelNumber(levelNumber + 1)
   }
   
   // MARK: - EngineDelegate Functions
   
   func gridTestPassed() {
-    statusNode.changeText(PassComments[Int(arc4random_uniform(UInt32(PassComments.count)))])
+    statusNode.tapeLabel.text = PassComments[Int(arc4random_uniform(UInt32(PassComments.count)))]
+    statusNode.tapeLabel.runAction(SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")
     tapeTestResults = []
     for exemplar in levelSetup.exemplars {
       tapeTestResults.append(TapeTestResult(input: exemplar, output: nil, kind: .Pass))
@@ -302,7 +329,8 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, StatusNodeDelegate, Engine
   }
   
   func gridTestFailedWithResult(result: TapeTestResult) {
-    statusNode.changeText(FailComments[Int(arc4random_uniform(UInt32(FailComments.count)))])
+    statusNode.tapeLabel.text = FailComments[Int(arc4random_uniform(UInt32(FailComments.count)))]
+    statusNode.tapeLabel.runAction(SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")
     statusNode.resetFailPageForTestResult(result)
     tapeTestResults = [result]
     thinkingOperationsDone = true

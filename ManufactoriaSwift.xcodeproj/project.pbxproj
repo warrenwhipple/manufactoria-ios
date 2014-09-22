@@ -16,6 +16,7 @@
 		2D37934519965135000B10EB /* Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D37934419965135000B10EB /* Button.swift */; };
 		2D4729CD19BB91110072E52D /* LiftedGridNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4729CC19BB91110072E52D /* LiftedGridNode.swift */; };
 		2D4729CF19BC92650072E52D /* ToolButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4729CE19BC92650072E52D /* ToolButton.swift */; };
+		2D54B24819CF27BB00DF68C5 /* SortTutorialScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D54B24719CF27BB00DF68C5 /* SortTutorialScene.swift */; };
 		2D5C7319199FE80600D53D0D /* SpeedControlNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5C7318199FE80600D53D0D /* SpeedControlNode.swift */; };
 		2D5E583F19A5265500F10DD3 /* ShimmerNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5E583E19A5265500F10DD3 /* ShimmerNode.swift */; };
 		2D60F5C7198041BD0032860B /* TitleScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D60F5C6198041BD0032860B /* TitleScene.swift */; };
@@ -47,6 +48,7 @@
 		2DD23D6E196F0BF900838E96 /* LevelLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD23D6D196F0BF900838E96 /* LevelLibrary.swift */; };
 		2DD23D71196F223E00838E96 /* MenuScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD23D70196F223E00838E96 /* MenuScene.swift */; };
 		2DD23D731974730F00838E96 /* Engine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD23D721974730F00838E96 /* Engine.swift */; };
+		2DD4745019D0566B001E658E /* CongratulationsMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD4744F19D0566B001E658E /* CongratulationsMenu.swift */; };
 		2DD8C8A219B69AD9000D729E /* LevelData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD8C8A119B69AD9000D729E /* LevelData.swift */; };
 /* End PBXBuildFile section */
 
@@ -70,6 +72,7 @@
 		2D37934419965135000B10EB /* Button.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
 		2D4729CC19BB91110072E52D /* LiftedGridNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LiftedGridNode.swift; sourceTree = "<group>"; };
 		2D4729CE19BC92650072E52D /* ToolButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToolButton.swift; sourceTree = "<group>"; };
+		2D54B24719CF27BB00DF68C5 /* SortTutorialScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SortTutorialScene.swift; sourceTree = "<group>"; };
 		2D5C7318199FE80600D53D0D /* SpeedControlNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpeedControlNode.swift; sourceTree = "<group>"; };
 		2D5E583E19A5265500F10DD3 /* ShimmerNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShimmerNode.swift; sourceTree = "<group>"; };
 		2D60F5C6198041BD0032860B /* TitleScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = TitleScene.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
@@ -105,6 +108,7 @@
 		2DD23D6D196F0BF900838E96 /* LevelLibrary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LevelLibrary.swift; sourceTree = "<group>"; };
 		2DD23D70196F223E00838E96 /* MenuScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuScene.swift; sourceTree = "<group>"; };
 		2DD23D721974730F00838E96 /* Engine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Engine.swift; sourceTree = "<group>"; };
+		2DD4744F19D0566B001E658E /* CongratulationsMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CongratulationsMenu.swift; sourceTree = "<group>"; };
 		2DD8C8A119B69AD9000D729E /* LevelData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LevelData.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -216,6 +220,7 @@
 			children = (
 				2DC49134194F45B800053237 /* GameScene.swift */,
 				2D2D26AA199E610D00EC4A45 /* BeltTutorialScene.swift */,
+				2D54B24719CF27BB00DF68C5 /* SortTutorialScene.swift */,
 				2DC4915C194F621A00053237 /* Grid.swift */,
 				2D15929919514B4900A96BCC /* GridNode.swift */,
 				2D4729CC19BB91110072E52D /* LiftedGridNode.swift */,
@@ -229,6 +234,7 @@
 				2D7F922B195C61FA00F04F63 /* ToolbarNode.swift */,
 				2D4729CE19BC92650072E52D /* ToolButton.swift */,
 				2D5C7318199FE80600D53D0D /* SpeedControlNode.swift */,
+				2DD4744F19D0566B001E658E /* CongratulationsMenu.swift */,
 			);
 			name = GameScene;
 			sourceTree = "<group>";
@@ -347,12 +353,14 @@
 				2D4729CF19BC92650072E52D /* ToolButton.swift in Sources */,
 				2D60F5C9198156250032860B /* GameData.swift in Sources */,
 				2DCA18A51985849B00DF3118 /* SpriteKitExtensions.swift in Sources */,
+				2DD4745019D0566B001E658E /* CongratulationsMenu.swift in Sources */,
 				2D336E8919534044008E55A9 /* MathFunctions.swift in Sources */,
 				2D15929A19514B4900A96BCC /* GridNode.swift in Sources */,
 				2DD23D6C196DB17C00838E96 /* TapeNode.swift in Sources */,
 				2D8C19A3199696A90064B790 /* SwipeNode.swift in Sources */,
 				2D849F3619A39EB6008F3D69 /* CoreGraphicsExtensions.swift in Sources */,
 				2DCA18AB1986D2FA00DF3118 /* BreakingLabel.swift in Sources */,
+				2D54B24819CF27BB00DF68C5 /* SortTutorialScene.swift in Sources */,
 				2DD8C8A219B69AD9000D729E /* LevelData.swift in Sources */,
 				2D7F922C195C61FA00F04F63 /* ToolbarNode.swift in Sources */,
 				2DC49137194F45B800053237 /* GameViewController.swift in Sources */,

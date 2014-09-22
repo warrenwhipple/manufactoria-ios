@@ -9,9 +9,7 @@
 import SpriteKit
 
 protocol StatusNodeDelegate: class {
-  func testButtonPressed()
   func menuButtonPressed()
-  func nextButtonPressed()
 }
 
 class StatusNode: SwipeNode {
@@ -20,16 +18,8 @@ class StatusNode: SwipeNode {
   
   weak var delegate: StatusNodeDelegate!
   let instructionsPage = SKNode()
-  let label = BreakingLabel()
-  let menuButton = SwipeThroughButton(iconOffNamed: "menuIconOff", iconOnNamed: "menuIconOn")
-  let testButton = SwipeThroughButton(iconOffNamed: "playIconOff", iconOnNamed: "playIconOn")
-  let nextButton = SwipeThroughButton(iconOffNamed: "playIconOff", iconOnNamed: "playIconOn")
-  var leftButtonPoint = CGPointZero
-  var rightButtonPoint = CGPointZero
-  var leftButtonExitPoint = CGPointZero
-  var rightButtonExitPoint = CGPointZero
-  var menuButtonLabel = SKLabelNode()
-  var nextButtonLabel = SKLabelNode()
+  let instructionsLabel = BreakingLabel()
+  let tapeLabel = BreakingLabel()
   let tapeNode = TapeNode()
   let instructions: String
   let failPage = SKNode()
@@ -37,17 +27,21 @@ class StatusNode: SwipeNode {
   var failTapeNode: FailTapeNode?
   var thinkingAnimationDone = false
   
+  var menuButton = SwipeThroughButton(iconOffNamed: "smallMenuIconOff", iconOnNamed: "smallMenuIconOn")
+  
   init(instructions: String) {
     self.instructions = instructions
-
-    label.fontMedium()
-    label.fontColor = Globals.strokeColor
-    label.text = instructions
     
-    instructionsPage.addChild(label)
+    instructionsLabel.fontMedium()
+    instructionsLabel.fontColor = Globals.strokeColor
+    instructionsLabel.text = instructions
+    tapeLabel.fontMedium()
+    tapeLabel.fontColor = Globals.strokeColor
+    tapeLabel.alpha = 0
+    
+    instructionsPage.addChild(instructionsLabel)
+    instructionsPage.addChild(tapeLabel)
     instructionsPage.addChild(tapeNode)
-    instructionsPage.addChild(menuButton)
-    instructionsPage.addChild(testButton)
     
     failLabel.fontMedium()
     failLabel.fontColor = Globals.strokeColor
@@ -56,32 +50,12 @@ class StatusNode: SwipeNode {
     
     super.init(pages: [instructionsPage, failPage], texture: nil, color: nil, size: CGSizeZero)
     
-    tapeNode.printer.setScale(0)
-    
-    testButton.swipeThroughDelegate = self
-    testButton.touchUpInsideClosure = {[unowned self] in self.delegate.testButtonPressed()}
+    menuButton.zPosition = 50
     menuButton.swipeThroughDelegate = self
     menuButton.touchUpInsideClosure = {[unowned self] in self.delegate.menuButtonPressed()}
-    nextButton.swipeThroughDelegate = self
-    nextButton.touchUpInsideClosure = {[unowned self] in self.delegate.nextButtonPressed()}
+    self.addChild(menuButton)
     
-    menuButtonLabel.fontMedium()
-    menuButtonLabel.fontColor = Globals.strokeColor
-    menuButtonLabel.verticalAlignmentMode = .Center
-    menuButtonLabel.horizontalAlignmentMode = .Right
-    menuButtonLabel.position.x = -Globals.iconRoughSize.width
-    menuButtonLabel.alpha = 0
-    menuButtonLabel.runAction(SKAction.sequence([SKAction.waitForDuration(3), SKAction.fadeAlphaTo(1, duration: 1)]))
-    menuButtonLabel.text = "menu"
-
-    nextButtonLabel.fontMedium()
-    nextButtonLabel.fontColor = Globals.strokeColor
-    nextButtonLabel.verticalAlignmentMode = .Center
-    nextButtonLabel.horizontalAlignmentMode = .Left
-    nextButtonLabel.position.x = Globals.iconRoughSize.width
-    nextButtonLabel.alpha = 0
-    nextButtonLabel.runAction(SKAction.sequence([SKAction.waitForDuration(3), SKAction.fadeAlphaTo(1, duration: 1)]))
-    nextButtonLabel.text = "next"
+    tapeNode.printer.setScale(0)
     
     // can't swipe at first
     userInteractionEnabled = false
@@ -91,28 +65,18 @@ class StatusNode: SwipeNode {
   
   override func fitToSize() {
     super.fitToSize()
-    let iconSize = Globals.iconRoughSize
-    let buttonTouchHeight = min(iconSize.height * 2, size.height / 2)
-    let yCenters = distributionForChildren(count: 2, childSize: iconSize.height, parentSize: size.height)
-    let buttonXCenters = distributionForChildren(count: 2, childSize: iconSize.width, parentSize: size.width)
-    leftButtonPoint = CGPoint(buttonXCenters[0], yCenters[0])
-    rightButtonPoint = CGPoint(buttonXCenters[1], yCenters[0])
-    leftButtonExitPoint = CGPoint(-size.width - iconSize.width, yCenters[0])
-    rightButtonExitPoint = CGPoint(size.width + iconSize.width, yCenters[0])
-    
-    menuButton.position = leftButtonPoint
-    menuButton.size = CGSize(iconSize.width * 2, buttonTouchHeight)
-    testButton.position = rightButtonPoint
-    testButton.size = menuButton.size
-    nextButton.position = rightButtonExitPoint
-    nextButton.size = menuButton.size
-    
-    label.position = CGPoint(0, yCenters[1])
-    tapeNode.position = CGPoint(0, yCenters[0])
+    menuButton.size = CGSize(66)
+    menuButton.position = CGPoint(
+      x:size.width * 0.5 - 13,
+      y:size.height  * 0.5 - 13
+    )
+    let yOffset = roundPix(size.height / 6)
+    tapeLabel.position.y = yOffset
+    tapeNode.position.y = -yOffset
     tapeNode.width = size.width
-    failLabel.position = label.position
-    failTapeNode?.position = tapeNode.position
-    failTapeNode?.width = tapeNode.width
+    failLabel.position.y = yOffset
+    failTapeNode?.position.y = -yOffset
+    failTapeNode?.width = size.width
   }
   
   var state: State = .Editing {
@@ -120,13 +84,6 @@ class StatusNode: SwipeNode {
       if state == oldValue {return}
       switch state {
       case .Editing:
-        label.text = instructions
-        menuButton.userInteractionEnabled = true
-        menuButton.position = leftButtonPoint
-        instructionsPage.addChild(menuButton)
-        testButton.userInteractionEnabled = true
-        testButton.position = rightButtonPoint
-        instructionsPage.addChild(testButton)
         tapeNode.unloadTape()
         tapeNode.printer.setScale(0)
         goToIndexWithoutSnap(1)
@@ -136,62 +93,19 @@ class StatusNode: SwipeNode {
       case .Thinking:
         userInteractionEnabled = false
         thinkingAnimationDone = false
-        menuButton.userInteractionEnabled = false
-        menuButton.runAction(SKAction.sequence([
-          SKAction.moveTo(leftButtonExitPoint, duration: 0.6).easeIn(),
-          SKAction.removeFromParent()
-          ]), withKey: "move")
-        testButton.userInteractionEnabled = false
-        testButton.runAction(SKAction.sequence([
-          SKAction.moveTo(rightButtonExitPoint, duration: 0.6).easeIn(),
-          SKAction.removeFromParent()
-          ]), withKey: "move")
-        runAction(SKAction.waitForDuration(0), completion: {[unowned self] in self.thinkingAnimationDone = true})
-        changeText("")
-        tapeNode.printer.runAction(SKAction.scaleTo(1, duration: 0.2), withKey: "scale")
+        instructionsLabel.runAction(SKAction.fadeAlphaTo(0, duration: 0.2))
+        tapeNode.printer.runAction(SKAction.sequence([
+          SKAction.waitForDuration(0.2),
+          SKAction.scaleTo(1, duration: 0.2)
+          ]), withKey: "scale")
+        runAction(SKAction.waitForDuration(0.4), completion: {[unowned self] in self.thinkingAnimationDone = true})
       case .Testing:
         break
       case .Congratulating:
-        label.runAction(SKAction.fadeAlphaTo(0, duration: 0.2))
-        menuButton.userInteractionEnabled = true
-        menuButton.position = CGPoint(leftButtonExitPoint.x, 0)
-        menuButton.addChild(menuButtonLabel)
-        instructionsPage.addChild(menuButton)
-        menuButton.runAction(SKAction.moveToX(leftButtonPoint.x, duration: 0.6).easeOut(), withKey: "move")
-        nextButton.userInteractionEnabled = true
-        nextButton.position = CGPoint(rightButtonExitPoint.x, 0)
-        nextButton.addChild(nextButtonLabel)
-        instructionsPage.addChild(nextButton)
-        nextButton.runAction(SKAction.moveToX(rightButtonPoint.x, duration: 0.6).easeOut(), withKey: "move")
         tapeNode.unloadTape()
         tapeNode.printer.runAction(SKAction.scaleTo(0, duration: 0.2), withKey: "scale")
       }
     }
-  }
-  
-  func changeText(text: String?) {
-    var sequence: [SKAction] = []
-    if label.alpha != 0 {
-      sequence.append(SKAction.fadeAlphaTo(0, duration: 0.5))
-    }
-    sequence.append(SKAction.runBlock({[weak self] in self!.label.text = text}))
-    if text != nil && text! != "" {
-      sequence.append(SKAction.fadeAlphaTo(1, duration: 0.5))
-    }
-    label.runAction(SKAction.sequence(sequence), withKey: "changeText")
-  }
-  
-  func changeText(text: String?, textPosition: CGPoint) {
-    var sequence: [SKAction] = []
-    if label.alpha != 0 {
-      sequence.append(SKAction.fadeAlphaTo(0, duration: 0.5))
-    }
-    sequence.append(SKAction.runBlock({[weak self] in self!.label.text = text}))
-    sequence.append(SKAction.runBlock({[weak self] in self!.label.position = textPosition}))
-    if text != nil && text! != "" {
-      sequence.append(SKAction.fadeAlphaTo(1, duration: 0.5))
-    }
-    label.runAction(SKAction.sequence(sequence), withKey: "changeText")
   }
   
   func resetFailPageForTestResult(result: TapeTestResult) {
@@ -199,15 +113,20 @@ class StatusNode: SwipeNode {
     case .Pass:
       assertionFailure("StatusNode cannot generate fail page for result.kind.Pass")
     case .FailLoop:
-      failLabel.text = "This looped."
+      if result.input == "" {failLabel.text = "The blank sequence caused a loop."}
+      else {failLabel.text = "This sequence caused a loop."}
     case .FailShouldAccept:
-      failLabel.text = "This should be accepted."
+      if result.input == "" {failLabel.text = "A blank sequence should be accepted."}
+      else {failLabel.text = "This sequence should be accepted."}
     case .FailShouldReject:
-      failLabel.text = "This should be rejected."
+      if result.input == "" {failLabel.text = "A blank sequence should be rejected."}
+      else {failLabel.text = "This sequence should be rejected."}
     case .FailWrongTransform:
-      failLabel.text = "Wrong output."
+      if result.input == "" {failLabel.text = "The blank sequence was transformed incorrectly."}
+      else {failLabel.text = "This sequence was was transformed incorrectly."}
     case .FailDroppedTransform:
-      failLabel.text = "This got dropped."
+      if result.input == "" {failLabel.text = "The blank sequence must be transformed."}
+      else {failLabel.text = "This sequence was dropped."}
     }
     
     failLabel.alpha = 0

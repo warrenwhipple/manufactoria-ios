@@ -126,7 +126,7 @@ var LevelLibrary: [LevelSetup] = [
   
   LevelSetup(
     tag: "all",
-    instructions: "Connect the entrance to the exit.",
+    instructions: "Connect the entrance and exit.",
     space: GridSpace(3),
     editModes: [],
     exemplars: [""],
@@ -136,7 +136,7 @@ var LevelLibrary: [LevelSetup] = [
   
   LevelSetup(
     tag: "B",
-    instructions: "Accept blue: Send to the exit.\nReject red: Dump on the floor.",
+    instructions: "Accept blue.\nReject red.",
     space: GridSpace(3),
     editModes: [.PullerBR],
     exemplars: ["r", "b"],
@@ -146,10 +146,10 @@ var LevelLibrary: [LevelSetup] = [
   
   LevelSetup(
     tag: "BRB...    ",
-    instructions: "Accept any that begin blue red blue.",
+    instructions: "Accept sequences that begin blue red blue.\nReject everything else.",
     space: GridSpace(5),
     editModes: [.PullerBR],
-    exemplars: ["rbrb", "brbr"],
+    exemplars: ["brr", "brb"],
     generationFunction: {n in return generate("br", n)},
     acceptFunction: {s in
       if s.length() < 3 {return false}
@@ -159,7 +159,7 @@ var LevelLibrary: [LevelSetup] = [
   
   LevelSetup(
     tag: "no R",
-    instructions: "Reject any red anywhere.",
+    instructions: "Reject sequences\nthat contain any red.",
     space: GridSpace(3),
     editModes: [.PullerBR],
     exemplars: ["bbrb", "bbbb"],
