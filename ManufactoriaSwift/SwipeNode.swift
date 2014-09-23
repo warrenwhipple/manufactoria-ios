@@ -11,8 +11,9 @@ import SpriteKit
 class SwipeNode: SKSpriteNode, SwipeThroughButtonDelegate {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   
-  let wrapper: SKNode
-  let leftArrow, rightArrow: SKSpriteNode
+  let wrapper = SKNode()
+  let pages: [SKNode]
+  let arrows: [SKSpriteNode]
   var touch: UITouch?
   var wrapperMinX: CGFloat = 0.0
   var lastTouchX: CGFloat = 0
@@ -21,24 +22,24 @@ class SwipeNode: SKSpriteNode, SwipeThroughButtonDelegate {
   var lastLastTouchTime: NSTimeInterval = 0
   
   init(pages: [SKNode], texture: SKTexture!, color: UIColor!, size: CGSize) {
-    leftArrow = SKSpriteNode("swipeArrow")
-    leftArrow.anchorPoint.x = 0
-    leftArrow.alpha = 0
-    rightArrow = SKSpriteNode("swipeArrow")
-    rightArrow.anchorPoint.x = 0
-    rightArrow.zRotation = CGFloat(M_PI)
-    if pages.count <= 1 {rightArrow.alpha = 0}
-    wrapper = SKNode()
     self.pages = pages
-    super.init(texture: texture, color: color, size: size)
-    userInteractionEnabled = true
     for i in 0 ..< pages.count {
       let page = pages[i]
-      page.position.x = CGFloat(i) * size.width
       wrapper.addChild(page)
     }
-    addChild(leftArrow)
-    addChild(rightArrow)
+    var tempArrows: [SKSpriteNode] = []
+    if pages.count > 1 {
+      for i in 0 ..< pages.count - 1 {
+        let arrow = SKSpriteNode("swipeArrow")
+        arrow.setScale(0)
+        arrow.runAction(SKAction.scaleTo(1, duration: 0.2), withKey: "scale")
+        tempArrows.append(arrow)
+        wrapper.addChild(arrow)
+      }
+    }
+    arrows = tempArrows
+    super.init(texture: texture, color: color, size: size)
+    userInteractionEnabled = true
     addChild(wrapper)
   }
   
@@ -46,46 +47,25 @@ class SwipeNode: SKSpriteNode, SwipeThroughButtonDelegate {
     self.init(pages: pages, texture: nil, color: nil, size: CGSizeZero)
   }
   
-  var pages: [SKNode] {
-    didSet {
-      touch = nil
-      removeChildrenInArray(oldValue)
-      for i in 0 ..< pages.count {
-        let page = pages[i]
-        page.position.x = CGFloat(i) * size.width
-        wrapper.addChild(page)
-      }
-      wrapperMinX = -CGFloat(pages.count - 1) * size.width
-      snapToClosestWithInitialVelocityX(0)
-    }
-  }
-  
   override var size: CGSize {didSet {if size != oldValue {fitToSize()}}}
   
   func fitToSize() {
     touch = nil
-    for i in 0 ..< pages.count {
-      pages[i].position.x = CGFloat(i) * size.width
-    }
-    if self.size.width != 0 {
-      wrapper.position.x *= size.width / self.size.width
-    }
+    for i in 0 ..< pages.count {pages[i].position.x = CGFloat(i) * size.width}
+    for i in 0 ..< arrows.count {arrows[i].position.x = (CGFloat(i) + 0.5) * size.width}
     wrapperMinX = -CGFloat(pages.count - 1) * size.width
     snapToClosestWithInitialVelocityX(0)
-    leftArrow.position.x = -0.5 * size.width + 4
-    rightArrow.position.x = 0.5 * size.width - 4
   }
   
   override var userInteractionEnabled: Bool {
     didSet {
       if userInteractionEnabled {
         if touch == nil && size.width != 0 {
-          fadeInArrowsForIndex(Int(round(-wrapper.position.x / size.width)))
+          for arrow in arrows {arrow.runAction(SKAction.scaleTo(1, duration: 0.2), withKey: "scale")}
         }
       } else {
         let fadeAction = SKAction.fadeAlphaTo(0, duration: 0.25)
-        leftArrow.runAction(fadeAction, withKey: "fade")
-        rightArrow.runAction(fadeAction, withKey: "fade")
+        for arrow in arrows {arrow.runAction(SKAction.scaleTo(0, duration: 0.2), withKey: "scale")}
         touch = nil
       }
     }
@@ -117,7 +97,6 @@ class SwipeNode: SKSpriteNode, SwipeThroughButtonDelegate {
         }
       }
     }
-    if userInteractionEnabled == true {fadeInArrowsForIndex(index)}
   }
   
   func snapToClosestWithInitialVelocityX(initialVelocityX: CGFloat) {
@@ -132,25 +111,12 @@ class SwipeNode: SKSpriteNode, SwipeThroughButtonDelegate {
     snapToIndex(Int(floor(-wrapper.position.x / size.width)), initialVelocityX: initialVelocityX)
   }
   
-  func fadeInArrowsForIndex(index: Int) {
-    let fadeAction = SKAction.fadeAlphaTo(1, duration: 0.25)
-    if index > 0 {
-      leftArrow.runAction(fadeAction, withKey: "fade")
-    }
-    if index < pages.count - 1 {
-      rightArrow.runAction(fadeAction, withKey: "fade")
-    }
-  }
-  
   func touchBegan() {
     wrapper.removeActionForKey("snap")
     lastTouchX = touch!.locationInNode(self).x
     lastLastTouchX = lastTouchX
     lastTouchTime = touch!.timestamp
     lastLastTouchTime = lastTouchTime
-    let fadeAction = SKAction.fadeAlphaTo(0, duration: 0.25)
-    leftArrow.runAction(fadeAction, withKey: "fade")
-    rightArrow.runAction(fadeAction, withKey: "fade")
   }
   
   func touchMoved() {

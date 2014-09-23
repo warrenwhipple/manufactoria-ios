@@ -59,8 +59,6 @@ class StatusNode: SwipeNode {
     
     // can't swipe at first
     userInteractionEnabled = false
-    rightArrow.alpha = 0
-    rightArrow.removeActionForKey("fade")
   }
   
   override func fitToSize() {
@@ -122,10 +120,10 @@ class StatusNode: SwipeNode {
       if result.input == "" {failLabel.text = "A blank sequence should be rejected."}
       else {failLabel.text = "This sequence should be rejected."}
     case .FailWrongTransform:
-      if result.input == "" {failLabel.text = "The blank sequence was transformed incorrectly."}
+      if result.input == "" {failLabel.text = "The blank sequence was processed incorrectly."}
       else {failLabel.text = "This sequence was was transformed incorrectly."}
     case .FailDroppedTransform:
-      if result.input == "" {failLabel.text = "The blank sequence must be transformed."}
+      if result.input == "" {failLabel.text = "The blank sequence must be processed."}
       else {failLabel.text = "This sequence was dropped."}
     }
     

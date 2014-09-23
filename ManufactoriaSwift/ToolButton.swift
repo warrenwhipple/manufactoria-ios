@@ -55,7 +55,7 @@ class ToolButton: SwipeThroughButton {
     let iconOn = SKSpriteNode(iconOnNamed)
     iconOn.color = Globals.highlightColor
     self.init(editMode: editMode, iconOff: iconOff, iconOn: iconOn)
-    generateSimpleIndicator()
+    //generateSimpleIndicator()
   }
 
   var isInFocus: Bool = false {
@@ -340,7 +340,7 @@ class SelectBoxMoveButton: ToolButton {
       self.boxOverlay.runAction(strokeColorAction, withKey: "colorize")
       self.moveOverlay.runAction(strokeColorAction, withKey: "colorize")
     }
-    generateSimpleIndicator()
+    //generateSimpleIndicator()
   }
   
   override var editMode: EditMode {

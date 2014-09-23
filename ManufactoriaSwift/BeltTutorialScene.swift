@@ -14,6 +14,9 @@ class BeltTutorialScene: GameScene {
   
   init(size: CGSize) {
     super.init(size: size, levelNumber: 0)
+    statusNode.instructionsLabel.text = "Connect the entrance and exit."
+    statusNode.tapeLabel.removeFromParent()
+    statusNode.tapeNode.removeFromParent()
     toolbarNode.userInteractionEnabled = false
     toolbarNode.undoCancelSwapper.removeFromParent()
     toolbarNode.redoConfirmSwapper.removeFromParent()
@@ -23,11 +26,7 @@ class BeltTutorialScene: GameScene {
     toolbarNode.robotButton.userInteractionEnabled = false
     toolbarNode.robotButton.alpha = 0
   }
-  
-  override func fitToSize() {
-    super.fitToSize()
-  }
-    
+      
   func checkTutorialGrid() -> Bool {
     var coord = levelData.grid.startCoord + 1
     var lastCoord = levelData.grid.startCoord
@@ -50,15 +49,25 @@ class BeltTutorialScene: GameScene {
   func showTestButton() {
     if !testButtonIsHidden {return}
     testButtonIsHidden = false
-    statusNode.instructionsLabel.runAction(SKAction.fadeAlphaTo(0, duration: 0.4), withKey: "fade")
+    statusNode.instructionsLabel.runAction(SKAction.sequence([
+      SKAction.fadeAlphaTo(0, duration: 0.2),
+      SKAction.runBlock({[unowned self] in self.statusNode.instructionsLabel.text = "Send the robot through."}),
+      SKAction.fadeAlphaTo(1, duration: 0.2)
+      ]), withKey: "fade")
     toolbarNode.robotButton.userInteractionEnabled = true
+    toolbarNode.robotButton.runAction(SKAction.fadeAlphaTo(1, duration: 0.4), withKey: "fade")
   }
   
   func hideTestButton() {
     if testButtonIsHidden {return}
     testButtonIsHidden = true
-    statusNode.instructionsLabel.runAction(SKAction.fadeAlphaTo(1, duration: 0.4), withKey: "fade")
+    statusNode.instructionsLabel.runAction(SKAction.sequence([
+      SKAction.fadeAlphaTo(0, duration: 0.2),
+      SKAction.runBlock({[unowned self] in self.statusNode.instructionsLabel.text = "Connect the entrance and exit."}),
+      SKAction.fadeAlphaTo(1, duration: 0.2)
+      ]), withKey: "fade")
     toolbarNode.robotButton.userInteractionEnabled = false
+    toolbarNode.robotButton.runAction(SKAction.fadeAlphaTo(0, duration: 0.4), withKey: "fade")
   }
   
   override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
