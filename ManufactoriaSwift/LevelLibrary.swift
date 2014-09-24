@@ -146,7 +146,7 @@ var LevelLibrary: [LevelSetup] = [
   
   LevelSetup(
     tag: "BRB...    ",
-    instructions: "Accept sequences that begin blue red blue.\nReject everything else.",
+    instructions: "Accept sequences\nthat begin blue red blue.",
     space: GridSpace(5),
     editModes: [.PullerBR],
     exemplars: ["brr", "brb"],

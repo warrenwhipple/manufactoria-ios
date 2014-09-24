@@ -13,8 +13,8 @@ class QuestionScene: ManufactoriaScene {
   let questionLabel = BreakingLabel()
   let yesLabel = BreakingLabel()
   let noLabel = BreakingLabel()
-  let yesButton = Button(texture: nil, color: nil, size: CGSize(80))
-  let noButton = Button(texture: nil, color: nil, size: CGSize(80))
+  let yesButton = Button()
+  let noButton = Button()
 
   override init(size: CGSize) {
     
@@ -28,8 +28,10 @@ class QuestionScene: ManufactoriaScene {
     noLabel.fontMedium()
     noLabel.fontColor = Globals.strokeColor
     
+    yesButton.size = CGSize(100)
     yesButton.addChild(yesLabel)
     
+    noButton.size = CGSize(100)
     noButton.addChild(noLabel)
     
     super.init(size: size)

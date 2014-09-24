@@ -12,7 +12,7 @@ protocol ToolButtonDelegate: class {
   func toolButtonActivated(ToolButton)
 }
 
-class ToolButton: SwipeThroughButton {
+class ToolButton: Button {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   weak var toolButtonDelegate: ToolButtonDelegate!
   var editMode: EditMode
@@ -313,11 +313,11 @@ class SelectBoxMoveButton: ToolButton {
     iconOn.zPosition = 1
     addChild(iconOn)
     
-    boxOverlay.color = Globals.highlightColor
+    boxOverlay.color = Globals.strokeColor
     boxOverlay.zPosition = 2
     addChild(boxOverlay)
     
-    moveOverlay.color = Globals.highlightColor
+    moveOverlay.color = Globals.strokeColor
     moveOverlay.zPosition = 2
     moveOverlay.setScale(0)
     addChild(moveOverlay)

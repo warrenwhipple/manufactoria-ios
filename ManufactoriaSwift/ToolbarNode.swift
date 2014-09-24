@@ -27,13 +27,13 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
   weak var delegate: ToolbarNodeDelegate!
   let drawPage = SKNode()
   let selectionPage = SKNode()
-  let undoButton = SwipeThroughButton(iconOffNamed: "undoIconOff", iconOnNamed: "undoIconOn")
-  let redoButton = SwipeThroughButton(iconOffNamed: "undoIconOff", iconOnNamed: "undoIconOn")
-  let cancelButton = SwipeThroughButton(iconOffNamed: "cancelIconOff", iconOnNamed: "cancelIconOn")
-  let confirmButton = SwipeThroughButton(iconOffNamed: "confirmIconOff", iconOnNamed: "confirmIconOn")
-  let robotButton = SwipeThroughButton(iconOffNamed: "robotOff64", iconOnNamed: "robotOn64")
+  let undoButton = Button(iconOffNamed: "undoIconOff", iconOnNamed: "undoIconOn")
+  let redoButton = Button(iconOffNamed: "undoIconOff", iconOnNamed: "undoIconOn")
+  let cancelButton = Button(iconOffNamed: "cancelIconOff", iconOnNamed: "cancelIconOn")
+  let confirmButton = Button(iconOffNamed: "confirmIconOff", iconOnNamed: "confirmIconOn")
+  let robotButton = Button(iconOffNamed: "robotOff64", iconOnNamed: "robotOn64")
   let selectBoxMoveButton = SelectBoxMoveButton()
-  let quickButtons: [SwipeThroughButton]
+  let quickButtons: [Button]
   let drawToolButtons, selectionToolButtons: [ToolButton]
   var buttonInFocus, lastDrawToolButton, lastSelectionToolButton: ToolButton
   var undoCancelSwapper, redoConfirmSwapper: ButtonSwapper

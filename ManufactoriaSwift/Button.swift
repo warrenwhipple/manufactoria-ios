@@ -8,12 +8,22 @@
 
 import SpriteKit
 
+protocol SwipeThroughDelegate: class {
+  var userInteractionEnabled: Bool {get}
+  func swipeThroughTouchMoved(touch: UITouch)
+  func swipeThroughTouchEnded(touch: UITouch)
+  func swipeThroughTouchCancelled(touch: UITouch)
+}
+
 class Button: SKSpriteNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   var pressClosure, releaseClosure, enableClosure, disableClosure, touchDownClosure, touchUpInsideClosure: (()->())?
+  weak var swipeThroughDelegate: SwipeThroughDelegate?
+  var swipeThroughTouch: UITouch?
+  var touchBeganPoint: CGPoint = CGPointZero
   
-  override init(texture: SKTexture!, color: UIColor!, size: CGSize) {
-    super.init(texture: nil, color: nil, size: size)
+  override init() {
+    super.init(texture: nil, color: nil, size: CGSizeZero)
     userInteractionEnabled = true
   }
   
@@ -43,8 +53,6 @@ class Button: SKSpriteNode {
     self.init(iconOff: iconOff, iconOn: iconOn)
   }
 
-  convenience override init() {self.init(texture: nil, color: nil, size: CGSizeZero)}
-  
   var touch: UITouch? {
     didSet {
       if touch == oldValue {return}
@@ -74,60 +82,6 @@ class Button: SKSpriteNode {
   }
   
   override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
-    if touch == nil {
-      touch = touches.anyObject() as? UITouch
-      touchDownClosure?()
-    }
-  }
-  
-  override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
-    if touch != nil && touches.containsObject(touch!) && !frame.contains(touch!.locationInNode(parent)) {
-      touch = nil
-    }
-  }
-  
-  override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
-    if touch != nil && touches.containsObject(touch!) {
-      touch = nil
-      touchUpInsideClosure?()
-    }
-  }
-  
-  override func touchesCancelled(touches: NSSet, withEvent event: UIEvent) {
-    if touch != nil && touches.containsObject(touch!) {
-      touch = nil
-    }
-  }
-}
-
-protocol SwipeThroughButtonDelegate: class {
-  func swipeThroughTouchMoved(touch: UITouch)
-  func swipeThroughTouchEnded(touch: UITouch)
-  func swipeThroughTouchCancelled(touch: UITouch)
-}
-
-class SwipeThroughButton: Button {
-  required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  weak var swipeThroughDelegate: SwipeThroughButtonDelegate?
-  var swipeThroughTouch: UITouch?
-  var touchBeganPoint: CGPoint = CGPointZero
-  
-  init() {
-    super.init(texture: nil, color: nil, size: CGSize(48))
-  }
-  
-  override init(iconOff: SKNode, iconOn: SKNode) {
-    super.init(iconOff: iconOff, iconOn: iconOn)
-  }
-  
-  convenience init(iconOffNamed: String, iconOnNamed: String) {
-    let iconOff = SKSpriteNode(iconOffNamed)
-    let iconOn = SKSpriteNode(iconOnNamed)
-    iconOn.color = Globals.highlightColor
-    self.init(iconOff: iconOff, iconOn: iconOn)
-  }
-  
-  override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
     if touch == nil && swipeThroughTouch == nil {
       touch = touches.anyObject() as? UITouch
       touchBeganPoint = touch!.locationInView(touch!.view)
@@ -136,11 +90,18 @@ class SwipeThroughButton: Button {
   }
   
   override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
-    if touch != nil && touches.containsObject(touch!)
-      && CGPointDistSq(p1: touch!.locationInView(touch!.view), p2: touchBeganPoint) >= 15*15 {
-        swipeThroughTouch = touch
-        touch = nil
-        swipeThroughDelegate?.swipeThroughTouchMoved(swipeThroughTouch!)
+    if touch != nil && touches.containsObject(touch!) {
+      if swipeThroughDelegate == nil || !swipeThroughDelegate!.userInteractionEnabled {
+        if !frame.contains(touch!.locationInNode(parent)) {
+          touch = nil
+        }
+      } else {
+        if CGPointDistSq(p1: touch!.locationInView(touch!.view), p2: touchBeganPoint) >= 15*15 {
+          swipeThroughTouch = touch
+          touch = nil
+          swipeThroughDelegate?.swipeThroughTouchMoved(swipeThroughTouch!)
+        }
+      }
     } else if swipeThroughTouch != nil && touches.containsObject(swipeThroughTouch!) {
       swipeThroughDelegate?.swipeThroughTouchMoved(swipeThroughTouch!)
     }
@@ -148,8 +109,8 @@ class SwipeThroughButton: Button {
   
   override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
     if touch != nil && touches.containsObject(touch!) {
-      touchUpInsideClosure?()
       touch = nil
+      touchUpInsideClosure?()
     } else if swipeThroughTouch != nil && touches.containsObject(swipeThroughTouch!) {
       swipeThroughDelegate?.swipeThroughTouchEnded(swipeThroughTouch!)
       swipeThroughTouch = nil

@@ -8,7 +8,7 @@
 
 import SpriteKit
 
-class SwipeNode: SKSpriteNode, SwipeThroughButtonDelegate {
+class SwipeNode: SKSpriteNode, SwipeThroughDelegate {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   
   let wrapper = SKNode()
