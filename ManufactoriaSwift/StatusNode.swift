@@ -17,6 +17,9 @@ class StatusNode: SwipeNode {
   enum State {case Editing, Thinking, Testing, Congratulating}
   
   weak var delegate: StatusNodeDelegate!
+  let optionsPage = SKNode()
+  let menuButton = SwipeThroughButton(iconOffNamed: "menuIconOff", iconOnNamed: "menuIconOn")
+  let menuLabel = SKLabelNode()
   let instructionsPage = SKNode()
   let instructionsLabel = BreakingLabel()
   let tapeLabel = BreakingLabel()
@@ -27,14 +30,15 @@ class StatusNode: SwipeNode {
   var failTapeNode: FailTapeNode?
   var thinkingAnimationDone = false
   
-  var menuButton = SwipeThroughButton(iconOffNamed: "smallMenuIconOff", iconOnNamed: "smallMenuIconOn")
-  
   init(instructions: String) {
     self.instructions = instructions
+    menuLabel.fontSmall()
+    menuLabel.color = Globals.strokeColor
     
     instructionsLabel.fontMedium()
     instructionsLabel.fontColor = Globals.strokeColor
     instructionsLabel.text = instructions
+    tapeNode.printer.setScale(0)
     tapeLabel.fontMedium()
     tapeLabel.fontColor = Globals.strokeColor
     tapeLabel.alpha = 0
@@ -50,15 +54,8 @@ class StatusNode: SwipeNode {
     
     super.init(pages: [instructionsPage, failPage], texture: nil, color: nil, size: CGSizeZero)
     
-    menuButton.zPosition = 50
     menuButton.swipeThroughDelegate = self
     menuButton.touchUpInsideClosure = {[unowned self] in self.delegate.menuButtonPressed()}
-    self.addChild(menuButton)
-    
-    tapeNode.printer.setScale(0)
-    
-    // can't swipe at first
-    userInteractionEnabled = false
   }
   
   override func fitToSize() {

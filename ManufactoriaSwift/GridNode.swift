@@ -41,6 +41,7 @@ class GridNode: SKNode {
   
   weak var delegate: GridNodeDelegate!
   let grid: Grid
+  var locks: [Bool]?
   let wrapper = SKNode()
   let cellNodes: [CellNode]
   let enterArrow, exitArrow: SKSpriteNode
@@ -156,6 +157,24 @@ class GridNode: SKNode {
       if editMode == .SelectCell && liftedGridNode == nil {return}
       cancelSelection()
     }
+  }
+  
+  func lockCoords(coords: [GridCoord]) {
+    if locks == nil {
+      locks = []
+      for _ in 0 ..< grid.cells.count {
+        locks?.append(false)
+      }
+    }
+    for coord in coords {
+      locks?[grid.space.columns * coord.j + coord.i] = true
+      self[coord].shimmerNode.stopShimmer()
+    }
+  }
+  
+  func coordIsLocked(coord: GridCoord) -> Bool {
+    if locks == nil {return false}
+    return locks![grid.space.columns * coord.j + coord.i]
   }
   
   func confirmSelection() {
@@ -316,7 +335,7 @@ class GridNode: SKNode {
     }
     
     bridgeEditMemory = nil
-    if grid.space.contains(editCoord) {
+    if grid.space.contains(editCoord) && !coordIsLocked(editCoord) {
       self[editCoord].isSelected = true
       var cell = grid[editCoord]
       if editMode == .Bridge {
@@ -378,12 +397,12 @@ class GridNode: SKNode {
     var isTouchCell = false
     var editCell: Cell = Cell()
     var touchCell: Cell = Cell()
-    if grid.space.contains(editCoord) {
+    if grid.space.contains(editCoord) && !coordIsLocked(editCoord) {
       self[editCoord].isSelected = false
       editCell = grid[editCoord]
       isEditCell = true
     }
-    if grid.space.contains(touchCoord) {
+    if grid.space.contains(touchCoord) && !coordIsLocked(touchCoord) {
       self[touchCoord].isSelected = true
       touchCell = grid[touchCoord]
       isTouchCell = true

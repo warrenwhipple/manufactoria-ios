@@ -22,9 +22,19 @@ class SortTutorialScene: GameScene {
     toolbarNode.redoConfirmSwapper.removeFromParent()
     for button in toolbarNode.drawToolButtons {button.removeFromParent()}
     
+    for i in 0 ..< gridNode.grid.cells.count {gridNode.grid.cells[i] = Cell()}
     gridNode.grid[GridCoord(1,0)] = Cell(kind: .Belt, direction: .North)
     gridNode.grid[GridCoord(1,1)] = Cell(kind: .PullerBR, direction: .North)
     gridNode.gridChanged()
+    
+    gridNode.lockCoords([
+      GridCoord(0,0),
+      GridCoord(1,0),
+      GridCoord(1,1),
+      GridCoord(2,0),
+      GridCoord(2,1),
+      GridCoord(2,2)
+      ])
   }
   
   override func loadTape(i: Int) {

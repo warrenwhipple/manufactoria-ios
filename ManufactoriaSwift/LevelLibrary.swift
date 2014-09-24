@@ -71,8 +71,8 @@ struct LevelSetup {
 
 private func generate(characters: String, count: Int, filter: ((String) -> (Bool))) -> [String] {
   var list: [String] = []
-  if filter("") {list.append("")}
-  if characters == "" {return list}
+  //if filter("") {list.append("")}
+  //if characters == "" {return list}
   var lastLevel = [""]
   var nextLevel: [String] = []
   while true {
