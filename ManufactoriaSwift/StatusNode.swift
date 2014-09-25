@@ -19,7 +19,6 @@ class StatusNode: SwipeNode {
   weak var delegate: StatusNodeDelegate!
   let optionsPage = SKNode()
   let menuButton = Button(iconOffNamed: "menuIconOff", iconOnNamed: "menuIconOn")
-  let menuLabel = SKLabelNode()
   let instructionsPage = SKNode()
   let instructionsLabel = BreakingLabel()
   let tapeLabel = BreakingLabel()
@@ -32,8 +31,10 @@ class StatusNode: SwipeNode {
   
   init(instructions: String) {
     self.instructions = instructions
-    menuLabel.fontSmall()
-    menuLabel.color = Globals.strokeColor
+    
+    super.init(pages: [optionsPage, instructionsPage, failPage], texture: nil, color: nil, size: CGSizeZero)
+    
+    optionsPage.addChild(menuButton)
     
     instructionsLabel.fontMedium()
     instructionsLabel.fontColor = Globals.strokeColor
@@ -52,19 +53,14 @@ class StatusNode: SwipeNode {
     
     failPage.addChild(failLabel)
     
-    super.init(pages: [instructionsPage, failPage], texture: nil, color: nil, size: CGSizeZero)
-    
     menuButton.swipeThroughDelegate = self
     menuButton.touchUpInsideClosure = {[unowned self] in self.delegate.menuButtonPressed()}
+    
+    goToIndexWithoutSnap(1)
   }
   
   override func fitToSize() {
     super.fitToSize()
-    menuButton.size = CGSize(66)
-    menuButton.position = CGPoint(
-      x:size.width * 0.5 - 13,
-      y:size.height  * 0.5 - 13
-    )
     let yOffset = roundPix(size.height / 6)
     tapeLabel.position.y = yOffset
     tapeNode.position.y = -yOffset

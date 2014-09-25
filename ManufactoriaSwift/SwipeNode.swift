@@ -13,6 +13,7 @@ class SwipeNode: SKSpriteNode, SwipeThroughDelegate {
   
   let wrapper = SKNode()
   let pages: [SKNode]
+  var currentIndex = 0
   let arrows: [SKSpriteNode]
   var touch: UITouch?
   var wrapperMinX: CGFloat = 0.0
@@ -54,7 +55,7 @@ class SwipeNode: SKSpriteNode, SwipeThroughDelegate {
     for i in 0 ..< pages.count {pages[i].position.x = CGFloat(i) * size.width}
     for i in 0 ..< arrows.count {arrows[i].position.x = (CGFloat(i) + 0.5) * size.width}
     wrapperMinX = -CGFloat(pages.count - 1) * size.width
-    snapToClosestWithInitialVelocityX(0)
+    goToIndexWithoutSnap(currentIndex)
   }
   
   override var userInteractionEnabled: Bool {
@@ -72,15 +73,19 @@ class SwipeNode: SKSpriteNode, SwipeThroughDelegate {
   }
   
   func goToIndexWithoutSnap(index: Int) {
+    currentIndex = index
     wrapper.removeActionForKey("snap")
     wrapper.position.x = -CGFloat(index) * size.width
   }
   
   func snapToIndex(index: Int, initialVelocityX: CGFloat) {
+    currentIndex = 0
     var newX: CGFloat = 0
     if index > pages.count - 1 {
+      currentIndex = pages.count - 1
       newX = -CGFloat(pages.count - 1) * size.width
     } else if index > 0 {
+      currentIndex = index
       newX = -CGFloat(index) * size.width
     }
     if wrapper.position.x == newX {

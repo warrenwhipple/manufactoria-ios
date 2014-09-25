@@ -19,26 +19,11 @@ class CongratulationsMenu: SKNode {
   weak var delegate: CongratulationsMenuDelegate!
   let menuButton = Button(iconOffNamed: "menuIconOff", iconOnNamed: "menuIconOn")
   let nextButton = Button(iconOffNamed: "nextIconOff", iconOnNamed: "nextIconOn")
-  let menuLabel = SKLabelNode()
-  let nextLabel = SKLabelNode()
 
   override init() {
     super.init()
-    menuLabel.fontMedium()
-    menuLabel.fontColor = Globals.strokeColor
-    menuLabel.text = "menu"
-    menuLabel.horizontalAlignmentMode = .Center
-    menuLabel.position.y = -Globals.iconRoughSize.height * 1.5
-    menuButton.addChild(menuLabel)
     addChild(menuButton)
     menuButton.touchUpInsideClosure = {[unowned self] in self.delegate.menuButtonPressed()}
-    
-    nextLabel.fontMedium()
-    nextLabel.fontColor = Globals.strokeColor
-    nextLabel.text = "next"
-    nextLabel.horizontalAlignmentMode = .Center
-    nextLabel.position.y = -Globals.iconRoughSize.height * 1.5
-    nextButton.addChild(nextLabel)
     addChild(nextButton)
     nextButton.touchUpInsideClosure = {[unowned self] in self.delegate.nextButtonPressed()}
   }
