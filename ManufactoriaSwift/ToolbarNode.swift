@@ -78,7 +78,7 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
     lastDrawToolButton = buttonInFocus
     lastSelectionToolButton = selectionToolButtons[0]
     
-    super.init(pages: [drawPage, selectionPage], texture: nil, color: nil, size: CGSizeZero)
+    super.init(pages: [drawPage, selectionPage])
     
     for node in redoButton.children {(node as SKNode).xScale = -1}
     
@@ -131,7 +131,7 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
     let buttonYCenters = distributionForChildren(count: 2, childSize: iconSize.height, parentSize: size.height)
     for button in quickButtons {button.position.y = buttonYCenters[1]}
     for button in drawToolButtons + selectionToolButtons {button.position.y = buttonYCenters[0]}
-    for arrow in arrows {arrow.position.y = buttonYCenters[0]}
+    //for arrow in arrows {arrow.position.y = buttonYCenters[0]}
     
     undoCancelSwapper.position = undoButton.position
     redoConfirmSwapper.position = redoButton.position

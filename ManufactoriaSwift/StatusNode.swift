@@ -32,7 +32,7 @@ class StatusNode: SwipeNode {
   init(instructions: String) {
     self.instructions = instructions
     
-    super.init(pages: [optionsPage, instructionsPage, failPage], texture: nil, color: nil, size: CGSizeZero)
+    super.init(pages: [optionsPage, instructionsPage, failPage])
     
     optionsPage.addChild(menuButton)
     

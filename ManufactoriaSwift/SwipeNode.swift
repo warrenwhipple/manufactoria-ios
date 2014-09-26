@@ -12,9 +12,11 @@ class SwipeNode: SKSpriteNode, SwipeThroughDelegate {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   
   let wrapper = SKNode()
-  let pages: [SKNode]
   var currentIndex = 0
-  let arrows: [SKSpriteNode]
+  var pages: [SKNode]
+  let arrowWrapper = SKNode()
+  var leftArrows: [SKSpriteNode] = []
+  var rightArrows: [SKSpriteNode] = []
   var touch: UITouch?
   var wrapperMinX: CGFloat = 0.0
   var lastTouchX: CGFloat = 0
@@ -22,30 +24,31 @@ class SwipeNode: SKSpriteNode, SwipeThroughDelegate {
   var lastTouchTime: NSTimeInterval = 0
   var lastLastTouchTime: NSTimeInterval = 0
   
-  init(pages: [SKNode], texture: SKTexture!, color: UIColor!, size: CGSize) {
+  init(pages: [SKNode]) {
     self.pages = pages
+    
+    super.init(texture: nil, color: nil, size: CGSizeZero)
+    userInteractionEnabled = true
+    
     for i in 0 ..< pages.count {
       let page = pages[i]
       wrapper.addChild(page)
     }
-    var tempArrows: [SKSpriteNode] = []
     if pages.count > 1 {
       for i in 0 ..< pages.count - 1 {
-        let arrow = SKSpriteNode("swipeArrow")
-        arrow.setScale(0)
-        arrow.runAction(SKAction.scaleTo(1, duration: 0.2), withKey: "scale")
-        tempArrows.append(arrow)
-        wrapper.addChild(arrow)
+        let leftArrow = SKSpriteNode("swipeArrow")
+        leftArrow.anchorPoint.x = 1
+        leftArrows.append(leftArrow)
+        arrowWrapper.addChild(leftArrow)
+        let rightArrow = SKSpriteNode("swipeArrow")
+        rightArrow.anchorPoint.x = 1
+        rightArrow.xScale = -1
+        rightArrows.append(rightArrow)
+        arrowWrapper.addChild(rightArrow)
       }
     }
-    arrows = tempArrows
-    super.init(texture: texture, color: color, size: size)
-    userInteractionEnabled = true
+    wrapper.addChild(arrowWrapper)
     addChild(wrapper)
-  }
-  
-  convenience init(pages: [SKNode]) {
-    self.init(pages: pages, texture: nil, color: nil, size: CGSizeZero)
   }
   
   override var size: CGSize {didSet {if size != oldValue {fitToSize()}}}
@@ -53,20 +56,26 @@ class SwipeNode: SKSpriteNode, SwipeThroughDelegate {
   func fitToSize() {
     touch = nil
     for i in 0 ..< pages.count {pages[i].position.x = CGFloat(i) * size.width}
-    for i in 0 ..< arrows.count {arrows[i].position.x = (CGFloat(i) + 0.5) * size.width}
+    for i in 0 ..< leftArrows.count {leftArrows[i].position.x = (CGFloat(i) + 0.5) * size.width}
+    for i in 0 ..< rightArrows.count {rightArrows[i].position.x = (CGFloat(i) + 0.5) * size.width}
     wrapperMinX = -CGFloat(pages.count - 1) * size.width
     goToIndexWithoutSnap(currentIndex)
+  }
+  
+  func updateArrowAlphas() {
+    for arrow in leftArrows + rightArrows {arrow.alpha = 0}
+    if size.width == 0 {return}
+    let positionRatio = wrapper.position.x / size.width
+    let closestIndex = round(positionRatio)
+    
   }
   
   override var userInteractionEnabled: Bool {
     didSet {
       if userInteractionEnabled {
-        if touch == nil && size.width != 0 {
-          for arrow in arrows {arrow.runAction(SKAction.scaleTo(1, duration: 0.2), withKey: "scale")}
-        }
+        arrowWrapper.runAction(SKAction.fadeAlphaTo(1, duration: 0.2))
       } else {
-        let fadeAction = SKAction.fadeAlphaTo(0, duration: 0.25)
-        for arrow in arrows {arrow.runAction(SKAction.scaleTo(0, duration: 0.2), withKey: "scale")}
+        arrowWrapper.runAction(SKAction.fadeAlphaTo(0, duration: 0.2))
         touch = nil
       }
     }
@@ -76,6 +85,7 @@ class SwipeNode: SKSpriteNode, SwipeThroughDelegate {
     currentIndex = index
     wrapper.removeActionForKey("snap")
     wrapper.position.x = -CGFloat(index) * size.width
+    updateArrowAlphas()
   }
   
   func snapToIndex(index: Int, initialVelocityX: CGFloat) {
@@ -139,6 +149,7 @@ class SwipeNode: SKSpriteNode, SwipeThroughDelegate {
     lastTouchX = touchX
     lastLastTouchTime = lastTouchTime
     lastTouchTime = touch!.timestamp
+    updateArrowAlphas()
   }
   
   func touchEnded() {
