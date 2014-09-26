@@ -53,6 +53,7 @@ class StatusNode: SwipeNode {
     
     failPage.addChild(failLabel)
     
+    
     menuButton.swipeThroughDelegate = self
     menuButton.touchUpInsideClosure = {[unowned self] in self.delegate.menuButtonPressed()}
     

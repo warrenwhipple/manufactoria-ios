@@ -15,8 +15,8 @@ class SwipeNode: SKSpriteNode, SwipeThroughDelegate {
   var currentIndex = 0
   var pages: [SKNode]
   let arrowWrapper = SKNode()
-  var leftArrows: [SKSpriteNode] = []
-  var rightArrows: [SKSpriteNode] = []
+  let leftArrow = SKSpriteNode("swipeArrow")
+  let rightArrow = SKSpriteNode("swipeArrow")
   var touch: UITouch?
   var wrapperMinX: CGFloat = 0.0
   var lastTouchX: CGFloat = 0
@@ -31,19 +31,11 @@ class SwipeNode: SKSpriteNode, SwipeThroughDelegate {
     userInteractionEnabled = true
     
     for page in pages {wrapper.addChild(page)}
-    if pages.count > 1 {
-      for i in 0 ..< pages.count - 1 {
-        let leftArrow = SKSpriteNode("swipeArrow")
-        leftArrow.anchorPoint.x = 1
-        leftArrows.append(leftArrow)
-        arrowWrapper.addChild(leftArrow)
-        let rightArrow = SKSpriteNode("swipeArrow")
-        rightArrow.anchorPoint.x = 1
-        rightArrow.xScale = -1
-        rightArrows.append(rightArrow)
-        arrowWrapper.addChild(rightArrow)
-      }
-    }
+    leftArrow.anchorPoint.x = 0
+    arrowWrapper.addChild(leftArrow)
+    rightArrow.anchorPoint.x = 0
+    rightArrow.xScale = -1
+    arrowWrapper.addChild(rightArrow)
     wrapper.addChild(arrowWrapper)
     addChild(wrapper)
   }
@@ -51,15 +43,6 @@ class SwipeNode: SKSpriteNode, SwipeThroughDelegate {
   func addPageToRight(newPage: SKNode) {
     pages.append(newPage)
     wrapper.addChild(newPage)
-    let leftArrow = SKSpriteNode("swipeArrow")
-    leftArrow.anchorPoint.x = 1
-    leftArrows.append(leftArrow)
-    arrowWrapper.addChild(leftArrow)
-    let rightArrow = SKSpriteNode("swipeArrow")
-    rightArrow.anchorPoint.x = 1
-    rightArrow.xScale = -1
-    rightArrows.append(rightArrow)
-    arrowWrapper.addChild(rightArrow)
     fitToSize()
     updateArrowAlphas()
   }
@@ -69,40 +52,26 @@ class SwipeNode: SKSpriteNode, SwipeThroughDelegate {
   func fitToSize() {
     touch = nil
     for i in 0 ..< pages.count {pages[i].position.x = CGFloat(i) * size.width}
-    for i in 0 ..< leftArrows.count {leftArrows[i].position.x = (CGFloat(i) + 0.5) * size.width}
-    for i in 0 ..< rightArrows.count {rightArrows[i].position.x = (CGFloat(i) + 0.5) * size.width}
     wrapperMinX = -CGFloat(pages.count - 1) * size.width
     goToIndexWithoutSnap(currentIndex)
   }
   
   func updateArrowAlphas() {
-    for arrow in leftArrows + rightArrows {arrow.alpha = 0}
     if size.width == 0 {return}
     let indexFloat = -wrapper.position.x / size.width
     let closestIndex = round(indexFloat)
-    let leftArrowIndex = Int(closestIndex)
-    let rightArrowIndex = Int(closestIndex - 1)
-    if indexFloat < closestIndex {
-      if leftArrowIndex >= 0 && leftArrowIndex < leftArrows.count {
-        leftArrows[leftArrowIndex].alpha = 1
-      }
-      if rightArrowIndex >= 0 && rightArrowIndex < rightArrows.count {
-        rightArrows[rightArrowIndex].alpha = max(0, 1 - 3 * abs(indexFloat - closestIndex))
-      }
-    } else if indexFloat > closestIndex {
-      if leftArrowIndex >= 0 && leftArrowIndex < leftArrows.count {
-        leftArrows[leftArrowIndex].alpha = max(0, 1 - 3 * abs(indexFloat - closestIndex))
-      }
-      if rightArrowIndex >= 0 && rightArrowIndex < rightArrows.count {
-        rightArrows[rightArrowIndex].alpha = 1
-      }
+    leftArrow.position.x = (closestIndex - 0.5) * size.width
+    rightArrow.position.x = (closestIndex + 0.5) * size.width
+    
+    if indexFloat > closestIndex {
+      leftArrow.alpha = 1
+      rightArrow.alpha = max(0, 1 - 3 * abs(indexFloat - closestIndex))
+    } else if indexFloat < closestIndex {
+      leftArrow.alpha = max(0, 1 - 3 * abs(indexFloat - closestIndex))
+      rightArrow.alpha = 1
     } else {
-      if leftArrowIndex >= 0 && leftArrowIndex < leftArrows.count {
-        leftArrows[leftArrowIndex].alpha = 1
-      }
-      if rightArrowIndex >= 0 && rightArrowIndex < rightArrows.count {
-        rightArrows[rightArrowIndex].alpha = 1
-      }
+      leftArrow.alpha = 1
+      rightArrow.alpha = 1
     }
   }
   
