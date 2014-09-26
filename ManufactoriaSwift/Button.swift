@@ -49,10 +49,31 @@ class Button: SKSpriteNode {
   convenience init(iconOffNamed: String, iconOnNamed: String) {
     let iconOff = SKSpriteNode(iconOffNamed)
     let iconOn = SKSpriteNode(iconOnNamed)
-    iconOn.color = Globals.highlightColor
     self.init(iconOff: iconOff, iconOn: iconOn)
+    iconOn.color = Globals.highlightColor
   }
-
+  
+  convenience init(iconOffNamed: String, iconOnNamed: String, labelText: String) {
+    let iconOff = SKSpriteNode(iconOffNamed)
+    let iconOn = SKSpriteNode(iconOnNamed)
+    self.init(iconOff: iconOff, iconOn: iconOn)
+    iconOn.color = Globals.highlightColor
+    let labelOff = SKLabelNode()
+    labelOff.fontSmall()
+    labelOff.fontColor = Globals.strokeColor
+    labelOff.horizontalAlignmentMode = .Center
+    labelOff.position.y = -1.5 * Globals.iconRoughSize.height
+    labelOff.text = labelText
+    iconOff.addChild(labelOff)
+    let labelOn = SKLabelNode()
+    labelOn.fontSmall()
+    labelOn.fontColor = Globals.highlightColor
+    labelOn.horizontalAlignmentMode = .Center
+    labelOn.position.y = -1.5 * Globals.iconRoughSize.height
+    labelOn.text = labelText
+    iconOn.addChild(labelOn)
+  }
+  
   var touch: UITouch? {
     didSet {
       if touch == oldValue {return}

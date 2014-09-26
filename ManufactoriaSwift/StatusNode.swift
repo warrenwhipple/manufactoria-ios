@@ -18,7 +18,7 @@ class StatusNode: SwipeNode {
   
   weak var delegate: StatusNodeDelegate!
   let optionsPage = SKNode()
-  let menuButton = Button(iconOffNamed: "menuIconOff", iconOnNamed: "menuIconOn")
+  let menuButton = Button(iconOffNamed: "menuIconOff", iconOnNamed: "menuIconOn", labelText: "menu")
   let instructionsPage = SKNode()
   let instructionsLabel = BreakingLabel()
   let tapeLabel = BreakingLabel()

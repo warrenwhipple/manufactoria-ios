@@ -14,7 +14,8 @@ class SwipeNode: SKSpriteNode, SwipeThroughDelegate {
   let wrapper = SKNode()
   var currentIndex = 0
   var pages: [SKNode]
-  let arrowWrapper = SKNode()
+  let leftArrowWrapper = SKNode()
+  let rightArrowWrapper = SKNode()
   let leftArrow = SKSpriteNode("swipeArrow")
   let rightArrow = SKSpriteNode("swipeArrow")
   var touch: UITouch?
@@ -32,11 +33,12 @@ class SwipeNode: SKSpriteNode, SwipeThroughDelegate {
     
     for page in pages {wrapper.addChild(page)}
     leftArrow.anchorPoint.x = 0
-    arrowWrapper.addChild(leftArrow)
+    leftArrowWrapper.addChild(leftArrow)
     rightArrow.anchorPoint.x = 0
     rightArrow.xScale = -1
-    arrowWrapper.addChild(rightArrow)
-    wrapper.addChild(arrowWrapper)
+    rightArrowWrapper.addChild(rightArrow)
+    wrapper.addChild(leftArrowWrapper)
+    wrapper.addChild(rightArrowWrapper)
     addChild(wrapper)
   }
 
@@ -60,8 +62,8 @@ class SwipeNode: SKSpriteNode, SwipeThroughDelegate {
     if size.width == 0 {return}
     let indexFloat = -wrapper.position.x / size.width
     let closestIndex = round(indexFloat)
-    leftArrow.position.x = (closestIndex - 0.5) * size.width
-    rightArrow.position.x = (closestIndex + 0.5) * size.width
+    leftArrowWrapper.position.x = (closestIndex - 0.5) * size.width
+    rightArrowWrapper.position.x = (closestIndex + 0.5) * size.width
     
     if indexFloat > closestIndex {
       leftArrow.alpha = 1
@@ -78,9 +80,11 @@ class SwipeNode: SKSpriteNode, SwipeThroughDelegate {
   override var userInteractionEnabled: Bool {
     didSet {
       if userInteractionEnabled {
-        arrowWrapper.runAction(SKAction.fadeAlphaTo(1, duration: 0.2))
+        leftArrowWrapper.runAction(SKAction.fadeAlphaTo(1, duration: 0.2))
+        rightArrowWrapper.runAction(SKAction.fadeAlphaTo(1, duration: 0.2))
       } else {
-        arrowWrapper.runAction(SKAction.fadeAlphaTo(0, duration: 0.2))
+        leftArrowWrapper.runAction(SKAction.fadeAlphaTo(1, duration: 0.2))
+        rightArrowWrapper.runAction(SKAction.fadeAlphaTo(1, duration: 0.2))
         touch = nil
       }
     }

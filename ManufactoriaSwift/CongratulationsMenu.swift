@@ -17,8 +17,8 @@ class CongratulationsMenu: SKNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   
   weak var delegate: CongratulationsMenuDelegate!
-  let menuButton = Button(iconOffNamed: "menuIconOff", iconOnNamed: "menuIconOn")
-  let nextButton = Button(iconOffNamed: "nextIconOff", iconOnNamed: "nextIconOn")
+  let menuButton = Button(iconOffNamed: "menuIconOff", iconOnNamed: "menuIconOn", labelText: "menu")
+  let nextButton = Button(iconOffNamed: "nextIconOff", iconOnNamed: "nextIconOn", labelText: "next")
 
   override init() {
     super.init()
