@@ -34,19 +34,20 @@ class StatusNode: SwipeNode {
     
     super.init(pages: [optionsPage, instructionsPage])
     
+    tapeNode.printer.setScale(0)
+    tapeLabel.fontMedium()
+    tapeLabel.fontColor = Globals.strokeColor
+    tapeLabel.alpha = 0
+    addChild(tapeLabel)
+    addChild(tapeNode)
+    
     optionsPage.addChild(menuButton)
     
     instructionsLabel.fontMedium()
     instructionsLabel.fontColor = Globals.strokeColor
     instructionsLabel.text = instructions
-    tapeNode.printer.setScale(0)
-    tapeLabel.fontMedium()
-    tapeLabel.fontColor = Globals.strokeColor
-    tapeLabel.alpha = 0
     
     instructionsPage.addChild(instructionsLabel)
-    instructionsPage.addChild(tapeLabel)
-    instructionsPage.addChild(tapeNode)
     
     failLabel.fontMedium()
     failLabel.fontColor = Globals.strokeColor
@@ -77,27 +78,41 @@ class StatusNode: SwipeNode {
       switch state {
       case .Editing:
         tapeNode.unloadTape()
-        tapeNode.printer.setScale(0)
-        tapeLabel.removeActionForKey("fade")
-        tapeLabel.alpha = 0
-        instructionsLabel.removeActionForKey("fade")
-        instructionsLabel.alpha = 1
+        tapeLabel.runAction(SKAction.sequence([
+          SKAction.fadeAlphaTo(0, duration: 0.2),
+          SKAction.removeFromParent()
+          ]), withKey: "fade")
+        tapeNode.runAction(SKAction.sequence([
+          SKAction.fadeAlphaTo(0, duration: 0.2),
+          SKAction.removeFromParent()
+          ]), withKey: "fade")
         if failPage.parent == nil {addPageToRight(failPage)}
         goToIndexWithoutSnap(2)
-        failLabel.runAction(SKAction.fadeAlphaTo(1, duration: 0.2))
-        failTapeNode?.runAction(SKAction.fadeAlphaTo(1, duration: 0.2))
+        wrapper.alpha = 0
+        wrapper.runAction(SKAction.sequence([
+          SKAction.waitForDuration(0.2),
+          SKAction.fadeAlphaTo(1, duration: 0.2)
+          ]), withKey: "fade")
+        if wrapper.parent == nil {addChild(wrapper)}
         userInteractionEnabled = true
       case .Thinking:
         userInteractionEnabled = false
         thinkingAnimationDone = false
-        instructionsLabel.runAction(SKAction.fadeAlphaTo(0, duration: 0.2))
+        wrapper.runAction(SKAction.sequence([
+          SKAction.fadeAlphaTo(0, duration: 0.2),
+          SKAction.removeFromParent()
+          ]), withKey: "fade")
+        tapeNode.printer.setScale(0)
         tapeNode.printer.runAction(SKAction.sequence([
           SKAction.waitForDuration(0.2),
-          SKAction.scaleTo(1, duration: 0.2)
+          SKAction.scaleTo(1, duration: 0.2),
+          SKAction.runBlock({[unowned self] in self.thinkingAnimationDone = true})
           ]), withKey: "scale")
-        runAction(SKAction.waitForDuration(0.4), completion: {[unowned self] in self.thinkingAnimationDone = true})
+        if tapeNode.parent == nil {addChild(tapeNode)}
       case .Testing:
-        break
+        tapeLabel.alpha = 0
+        tapeLabel.runAction(SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")
+        if tapeLabel.parent == nil {addChild(tapeLabel)}
       case .Congratulating:
         tapeNode.unloadTape()
         tapeNode.printer.runAction(SKAction.scaleTo(0, duration: 0.2), withKey: "scale")
@@ -126,10 +141,8 @@ class StatusNode: SwipeNode {
       else {failLabel.text = "This sequence was dropped."}
     }
     
-    failLabel.alpha = 0
     failTapeNode?.removeFromParent()
     failTapeNode = FailTapeNode(tape: result.input)
-    failTapeNode?.alpha = 0
     failTapeNode?.position = tapeNode.position
     failTapeNode?.width = tapeNode.width
     failPage.addChild(failTapeNode!)
