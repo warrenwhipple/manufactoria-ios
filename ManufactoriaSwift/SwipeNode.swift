@@ -30,10 +30,7 @@ class SwipeNode: SKSpriteNode, SwipeThroughDelegate {
     super.init(texture: nil, color: nil, size: CGSizeZero)
     userInteractionEnabled = true
     
-    for i in 0 ..< pages.count {
-      let page = pages[i]
-      wrapper.addChild(page)
-    }
+    for page in pages {wrapper.addChild(page)}
     if pages.count > 1 {
       for i in 0 ..< pages.count - 1 {
         let leftArrow = SKSpriteNode("swipeArrow")
@@ -50,6 +47,21 @@ class SwipeNode: SKSpriteNode, SwipeThroughDelegate {
     wrapper.addChild(arrowWrapper)
     addChild(wrapper)
   }
+
+  func addPageToRight(newPage: SKNode) {
+    pages.append(newPage)
+    wrapper.addChild(newPage)
+    let leftArrow = SKSpriteNode("swipeArrow")
+    leftArrow.anchorPoint.x = 1
+    leftArrows.append(leftArrow)
+    arrowWrapper.addChild(leftArrow)
+    let rightArrow = SKSpriteNode("swipeArrow")
+    rightArrow.anchorPoint.x = 1
+    rightArrow.xScale = -1
+    rightArrows.append(rightArrow)
+    arrowWrapper.addChild(rightArrow)
+    updateArrowAlphas()
+  }
   
   override var size: CGSize {didSet {if size != oldValue {fitToSize()}}}
   
@@ -65,9 +77,32 @@ class SwipeNode: SKSpriteNode, SwipeThroughDelegate {
   func updateArrowAlphas() {
     for arrow in leftArrows + rightArrows {arrow.alpha = 0}
     if size.width == 0 {return}
-    let positionRatio = wrapper.position.x / size.width
-    let closestIndex = round(positionRatio)
-    
+    let indexFloat = -wrapper.position.x / size.width
+    let closestIndex = round(indexFloat)
+    let leftArrowIndex = Int(closestIndex)
+    let rightArrowIndex = Int(closestIndex - 1)
+    if indexFloat < closestIndex {
+      if leftArrowIndex >= 0 && leftArrowIndex < leftArrows.count {
+        leftArrows[leftArrowIndex].alpha = 1
+      }
+      if rightArrowIndex >= 0 && rightArrowIndex < rightArrows.count {
+        rightArrows[rightArrowIndex].alpha = 1 - 2 * abs(indexFloat - closestIndex)
+      }
+    } else if indexFloat > closestIndex {
+      if leftArrowIndex >= 0 && leftArrowIndex < leftArrows.count {
+        leftArrows[leftArrowIndex].alpha = 1 - 2 * abs(indexFloat - closestIndex)
+      }
+      if rightArrowIndex >= 0 && rightArrowIndex < rightArrows.count {
+        rightArrows[rightArrowIndex].alpha = 1
+      }
+    } else {
+      if leftArrowIndex >= 0 && leftArrowIndex < leftArrows.count {
+        leftArrows[leftArrowIndex].alpha = 1
+      }
+      if rightArrowIndex >= 0 && rightArrowIndex < rightArrows.count {
+        rightArrows[rightArrowIndex].alpha = 1
+      }
+    }
   }
   
   override var userInteractionEnabled: Bool {
@@ -101,16 +136,17 @@ class SwipeNode: SKSpriteNode, SwipeThroughDelegate {
     if wrapper.position.x == newX {
       wrapper.removeActionForKey("snap")
     } else {
-      if initialVelocityX == 0 {
-        wrapper.runAction(SKAction.moveToX(newX, duration: 0.25).easeOut(), withKey: "snap")
-      } else {
-        let eta = (newX - wrapper.position.x) / initialVelocityX
-        if eta < 0 || eta > 0.25 {
-          wrapper.runAction(SKAction.moveToX(newX, duration: 0.25).easeOut(), withKey: "snap")
-        } else {
-          wrapper.runAction(SKAction.moveToX(newX, duration: NSTimeInterval(eta)).easeOut(), withKey: "snap")
-        }
+      var eta: CGFloat = 0.25
+      if initialVelocityX != 0 {
+        eta = max(0, min (0.25, abs((newX - wrapper.position.x) / initialVelocityX)))
       }
+      wrapper.runAction(SKAction.group([
+        SKAction.moveToX(newX, duration: NSTimeInterval(eta)).easeOut(),
+        SKAction.customActionWithDuration(NSTimeInterval(eta), actionBlock: {
+          [unowned self]
+          (node: SKNode!, elapsedTime: CGFloat) -> () in
+          self.updateArrowAlphas()})
+        ]), withKey: "snap")
     }
   }
   
