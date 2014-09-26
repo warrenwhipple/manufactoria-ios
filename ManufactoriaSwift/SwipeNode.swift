@@ -60,6 +60,7 @@ class SwipeNode: SKSpriteNode, SwipeThroughDelegate {
     rightArrow.xScale = -1
     rightArrows.append(rightArrow)
     arrowWrapper.addChild(rightArrow)
+    fitToSize()
     updateArrowAlphas()
   }
   
@@ -86,11 +87,11 @@ class SwipeNode: SKSpriteNode, SwipeThroughDelegate {
         leftArrows[leftArrowIndex].alpha = 1
       }
       if rightArrowIndex >= 0 && rightArrowIndex < rightArrows.count {
-        rightArrows[rightArrowIndex].alpha = 1 - 2 * abs(indexFloat - closestIndex)
+        rightArrows[rightArrowIndex].alpha = max(0, 1 - 3 * abs(indexFloat - closestIndex))
       }
     } else if indexFloat > closestIndex {
       if leftArrowIndex >= 0 && leftArrowIndex < leftArrows.count {
-        leftArrows[leftArrowIndex].alpha = 1 - 2 * abs(indexFloat - closestIndex)
+        leftArrows[leftArrowIndex].alpha = max(0, 1 - 3 * abs(indexFloat - closestIndex))
       }
       if rightArrowIndex >= 0 && rightArrowIndex < rightArrows.count {
         rightArrows[rightArrowIndex].alpha = 1

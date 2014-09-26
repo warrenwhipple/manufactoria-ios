@@ -32,7 +32,7 @@ class StatusNode: SwipeNode {
   init(instructions: String) {
     self.instructions = instructions
     
-    super.init(pages: [optionsPage, instructionsPage, failPage])
+    super.init(pages: [optionsPage, instructionsPage])
     
     optionsPage.addChild(menuButton)
     
@@ -77,7 +77,12 @@ class StatusNode: SwipeNode {
       case .Editing:
         tapeNode.unloadTape()
         tapeNode.printer.setScale(0)
-        goToIndexWithoutSnap(1)
+        tapeLabel.removeActionForKey("fade")
+        tapeLabel.alpha = 0
+        instructionsLabel.removeActionForKey("fade")
+        instructionsLabel.alpha = 1
+        if failPage.parent == nil {addPageToRight(failPage)}
+        goToIndexWithoutSnap(2)
         failLabel.runAction(SKAction.fadeAlphaTo(1, duration: 0.2))
         failTapeNode?.runAction(SKAction.fadeAlphaTo(1, duration: 0.2))
         userInteractionEnabled = true
