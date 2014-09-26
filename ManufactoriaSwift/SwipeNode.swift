@@ -62,18 +62,28 @@ class SwipeNode: SKSpriteNode, SwipeThroughDelegate {
     if size.width == 0 {return}
     let indexFloat = -wrapper.position.x / size.width
     let closestIndex = round(indexFloat)
+    let closestIndexInt = Int(closestIndex)
     leftArrowWrapper.position.x = (closestIndex - 0.5) * size.width
     rightArrowWrapper.position.x = (closestIndex + 0.5) * size.width
     
-    if indexFloat > closestIndex {
-      leftArrow.alpha = 1
-      rightArrow.alpha = max(0, 1 - 3 * abs(indexFloat - closestIndex))
-    } else if indexFloat < closestIndex {
-      leftArrow.alpha = max(0, 1 - 3 * abs(indexFloat - closestIndex))
-      rightArrow.alpha = 1
+    if closestIndexInt > 0 {
+      if indexFloat < closestIndex {
+        leftArrow.alpha = max(0, 1 - 3 * abs(indexFloat - closestIndex))
+      } else {
+        leftArrow.alpha = 1
+        }
     } else {
-      leftArrow.alpha = 1
-      rightArrow.alpha = 1
+      leftArrow.alpha = 0
+    }
+    
+    if closestIndexInt < pages.count - 1 {
+      if indexFloat > closestIndex {
+        rightArrow.alpha = max(0, 1 - 3 * abs(indexFloat - closestIndex))
+      } else {
+        rightArrow.alpha = 1
+      }
+    } else {
+      rightArrow.alpha = 0
     }
   }
   

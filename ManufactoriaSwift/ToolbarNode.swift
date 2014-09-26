@@ -131,7 +131,8 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
     let buttonYCenters = distributionForChildren(count: 2, childSize: iconSize.height, parentSize: size.height)
     for button in quickButtons {button.position.y = buttonYCenters[1]}
     for button in drawToolButtons + selectionToolButtons {button.position.y = buttonYCenters[0]}
-    //for arrow in arrows {arrow.position.y = buttonYCenters[0]}
+    leftArrowWrapper.position.y = buttonYCenters[0]
+    rightArrowWrapper.position.y = buttonYCenters[0]
     
     undoCancelSwapper.position = undoButton.position
     redoConfirmSwapper.position = redoButton.position
