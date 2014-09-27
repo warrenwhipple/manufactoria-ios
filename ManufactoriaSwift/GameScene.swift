@@ -143,10 +143,10 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, StatusNodeDelegate, Engine
     gridNode.rect = CGRect(origin: CGPointZero, size: size)
     let gridRect = CGRect(centerX: 0.5 * size.width, centerY: 0.5 * size.height,
       width: CGFloat(levelData.grid.space.columns) * gridNode.wrapper.xScale, height: CGFloat(levelData.grid.space.rows) * gridNode.wrapper.yScale)
-    let bottomGapRect = CGRect(x: 0,y: 0,
-      width: size.width, height: 0.5 * (size.height - gridRect.size.height))
-    let topGapRect = CGRect(x: 0, y: gridRect.maxY,
-      width: size.width, height: bottomGapRect.height)
+    let bottomGapRect = roundPix(CGRect(x: 0,y: 0,
+      width: size.width, height: 0.5 * (size.height - gridRect.size.height)))
+    let topGapRect = roundPix(CGRect(x: 0, y: gridRect.maxY,
+      width: size.width, height: bottomGapRect.height))
     
     statusNode.position = topGapRect.center
     statusNode.size = topGapRect.size

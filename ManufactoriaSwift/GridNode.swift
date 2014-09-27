@@ -76,11 +76,15 @@ class GridNode: SKNode {
     }
     cellNodes = tempCellNodes
     
-    enterArrow = SKSpriteNode("enterExitArrow")
+    enterArrow = SKSpriteNode()
+    enterArrow.colorBlendFactor = 1
+    enterArrow.color = Globals.strokeColor
     enterArrow.zPosition = 20
     enterArrow.position = CGPoint(CGFloat(grid.startCoord.i) + 0.5, CGFloat(grid.startCoord.j) + 1)
     wrapper.addChild(enterArrow)
-    exitArrow = SKSpriteNode("enterExitArrow")
+    exitArrow = SKSpriteNode()
+    exitArrow.colorBlendFactor = 1
+    exitArrow.color = Globals.strokeColor
     exitArrow.zPosition = 20
     exitArrow.position = CGPoint(CGFloat(grid.endCoord.i) + 0.5, CGFloat(grid.endCoord.j))
     wrapper.addChild(exitArrow)
@@ -125,7 +129,11 @@ class GridNode: SKNode {
     wrapper.setScale(cellSize)
     beltTexture = CellNode.loadSharedTexturesForPointSize(cellSize)
     for cellNode in cellNodes {cellNode.assignSharedTextures()}
+    enterArrow.texture = CellNode.sharedEnterExitArrowTexture()
+    enterArrow.size = enterArrow.texture!.size()
     enterArrow.setScale(1 / cellSize)
+    exitArrow.texture = CellNode.sharedEnterExitArrowTexture()
+    exitArrow.size = exitArrow.texture!.size()
     exitArrow.setScale(1 / cellSize)
   }
   

@@ -8,12 +8,22 @@
 
 import CoreGraphics
 
+// rounding only set for @2x resolution
 func roundPix(x: CGFloat) -> CGFloat {
   return round(x * 2) * 0.5
 }
 
 func roundPix(p: CGPoint) -> CGPoint {
   return CGPoint(x: round(p.x * 2) * 0.5, y: round(p.y * 2) * 0.5)
+}
+
+func roundPix(r: CGRect) -> CGRect {
+  let center = r.center
+  let size = r.size
+  let newRect = CGRect(center: roundPix(center), size: CGSize(width: round(size.width), height: round(size.height)))
+  println(r)
+  println(newRect)
+  return newRect
 }
 
 func distributionForChildren(#count: Int, #childSize: CGFloat, #parentSize: CGFloat) -> [CGFloat] {
