@@ -20,9 +20,8 @@ class LiftedGridNode: SKNode {
   
   init(grid: Grid) {
     self.grid = grid
-    let cellNode = CellNode()
-    let cellSize = CGSize(SKTexture(imageNamed: "belt").size().height * 0.5)
-    let beltSize = CGSize(SKTexture(imageNamed: "belt").size().width, SKTexture(imageNamed: "belt").size().height * 0.5)
+    let cellSize = CGSize(CellNode.sharedPointSize())
+    let beltSize = CellNode.sharedBeltHalfTexture().size()
     var tempNodes: [SKNode] = []
     var tempBeltSprites: [SKSpriteNode] = []
     for j in 0 ..< grid.space.rows {
@@ -51,7 +50,8 @@ class LiftedGridNode: SKNode {
             bridge.zPosition = 1
             node.addChild(bridge)
           case .PusherB, .PusherR, .PusherB, .PusherG:
-            let pusher = SKSpriteNode("pusher")
+            let pusher = SKSpriteNode(texture: CellNode.sharedPusherTexture())
+            pusher.colorBlendFactor = 1
             switch cell.kind {
             case .PusherB: pusher.color = Globals.blueColor
             case .PusherR: pusher.color = Globals.redColor
@@ -61,8 +61,10 @@ class LiftedGridNode: SKNode {
             pusher.zPosition = 2
             node.addChild(pusher)
           case .PullerBR, .PullerRB, .PullerGY,  .PullerYG:
-            let pullerLeft = SKSpriteNode("pullerHalf")
-            let pullerRight = SKSpriteNode("pullerHalf")
+            let pullerLeft = SKSpriteNode(texture: CellNode.sharedPullerHalfTexture())
+            pullerLeft.colorBlendFactor = 1
+            let pullerRight = SKSpriteNode(texture: CellNode.sharedPullerHalfTexture())
+            pullerRight.colorBlendFactor = 1
             switch cell.kind {
             case .PullerBR: pullerLeft.color = Globals.blueColor;   pullerRight.color = Globals.redColor
             case .PullerRB: pullerLeft.color = Globals.redColor;    pullerRight.color = Globals.blueColor
@@ -96,8 +98,6 @@ class LiftedGridNode: SKNode {
     beltSprites = tempBeltSprites
     super.init()
     self.zPosition = 5
-    //wrapperWrapper.addChild(wrapper)
-    //addChild(wrapperWrapper)
     addChild(wrapper)
   }
   
