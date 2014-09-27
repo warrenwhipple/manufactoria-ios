@@ -30,7 +30,7 @@ class Button: SKSpriteNode {
   init(iconOff: SKNode, iconOn: SKNode) {
     iconOn.zPosition = iconOff.zPosition + 1
     iconOn.alpha = 0
-    super.init(texture: nil, color: nil, size: Globals.buttonTouchSize)
+    super.init(texture: nil, color: nil, size: CGSize(Globals.touchSpan))
     userInteractionEnabled = true
     addChild(iconOff)
     addChild(iconOn)
@@ -59,18 +59,18 @@ class Button: SKSpriteNode {
     self.init(iconOff: iconOff, iconOn: iconOn)
     iconOn.color = Globals.highlightColor
     let labelOff = SKLabelNode()
-    labelOff.fontSmall()
+    labelOff.fontMedium()
     labelOff.fontColor = Globals.strokeColor
     labelOff.horizontalAlignmentMode = .Center
-    labelOff.position.y = -1.5 * Globals.iconRoughSize.height
+    labelOff.position.y = -0.5 * Globals.iconSpan - 2 * Globals.mediumEm
     labelOff.text = labelText
     iconOff.addChild(labelOff)
     let labelOn = SKLabelNode()
-    labelOn.fontSmall()
+    labelOn.fontMedium()
     labelOn.fontColor = Globals.highlightColor
-    labelOn.horizontalAlignmentMode = .Center
-    labelOn.position.y = -1.5 * Globals.iconRoughSize.height
-    labelOn.text = labelText
+    labelOn.horizontalAlignmentMode = labelOff.horizontalAlignmentMode
+    labelOn.position.y = labelOff.position.y
+    labelOn.text = labelOff.text
     iconOn.addChild(labelOn)
   }
   

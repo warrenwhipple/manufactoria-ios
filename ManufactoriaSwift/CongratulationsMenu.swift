@@ -31,9 +31,11 @@ class CongratulationsMenu: SKNode {
   var size: CGSize = CGSizeZero {didSet {if size != oldValue {fitToSize()}}}
   
   func fitToSize() {
-    let xPositions = distributionForChildren(count: 2, childSize: Globals.iconRoughSize.width, parentSize: size.width)
+    let xPositions = distributionForChildren(count: 2, childSize: Globals.iconSpan, parentSize: size.width)
     let spacing = xPositions[1] - xPositions[0]
     let touchSize = CGSize(spacing)
+    menuButton.position.y = Globals.mediumEm
+    nextButton.position.y = Globals.mediumEm
     menuButton.position.x = xPositions[0]
     nextButton.position.x = xPositions[1]
     menuButton.size = touchSize

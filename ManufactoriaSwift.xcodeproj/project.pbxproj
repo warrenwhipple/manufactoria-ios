@@ -21,7 +21,6 @@
 		2D5E583F19A5265500F10DD3 /* ShimmerNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5E583E19A5265500F10DD3 /* ShimmerNode.swift */; };
 		2D60F5C7198041BD0032860B /* TitleScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D60F5C6198041BD0032860B /* TitleScene.swift */; };
 		2D60F5C9198156250032860B /* GameData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D60F5C8198156250032860B /* GameData.swift */; };
-		2D62A46119929CC7002CD03F /* Globals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D62A46019929CC7002CD03F /* Globals.swift */; };
 		2D7F922C195C61FA00F04F63 /* ToolbarNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7F922B195C61FA00F04F63 /* ToolbarNode.swift */; };
 		2D849F3619A39EB6008F3D69 /* CoreGraphicsExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D849F3519A39EB6008F3D69 /* CoreGraphicsExtensions.swift */; };
 		2D8C19A3199696A90064B790 /* SwipeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8C19A2199696A90064B790 /* SwipeNode.swift */; };
@@ -78,7 +77,6 @@
 		2D5E583E19A5265500F10DD3 /* ShimmerNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShimmerNode.swift; sourceTree = "<group>"; };
 		2D60F5C6198041BD0032860B /* TitleScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = TitleScene.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		2D60F5C8198156250032860B /* GameData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameData.swift; sourceTree = "<group>"; };
-		2D62A46019929CC7002CD03F /* Globals.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Globals.swift; sourceTree = "<group>"; };
 		2D7F922B195C61FA00F04F63 /* ToolbarNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToolbarNode.swift; sourceTree = "<group>"; };
 		2D849F3519A39EB6008F3D69 /* CoreGraphicsExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreGraphicsExtensions.swift; sourceTree = "<group>"; };
 		2D8C19A2199696A90064B790 /* SwipeNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwipeNode.swift; sourceTree = "<group>"; };
@@ -168,7 +166,6 @@
 				2DC49138194F45B800053237 /* Main.storyboard */,
 				2DC49130194F45B800053237 /* AppDelegate.swift */,
 				2DC49136194F45B800053237 /* GameViewController.swift */,
-				2D62A46019929CC7002CD03F /* Globals.swift */,
 				2D03B939197EB89700715176 /* SwiftExtensions.swift */,
 				2D336E8819534044008E55A9 /* MathFunctions.swift */,
 				2D849F3519A39EB6008F3D69 /* CoreGraphicsExtensions.swift */,
@@ -368,7 +365,6 @@
 				2D7F922C195C61FA00F04F63 /* ToolbarNode.swift in Sources */,
 				2DC49137194F45B800053237 /* GameViewController.swift in Sources */,
 				2D15929C19514B5400A96BCC /* CellNode.swift in Sources */,
-				2D62A46119929CC7002CD03F /* Globals.swift in Sources */,
 				2DD23D6E196F0BF900838E96 /* LevelLibrary.swift in Sources */,
 				2D5C7319199FE80600D53D0D /* SpeedControlNode.swift in Sources */,
 				2D2D26AB199E610D00EC4A45 /* BeltTutorialScene.swift in Sources */,

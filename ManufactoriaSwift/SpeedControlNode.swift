@@ -55,7 +55,7 @@ class SpeedControlNode: SKNode {
   var size: CGSize = CGSizeZero {didSet{if size != oldValue {fitToSize()}}}
 
   func fitToSize() {
-    let positions = distributionForChildren(count: 4, childSize: Globals.iconRoughSize.width, parentSize: size.width)
+    let positions = distributionForChildren(count: 4, childSize: Globals.iconSpan, parentSize: size.width)
     backButton.position.x = positions[0]
     slowerButton.position.x = positions[1]
     //speedLabel.position.x = positions[2]

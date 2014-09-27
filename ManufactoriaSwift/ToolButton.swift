@@ -76,7 +76,7 @@ class ToolButton: Button {
   func generateSimpleIndicator() {
     let indicatorSprite = SKSpriteNode("indicator")
     indicatorSprite.color = Globals.highlightColor
-    indicatorSprite.position.y = -0.75 * Globals.iconRoughSize.height
+    indicatorSprite.position.y = -0.75 * Globals.iconSpan
     indicatorSprite.setScale(0)
     addChild(indicatorSprite)
     indicator = indicatorSprite
@@ -84,7 +84,7 @@ class ToolButton: Button {
   
   func generateMultiIndicatorWithCount(count: Int) {
     multiIndicator = MultiIndicator(count: count)
-    multiIndicator!.position.y = -0.75 * Globals.iconRoughSize.height
+    multiIndicator!.position.y = -0.75 * Globals.iconSpan
     multiIndicator!.setScale(0)
     addChild(multiIndicator!)
     indicator = multiIndicator!

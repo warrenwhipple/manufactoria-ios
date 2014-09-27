@@ -63,6 +63,7 @@ class StatusNode: SwipeNode {
   
   override func fitToSize() {
     super.fitToSize()
+    menuButton.position.y = Globals.mediumEm
     let yOffset = roundPix(size.height / 6)
     tapeLabel.position.y = yOffset
     tapeNode.position.y = -yOffset

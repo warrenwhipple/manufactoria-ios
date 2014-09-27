@@ -114,7 +114,7 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
   
   override func fitToSize() {
     super.fitToSize()
-    let iconSize = Globals.iconRoughSize
+    let iconSize = CGSize(Globals.iconSpan)
     var buttonTouchHeight = min(iconSize.height * 2, size.height / 2)
     func distributeButtons(buttons: [Button]) {
       let buttonTouchWidth = min(iconSize.width * 2, size.width / CGFloat(buttons.count))
