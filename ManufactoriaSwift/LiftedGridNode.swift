@@ -20,7 +20,9 @@ class LiftedGridNode: SKNode {
   
   init(grid: Grid) {
     self.grid = grid
-    let beltSize = CGSize(SKTexture(imageNamed: "belt").size().width, Globals.cellSize.height)
+    let cellNode = CellNode()
+    let cellSize = CGSize(SKTexture(imageNamed: "belt").size().height * 0.5)
+    let beltSize = CGSize(SKTexture(imageNamed: "belt").size().width, SKTexture(imageNamed: "belt").size().height * 0.5)
     var tempNodes: [SKNode] = []
     var tempBeltSprites: [SKSpriteNode] = []
     for j in 0 ..< grid.space.rows {
@@ -28,10 +30,10 @@ class LiftedGridNode: SKNode {
         let cell = grid[GridCoord(i,j)]
         if cell.kind != .Blank {
           let node = SKNode()
-          node.setScale(1 / Globals.cellSize.width)
+          node.setScale(1 / cellSize.width)
           node.position = CGPoint(CGFloat(i) + 0.5, CGFloat(j) + 0.5)
           tempNodes.append(node)
-          let back = SKSpriteNode(texture: nil, color: Globals.backgroundColor, size: Globals.cellSize)
+          let back = SKSpriteNode(texture: nil, color: Globals.backgroundColor, size: cellSize)
           back.alpha = 0
           back.runAction(SKAction.fadeAlphaTo(0.8, duration: 0.4))
           node.addChild(back)
@@ -76,7 +78,7 @@ class LiftedGridNode: SKNode {
             node.addChild(pullerRight)
           default: break
           }
-          let select = SKSpriteNode(texture: nil, color: Globals.highlightColor, size: Globals.cellSize)
+          let select = SKSpriteNode(texture: nil, color: Globals.highlightColor, size: cellSize)
           select.alpha = 0.5
           select.zPosition = 3
           node.addChild(select)

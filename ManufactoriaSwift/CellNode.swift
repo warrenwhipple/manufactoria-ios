@@ -113,6 +113,13 @@ class CellNode: SKNode {
     self.setScale(1 / pointSize!)
   }
   
+  class func sharedPointSize() -> CGFloat {return pointSize ?? 0}
+  class func sharedBeltTexture() -> SKTexture {return beltTexture ?? SKTexture()}
+  class func sharedBeltHalfTexture() -> SKTexture {return beltHalfTexture ?? SKTexture()}
+  class func sharedPusherTexture() -> SKTexture {return pusherTexture ?? SKTexture()}
+  class func sharedPullerHalfTexture() -> SKTexture {return pullerHalfTexture ?? SKTexture()}
+  class func sharedEnterExitArrowTexture() -> SKTexture {return enterExitArrowTexture ?? SKTexture()}
+  
   func update(dt: NSTimeInterval, clippedBeltTexture: SKTexture) {
     
     belt.texture = clippedBeltTexture
