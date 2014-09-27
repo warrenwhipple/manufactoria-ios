@@ -157,14 +157,14 @@ class BeltBridgeButton: ToolButton {
       bridgeIconOff.runAction(fadeInAction, withKey: "fade")
       bridgeIconOn.runAction(fadeOutAction, withKey: "fade")
     }
-    generateMultiIndicatorWithCount(2)
+    //generateMultiIndicatorWithCount(2)
   }
   
   override func cycleEditMode() -> EditMode {
     if editMode == EditMode.Belt {
       spinNode.alpha = 1
       spinNode.runAction(SKAction.rotateToAngle(CGFloat(-M_PI_2), duration: 0.2).ease(), withKey: "rotate")
-      multiIndicator?.index = 1
+      //multiIndicator?.index = 1
       editMode = .Bridge
       return .Bridge
     } else {
@@ -172,7 +172,7 @@ class BeltBridgeButton: ToolButton {
         SKAction.rotateToAngle(0, duration: 0.2).ease(),
         SKAction.fadeAlphaTo(0, duration: 0)
         ]), withKey: "rotate")
-      multiIndicator?.index = 0
+      //multiIndicator?.index = 0
       editMode = .Belt
       return .Belt
     }
@@ -184,15 +184,15 @@ class PullerButton: ToolButton {
   var spinNode = SKNode()
   
   init(kind: EditMode) {
-    let leftIconOff = SKSpriteNode("pullerHalfOutline")
+    let leftIconOff = SKSpriteNode("pullerHalfIconOff")
     leftIconOff.anchorPoint.x = 1
-    let rightIconOff = SKSpriteNode("pullerHalfOutline")
+    let rightIconOff = SKSpriteNode("pullerHalfIconOff")
     rightIconOff.anchorPoint.x = 1
     rightIconOff.zRotation = CGFloat(M_PI)
     leftIconOff.addChild(rightIconOff)
-    let leftIconOn = SKSpriteNode("pullerHalf")
+    let leftIconOn = SKSpriteNode("pullerHalfIconOn")
     leftIconOn.anchorPoint.x = 1
-    let rightIconOn = SKSpriteNode("pullerHalf")
+    let rightIconOn = SKSpriteNode("pullerHalfIconOn")
     rightIconOn.anchorPoint.x = 1
     rightIconOn.zRotation = CGFloat(M_PI)
     leftIconOn.addChild(rightIconOn)
@@ -214,17 +214,17 @@ class PullerButton: ToolButton {
     }
     leftIconOn.color = leftIconOff.color
     rightIconOn.color = rightIconOff.color
-    generateMultiIndicatorWithCount(2)
+    //generateMultiIndicatorWithCount(2)
   }
   
   override func cycleEditMode() -> EditMode {
     if editMode == EditMode.PullerBR || editMode == EditMode.PullerGY {
       spinNode.runAction(SKAction.rotateToAngle(CGFloat(-M_PI), duration: 0.2).ease(), withKey: "rotate")
-      multiIndicator?.index = 1
+      //multiIndicator?.index = 1
     } else {
       spinNode.zRotation += CGFloat(2 * M_PI)
       spinNode.runAction(SKAction.rotateToAngle(0, duration: 0.2).ease(), withKey: "rotate")
-      multiIndicator?.index = 0
+      //multiIndicator?.index = 0
     }
     switch editMode {
     case .PullerBR: editMode = .PullerRB
@@ -240,9 +240,9 @@ class PusherButton: ToolButton {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   var editModes: [EditMode]
   var editModeIndex = 0
-  let iconOff = SKSpriteNode("pusherOutline")
-  let iconOn = SKSpriteNode("pusher")
-  let newIconOn = SKSpriteNode("pusher")
+  let iconOff = SKSpriteNode("pusherIconOff")
+  let iconOn = SKSpriteNode("pusherIconOn")
+  let newIconOn = SKSpriteNode("pusherIconOn")
   
   init(kinds: [EditMode]) {
     assert(!kinds.isEmpty, "PusherButton must init with at least one kind")

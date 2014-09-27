@@ -20,7 +20,7 @@ class TitleScene: ManufactoriaScene {
     title.fontColor = Globals.strokeColor
     title.verticalAlignmentMode = .Center
     title.text = "Manufactoria"
-    button = Button(iconOffNamed: "playIconOff", iconOnNamed: "playIconOn")
+    button = Button(iconOffNamed: "nextIconOff", iconOnNamed: "nextIconOn")
     super.init(size: size)
     backgroundColor = Globals.backgroundColor
     if gameData.levelsComplete == 0 {

@@ -43,6 +43,9 @@ class ManufactoriaScene: SKScene {
     } else if levelNumber == 1 && GameData.sharedInstance.levelsComplete == 1 {
       view?.presentScene(SortTutorialScene(size: view!.bounds.size),
         transition: SKTransition.pushWithDirection(.Left, duration: 0.5).outInPlay())
+    } else if levelNumber == 2 && GameData.sharedInstance.levelsComplete == 2 {
+      view?.presentScene(SequenceTutorialScene(size: view!.bounds.size),
+        transition: SKTransition.pushWithDirection(.Left, duration: 0.5).outInPlay())
     } else{
       view?.presentScene(GameScene(size: view!.bounds.size, levelNumber: levelNumber),
         transition: SKTransition.pushWithDirection(.Left, duration: 0.5).outInPlay())

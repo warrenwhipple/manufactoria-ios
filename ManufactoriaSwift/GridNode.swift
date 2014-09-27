@@ -118,7 +118,7 @@ class GridNode: SKNode {
     let maxCellWidth = size.width / CGFloat(grid.space.columns)
     let maxCellHeight = size.height / CGFloat(grid.space.rows)
     var maxCellSize: CGFloat = 46
-    if IPAD {maxCellSize = 64}
+    if IPAD && grid.space.rows <= 9 {maxCellSize = 64}
     var cellSize = min(maxCellWidth, maxCellHeight, maxCellSize)
     if cellSize > maxCellSize - 0.5 {cellSize = maxCellSize} // if close, let overlap
     cellSize = round(cellSize)
@@ -243,20 +243,7 @@ class GridNode: SKNode {
       cellNodes[i++].nextCell = cell
     }
   }
-  
-  /*
-  var gridIsSelected: Bool = false {
-    didSet {
-      if gridIsSelected == oldValue {return}
-      if gridIsSelected {
-        delegate.gridWasSelected()
-      } else {
-        delegate.gridWasUnselected()
-      }
-    }
-  }
-*/
-  
+    
   func gridSelectionChanged() {
     for j in 0 ..< grid.space.rows {
       for i in 0 ..< grid.space.columns {

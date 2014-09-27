@@ -15,16 +15,31 @@ class BeltTutorialScene: GameScene {
   init(size: CGSize) {
     super.init(size: size, levelNumber: 0)
     statusNode.instructionsLabel.text = "Connect the entrance and exit."
-    statusNode.tapeLabel.removeFromParent()
-    statusNode.tapeNode.removeFromParent()
+    statusNode.leftArrowWrapper.removeFromParent()
+    statusNode.rightArrowWrapper.removeFromParent()
     toolbarNode.userInteractionEnabled = false
     toolbarNode.undoCancelSwapper.removeFromParent()
     toolbarNode.redoConfirmSwapper.removeFromParent()
+    toolbarNode.leftArrowWrapper.removeFromParent()
+    toolbarNode.rightArrowWrapper.removeFromParent()
     for button in toolbarNode.drawToolButtons {button.removeFromParent()}
     toolbarNode.robotButton.disableClosure = nil
     toolbarNode.robotButton.enableClosure = nil
     toolbarNode.robotButton.userInteractionEnabled = false
     toolbarNode.robotButton.alpha = 0
+  }
+  
+  override func fitToSize() {
+    super.fitToSize()
+    toolbarNode.robotButton.position.y = 0
+  }
+  
+  override var state: State {
+    didSet {
+      statusNode.tapeLabel.removeFromParent()
+      statusNode.tapeNode.removeFromParent()
+      statusNode.thinkingAnimationDone = true
+    }
   }
       
   func checkTutorialGrid() -> Bool {

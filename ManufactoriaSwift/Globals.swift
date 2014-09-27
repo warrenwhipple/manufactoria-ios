@@ -9,7 +9,7 @@
 import SpriteKit
 
 struct Globals {
-  static let cellSize = CGSize(SKTexture(imageNamed: "belt").size().height * 0.5)
+  let cellSize = CGSize(SKTexture(imageNamed: "belt").size().height * 0.5)
   static let beltSize = CGSize(SKTexture(imageNamed: "belt").size().width, SKTexture(imageNamed: "belt").size().height * 0.5)
   static let iconRoughSize = CGSize(36)
   static let buttonTouchSize = CGSize(72)

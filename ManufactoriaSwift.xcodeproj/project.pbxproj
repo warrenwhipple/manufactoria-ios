@@ -50,6 +50,7 @@
 		2DD23D731974730F00838E96 /* Engine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD23D721974730F00838E96 /* Engine.swift */; };
 		2DD4745019D0566B001E658E /* CongratulationsMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD4744F19D0566B001E658E /* CongratulationsMenu.swift */; };
 		2DD8C8A219B69AD9000D729E /* LevelData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD8C8A119B69AD9000D729E /* LevelData.swift */; };
+		2DF749FF19D627B800EBE94D /* SequenceTutorialScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DF749FE19D627B800EBE94D /* SequenceTutorialScene.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -110,6 +111,7 @@
 		2DD23D721974730F00838E96 /* Engine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Engine.swift; sourceTree = "<group>"; };
 		2DD4744F19D0566B001E658E /* CongratulationsMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CongratulationsMenu.swift; sourceTree = "<group>"; };
 		2DD8C8A119B69AD9000D729E /* LevelData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LevelData.swift; sourceTree = "<group>"; };
+		2DF749FE19D627B800EBE94D /* SequenceTutorialScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SequenceTutorialScene.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -221,6 +223,7 @@
 				2DC49134194F45B800053237 /* GameScene.swift */,
 				2D2D26AA199E610D00EC4A45 /* BeltTutorialScene.swift */,
 				2D54B24719CF27BB00DF68C5 /* SortTutorialScene.swift */,
+				2DF749FE19D627B800EBE94D /* SequenceTutorialScene.swift */,
 				2DC4915C194F621A00053237 /* Grid.swift */,
 				2D15929919514B4900A96BCC /* GridNode.swift */,
 				2D4729CC19BB91110072E52D /* LiftedGridNode.swift */,
@@ -378,6 +381,7 @@
 				2DD23D731974730F00838E96 /* Engine.swift in Sources */,
 				2DCA18A71985AA0200DF3118 /* QuestionScene.swift in Sources */,
 				2DC49131194F45B800053237 /* AppDelegate.swift in Sources */,
+				2DF749FF19D627B800EBE94D /* SequenceTutorialScene.swift in Sources */,
 				2DC4915D194F621A00053237 /* Grid.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -12,7 +12,7 @@ class ShimmerNode: SKSpriteNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
 
   var alphaMin: CGFloat = 0 {didSet {if alphaMin < 0 {alphaMin = 0} else if alphaMin > alphaMax {alphaMin = alphaMax}}}
-  var alphaMax: CGFloat = 0.125 {didSet {if alphaMax > 1 {alphaMax = 1} else if alphaMax < alphaMin {alphaMax = alphaMin}}}
+  var alphaMax: CGFloat = 0.1 {didSet {if alphaMax > 1 {alphaMax = 1} else if alphaMax < alphaMin {alphaMax = alphaMin}}}
   var shimmerSpeed: CGFloat = 1 {didSet {if shimmerSpeed < 0 {shimmerSpeed = 0}}}
   var isShimmering: Bool {get {return actionForKey("shimmer") != nil}}
 
