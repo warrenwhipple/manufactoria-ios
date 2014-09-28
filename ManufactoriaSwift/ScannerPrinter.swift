@@ -23,11 +23,20 @@ class Scanner: SKSpriteNode {
     didSet {
       if state == oldValue {return}
       switch state {
-      case .Hiding: xScale = 0
-      case .Waiting: xScale = 1
-      case .Spinning: xScale = 1
+      case .Hiding:
+        runAction(SKAction.scaleXTo(0, duration: 0.2).easeIn(), withKey: "scale")
+      case .Waiting:
+        runAction(SKAction.scaleXTo(1, duration: 0.2).easeOut(), withKey: "scale")
+      case .Spinning:
+        runAction(SKAction.scaleXTo(1, duration: 0.2).easeOut(), withKey: "scale")
       }
     }
+  }
+  
+  func resetHiding() {
+    state = .Hiding
+    xScale = 0
+    removeActionForKey("scale")
   }
 }
 
@@ -46,9 +55,17 @@ class Printer: SKSpriteNode {
     didSet {
       if state == oldValue {return}
       switch state {
-      case .Hiding: setScale(0)
-      case .Waiting: setScale(1)
+      case .Hiding:
+        runAction(SKAction.scaleTo(0, duration: 0.2).easeIn(), withKey: "scale")
+      case .Waiting:
+        runAction(SKAction.scaleTo(1, duration: 0.2).easeOut(), withKey: "scale")
       }
     }
+  }
+  
+  func resetHiding() {
+    state = .Hiding
+    setScale(0)
+    removeActionForKey("scale")
   }
 }

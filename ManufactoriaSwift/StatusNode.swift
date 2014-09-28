@@ -95,7 +95,11 @@ class StatusNode: SwipeNode {
           SKAction.fadeAlphaTo(0, duration: 0.2),
           SKAction.removeFromParent()
           ]), withKey: "fade")
-        if tapeNode.parent == nil {addChild(tapeNode)}
+        if tapeNode.parent == nil {
+          addChild(tapeNode)
+          tapeNode.scanner.resetHiding()
+          tapeNode.printer.resetHiding()
+        }
         tapeNode.scanner.state = .Spinning
         tapeNode.printer.state = .Waiting
       case .Testing:

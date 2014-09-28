@@ -40,6 +40,8 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, StatusNodeDelegate, Engine
   var tickPercent: CGFloat = 0
   var beltPercent: CGFloat = 0
   var gridTestDidPass = false
+  var thinkingOperationsDone = false
+  var thinkingAnimationsDone = false
   
   init(size: CGSize, var levelNumber: Int) {
     if levelNumber > LevelLibrary.count - 1 {levelNumber = 0}
@@ -104,11 +106,14 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, StatusNodeDelegate, Engine
           SKAction.fadeAlphaTo(1, duration: 0.2)
           ]), withKey: "fade")
       case .Thinking:
+        thinkingOperationsDone = false
+        thinkingAnimationsDone = false
+        runAction(SKAction.waitForDuration(0.2), completion: {[unowned self] in self.thinkingAnimationsDone = true})
         statusNode.state = .Thinking
         gridTestDidPass = false
         gridNode.state = .Waiting
         toolbarNode.runAction(SKAction.sequence([
-          SKAction.fadeAlphaTo(0, duration: 0.5),
+          SKAction.fadeAlphaTo(0, duration: 0.2),
           SKAction.removeFromParent()
           ]), withKey: "fade")
         engine.beginGridTest()
@@ -245,6 +250,9 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, StatusNodeDelegate, Engine
     
     // update child nodes
     gridNode.update(dt, beltPercent: beltPercent)
+    
+    // check thinking operations and animations
+    if state == .Thinking && thinkingOperationsDone && thinkingAnimationsDone {state = .Testing}
   }
   
   func loadTape(i: Int) {
@@ -317,7 +325,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, StatusNodeDelegate, Engine
       gameData.save()
     }
     gridTestDidPass = true
-    state = .Testing
+    thinkingOperationsDone = true
   }
   
   func gridTestFailedWithResult(result: TapeTestResult) {
@@ -325,7 +333,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, StatusNodeDelegate, Engine
     statusNode.tapeLabel.runAction(SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")
     statusNode.resetFailPageForTestResult(result)
     tapeTestResults = [result]
-    state = .Testing
+    thinkingOperationsDone = true
   }
   
   // MARK: - GridNodeDelegate Functions
