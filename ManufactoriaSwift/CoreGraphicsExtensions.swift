@@ -8,6 +8,8 @@
 
 import CoreGraphics
 
+let PI = CGFloat(M_PI)
+
 // rounding only set for @2x resolution
 func roundPix(x: CGFloat) -> CGFloat {
   return round(x * 2) * 0.5

@@ -45,7 +45,7 @@ class LiftedGridNode: SKNode {
           case .Bridge:
             let bridge = SKSpriteNode(texture: nil, color: Globals.strokeColor, size: beltSize)
             bridge.colorBlendFactor = 1
-            bridge.zRotation = CGFloat(-M_PI_2)
+            bridge.zRotation = -PI/2
             tempBeltSprites.append(bridge)
             bridge.zPosition = 1
             node.addChild(bridge)

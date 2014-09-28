@@ -25,10 +25,26 @@ class Scanner: SKSpriteNode {
       switch state {
       case .Hiding:
         runAction(SKAction.scaleXTo(0, duration: 0.2).easeIn(), withKey: "scale")
+        if zRotation < 0 {
+          runAction(SKAction.sequence([
+            SKAction.rotateToAngle(-PI, duration: 0.5 * NSTimeInterval(-zRotation / PI)),
+            SKAction.rotateToAngle(0, duration: 0)
+            ]), withKey: "rotate")
+        }
       case .Waiting:
         runAction(SKAction.scaleXTo(1, duration: 0.2).easeOut(), withKey: "scale")
+        if zRotation < 0 {
+          runAction(SKAction.sequence([
+            SKAction.rotateToAngle(-PI, duration: 0.5 * NSTimeInterval(-zRotation / PI)),
+            SKAction.rotateToAngle(0, duration: 0)
+            ]), withKey: "rotate")
+        }
       case .Spinning:
         runAction(SKAction.scaleXTo(1, duration: 0.2).easeOut(), withKey: "scale")
+        runAction(SKAction.repeatActionForever(SKAction.sequence([
+          SKAction.rotateToAngle(-PI, duration: 0.5),
+          SKAction.rotateToAngle(0, duration: 0)
+          ])), withKey: "rotate")
       }
     }
   }

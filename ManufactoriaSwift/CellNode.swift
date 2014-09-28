@@ -31,7 +31,7 @@ class CellNode: SKNode {
 
     bridge = SKSpriteNode()
     bridge.zPosition = 1
-    bridge.zRotation = CGFloat(-M_PI_2)
+    bridge.zRotation = -PI/2
     bridge.colorBlendFactor = 1
     bridge.color = Globals.strokeColor
     
@@ -45,7 +45,7 @@ class CellNode: SKNode {
     puller.zPosition = 3
     pullerLeft.anchorPoint = CGPoint(1, 0.5)
     pullerRight.anchorPoint = CGPoint(1, 0.5)
-    pullerRight.zRotation = CGFloat(M_PI)
+    pullerRight.zRotation = PI
     pullerLeft.colorBlendFactor = 1
     pullerRight.colorBlendFactor = 1
     puller.addChild(pullerLeft)
@@ -199,9 +199,9 @@ class CellNode: SKNode {
     }
     switch newCell.direction {
     case .North: zRotation = 0.0
-    case .East: zRotation = CGFloat(-M_PI_2)
-    case .South: zRotation = CGFloat(M_PI)
-    case .West: zRotation = CGFloat(M_PI_2)
+    case .East: zRotation = -PI/2
+    case .South: zRotation = PI
+    case .West: zRotation = PI/2
     }
     cell = newCell
     nextCell = newCell

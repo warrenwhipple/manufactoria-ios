@@ -202,14 +202,14 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
     }
   }
   
-  var undoQueueIsEmpty: Bool = true {
+  var undoQueueIsEmpty: Bool = false {
     didSet {
       if undoQueueIsEmpty == oldValue {return}
       if state == .Drawing {undoButton.userInteractionEnabled = !undoQueueIsEmpty}
     }
   }
   
-  var redoQueueIsEmpty: Bool = true {
+  var redoQueueIsEmpty: Bool = false {
     didSet {
       if redoQueueIsEmpty == oldValue {return}
       if state == .Drawing {redoButton.userInteractionEnabled = !redoQueueIsEmpty}
