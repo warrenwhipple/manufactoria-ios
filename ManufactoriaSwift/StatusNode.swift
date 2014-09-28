@@ -109,6 +109,7 @@ class StatusNode: SwipeNode {
           SKAction.scaleTo(1, duration: 0.2),
           SKAction.runBlock({[unowned self] in self.thinkingAnimationDone = true})
           ]), withKey: "scale")
+        tapeNode.alpha = 1
         if tapeNode.parent == nil {addChild(tapeNode)}
       case .Testing:
         tapeLabel.alpha = 0

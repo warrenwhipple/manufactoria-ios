@@ -58,9 +58,6 @@ class GameViewController: UIViewController {
     Globals.mediumEm = emLabel.frame.size.height
     emLabel.fontLarge()
     Globals.largeEm = emLabel.frame.size.height
-    println(Globals.smallEm)
-    println(Globals.mediumEm)
-    println(Globals.largeEm)
     
     super.viewDidLoad()
     let skView = view as SKView
