@@ -68,7 +68,6 @@ class SortTutorialScene: GameScene {
     didSet {
       statusNode.tapeLabel.removeFromParent()
       statusNode.tapeNode.removeFromParent()
-      statusNode.thinkingAnimationDone = true
       if state == State.Editing {statusNode.goToIndexWithoutSnap(1)}
     }
   }

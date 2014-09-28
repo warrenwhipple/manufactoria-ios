@@ -38,7 +38,6 @@ class BeltTutorialScene: GameScene {
     didSet {
       statusNode.tapeLabel.removeFromParent()
       statusNode.tapeNode.removeFromParent()
-      statusNode.thinkingAnimationDone = true
     }
   }
       

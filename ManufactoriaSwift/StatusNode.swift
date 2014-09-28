@@ -27,19 +27,15 @@ class StatusNode: SwipeNode {
   let failPage = SKNode()
   let failLabel = BreakingLabel()
   var failTapeNode: FailTapeNode?
-  var thinkingAnimationDone = false
   
   init(instructions: String) {
     self.instructions = instructions
     
     super.init(pages: [optionsPage, instructionsPage])
     
-    tapeNode.printer.setScale(0)
     tapeLabel.fontMedium()
     tapeLabel.fontColor = Globals.strokeColor
     tapeLabel.alpha = 0
-    addChild(tapeLabel)
-    addChild(tapeNode)
     
     optionsPage.addChild(menuButton)
     
@@ -78,15 +74,12 @@ class StatusNode: SwipeNode {
       if state == oldValue {return}
       switch state {
       case .Editing:
-        tapeNode.unloadTape()
         tapeLabel.runAction(SKAction.sequence([
           SKAction.fadeAlphaTo(0, duration: 0.2),
           SKAction.removeFromParent()
           ]), withKey: "fade")
-        tapeNode.runAction(SKAction.sequence([
-          SKAction.fadeAlphaTo(0, duration: 0.2),
-          SKAction.removeFromParent()
-          ]), withKey: "fade")
+        tapeNode.removeFromParent()
+        tapeNode.unloadTape()
         if failPage.parent == nil {addPageToRight(failPage)}
         goToIndexWithoutSnap(2)
         wrapper.alpha = 0
@@ -98,26 +91,25 @@ class StatusNode: SwipeNode {
         userInteractionEnabled = true
       case .Thinking:
         userInteractionEnabled = false
-        thinkingAnimationDone = false
         wrapper.runAction(SKAction.sequence([
           SKAction.fadeAlphaTo(0, duration: 0.2),
           SKAction.removeFromParent()
           ]), withKey: "fade")
-        tapeNode.printer.setScale(0)
-        tapeNode.printer.runAction(SKAction.sequence([
-          SKAction.waitForDuration(0.2),
-          SKAction.scaleTo(1, duration: 0.2),
-          SKAction.runBlock({[unowned self] in self.thinkingAnimationDone = true})
-          ]), withKey: "scale")
-        tapeNode.alpha = 1
         if tapeNode.parent == nil {addChild(tapeNode)}
+        tapeNode.scanner.state = .Spinning
+        tapeNode.printer.state = .Waiting
       case .Testing:
-        tapeLabel.alpha = 0
+        if tapeLabel.parent == nil {
+          tapeLabel.alpha = 0
+          addChild(tapeLabel)
+        }
         tapeLabel.runAction(SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")
-        if tapeLabel.parent == nil {addChild(tapeLabel)}
+        tapeNode.scanner.state = .Waiting
+        tapeNode.printer.state = .Waiting
       case .Congratulating:
         tapeNode.unloadTape()
-        tapeNode.printer.runAction(SKAction.scaleTo(0, duration: 0.2), withKey: "scale")
+        tapeNode.scanner.state = .Hiding
+        tapeNode.printer.state = .Hiding
       }
     }
   }

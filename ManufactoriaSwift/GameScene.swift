@@ -39,7 +39,6 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, StatusNodeDelegate, Engine
   var lastUpdateTime: NSTimeInterval = 0
   var tickPercent: CGFloat = 0
   var beltPercent: CGFloat = 0
-  var thinkingOperationsDone = false
   var gridTestDidPass = false
   
   init(size: CGSize, var levelNumber: Int) {
@@ -106,8 +105,6 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, StatusNodeDelegate, Engine
           ]), withKey: "fade")
       case .Thinking:
         statusNode.state = .Thinking
-        statusNode.thinkingAnimationDone = false
-        thinkingOperationsDone = false
         gridTestDidPass = false
         gridNode.state = .Waiting
         toolbarNode.runAction(SKAction.sequence([
@@ -248,11 +245,6 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, StatusNodeDelegate, Engine
     
     // update child nodes
     gridNode.update(dt, beltPercent: beltPercent)
-    
-    // check if done thinking
-    if state == .Thinking && statusNode.thinkingAnimationDone && thinkingOperationsDone {
-      state = .Testing
-    }
   }
   
   func loadTape(i: Int) {
@@ -325,7 +317,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, StatusNodeDelegate, Engine
       gameData.save()
     }
     gridTestDidPass = true
-    thinkingOperationsDone = true
+    state = .Testing
   }
   
   func gridTestFailedWithResult(result: TapeTestResult) {
@@ -333,7 +325,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, StatusNodeDelegate, Engine
     statusNode.tapeLabel.runAction(SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")
     statusNode.resetFailPageForTestResult(result)
     tapeTestResults = [result]
-    thinkingOperationsDone = true
+    state = .Testing
   }
   
   // MARK: - GridNodeDelegate Functions

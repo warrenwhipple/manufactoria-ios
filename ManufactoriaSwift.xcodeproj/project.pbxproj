@@ -21,6 +21,7 @@
 		2D5E583F19A5265500F10DD3 /* ShimmerNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5E583E19A5265500F10DD3 /* ShimmerNode.swift */; };
 		2D60F5C7198041BD0032860B /* TitleScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D60F5C6198041BD0032860B /* TitleScene.swift */; };
 		2D60F5C9198156250032860B /* GameData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D60F5C8198156250032860B /* GameData.swift */; };
+		2D680ED919D87450000B6E36 /* ScannerPrinter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D680ED819D87450000B6E36 /* ScannerPrinter.swift */; };
 		2D7F922C195C61FA00F04F63 /* ToolbarNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7F922B195C61FA00F04F63 /* ToolbarNode.swift */; };
 		2D849F3619A39EB6008F3D69 /* CoreGraphicsExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D849F3519A39EB6008F3D69 /* CoreGraphicsExtensions.swift */; };
 		2D8C19A3199696A90064B790 /* SwipeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8C19A2199696A90064B790 /* SwipeNode.swift */; };
@@ -77,6 +78,7 @@
 		2D5E583E19A5265500F10DD3 /* ShimmerNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShimmerNode.swift; sourceTree = "<group>"; };
 		2D60F5C6198041BD0032860B /* TitleScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = TitleScene.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		2D60F5C8198156250032860B /* GameData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameData.swift; sourceTree = "<group>"; };
+		2D680ED819D87450000B6E36 /* ScannerPrinter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScannerPrinter.swift; sourceTree = "<group>"; };
 		2D7F922B195C61FA00F04F63 /* ToolbarNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToolbarNode.swift; sourceTree = "<group>"; };
 		2D849F3519A39EB6008F3D69 /* CoreGraphicsExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreGraphicsExtensions.swift; sourceTree = "<group>"; };
 		2D8C19A2199696A90064B790 /* SwipeNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwipeNode.swift; sourceTree = "<group>"; };
@@ -130,6 +132,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2D680EDA19D87E46000B6E36 /* Tutorials */ = {
+			isa = PBXGroup;
+			children = (
+				2D2D26AA199E610D00EC4A45 /* BeltTutorialScene.swift */,
+				2D54B24719CF27BB00DF68C5 /* SortTutorialScene.swift */,
+				2DF749FE19D627B800EBE94D /* SequenceTutorialScene.swift */,
+			);
+			name = Tutorials;
+			sourceTree = "<group>";
+		};
 		2D9A097A195643680007F6A4 /* Images */ = {
 			isa = PBXGroup;
 			children = (
@@ -218,9 +230,6 @@
 			isa = PBXGroup;
 			children = (
 				2DC49134194F45B800053237 /* GameScene.swift */,
-				2D2D26AA199E610D00EC4A45 /* BeltTutorialScene.swift */,
-				2D54B24719CF27BB00DF68C5 /* SortTutorialScene.swift */,
-				2DF749FE19D627B800EBE94D /* SequenceTutorialScene.swift */,
 				2DC4915C194F621A00053237 /* Grid.swift */,
 				2D15929919514B4900A96BCC /* GridNode.swift */,
 				2D4729CC19BB91110072E52D /* LiftedGridNode.swift */,
@@ -230,11 +239,13 @@
 				2D8C19A2199696A90064B790 /* SwipeNode.swift */,
 				2DCEF7D4198D63960008DA44 /* StatusNode.swift */,
 				2DD23D6B196DB17C00838E96 /* TapeNode.swift */,
+				2D680ED819D87450000B6E36 /* ScannerPrinter.swift */,
 				2DC1CD6819AFB75900589B86 /* FailTapeNode.swift */,
 				2D7F922B195C61FA00F04F63 /* ToolbarNode.swift */,
 				2D4729CE19BC92650072E52D /* ToolButton.swift */,
 				2D5C7318199FE80600D53D0D /* SpeedControlNode.swift */,
 				2DD4744F19D0566B001E658E /* CongratulationsMenu.swift */,
+				2D680EDA19D87E46000B6E36 /* Tutorials */,
 			);
 			name = GameScene;
 			sourceTree = "<group>";
@@ -353,6 +364,7 @@
 				2D4729CF19BC92650072E52D /* ToolButton.swift in Sources */,
 				2D60F5C9198156250032860B /* GameData.swift in Sources */,
 				2DCA18A51985849B00DF3118 /* SpriteKitExtensions.swift in Sources */,
+				2D680ED919D87450000B6E36 /* ScannerPrinter.swift in Sources */,
 				2DD4745019D0566B001E658E /* CongratulationsMenu.swift in Sources */,
 				2D336E8919534044008E55A9 /* MathFunctions.swift in Sources */,
 				2D15929A19514B4900A96BCC /* GridNode.swift in Sources */,
