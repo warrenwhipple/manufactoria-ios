@@ -20,10 +20,7 @@ func roundPix(p: CGPoint) -> CGPoint {
 func roundPix(r: CGRect) -> CGRect {
   let center = r.center
   let size = r.size
-  let newRect = CGRect(center: roundPix(center), size: CGSize(width: round(size.width), height: round(size.height)))
-  println(r)
-  println(newRect)
-  return newRect
+  return CGRect(center: roundPix(center), size: CGSize(width: round(size.width), height: round(size.height)))
 }
 
 func distributionForChildren(#count: Int, #childSize: CGFloat, #parentSize: CGFloat) -> [CGFloat] {

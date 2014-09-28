@@ -49,7 +49,7 @@ class SortTutorialScene: GameScene {
     for coord in freeCoords {
       let shimmerNode = gridNode[coord].shimmerNode
       shimmerNode.color = Globals.highlightColor
-      shimmerNode.alphaMin = 0.1
+      shimmerNode.alphaMin = 0.5
       shimmerNode.alphaMax = 0.2
       shimmerNode.startMidShimmer()
     }

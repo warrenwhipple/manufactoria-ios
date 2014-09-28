@@ -11,33 +11,38 @@ import SpriteKit
 class TitleScene: ManufactoriaScene {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   let gameData = GameData.sharedInstance
-  let title: SKLabelNode
-  let button: Button
+  let titleLabel = SKLabelNode()
+  let tapLabel = SKLabelNode()
   
   override init(size: CGSize) {
-    title = SKLabelNode()
-    title.fontLarge()
-    title.fontColor = Globals.strokeColor
-    title.verticalAlignmentMode = .Center
-    title.text = "Manufactoria"
-    button = Button(iconOffNamed: "nextIconOff", iconOnNamed: "nextIconOn")
     super.init(size: size)
     backgroundColor = Globals.backgroundColor
-    if gameData.levelsComplete == 0 {
-      button.touchUpInsideClosure = {[unowned self] in self.transitionToGameSceneWithLevelNumber(0)}
-    } else {
-      button.touchUpInsideClosure = {[unowned self] in self.transitionToMenuScene()}
-    }
-    addChild(title)
-    addChild(button)
+    titleLabel.fontLarge()
+    titleLabel.fontColor = Globals.strokeColor
+    titleLabel.horizontalAlignmentMode = .Center
+    titleLabel.verticalAlignmentMode = .Center
+    titleLabel.text = "Manufactoria"
+    addChild(titleLabel)
+    tapLabel.fontMedium()
+    tapLabel.fontColor = Globals.strokeColor
+    tapLabel.horizontalAlignmentMode = .Center
+    tapLabel.text = "tap to play"
+    addChild(tapLabel)
     fitToSize()
   }
   
   override var size: CGSize {didSet{if size != oldValue {fitToSize()}}}
   
   func fitToSize() {
-    title.position = CGPoint(size.width * 0.5, size.height * 0.5 + 40)
-    button.position = CGPoint(size.width * 0.5, size.height * 0.5 - 40)
-    button.size = size * 2
+    titleLabel.position = size.center
+    tapLabel.position = CGPoint(x: titleLabel.position.x, y: 2 * Globals.mediumEm)
+  }
+  
+  override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
+    if gameData.levelsComplete == 0 {
+      self.transitionToGameSceneWithLevelNumber(0)
+    } else {
+      transitionToMenuScene()
+    }
   }
 }
