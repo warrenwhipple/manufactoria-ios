@@ -62,21 +62,8 @@ class TapeNode: SKNode {
     case .Writing:
       deletingDot?.removeFromParent()
       deletingDot = nil
-      let offsetX = -0.5 * CGFloat(dots.count - 1)
-      let tapeSpacing = min(dotSpacing, (width - dotSpacing) / CGFloat(dots.count - 1))
-      var i = 0
-      for dot in dots {dot.position.x = tapeSpacing * (CGFloat(i++) + offsetX)}
-      dots.last?.alpha = 1
-      printer.position.x = tapeSpacing * (CGFloat(i - 1) + offsetX)
     case .Deleting:
-      let offsetX = -0.5 * CGFloat(dots.count + 1)
-      let tapeSpacing = min(dotSpacing, (width - dotSpacing) / CGFloat(dots.count + 1))
-      deletingDot?.position.x = tapeSpacing * offsetX
-      deletingDot?.setScale(1)
-      var i = 1
-      for dot in dots {dot.position.x = tapeSpacing * (CGFloat(i++) + offsetX)}
       dots.last?.alpha = 1
-      printer.position.x = tapeSpacing * (CGFloat(i) + offsetX)
     }
   }
   
@@ -117,26 +104,27 @@ class TapeNode: SKNode {
     case .Deleting:
       if tickPercent < 0.5 {
         let easeT = easeInOut(2 * tickPercent)
-        let offsetX = -0.5 * CGFloat(dots.count + 1)
-        let tapeSpacing = min(dotSpacing, (width - dotSpacing) / CGFloat(dots.count + 1))
-        deletingDot?.position.x = tapeSpacing * offsetX
-        deletingDot?.setScale(1 + easeT)
-        deletingDot?.alpha = (1 - easeT)
+        let easeTLeft = 1 - easeT
+        let offsetX = -0.5 * (easeTLeft * CGFloat(dots.count) + easeT * CGFloat(dots.count + 1))
+        let tapeSpacing = easeTLeft * min(dotSpacing, (width - dotSpacing) / CGFloat(dots.count + 2)) + easeT * min(dotSpacing, (width - dotSpacing) / CGFloat(dots.count + 1))
         var i = 1
-        for dot in dots {
-          dot.position.x = tapeSpacing * (CGFloat(i++) + offsetX)
-        }
+        for dot in dots {dot.position.x = tapeSpacing * (CGFloat(i++) + offsetX)}
+        deletingDot?.position.x = tapeSpacing * offsetX
+        scanner.position.x = tapeSpacing * (offsetX - 1) * easeTLeft + tapeSpacing * (offsetX) * easeT
         printer.position.x = tapeSpacing * (CGFloat(i) + offsetX)
+        deletingDot?.setScale(1)
+        deletingDot?.alpha = 1
       } else {
         let easeT = easeInOut(2 * tickPercent - 1)
-        let easeTLeft = 1 - easeT
-        let offsetX = -0.5 * (easeTLeft * CGFloat(dots.count - 1) + easeT * CGFloat(dots.count))
-        let tapeSpacing = easeTLeft * min(dotSpacing, (width - dotSpacing) / CGFloat(dots.count + 1)) + easeT * min(dotSpacing, (width - dotSpacing) / CGFloat(dots.count))
-        deletingDot?.setScale(2)
-        deletingDot?.alpha = 0
-        var i = 0
+        let offsetX = -0.5 * CGFloat(dots.count + 1)
+        let tapeSpacing = min(dotSpacing, (width - dotSpacing) / CGFloat(dots.count + 1))
+        var i = 1
         for dot in dots {dot.position.x = tapeSpacing * (CGFloat(i++) + offsetX)}
+        deletingDot?.position.x = tapeSpacing * offsetX
+        scanner.position.x = tapeSpacing * (offsetX)
         printer.position.x = tapeSpacing * (CGFloat(i) + offsetX)
+        deletingDot?.setScale(1 + easeT)
+        deletingDot?.alpha = (1 - easeT)
       }
     case .Exiting:
       let easeTLeft = 1 - easeInOut(tickPercent)
