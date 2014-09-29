@@ -186,7 +186,6 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
     if index == 0 {
       if buttonInFocus != lastDrawToolButton {
         buttonInFocus.isInFocus = false
-        lastSelectionToolButton = buttonInFocus
         buttonInFocus = lastDrawToolButton
         buttonInFocus.isInFocus = true
         delegate.editMode = buttonInFocus.editMode
@@ -194,7 +193,6 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
     } else if index == 1 {
       if buttonInFocus != lastSelectionToolButton {
         buttonInFocus.isInFocus = false
-        lastDrawToolButton = buttonInFocus
         buttonInFocus = lastSelectionToolButton
         buttonInFocus.isInFocus = true
         delegate.editMode = buttonInFocus.editMode
@@ -222,6 +220,11 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
     if button == buttonInFocus {
       delegate.editMode = button.cycleEditMode()
     } else {
+      if contains(drawToolButtons, button) {
+        lastDrawToolButton = button
+      } else if contains(selectionToolButtons, button) {
+        lastSelectionToolButton = button
+      }
       buttonInFocus.isInFocus = false
       button.isInFocus = true
       buttonInFocus = button
