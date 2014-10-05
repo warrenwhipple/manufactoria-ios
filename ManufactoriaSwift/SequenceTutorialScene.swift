@@ -53,7 +53,7 @@ class SequenceTutorialScene: GameScene {
     for coord in freeCoords {
       let shimmerNode = gridNode[coord].shimmerNode
       shimmerNode.color = Globals.highlightColor
-      shimmerNode.alphaMin = 0.5
+      shimmerNode.alphaMin = 0.05
       shimmerNode.alphaMax = 0.2
       shimmerNode.startMidShimmer()
     }
@@ -67,8 +67,15 @@ class SequenceTutorialScene: GameScene {
   
   override func fitToSize() {
     super.fitToSize()
-    //toolbarNode.robotButton.position.y = 0
-    toolbarNode.drawToolButtons[2].position.x = 0
+    toolbarNode.robotButton.position.y = 0
+    toolbarNode.drawToolButtons[2].position.y = 0
+  }
+  
+  override var state: State {
+    didSet {
+      toolbarNode.robotButton.position.y = 0
+      toolbarNode.drawToolButtons[2].position.y = 0
+    }
+  }
 
-  }  
 }

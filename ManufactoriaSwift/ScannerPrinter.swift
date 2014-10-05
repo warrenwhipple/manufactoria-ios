@@ -25,26 +25,37 @@ class Scanner: SKSpriteNode {
       switch state {
       case .Hiding:
         runAction(SKAction.scaleXTo(0, duration: 0.2).easeIn(), withKey: "scale")
-        if zRotation < 0 {
+        if oldValue == .Spinning {
           runAction(SKAction.sequence([
-            SKAction.rotateToAngle(-PI, duration: 0.5 * NSTimeInterval(-zRotation / PI)),
+            SKAction.rotateByAngle(-PI, duration: 0.2),
             SKAction.rotateToAngle(0, duration: 0)
             ]), withKey: "rotate")
         }
       case .Waiting:
         runAction(SKAction.scaleXTo(1, duration: 0.2).easeOut(), withKey: "scale")
-        if zRotation < 0 {
+        if oldValue == .Spinning {
           runAction(SKAction.sequence([
-            SKAction.rotateToAngle(-PI, duration: 0.5 * NSTimeInterval(-zRotation / PI)),
+            SKAction.rotateToAngle(-PI, duration: 0.2 * NSTimeInterval((PI + zRotation) / PI)),
+            SKAction.rotateToAngle(-3*PI, duration: 0.6).easeOut(),
             SKAction.rotateToAngle(0, duration: 0)
             ]), withKey: "rotate")
         }
       case .Spinning:
         runAction(SKAction.scaleXTo(1, duration: 0.2).easeOut(), withKey: "scale")
-        runAction(SKAction.repeatActionForever(SKAction.sequence([
-          SKAction.rotateToAngle(-PI, duration: 0.5),
+        let rotateForeverAction = SKAction.repeatActionForever(SKAction.sequence([
+          SKAction.rotateToAngle(-PI, duration: 0.2),
           SKAction.rotateToAngle(0, duration: 0)
-          ])), withKey: "rotate")
+          ]))
+        if oldValue == .Waiting {
+          runAction(SKAction.sequence([
+            SKAction.rotateToAngle(-2*PI, duration: 0.6).easeIn(),
+            SKAction.rotateToAngle(0, duration: 0),
+            rotateForeverAction
+            ]), withKey: "rotate")
+        } else {
+          zRotation = 0
+          runAction(rotateForeverAction, withKey: "rotate")
+        }
       }
     }
   }

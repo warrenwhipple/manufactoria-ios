@@ -184,6 +184,8 @@ class PullerButton: ToolButton {
   var spinNode = SKNode()
   
   init(kind: EditMode) {
+    let beltIcon = SKSpriteNode("beltIconOff")
+    beltIcon.alpha = 0
     let leftIconOff = SKSpriteNode("pullerHalfIconOff")
     leftIconOff.anchorPoint.x = 1
     let rightIconOff = SKSpriteNode("pullerHalfIconOff")
@@ -199,6 +201,8 @@ class PullerButton: ToolButton {
     super.init(editMode: kind, iconOff: leftIconOff, iconOn: leftIconOn)
     leftIconOff.removeFromParent()
     leftIconOn.removeFromParent()
+    addChild(beltIcon)
+    spinNode.zPosition = 1
     spinNode.addChild(leftIconOff)
     spinNode.addChild(leftIconOn)
     addChild(spinNode)
@@ -214,7 +218,19 @@ class PullerButton: ToolButton {
     }
     leftIconOn.color = leftIconOff.color
     rightIconOn.color = rightIconOff.color
-    //generateMultiIndicatorWithCount(2)
+    let fadeOutAction = SKAction.fadeAlphaTo(0, duration: 0.2)
+    let fadeInAction = SKAction.fadeAlphaTo(1, duration: 0.2)
+    let fadePartialAction = SKAction.fadeAlphaTo(0.2, duration: 0.2)
+    focusClosure = {
+      leftIconOff.runAction(fadeOutAction, withKey: "fade")
+      leftIconOn.runAction(fadeInAction, withKey: "fade")
+      beltIcon.runAction(fadePartialAction, withKey: "fade")
+    }
+    unfocusClosure = {
+      leftIconOff.runAction(fadeInAction, withKey: "fade")
+      leftIconOn.runAction(fadeOutAction, withKey: "fade")
+      beltIcon.runAction(fadeOutAction, withKey: "fade")
+    }
   }
   
   override func cycleEditMode() -> EditMode {

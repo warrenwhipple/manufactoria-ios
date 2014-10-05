@@ -14,7 +14,7 @@ class BeltTutorialScene: GameScene {
   
   init(size: CGSize) {
     super.init(size: size, levelNumber: 0)
-    statusNode.instructionsLabel.text = "Connect the entrance and exit."
+    statusNode.instructionsLabel.text = "This is your factory floor plan.\n\nConnect the entrance and exit."
     statusNode.leftArrowWrapper.removeFromParent()
     statusNode.rightArrowWrapper.removeFromParent()
     toolbarNode.userInteractionEnabled = false
@@ -32,15 +32,17 @@ class BeltTutorialScene: GameScene {
   override func fitToSize() {
     super.fitToSize()
     toolbarNode.robotButton.position.y = 0
+    statusNode.tapeLabel.position.y = 0
   }
   
   override var state: State {
     didSet {
-      statusNode.tapeLabel.removeFromParent()
+      //statusNode.tapeLabel.removeFromParent()
       statusNode.tapeNode.removeFromParent()
+      speedControlNode.removeFromParent()
     }
   }
-      
+  
   func checkTutorialGrid() -> Bool {
     var coord = levelData.grid.startCoord + 1
     var lastCoord = levelData.grid.startCoord
@@ -65,7 +67,7 @@ class BeltTutorialScene: GameScene {
     testButtonIsHidden = false
     statusNode.instructionsLabel.runAction(SKAction.sequence([
       SKAction.fadeAlphaTo(0, duration: 0.2),
-      SKAction.runBlock({[unowned self] in self.statusNode.instructionsLabel.text = "Send the robot through."}),
+      SKAction.runBlock({[unowned self] in self.statusNode.instructionsLabel.text = "Tap the robot to send it\nthrough the factory."}),
       SKAction.fadeAlphaTo(1, duration: 0.2)
       ]), withKey: "fade")
     toolbarNode.robotButton.userInteractionEnabled = true

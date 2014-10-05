@@ -229,20 +229,22 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, StatusNodeDelegate, Engine
         )
       case .Exiting:
         if robotState == .Falling {fallthrough}
-        if tickPercent >= 1 {
+        robotNode?.position = CGPoint(x: CGFloat(robotCoord.i) + 0.5, y: CGFloat(robotCoord.j) + 0.5)
+        if tickPercent < 1 {
+          robotNode?.setScale((1 - tickPercent) / gridNode.wrapper.xScale)
+        } else {
           robotNode?.setScale(0)
           loadNextTape()
-        } else {
-          //robotNode?.alpha = 1 - tickPercent
-          robotNode?.setScale((1 - tickPercent) / gridNode.wrapper.xScale)
         }
       case .Falling:
-        if tickPercent >= 1 {
-          robotNode?.setScale(0)
-          loadNextTape()
+        robotNode?.position = CGPoint(x: CGFloat(robotCoord.i) + 0.5, y: CGFloat(robotCoord.j) + 0.5)
+        if tickPercent < 0.5 {
+          robotNode?.setScale((1 - 0.5 * tickPercent) / gridNode.wrapper.xScale)
+        } else if tickPercent < 1 {
+          robotNode?.setScale(0.75 / gridNode.wrapper.xScale)
         } else {
-          //robotNode?.alpha = 1 - tickPercent
-          robotNode?.setScale((1 - tickPercent) / gridNode.wrapper.xScale)
+          robotNode?.setScale(0.75 / gridNode.wrapper.xScale)
+          loadNextTape()
         }
       }
       statusNode.tapeNode.update(tickPercent)

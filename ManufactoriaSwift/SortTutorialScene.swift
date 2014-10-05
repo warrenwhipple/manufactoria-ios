@@ -49,8 +49,9 @@ class SortTutorialScene: GameScene {
     for coord in freeCoords {
       let shimmerNode = gridNode[coord].shimmerNode
       shimmerNode.color = Globals.highlightColor
-      shimmerNode.alphaMin = 0.5
-      shimmerNode.alphaMax = 0.2
+      shimmerNode.alphaMin = 0.05
+      shimmerNode.alphaMax = 0.25
+      shimmerNode.shimmerSpeed = 4
       shimmerNode.startMidShimmer()
     }
     
@@ -62,13 +63,18 @@ class SortTutorialScene: GameScene {
   override func fitToSize() {
     super.fitToSize()
     toolbarNode.robotButton.position.y = 0
+    statusNode.tapeLabel.position.y = 0
   }
   
   override var state: State {
     didSet {
-      statusNode.tapeLabel.removeFromParent()
       statusNode.tapeNode.removeFromParent()
-      if state == State.Editing {statusNode.goToIndexWithoutSnap(1)}
+      statusNode.tapeLabel.position.y = 0
+      if state == State.Editing {
+        statusNode.instructionsLabel.text = "Send blue to the exit.\nDump red on the floor."
+        statusNode.goToIndexWithoutSnap(1)
+        toolbarNode.robotButton.position.y = 0
+      }
     }
   }
   
