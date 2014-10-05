@@ -16,8 +16,8 @@ class TapeNode: SKNode {
   var deletingDot: SKSpriteNode?
   let dotTexture = SKTexture(imageNamed: "dot")
   let dotSpacing: CGFloat
-  let scanner = Scanner()
-  let printer = Printer()
+  let scanner = SKSpriteNode("scanner")
+  let printer = SKSpriteNode("printer")
   
   override init() {
     dotSpacing = dotTexture.size().width * 1.25

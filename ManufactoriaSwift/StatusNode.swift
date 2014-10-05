@@ -97,23 +97,15 @@ class StatusNode: SwipeNode {
           ]), withKey: "fade")
         if tapeNode.parent == nil {
           addChild(tapeNode)
-          tapeNode.scanner.resetHiding()
-          tapeNode.printer.resetHiding()
         }
-        tapeNode.scanner.state = .Spinning
-        tapeNode.printer.state = .Waiting
       case .Testing:
         if tapeLabel.parent == nil {
           tapeLabel.alpha = 0
           addChild(tapeLabel)
         }
         tapeLabel.runAction(SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")
-        tapeNode.scanner.state = .Waiting
-        tapeNode.printer.state = .Waiting
       case .Congratulating:
         tapeNode.unloadTape()
-        tapeNode.scanner.state = .Hiding
-        tapeNode.printer.state = .Hiding
       }
     }
   }
