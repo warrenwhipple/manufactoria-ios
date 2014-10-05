@@ -273,20 +273,23 @@ class PusherButton: ToolButton {
     default:       iconOff.color = Globals.yellowColor
     }
     iconOn.color = iconOff.color
-    generateMultiIndicatorWithCount(editModes.count)
-    var i = 0
-    for editMode in editModes {
-      switch editMode {
-      case .PusherB: multiIndicator?.dots[i].color = Globals.blueColor
-      case .PusherR: multiIndicator?.dots[i].color = Globals.redColor
-      case .PusherG: multiIndicator?.dots[i].color = Globals.greenColor
-      default:       multiIndicator?.dots[i].color = Globals.yellowColor
+    if editModes.count > 1 {
+      generateMultiIndicatorWithCount(editModes.count)
+      var i = 0
+      for editMode in editModes {
+        switch editMode {
+        case .PusherB: multiIndicator?.dots[i].color = Globals.blueColor
+        case .PusherR: multiIndicator?.dots[i].color = Globals.redColor
+        case .PusherG: multiIndicator?.dots[i].color = Globals.greenColor
+        default:       multiIndicator?.dots[i].color = Globals.yellowColor
+        }
+        i++
       }
-      i++
     }
   }
   
   override func cycleEditMode() -> EditMode {
+    if editModes.count <= 1 {return editMode}
     if ++editModeIndex >= editModes.count {editModeIndex = 0}
     editMode = editModes[editModeIndex]
     var newColor: UIColor!

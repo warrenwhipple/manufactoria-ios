@@ -60,7 +60,14 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
       default: break
       }
     }
-    if !pusherKinds.isEmpty {tempDrawToolButtons.append(PusherButton(kinds: pusherKinds))}
+    if IPAD {
+      for pusherKind in pusherKinds {
+        tempDrawToolButtons.append(PusherButton(kinds: [pusherKind]))
+      }
+    } else if !pusherKinds.isEmpty {
+      tempDrawToolButtons.append(PusherButton(kinds: pusherKinds))
+    }
+    
     drawToolButtons = tempDrawToolButtons
     
     selectionToolButtons = [
