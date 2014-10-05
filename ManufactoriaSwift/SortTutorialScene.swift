@@ -51,7 +51,7 @@ class SortTutorialScene: GameScene {
       shimmerNode.color = Globals.highlightColor
       shimmerNode.alphaMin = 0.05
       shimmerNode.alphaMax = 0.25
-      shimmerNode.shimmerSpeed = 4
+      shimmerNode.shimmerDurationMax = 2
       shimmerNode.startMidShimmer()
     }
     

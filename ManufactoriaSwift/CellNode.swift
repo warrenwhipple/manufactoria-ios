@@ -15,7 +15,7 @@ private var beltTexture, beltHalfTexture, pusherTexture, pullerHalfTexture, ente
 class CellNode: SKNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   
-  let belt, bridge, pusher, pullerLeft, pullerRight, selectNode: SKSpriteNode
+  let belt, bridge, pusher, pullerLeft, pullerRight, selectNode, thinkNode: SKSpriteNode
   let enterExitArrow: SKSpriteNode?
   let puller: SKNode
   let shimmerNode: ShimmerNode
@@ -55,13 +55,18 @@ class CellNode: SKNode {
     selectNode.color = Globals.highlightColor
     selectNode.zPosition = 4
     selectNode.alpha = 0
-    
+
+    thinkNode = SKSpriteNode()
+    thinkNode.zPosition = 4
+    thinkNode.alpha = 0
+
     shimmerNode = ShimmerNode()
 
     super.init()
     
     addChild(selectNode)
     addChild(shimmerNode)
+    addChild(thinkNode)
   }
   
   class func loadSharedTexturesForPointSize(newPointSize: CGFloat) -> SKTexture {

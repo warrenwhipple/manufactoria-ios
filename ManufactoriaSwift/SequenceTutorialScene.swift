@@ -54,7 +54,8 @@ class SequenceTutorialScene: GameScene {
       let shimmerNode = gridNode[coord].shimmerNode
       shimmerNode.color = Globals.highlightColor
       shimmerNode.alphaMin = 0.05
-      shimmerNode.alphaMax = 0.2
+      shimmerNode.alphaMax = 0.25
+      shimmerNode.shimmerDurationMax = 2
       shimmerNode.startMidShimmer()
     }
     
