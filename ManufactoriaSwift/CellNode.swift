@@ -15,7 +15,7 @@ private var beltTexture, beltHalfTexture, pusherTexture, pullerHalfTexture, ente
 class CellNode: SKNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   
-  let belt, bridge, pusher, pullerLeft, pullerRight, glowNode: SKSpriteNode
+  let belt, bridge, pusher, pullerLeft, pullerRight, selectNode: SKSpriteNode
   let enterExitArrow: SKSpriteNode?
   let puller: SKNode
   let shimmerNode: ShimmerNode
@@ -51,16 +51,16 @@ class CellNode: SKNode {
     puller.addChild(pullerLeft)
     puller.addChild(pullerRight)
     
-    glowNode = SKSpriteNode()
-    glowNode.color = Globals.highlightColor
-    glowNode.zPosition = 4
-    glowNode.alpha = 0
+    selectNode = SKSpriteNode()
+    selectNode.color = Globals.highlightColor
+    selectNode.zPosition = 4
+    selectNode.alpha = 0
     
     shimmerNode = ShimmerNode()
 
     super.init()
     
-    addChild(glowNode)
+    addChild(selectNode)
     addChild(shimmerNode)
   }
   
@@ -108,7 +108,7 @@ class CellNode: SKNode {
     pullerRight.size = pullerHalfTexture!.size()
     enterExitArrow?.texture = enterExitArrowTexture!
     enterExitArrow?.size = enterExitArrowTexture!.size()
-    glowNode.size = CGSize(pointSize!)
+    selectNode.size = CGSize(pointSize!)
     shimmerNode.size = CGSize(pointSize!)
     self.setScale(1 / pointSize!)
   }
@@ -125,7 +125,7 @@ class CellNode: SKNode {
     belt.texture = clippedBeltTexture
     bridge.texture = clippedBeltTexture
     
-    let glow = glowNode.alpha
+    let glow = selectNode.alpha
     let glowStep = CGFloat(dt) * 4.0
     var glowTarget = CGFloat(0.0)
     
@@ -141,11 +141,11 @@ class CellNode: SKNode {
     if glow == glowTarget {
       // do nothing
     } else if glow < glowTarget - glowStep {
-      glowNode.alpha += glowStep
+      selectNode.alpha += glowStep
     } else if glow > glowTarget + glowStep {
-      glowNode.alpha -= glowStep
+      selectNode.alpha -= glowStep
     } else {
-      glowNode.alpha = glowTarget
+      selectNode.alpha = glowTarget
     }
   }
   

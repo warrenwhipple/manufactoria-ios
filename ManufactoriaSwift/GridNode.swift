@@ -216,7 +216,7 @@ class GridNode: SKNode {
             grid[cellCoord] = liftedCell
             let cellNode = self[cellCoord]
             cellNode.applyCell(liftedCell)
-            cellNode.glowNode.alpha = 0.5
+            cellNode.selectNode.alpha = 0.5
           }
         }
       }
@@ -289,7 +289,7 @@ class GridNode: SKNode {
             grid.cells[i] = Cell()
             cellNode.applyCell(Cell())
             cellNode.isSelected = false
-            cellNode.glowNode.alpha = 0
+            cellNode.selectNode.alpha = 0
           }
           i++
         }
