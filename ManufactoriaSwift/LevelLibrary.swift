@@ -235,6 +235,20 @@ var LevelLibrary: [LevelSetup] = [
   ),
   
   LevelSetup(
+    tag: "...B",
+    instructions: "Accept sequences ending with blue.",
+    space: GridSpace(7),
+    editModes: [.PullerBR],
+    exemplars: ["bbr", "rbb"],
+    generationFunction: {n in return generate("br", n)},
+    acceptFunction: {s in
+      if s.length() < 1 {return false}
+      if s[-1] == "b" {return true}
+      return false
+    }
+  ),
+
+  LevelSetup(
     tag: "...BB",
     instructions: "Accept sequences ending with two blues.",
     space: GridSpace(7),
@@ -247,7 +261,7 @@ var LevelLibrary: [LevelSetup] = [
       return false
     }
   ),
-
+  
   LevelSetup(
     tag: "G + ... + Y",
     instructions: "Add green to the start\nand yellow to the end.",
@@ -286,9 +300,9 @@ var LevelLibrary: [LevelSetup] = [
   ),
   
   LevelSetup(
-    tag: "no R",
+    tag: "remove R",
     instructions: "Remove all reds.",
-    space: GridSpace(7),
+    space: GridSpace(5),
     editModes: [.PullerBR, .PullerGY, .PusherB, .PusherR, .PusherG, .PusherY],
     exemplars: ["brbbrr"],
     generationFunction: {n in return generate("br", n)},
@@ -302,7 +316,7 @@ var LevelLibrary: [LevelSetup] = [
   LevelSetup(
     tag: "swap",
     instructions: "Swap blues and reds.",
-    space: GridSpace(7),
+    space: GridSpace(5),
     editModes: [.PullerBR, .PullerGY, .PusherB, .PusherR, .PusherG, .PusherY],
     exemplars: ["brbbrr"],
     generationFunction: {n in return generate("br", n)},
