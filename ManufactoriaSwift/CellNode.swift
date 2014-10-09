@@ -115,6 +115,7 @@ class CellNode: SKNode {
     enterExitArrow?.size = enterExitArrowTexture!.size()
     selectNode.size = CGSize(pointSize!)
     shimmerNode.size = CGSize(pointSize!)
+    thinkNode.size = CGSize(pointSize!)
     self.setScale(1 / pointSize!)
   }
   

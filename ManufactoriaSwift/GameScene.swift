@@ -106,19 +106,21 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, StatusNodeDelegate, Engine
       case .Thinking:
         statusNode.state = .Thinking
         gridTestDidPass = false
-        gridNode.state = .Waiting
+        gridNode.state = .Thinking
         toolbarNode.runAction(SKAction.sequence([
           SKAction.fadeAlphaTo(0, duration: 0.2),
           SKAction.removeFromParent()
           ]), withKey: "fade")
         engine.beginGridTest()
       case .Testing:
+        gridNode.state = .Waiting
         loadTape(0)
         statusNode.state = .Testing
         if speedControlNode.parent == nil {addChild(speedControlNode)}
         speedControlNode.runAction(SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")
         speedControlNode.isEnabled = true
       case .Congratulating:
+        gridNode.state = .Waiting
         statusNode.state = .Congratulating
         speedControlNode.isEnabled = false
         speedControlNode.runAction(SKAction.sequence([

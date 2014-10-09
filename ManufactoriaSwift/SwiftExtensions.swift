@@ -8,6 +8,16 @@
 
 import Foundation
 
+extension Array {
+  func shuffled() -> [T] {
+    var list = self
+    for i in 0..<list.count {
+      let j = Int(arc4random_uniform(UInt32(list.count - i))) + i
+      list.insert(list.removeAtIndex(j), atIndex: i)
+    }
+    return list
+  }
+}
 
 extension String {
     

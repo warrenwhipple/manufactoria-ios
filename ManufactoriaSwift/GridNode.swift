@@ -137,6 +137,11 @@ class GridNode: SKNode {
     exitArrow.setScale(1 / cellSize)
   }
   
+  var thinkNodes: [SKSpriteNode] = []
+  var thinkIndex = 0
+  var thinkColors: [UIColor] = [Globals.blueColor, Globals.redColor]
+  var thinkCount = 0
+  
   var state: State = .Editing {
     didSet {
       if state == oldValue {return}
@@ -149,6 +154,15 @@ class GridNode: SKNode {
         for cellNode in cellNodes {
           cellNode.shimmerNode.stopShimmer()
         }
+        thinkNodes = []
+        for i in 0 ..< grid.cells.count {
+          if grid.cells[i].kind != .Blank {
+            thinkNodes.append(cellNodes[i].thinkNode)
+          }
+        }
+        thinkNodes = thinkNodes.shuffled()
+        thinkIndex = thinkNodes.count - 1
+        thinkCount = min(30, max(12, thinkNodes.count))
       case .Waiting:
         cancelSelection()
         for cellNode in cellNodes {
@@ -164,6 +178,19 @@ class GridNode: SKNode {
       cellNode.update(dt, clippedBeltTexture: clippedBeltTexture)
     }
     liftedGridNode?.updateWithClippedBeltTexture(clippedBeltTexture)
+    if !thinkNodes.isEmpty && (state == .Thinking || thinkCount > 0) {
+      thinkCount--
+      if thinkIndex < 0 {
+        thinkNodes = thinkNodes.shuffled()
+        thinkIndex = thinkNodes.count - 1
+      }
+      let thinkNode = thinkNodes[thinkIndex--]
+      thinkNode.color = thinkColors[randInt(thinkColors.count)]
+      thinkNode.runAction(SKAction.sequence([
+        SKAction.fadeAlphaTo(0.5, duration: 0.1),
+        SKAction.fadeAlphaTo(0, duration: 0.1)
+        ]))
+    }
   }
   
   var editMode: EditMode = .Belt {
