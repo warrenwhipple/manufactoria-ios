@@ -56,6 +56,7 @@ class SmartLabel: SKNode {
             case "b", "B", "r", "R", "g", "G", "y", "Y":
               clipLabel()
               let sprite = SKSpriteNode(texture: dotTexture)
+              sprite.anchorPoint = CGPointZero
               sprite.colorBlendFactor = 1
               switch nextCharacter {
               case "b", "B": sprite.color = Globals.blueColor
@@ -100,19 +101,24 @@ class SmartLabel: SKNode {
     emLabel.text = "M"
     let em = emLabel.frame.size.height
     var yShift: CGFloat = (em * lineHeight * CGFloat(rows.count - 1) - em) / 2
-    let dotSpacing = SKTexture(imageNamed: "dot").size().width * 1.25
     var lineIndex = 0
     for row in rows {
       var xShift: CGFloat = 0
-      for node in row {
+      for i in 0 ..< row.count {
+        let node = row[i]
+        node.position.y = -CGFloat(lineIndex) * lineHeight * em + yShift
         if node is SKLabelNode {
-          node.position.y = -CGFloat(lineIndex) * lineHeight * em + yShift
-          node.position.x = xShift
-          xShift += node.frame.width
+          let label = node as SKLabelNode
+          if !label.text.isEmpty {
+            if label.text[0] == " " {xShift += em * 0.5}
+            label.position.x = xShift
+            xShift += label.frame.width
+            if label.text[-1] == " " {xShift += em * 0.25}
+          }
         } else {
-          node.position.y = -CGFloat(lineIndex) * lineHeight * em + yShift + em / 2
-          node.position.x = xShift + dotSpacing / 2
-          xShift += dotSpacing
+          xShift += em * 0.25
+          node.position.x = xShift
+          xShift += em
         }
       }
       xShift *= -0.5

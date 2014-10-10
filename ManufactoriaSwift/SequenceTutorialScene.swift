@@ -14,7 +14,7 @@ class SequenceTutorialScene: GameScene {
   
   init(size: CGSize) {
     super.init(size: size, levelNumber: 2)
-    statusNode.instructionsLabel.text = "Colors come in sequences.\n\nAccept the sequence blue-red-blue.\nReject everything else."
+    statusNode.instructionsLabel.text = "Colors come in sequences.\n\nAccept #b#r#b.\nReject everything else."
     statusNode.leftArrowWrapper.removeFromParent()
     statusNode.rightArrowWrapper.removeFromParent()
     toolbarNode.userInteractionEnabled = false

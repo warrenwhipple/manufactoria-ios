@@ -14,7 +14,7 @@ class SortTutorialScene: GameScene {
   
   init(size: CGSize) {
     super.init(size: size, levelNumber: 1)
-    statusNode.instructionsLabel.text = "Colors can be sorted.\n\nSend blue to the exit.\nDump red on the floor."
+    statusNode.instructionsLabel.text = "Colors can be sorted.\n\nAccept #b, send it to the exit.\nReject #r, dump it on the floor."
     statusNode.leftArrowWrapper.removeFromParent()
     statusNode.rightArrowWrapper.removeFromParent()
     toolbarNode.userInteractionEnabled = false
@@ -71,7 +71,7 @@ class SortTutorialScene: GameScene {
       statusNode.tapeNode.removeFromParent()
       statusNode.tapeLabel.position.y = 0
       if state == State.Editing {
-        statusNode.instructionsLabel.text = "Send blue to the exit.\nDump red on the floor."
+        statusNode.instructionsLabel.text = "Accept #b, send it to the exit.\nReject #r, dump it on the floor."
         statusNode.goToIndexWithoutSnap(1)
         toolbarNode.robotButton.position.y = 0
       }

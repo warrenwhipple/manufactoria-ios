@@ -24,9 +24,9 @@ struct Globals {
   static var testCount =       1000
   static var loopTickCount =   10000
   static var loopTapeLength =  500
-  static var smallFontSize: CGFloat =  12.5
-  static var mediumFontSize: CGFloat = 17.1
-  static var largeFontSize: CGFloat =  26.3
+  static var smallFontSize: CGFloat =  13 // em = 12px
+  static var mediumFontSize: CGFloat = 19 // em = 16px
+  static var largeFontSize: CGFloat =  30 // em = 24px
   static var smallFont =  "HelveticaNeue"
   static var mediumFont = "HelveticaNeue-Light"
   static var largeFont =  "HelveticaNeue-Thin"
@@ -42,9 +42,9 @@ class GameViewController: UIViewController {
     if IPAD {
       Globals.iconSpan = 64
       Globals.touchSpan = 92
-      Globals.smallFontSize = 17.1
-      Globals.mediumFontSize = 26.3
-      Globals.largeFontSize = 51.2
+      Globals.smallFontSize = 19 // em = 12px
+      Globals.mediumFontSize = 30 // em = 24px
+      Globals.largeFontSize = 52 // em = 40px
       Globals.smallFont = "HelveticaNeue-Light"
       Globals.mediumFont = "HelveticaNeue-Thin"
       Globals.largeFont = "HelveticaNeue-UltraLight"

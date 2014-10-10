@@ -20,7 +20,7 @@ class StatusNode: SwipeNode {
   let optionsPage = SKNode()
   let menuButton = Button(iconOffNamed: "menuIconOff", iconOnNamed: "menuIconOn", labelText: "menu")
   let instructionsPage = SKNode()
-  let instructionsLabel = BreakingLabel()
+  let instructionsLabel = SmartLabel()
   let tapeLabel = BreakingLabel()
   let tapeNode = TapeNode()
   let instructions: String
@@ -39,8 +39,6 @@ class StatusNode: SwipeNode {
     
     optionsPage.addChild(menuButton)
     
-    instructionsLabel.fontMedium()
-    instructionsLabel.fontColor = Globals.strokeColor
     instructionsLabel.text = instructions
     
     instructionsPage.addChild(instructionsLabel)

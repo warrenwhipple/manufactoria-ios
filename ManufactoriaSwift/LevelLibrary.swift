@@ -126,7 +126,7 @@ var LevelLibrary: [LevelSetup] = [
   
   LevelSetup(
     tag: "all",
-    instructions: "Connect the entrance and exit.",
+    instructions: "Accept everything.",
     space: GridSpace(3),
     editModes: [],
     exemplars: [""],
@@ -136,7 +136,7 @@ var LevelLibrary: [LevelSetup] = [
   
   LevelSetup(
     tag: "B",
-    instructions: "Accept blue.\nReject red.",
+    instructions: "Accept #b.\nReject #r.",
     space: GridSpace(3),
     editModes: [.PullerBR],
     exemplars: ["r", "b"],
@@ -146,7 +146,7 @@ var LevelLibrary: [LevelSetup] = [
   
   LevelSetup(
     tag: "BRB...    ",
-    instructions: "Accept sequences\nthat begin blue red blue.",
+    instructions: "Accept if it begins #b#r#b.",
     space: GridSpace(5),
     editModes: [.PullerBR],
     exemplars: ["brr", "brb"],
@@ -159,7 +159,7 @@ var LevelLibrary: [LevelSetup] = [
   
   LevelSetup(
     tag: "no R",
-    instructions: "Reject sequences\nthat contain any red.",
+    instructions: "Reject any #r anywhere.",
     space: GridSpace(3),
     editModes: [.PullerBR],
     exemplars: ["bbrb", "bbbb"],
@@ -173,7 +173,7 @@ var LevelLibrary: [LevelSetup] = [
   
   LevelSetup(
     tag: ">= 3B",
-    instructions: "Accept three or more blues.",
+    instructions: "Accept if there are\nthree or more #b.",
     space: GridSpace(5),
     editModes: [.PullerBR],
     exemplars: ["rbrbr", "brbrb"],
@@ -183,6 +183,16 @@ var LevelLibrary: [LevelSetup] = [
       for c in s {if c == "b" {if ++k >= 3 {return true}}}
       return false
     }
+  ),
+  
+  LevelSetup(
+    tag: "BRBBR",
+    instructions: "Write the sequence #b#r#b#b#r.",
+    space: GridSpace(5),
+    editModes: [.PusherB, .PusherR],
+    exemplars: [""],
+    generationFunction: {n in return [""]},
+    transformFunction: {s in return "brbbr"}
   ),
   
   LevelSetup(
@@ -219,7 +229,7 @@ var LevelLibrary: [LevelSetup] = [
   
   LevelSetup(
     tag: "B → G\nR → Y",
-    instructions: "Change blue to green and red to yellow.",
+    instructions: "Change #b → #g and #r → #y.",
     space: GridSpace(5),
     editModes: [.PullerBR, .PusherG, .PusherY],
     exemplars: ["brbbrr"],
@@ -236,7 +246,7 @@ var LevelLibrary: [LevelSetup] = [
   
   LevelSetup(
     tag: "...B",
-    instructions: "Accept sequences ending with blue.",
+    instructions: "Accept sequences ending #b.",
     space: GridSpace(7),
     editModes: [.PullerBR],
     exemplars: ["bbr", "rbb"],
@@ -250,7 +260,7 @@ var LevelLibrary: [LevelSetup] = [
 
   LevelSetup(
     tag: "...BB",
-    instructions: "Accept sequences ending with two blues.",
+    instructions: "Accept sequences ending #b#b.",
     space: GridSpace(7),
     editModes: [.PullerBR],
     exemplars: ["bbrb", "rbbb"],
@@ -264,7 +274,7 @@ var LevelLibrary: [LevelSetup] = [
   
   LevelSetup(
     tag: "G + ... + Y",
-    instructions: "Add green to the start\nand yellow to the end.",
+    instructions: "Add #g to the start\nand #y to the end.",
     space: GridSpace(5),
     editModes: [.PullerBR, .PusherB, .PusherR, .PusherG, .PusherY],
     exemplars: ["brbbrr"],
@@ -274,7 +284,7 @@ var LevelLibrary: [LevelSetup] = [
   
   LevelSetup(
     tag: "first = last",
-    instructions: "Accept sequences in which\nthe first and last colors are the same.",
+    instructions: "Accept if the first\nand last colors are the same.",
     space: GridSpace(7),
     editModes: [.PullerBR],
     exemplars: ["brrbr", "rbbbr"],
@@ -284,7 +294,7 @@ var LevelLibrary: [LevelSetup] = [
 
   LevelSetup(
     tag: "xB = xR",
-    instructions: "Accept sequences with\nthe same number of blues and reds.",
+    instructions: "Accept sequences with\nthe same number of #b as #r.",
     space: GridSpace(7),
     editModes: [.PullerBR, .PullerGY, .PusherB, .PusherR, .PusherG, .PusherY],
     exemplars: ["brrbr", "rbbrbr"],
@@ -301,7 +311,7 @@ var LevelLibrary: [LevelSetup] = [
   
   LevelSetup(
     tag: "remove R",
-    instructions: "Remove all reds.",
+    instructions: "Remove all #r.",
     space: GridSpace(5),
     editModes: [.PullerBR, .PullerGY, .PusherB, .PusherR, .PusherG, .PusherY],
     exemplars: ["brbbrr"],
@@ -315,7 +325,7 @@ var LevelLibrary: [LevelSetup] = [
   
   LevelSetup(
     tag: "swap",
-    instructions: "Swap blues and reds.",
+    instructions: "Swap #b and #r.",
     space: GridSpace(5),
     editModes: [.PullerBR, .PullerGY, .PusherB, .PusherR, .PusherG, .PusherY],
     exemplars: ["brbbrr"],
@@ -346,7 +356,7 @@ var LevelLibrary: [LevelSetup] = [
   
   LevelSetup(
     tag: "xB xR",
-    instructions: "Accept a number of blues\nfollowed by the same number of reds.",
+    instructions: "Accept a number of #b\nfollowed by the same number of #r.",
     space: GridSpace(9),
     editModes: [.PullerBR, .PullerGY, .PusherB, .PusherR, .PusherG, .PusherY],
     exemplars: ["bbrrbb", "bbbrrr"],
@@ -364,7 +374,7 @@ var LevelLibrary: [LevelSetup] = [
   
   LevelSetup(
     tag: "xB xR xB",
-    instructions: "Accept a number of blues followed by the same\nnumber of reds followed by the same number of blues.",
+    instructions: "Accept a number of #b followed by the same\nnumber of #r followed by the same number of #b.",
     space: GridSpace(9),
     editModes: [.PullerBR, .PullerGY, .PusherB, .PusherR, .PusherG, .PusherY],
     exemplars: ["bbbrrb", "bbrrbb"],
@@ -384,7 +394,7 @@ var LevelLibrary: [LevelSetup] = [
 
   LevelSetup(
     tag: "middle",
-    instructions: "Insert a green in the middle of the sequence.",
+    instructions: "Insert a #g in the middle of the sequence.",
     space: GridSpace(9),
     editModes: [.PullerBR, .PullerGY, .PusherB, .PusherR, .PusherG, .PusherY],
     exemplars: ["brbbrr"],
@@ -397,7 +407,7 @@ var LevelLibrary: [LevelSetup] = [
   
   LevelSetup(
     tag: "B → front",
-    instructions: "Move all the blues\nto the front of the sequence.",
+    instructions: "Move all #b\nto the front of the sequence.",
     space: GridSpace(9),
     editModes: [.PullerBR, .PullerGY, .PusherB, .PusherR, .PusherG, .PusherY],
     exemplars: ["rbbrrbbrbr"],
@@ -428,7 +438,7 @@ var LevelLibrary: [LevelSetup] = [
   
   LevelSetup(
     tag: "xB = 2xR",
-    instructions: "Accept sequences with\ntwice as many blues as reds.",
+    instructions: "Accept sequences with\ntwice as many #b as #r.",
     space: GridSpace(11),
     editModes: [.PullerBR, .PullerGY, .PusherB, .PusherR, .PusherG, .PusherY],
     exemplars: ["brrbr", "rbbrbr"],

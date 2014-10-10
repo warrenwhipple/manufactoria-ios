@@ -30,11 +30,6 @@ class TitleScene: ManufactoriaScene {
     tapLabel.text = "tap to play"
     addChild(tapLabel)
     fitToSize()
-    
-    smartLabel.text = "hello#b#r#g   howsit whatsup\ngoodbye"
-    smartLabel.position.x = size.width/2
-    smartLabel.position.y = size.height*2/3
-    addChild(smartLabel)
   }
   
   override var size: CGSize {didSet{if size != oldValue {fitToSize()}}}
