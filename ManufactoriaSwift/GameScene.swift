@@ -114,6 +114,21 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, StatusNodeDelegate, Engine
         engine.beginGridTest()
       case .Testing:
         gridNode.state = .Waiting
+        var isPuller = false
+        var isPusher = false
+        for cell in gridNode.grid.cells {
+          switch cell.kind {
+          case .PullerBR, .PullerRB, .PullerGY, .PullerYG: isPuller = true
+          case .PusherB, .PusherR, .PusherG, .PusherY: isPusher = true
+          default: break
+          }
+          if isPusher && isPuller {break}
+        }
+        if isPuller {statusNode.tapeNode.scanner.alpha = 1}
+        else {statusNode.tapeNode.scanner.alpha = 0}
+        if isPusher {statusNode.tapeNode.printer.alpha = 1}
+        else {statusNode.tapeNode.printer.alpha = 0}
+        
         loadTape(0)
         statusNode.state = .Testing
         if speedControlNode.parent == nil {addChild(speedControlNode)}
