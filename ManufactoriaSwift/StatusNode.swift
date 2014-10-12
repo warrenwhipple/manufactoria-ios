@@ -25,8 +25,6 @@ class StatusNode: SwipeNode {
   let tapeNode = TapeNode()
   let instructions: String
   let failPage = SKNode()
-  let failLabel = BreakingLabel()
-  var failTapeNode: FailTapeNode?
   
   init(instructions: String) {
     self.instructions = instructions
@@ -43,12 +41,6 @@ class StatusNode: SwipeNode {
     
     instructionsPage.addChild(instructionsLabel)
     
-    failLabel.fontMedium()
-    failLabel.fontColor = Globals.strokeColor
-    
-    failPage.addChild(failLabel)
-    
-    
     menuButton.swipeThroughDelegate = self
     menuButton.touchUpInsideClosure = {[unowned self] in self.delegate.menuButtonPressed()}
     
@@ -62,9 +54,6 @@ class StatusNode: SwipeNode {
     tapeLabel.position.y = yOffset
     tapeNode.position.y = -yOffset
     tapeNode.width = size.width
-    failLabel.position.y = yOffset
-    failTapeNode?.position.y = -yOffset
-    failTapeNode?.width = size.width
   }
   
   var state: State = .Editing {
@@ -109,30 +98,85 @@ class StatusNode: SwipeNode {
   }
   
   func resetFailPageForTestResult(result: TapeTestResult) {
+    failPage.removeAllChildren()
+    let lineHeight = SKTexture(imageNamed: "dot").size().height * 1.5
     switch result.kind {
     case .Pass:
       assertionFailure("StatusNode cannot generate fail page for result.kind.Pass")
     case .FailLoop:
-      if result.input == "" {failLabel.text = "The blank sequence caused a loop."}
-      else {failLabel.text = "This sequence caused a loop."}
+      if result.input == "" {
+        let label = SmartLabel()
+        label.text = "The blank sequence caused a loop."
+        failPage.addChild(label)
+      } else {
+        let tape = FailTapeNode(tape: result.input)
+        tape.position.y = lineHeight * 0.5
+        failPage.addChild(tape)
+        let label = SmartLabel()
+        label.text = "caused a loop."
+        label.position.y = -lineHeight * 0.5
+        failPage.addChild(label)
+      }
     case .FailShouldAccept:
-      if result.input == "" {failLabel.text = "A blank sequence should be accepted."}
-      else {failLabel.text = "This sequence should be accepted."}
+      if result.input == "" {
+        let label = SmartLabel()
+        label.text = "The blank sequence should be accepted."
+        failPage.addChild(label)
+      } else {
+        let tape = FailTapeNode(tape: result.input)
+        tape.position.y = lineHeight * 0.5
+        failPage.addChild(tape)
+        let label = SmartLabel()
+        label.text = "should be accepted."
+        label.position.y = -lineHeight * 0.5
+        failPage.addChild(label)
+      }
     case .FailShouldReject:
-      if result.input == "" {failLabel.text = "A blank sequence should be rejected."}
-      else {failLabel.text = "This sequence should be rejected."}
+      if result.input == "" {
+        let label = SmartLabel()
+        label.text = "The blank sequence should be rejected."
+        failPage.addChild(label)
+      } else {
+        let tape = FailTapeNode(tape: result.input)
+        tape.position.y = lineHeight * 0.5
+        failPage.addChild(tape)
+        let label = SmartLabel()
+        label.text = "should be rejected."
+        label.position.y = -lineHeight * 0.5
+        failPage.addChild(label)
+      }
     case .FailWrongTransform:
-      if result.input == "" {failLabel.text = "The blank sequence was processed incorrectly."}
-      else {failLabel.text = "This sequence was was transformed incorrectly."}
+      let tapeOut = FailTapeNode(tape: result.correctOutput ?? "")
+      if result.input == "" {
+        let label = SmartLabel()
+        label.text = "The blank sequence should be transformed to"
+        label.position.y = lineHeight * 0.5
+        failPage.addChild(label)
+        tapeOut.position.y = -lineHeight * 0.5
+      } else {
+        let tapeIn = FailTapeNode(tape: result.input)
+        tapeIn.position.y = lineHeight
+        failPage.addChild(tapeIn)
+        let label = SmartLabel()
+        label.text = "should be transformed to"
+        failPage.addChild(label)
+        tapeOut.position.y = -lineHeight
+      }
+      failPage.addChild(tapeOut)
     case .FailDroppedTransform:
-      if result.input == "" {failLabel.text = "The blank sequence must be processed."}
-      else {failLabel.text = "This sequence was dropped."}
+      if result.input == "" {
+        let label = SmartLabel()
+        label.text = "The blank sequence should not be dropped."
+        failPage.addChild(label)
+      } else {
+        let tape = FailTapeNode(tape: result.input)
+        tape.position.y = lineHeight * 0.5
+        failPage.addChild(tape)
+        let label = SmartLabel()
+        label.text = "should not be dropped."
+        label.position.y = -lineHeight * 0.5
+        failPage.addChild(label)
+      }
     }
-    
-    failTapeNode?.removeFromParent()
-    failTapeNode = FailTapeNode(tape: result.input)
-    failTapeNode?.position = tapeNode.position
-    failTapeNode?.width = tapeNode.width
-    failPage.addChild(failTapeNode!)
   }
 }

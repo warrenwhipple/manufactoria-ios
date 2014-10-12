@@ -59,10 +59,11 @@ class FailTapeNode: SKNode {
       }
       super.init()
       for dot in dots {addChild(dot)}
-      runAction(SKAction.customActionWithDuration(1, actionBlock: {
-        [unowned self] node, time in
-        self.positionDots(time)
-      }))
+      positionDots(1)
+      //runAction(SKAction.customActionWithDuration(1, actionBlock: {
+      //  [unowned self] node, time in
+      //  self.positionDots(time)
+      //}))
     }
   }
   

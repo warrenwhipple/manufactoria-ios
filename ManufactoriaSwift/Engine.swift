@@ -14,6 +14,7 @@ struct TapeTestResult {
   }
   let input: String
   let output: String?
+  let correctOutput: String?
   let kind: Kind
 }
 
@@ -46,7 +47,7 @@ class Engine {
   func tapeTestOpDidFinish(tapeTestOp: TapeTestOp) {
     //  check for tape test loop
     if tapeTestOp.didLoop {
-      gridTestFailedWithResult(TapeTestResult(input: tapeTestOp.input, output: nil, kind: .FailLoop))
+      gridTestFailedWithResult(TapeTestResult(input: tapeTestOp.input, output: nil, correctOutput: nil, kind: .FailLoop))
       return
     }
     
@@ -54,22 +55,23 @@ class Engine {
     if let acceptFunction = levelSetup.acceptFunction {
       let shouldAccept = acceptFunction(tapeTestOp.input)
       if shouldAccept && tapeTestOp.output == nil {
-        gridTestFailedWithResult(TapeTestResult(input: tapeTestOp.input, output: tapeTestOp.output, kind: .FailShouldAccept))
+        gridTestFailedWithResult(TapeTestResult(input: tapeTestOp.input, output: tapeTestOp.output, correctOutput: nil,  kind: .FailShouldAccept))
         return
       }
       if !shouldAccept && tapeTestOp.output != nil {
-        gridTestFailedWithResult(TapeTestResult(input: tapeTestOp.input, output: tapeTestOp.output, kind: .FailShouldReject))
+        gridTestFailedWithResult(TapeTestResult(input: tapeTestOp.input, output: tapeTestOp.output, correctOutput: nil,  kind: .FailShouldReject))
         return
       }
       
     // check for transform tape test failure
     } else if let transformFunction = levelSetup.transformFunction {
+      let correctOutput = transformFunction(tapeTestOp.input)
       if tapeTestOp.output == nil {
-        gridTestFailedWithResult(TapeTestResult(input: tapeTestOp.input, output: tapeTestOp.output, kind: .FailDroppedTransform))
+        gridTestFailedWithResult(TapeTestResult(input: tapeTestOp.input, output: tapeTestOp.output, correctOutput: correctOutput, kind: .FailDroppedTransform))
         return
       }
-      if transformFunction(tapeTestOp.input) != tapeTestOp.output! {
-        gridTestFailedWithResult(TapeTestResult(input: tapeTestOp.input, output: tapeTestOp.output, kind: .FailWrongTransform))
+      if correctOutput != tapeTestOp.output! {
+        gridTestFailedWithResult(TapeTestResult(input: tapeTestOp.input, output: tapeTestOp.output, correctOutput: correctOutput, kind: .FailWrongTransform))
         return
       }
     }

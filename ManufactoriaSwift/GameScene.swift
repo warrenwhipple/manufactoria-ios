@@ -313,7 +313,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, StatusNodeDelegate, Engine
     statusNode.tapeLabel.runAction(SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")
     tapeTestResults = []
     for exemplar in levelSetup.exemplars {
-      tapeTestResults.append(TapeTestResult(input: exemplar, output: nil, kind: .Pass))
+      tapeTestResults.append(TapeTestResult(input: exemplar, output: nil, correctOutput: nil, kind: .Pass))
     }
     let gameData = GameData.sharedInstance
     if gameData.levelsComplete < levelNumber + 1 {
