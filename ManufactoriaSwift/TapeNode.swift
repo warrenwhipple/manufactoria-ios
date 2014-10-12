@@ -44,10 +44,10 @@ class TapeNode: SKNode {
       deletingDot = nil
       let offsetX = -0.5 * CGFloat(dots.count + 1)
       let tapeSpacing = min(dotSpacing, (width - dotSpacing) / CGFloat(dots.count + 1))
-      scanner.position.x = 0
+      scanner.position.x = tapeSpacing * offsetX - width
       var i = 1
       for dot in dots {dot.position.x = tapeSpacing * (CGFloat(i++) + offsetX) - width}
-      printer.position.x = 0
+      printer.position.x = tapeSpacing * (CGFloat(i) + offsetX) - width
       dots.last?.alpha = 1
     case .Waiting, .Exiting:
       deletingDot?.removeFromParent()
@@ -71,15 +71,13 @@ class TapeNode: SKNode {
     switch state {
     case .OffScreen, .Waiting: break
     case .Entering:
-      let easeT = easeInOut(tickPercent)
-      let easeTLeft = 1 - easeT
       let easeOutTLeft = 1 - easeOut(tickPercent)
       let offsetX = -0.5 * CGFloat(dots.count + 1)
       let tapeSpacing = min(dotSpacing, (width - dotSpacing) / CGFloat(dots.count + 1))
+      scanner.position.x = tapeSpacing * offsetX + width * easeOutTLeft
       var i = 1
       for dot in dots {dot.position.x = tapeSpacing * (CGFloat(i++) + offsetX) + width * easeOutTLeft}
-      scanner.position.x = tapeSpacing * offsetX * easeT
-      printer.position.x = -tapeSpacing * offsetX * easeT
+      printer.position.x = tapeSpacing * (CGFloat(i) + offsetX) + width * easeOutTLeft
     case .Writing:
       if tickPercent < 0.5 {
         let easeT = easeInOut(2 * tickPercent)
@@ -127,14 +125,13 @@ class TapeNode: SKNode {
         deletingDot?.alpha = (1 - easeT)
       }
     case .Exiting:
-      let easeTLeft = 1 - easeInOut(tickPercent)
       let easeInT = easeIn(tickPercent)
       let offsetX = -0.5 * CGFloat(dots.count + 1)
       let tapeSpacing = min(dotSpacing, (width - dotSpacing) / CGFloat(dots.count + 1))
+      scanner.position.x = tapeSpacing * offsetX - width * easeInT
       var i = 1
       for dot in dots {dot.position.x = tapeSpacing * (CGFloat(i++) + offsetX) - width * easeInT}
-      scanner.position.x = tapeSpacing * offsetX * easeTLeft
-      printer.position.x = -tapeSpacing * offsetX * easeTLeft
+      printer.position.x = tapeSpacing * (CGFloat(i) + offsetX) - width * easeInT
     }
   }
   
