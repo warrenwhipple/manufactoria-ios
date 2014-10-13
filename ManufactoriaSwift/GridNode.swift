@@ -52,11 +52,11 @@ class GridNode: SKNode {
   var editCoord = GridCoord(0, 0)
   var selectShouldUnselect = false
   var selectBoxStartCoord = GridCoord(0, 0)
-  var bridgeEditMemory: Cell? = nil
   var liftedGridNode: LiftedGridNode?
   var moveTouchOffset = CGPointZero
   var moveTouchBeganTimeStamp: NSTimeInterval = 0
   var moveTouchBeganPoint = CGPointZero
+  var touchDidLeaveFirstCell = false
   
   subscript(coord: GridCoord) -> CellNode {
     get {
@@ -312,6 +312,7 @@ class GridNode: SKNode {
     if editTouch != nil {return}
     editTouch = touches.anyObject() as? UITouch
     if editTouch == nil {return}
+    touchDidLeaveFirstCell = false
     
     if editMode == .Move {
       if liftedGridNode == nil {
@@ -364,27 +365,6 @@ class GridNode: SKNode {
       }
       return
     }
-    
-    bridgeEditMemory = nil
-    if grid.space.contains(editCoord) && !coordIsLocked(editCoord) {
-      self[editCoord].isSelected = true
-      var cell = grid[editCoord]
-      if editMode == .Bridge {
-        bridgeEditMemory = cell
-      }
-      if let editModeCellKind = editMode.cellKind() {
-        if editModeCellKind == CellKind.Blank {
-          cell.kind = .Blank
-          cell.direction = .North
-        } else if editModeCellKind == cell.kind {
-          cell.direction = cell.direction.cw()
-        } else {
-          cell.kind = editModeCellKind
-        }
-      }
-      grid[editCoord] = cell
-      self[editCoord].changeCell(cell, animate: true)
-    }
   }
   
   override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
@@ -398,6 +378,7 @@ class GridNode: SKNode {
     
     let touchCoord = coordForTouch(editTouch!)
     if touchCoord == editCoord {return}
+    touchDidLeaveFirstCell = true
     
     if editMode == .SelectBox {
       let left = min(selectBoxStartCoord.i, touchCoord.i)
@@ -448,9 +429,6 @@ class GridNode: SKNode {
       }
     case .Bridge:
       if isEditCell {
-        if bridgeEditMemory != nil {
-          editCell = bridgeEditMemory!
-        }
         var newBridgeDirection = Direction.North
         if touchCoord.j > editCoord.j {
           newBridgeDirection = .North
@@ -511,7 +489,6 @@ class GridNode: SKNode {
       self[touchCoord].changeCell(touchCell, animate: true)
     }
     editCoord = touchCoord
-    bridgeEditMemory = nil
   }
   
   override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
@@ -547,9 +524,24 @@ class GridNode: SKNode {
     
     if grid.space.contains(editCoord) {
       self[editCoord].isSelected = false
+      if !touchDidLeaveFirstCell && !coordIsLocked(editCoord) {
+        var cell = grid[editCoord]
+        if let editModeCellKind = editMode.cellKind() {
+          if editModeCellKind == CellKind.Blank {
+            cell.kind = .Blank
+            cell.direction = .North
+          } else if editModeCellKind == cell.kind {
+            cell.direction = cell.direction.cw()
+          } else {
+            cell.kind = editModeCellKind
+          }
+        }
+        grid[editCoord] = cell
+        self[editCoord].changeCell(cell, animate: true)
+      }
     }
+    
     editTouch = nil
-    bridgeEditMemory = nil
     delegate.gridWasEdited()
   }
   
