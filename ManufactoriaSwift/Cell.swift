@@ -37,6 +37,33 @@ enum CellKind {
     case .PullerYG: return EditMode.PullerYG
     }
   }
+  func pusherColor() -> UIColor? {
+    switch self {
+    case .PusherB: return Globals.blueColor
+    case .PusherR: return Globals.redColor
+    case .PusherG: return Globals.greenColor
+    case .PusherY: return Globals.yellowColor
+    default: return nil
+    }
+  }
+  func pullerLeftColor() -> UIColor? {
+    switch self {
+    case .PullerBR: return Globals.blueColor
+    case .PullerRB: return Globals.redColor
+    case .PullerGY: return Globals.greenColor
+    case .PullerYG: return Globals.yellowColor
+    default: return nil
+    }
+  }
+  func pullerRightColor() -> UIColor? {
+    switch self {
+    case .PullerBR: return Globals.redColor
+    case .PullerRB: return Globals.blueColor
+    case .PullerGY: return Globals.yellowColor
+    case .PullerYG: return Globals.greenColor
+    default: return nil
+    }
+  }
 }
 
 enum Direction {

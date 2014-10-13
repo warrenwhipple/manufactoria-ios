@@ -284,7 +284,7 @@ var LevelLibrary: [LevelSetup] = [
   
   LevelSetup(
     tag: "first = last",
-    instructions: "Accept if the first\nand last colors are the same.",
+    instructions: "Accept if the first and\nlast colors are the same.",
     space: GridSpace(7),
     editModes: [.PullerBR],
     exemplars: ["brrbr", "rbbbr"],

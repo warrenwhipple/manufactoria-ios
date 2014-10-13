@@ -8,37 +8,23 @@
 
 import SpriteKit
 
-private var pointSize: CGFloat?
-private var sizeString: String?
-private var beltTexture, beltHalfTexture, pusherTexture, pullerHalfTexture, enterExitArrowTexture: SKTexture?
+private var pointSize: CGFloat = 0
+private var sizeString: String!
+private var beltTexture, beltHalfTexture, pusherTexture, pullerHalfTexture, enterExitArrowTexture: SKTexture!
 
 class CellNode: SKNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   
-  let belt, bridge, pusher, pullerLeft, pullerRight, selectNode, thinkNode: SKSpriteNode
+  var belt, dyingBelt, bridge, dyingBridge, pusher, dyingPusher: SKSpriteNode?
+  let pullerLeft, pullerRight, selectNode, thinkNode: SKSpriteNode
+  let pivot = SKNode()
   let enterExitArrow: SKSpriteNode?
   let puller: SKNode
   let shimmerNode: ShimmerNode
   var cell = Cell(kind: .Blank, direction: Direction.North)
-  var nextCell = Cell(kind: .Blank, direction: Direction.North)
   var isSelected = false
   
   override init() {
-    belt = SKSpriteNode()
-    belt.zPosition = 1
-    belt.colorBlendFactor = 1
-    belt.color = Globals.strokeColor
-
-    bridge = SKSpriteNode()
-    bridge.zPosition = 1
-    bridge.zRotation = -PI/2
-    bridge.colorBlendFactor = 1
-    bridge.color = Globals.strokeColor
-    
-    pusher = SKSpriteNode()
-    pusher.zPosition = 3
-    pusher.colorBlendFactor = 1
-    
     puller = SKNode()
     pullerLeft = SKSpriteNode()
     pullerRight = SKSpriteNode()
@@ -64,9 +50,252 @@ class CellNode: SKNode {
 
     super.init()
     
+    addChild(pivot)
     addChild(selectNode)
     addChild(shimmerNode)
     addChild(thinkNode)
+  }
+  
+  func newBeltWithAnimate(animate: Bool) {
+    belt?.removeFromParent()
+    belt = SKSpriteNode()
+    belt?.zPosition = 1
+    belt?.colorBlendFactor = 1
+    belt?.color = Globals.strokeColor
+    belt?.texture = beltHalfTexture? ?? nil
+    belt?.size = beltHalfTexture?.size() ?? CGSizeZero
+    if animate {
+      belt?.alpha = 0
+      belt?.runAction(SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")
+    }
+    pivot.addChild(belt!)
+  }
+  
+  func killBeltWithAnimate(animate: Bool) {
+    if animate {
+      dyingBelt?.removeFromParent()
+      dyingBelt = belt
+      belt = nil
+      dyingBelt?.runAction(SKAction.sequence([
+        SKAction.fadeAlphaTo(0, duration: 0.2),
+        SKAction.removeFromParent(),
+        SKAction.runBlock({[unowned self] in self.dyingBelt = nil})
+        ]), withKey: "fade")
+    } else {
+      belt?.removeFromParent()
+      belt = nil
+    }
+  }
+  
+  func newBridgeWithAnimateFade(animateFade: Bool, animateRotate: Bool) {
+    bridge?.removeFromParent()
+    bridge = SKSpriteNode()
+    bridge?.zPosition = 1
+    bridge?.colorBlendFactor = 1
+    bridge?.color = Globals.strokeColor
+    bridge?.texture = beltHalfTexture? ?? nil
+    bridge?.size = beltHalfTexture?.size() ?? CGSizeZero
+    if animateFade {
+      bridge?.alpha = 0
+      bridge?.runAction(SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")
+    } else if animateRotate {
+      bridge?.runAction(SKAction.rotateToAngle(-PI/2, duration: 0.2).ease(), withKey: "rotate")
+    } else {
+      belt?.zRotation = -PI/2
+    }
+    pivot.addChild(bridge!)
+  }
+  
+  func killBridgeWithAnimateFade(animateFade: Bool, animateRotation: Bool) {
+    if animateFade {
+      dyingBridge?.removeFromParent()
+      dyingBridge = bridge
+      bridge = nil
+      dyingBridge?.runAction(SKAction.sequence([
+        SKAction.fadeAlphaTo(0, duration: 0.2),
+        SKAction.removeFromParent(),
+        SKAction.runBlock({[unowned self] in self.dyingBridge = nil})
+        ]), withKey: "fade")
+    } else if animateRotation {
+      dyingBridge?.removeFromParent()
+      dyingBridge = bridge
+      bridge = nil
+      dyingBridge?.runAction(SKAction.sequence([
+        SKAction.rotateToAngle(0, duration: 0.2),
+        SKAction.removeFromParent(),
+        SKAction.runBlock({[unowned self] in self.dyingBridge = nil})
+        ]), withKey: "rotate")
+    } else {
+      bridge?.removeFromParent()
+      bridge = nil
+    }
+  }
+
+  func newPusherWithColor(color: UIColor, animate: Bool) {
+    pusher?.removeFromParent()
+    pusher = SKSpriteNode()
+    pusher?.zPosition = 3
+    pusher?.colorBlendFactor = 1
+    pusher?.color = color
+    pusher?.texture = pusherTexture? ?? nil
+    pusher?.size = pusherTexture.size() ?? CGSizeZero
+    if animate {
+      pusher?.setScale(0)
+      pusher?.runAction(SKAction.scaleTo(1, duration: 0.2).easeOut(), withKey: "scale")
+    }
+    addChild(pusher!)
+  }
+  
+  func killPusherWithAnimate(animate: Bool) {
+    if animate {
+      dyingPusher?.removeFromParent()
+      dyingPusher = pusher
+      pusher = nil
+      dyingPusher?.runAction(SKAction.sequence([
+        SKAction.scaleTo(0, duration: 0.2).easeIn(),
+        SKAction.removeFromParent(),
+        SKAction.runBlock({[unowned self] in self.dyingPusher = nil})
+        ]), withKey: "scale")
+    } else {
+      pusher?.removeFromParent()
+      pusher = nil
+    }
+  }
+  
+  func changePusherColor(color: UIColor, animate: Bool) {
+    if animate {
+      dyingPusher?.removeFromParent()
+      dyingPusher = pusher
+      pusher = nil
+      dyingPusher?.runAction(SKAction.sequence([
+        SKAction.waitForDuration(0.2),
+        SKAction.removeFromParent(),
+        SKAction.runBlock({[unowned self] in self.dyingPusher = nil})
+        ]))
+    } else {
+      pusher?.removeFromParent()
+      pusher = nil
+    }
+    newPusherWithColor(color, animate: animate)
+  }
+  
+  func newPullerWithLeftColor(leftColor: UIColor, rightColor: UIColor, flipped: Bool, animate: Bool) {
+  
+  }
+  
+  func killPullerWithAnimate(animate: Bool) {
+    
+  }
+  
+  func flipPullerWithAnimate(animate: Bool) {
+    
+  }
+  
+  func changeCell(newCell: Cell, animate: Bool) {
+    // rotation
+    if cell.direction != newCell.direction {
+      if animate {
+        var newAngle: CGFloat = 0
+        switch newCell.direction {
+        case .North: break
+        case .East: newAngle = -PI/2
+        case .South: newAngle = PI
+        case .West: newAngle = PI/2
+        }
+        if newCell.kind == CellKind.Blank {
+          pivot.runAction(SKAction.sequence([
+            SKAction.waitForDuration(0.2),
+            SKAction.rotateToAngle(newAngle, duration: 0)
+            ]), withKey: "rotate")
+        } else if belt == nil {
+          pivot.removeActionForKey("rotate")
+          pivot.zRotation = newAngle
+        } else {
+          pivot.runAction(SKAction.rotateToAngle(newAngle, duration: 0.2, shortestUnitArc: true).ease(), withKey: "rotate")
+        }
+      } else {
+        pivot.removeActionForKey("rotate")
+        switch newCell.direction {
+        case .North: pivot.zRotation = 0
+        case .East: pivot.zRotation = -PI/2
+        case .South: pivot.zRotation = PI
+        case .West: pivot.zRotation = PI/2
+        }
+      }
+    }
+    
+    // kind
+    if cell.kind != newCell.kind {
+      switch newCell.kind {
+        
+      case .Blank:
+        switch cell.kind {
+        case .Blank: break
+        case .Belt:
+          killBeltWithAnimate(animate)
+        case .Bridge:
+          killBeltWithAnimate(animate)
+          killBridgeWithAnimateFade(animate, animateRotation: false)
+        case .PusherB, .PusherR, .PusherG, .PusherY:
+          killBeltWithAnimate(animate)
+          killPusherWithAnimate(animate)
+        case .PullerBR, .PullerRB, .PullerGY, .PullerYG:
+          killBeltWithAnimate(animate)
+          killPullerWithAnimate(animate)
+        }
+        
+      case .Belt:
+        switch cell.kind {
+        case .Blank:
+          newBeltWithAnimate(animate)
+        case .Belt: break
+        case .Bridge:
+          killBridgeWithAnimateFade(false, animateRotation: animate)
+        case .PusherB, .PusherR, .PusherG, .PusherY:
+          killPusherWithAnimate(animate)
+        case .PullerBR, .PullerRB, .PullerGY, .PullerYG:
+          killPullerWithAnimate(animate)
+        }
+        
+      case .Bridge:
+        switch cell.kind {
+        case .Blank:
+          newBeltWithAnimate(animate)
+          newBridgeWithAnimateFade(animate, animateRotate: false)
+        case .Belt:
+          newBridgeWithAnimateFade(false, animateRotate: true)
+        case .Bridge: break
+        case .PusherB, .PusherR, .PusherG, .PusherY:
+          killPusherWithAnimate(animate)
+          newBridgeWithAnimateFade(false, animateRotate: true)
+        case .PullerBR, .PullerRB, .PullerGY, .PullerYG:
+          killPullerWithAnimate(animate)
+          newBridgeWithAnimateFade(false, animateRotate: true)
+        }
+        
+      case .PusherB, .PusherR, .PusherG, .PusherY:
+        switch cell.kind {
+        case .Blank:
+          newBeltWithAnimate(animate)
+          newPusherWithColor(newCell.kind.pusherColor() ?? Globals.strokeColor, animate: true)
+        case .Belt:
+          newPusherWithColor(newCell.kind.pusherColor() ?? Globals.strokeColor, animate: true)
+        case .Bridge:
+          killBridgeWithAnimateFade(false, animateRotation: true)
+          newPusherWithColor(newCell.kind.pusherColor() ?? Globals.strokeColor, animate: true)
+        case .PusherB, .PusherR, .PusherG, .PusherY:
+          changePusherColor(newCell.kind.pusherColor() ?? Globals.strokeColor, animate: true)
+        case .PullerBR, .PullerRB, .PullerGY, .PullerYG:
+          killPullerWithAnimate(animate)
+          newPusherWithColor(newCell.kind.pusherColor() ?? Globals.strokeColor, animate: true)
+        }
+        
+      case .PullerBR, .PullerRB, .PullerGY, .PullerYG:
+        break
+      }
+    }
+    
+    cell = newCell
   }
   
   class func loadSharedTexturesForPointSize(newPointSize: CGFloat) -> SKTexture {
@@ -90,7 +319,7 @@ class CellNode: SKNode {
   }
   
   class func unloadSharedTextures() {
-    pointSize = nil
+    pointSize = 0
     sizeString = nil
     beltTexture = nil
     beltHalfTexture = nil
@@ -100,23 +329,23 @@ class CellNode: SKNode {
   }
   
   func assignSharedTextures() {
-    if pointSize == nil {return}
-    belt.texture = beltHalfTexture!
-    belt.size = beltHalfTexture!.size()
-    bridge.texture = beltHalfTexture!
-    bridge.size = beltHalfTexture!.size()
-    pusher.texture = pusherTexture!
-    pusher.size = pusherTexture!.size()
-    pullerLeft.texture = pullerHalfTexture!
-    pullerLeft.size = pullerHalfTexture!.size()
-    pullerRight.texture = pullerHalfTexture!
-    pullerRight.size = pullerHalfTexture!.size()
-    enterExitArrow?.texture = enterExitArrowTexture!
-    enterExitArrow?.size = enterExitArrowTexture!.size()
-    selectNode.size = CGSize(pointSize!)
-    shimmerNode.size = CGSize(pointSize!)
-    thinkNode.size = CGSize(pointSize!)
-    self.setScale(1 / pointSize!)
+    if pointSize == 0 {return}
+    belt?.texture = beltHalfTexture
+    belt?.size = beltHalfTexture?.size() ?? CGSizeZero
+    bridge?.texture = beltHalfTexture
+    bridge?.size = beltHalfTexture?.size() ?? CGSizeZero
+    pusher?.texture = pusherTexture
+    pusher?.size = pusherTexture?.size() ?? CGSizeZero
+    pullerLeft.texture = pullerHalfTexture
+    pullerLeft.size = pullerHalfTexture?.size() ?? CGSizeZero
+    pullerRight.texture = pullerHalfTexture
+    pullerRight.size = pullerHalfTexture?.size() ?? CGSizeZero
+    enterExitArrow?.texture = enterExitArrowTexture
+    enterExitArrow?.size = enterExitArrowTexture?.size() ?? CGSizeZero
+    selectNode.size = CGSize(pointSize)
+    shimmerNode.size = CGSize(pointSize)
+    thinkNode.size = CGSize(pointSize)
+    self.setScale(1 / pointSize)
   }
   
   class func sharedPointSize() -> CGFloat {return pointSize ?? 0}
@@ -126,90 +355,10 @@ class CellNode: SKNode {
   class func sharedPullerHalfTexture() -> SKTexture {return pullerHalfTexture ?? SKTexture()}
   class func sharedEnterExitArrowTexture() -> SKTexture {return enterExitArrowTexture ?? SKTexture()}
   
-  func update(dt: NSTimeInterval, clippedBeltTexture: SKTexture) {
-    
-    belt.texture = clippedBeltTexture
-    bridge.texture = clippedBeltTexture
-    
-    let glow = selectNode.alpha
-    let glowStep = CGFloat(dt) * 4.0
-    var glowTarget = CGFloat(0.0)
-    
-    if cell != nextCell {
-      glowTarget = 1.0
-      if glow == glowTarget {
-        applyCell(nextCell)
-      }
-    } else if isSelected {
-      glowTarget = 0.5
-    }
-    
-    if glow == glowTarget {
-      // do nothing
-    } else if glow < glowTarget - glowStep {
-      selectNode.alpha += glowStep
-    } else if glow > glowTarget + glowStep {
-      selectNode.alpha -= glowStep
-    } else {
-      selectNode.alpha = glowTarget
-    }
+  func updateWithClippedBeltTexture(clippedBeltTexture: SKTexture) {
+    belt?.texture = clippedBeltTexture
+    dyingBelt?.texture = clippedBeltTexture
+    bridge?.texture = clippedBeltTexture
+    dyingBridge?.texture = clippedBeltTexture
   }
-  
-  func applyCell(newCell: Cell) {
-    belt.removeFromParent()
-    bridge.removeFromParent()
-    pusher.removeFromParent()
-    puller.removeFromParent()
-    switch newCell.kind {
-    case .Blank: break
-    case .Belt: addChild(belt)
-    case .Bridge:
-      addChild(belt)
-      addChild(bridge)
-    case .PusherB:
-      addChild(belt)
-      addChild(pusher)
-      pusher.color = Globals.blueColor
-    case .PusherR:
-      addChild(belt)
-      addChild(pusher)
-      pusher.color = Globals.redColor
-    case .PusherG:
-      addChild(belt)
-      addChild(pusher)
-      pusher.color = Globals.greenColor
-    case .PusherY:
-      addChild(belt)
-      addChild(pusher)
-      pusher.color = Globals.yellowColor
-    case .PullerBR:
-      addChild(belt)
-      addChild(puller)
-      pullerLeft.color = Globals.blueColor
-      pullerRight.color = Globals.redColor
-    case .PullerRB:
-      addChild(belt)
-      addChild(puller)
-      pullerLeft.color = Globals.redColor
-      pullerRight.color = Globals.blueColor
-    case .PullerGY:
-      addChild(belt)
-      addChild(puller)
-      pullerLeft.color = Globals.greenColor
-      pullerRight.color = Globals.yellowColor
-    case .PullerYG:
-      addChild(belt)
-      addChild(puller)
-      pullerLeft.color = Globals.yellowColor
-      pullerRight.color = Globals.greenColor
-    }
-    switch newCell.direction {
-    case .North: zRotation = 0.0
-    case .East: zRotation = -PI/2
-    case .South: zRotation = PI
-    case .West: zRotation = PI/2
-    }
-    cell = newCell
-    nextCell = newCell
-  }  
 }

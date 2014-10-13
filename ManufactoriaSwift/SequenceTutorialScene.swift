@@ -32,7 +32,7 @@ class SequenceTutorialScene: GameScene {
     gridNode.grid[GridCoord(1,3)] = Cell(kind: .Belt, direction: .East)
     gridNode.grid[GridCoord(2,3)] = Cell(kind: .Belt, direction: .North)
     gridNode.grid[GridCoord(2,4)] = Cell(kind: .Belt, direction: .North)
-    for i in 0 ..< gridNode.grid.cells.count {gridNode.cellNodes[i].applyCell(gridNode.grid.cells[i])}
+    for i in 0 ..< gridNode.grid.cells.count {gridNode.cellNodes[i].changeCell(gridNode.grid.cells[i], animate: false)}
     
     var freeCoords: [GridCoord] = []
     var lockCoords: [GridCoord] = []

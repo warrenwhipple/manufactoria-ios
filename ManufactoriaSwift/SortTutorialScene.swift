@@ -27,7 +27,7 @@ class SortTutorialScene: GameScene {
     for i in 0 ..< gridNode.grid.cells.count {gridNode.grid.cells[i] = Cell()}
     gridNode.grid[GridCoord(1,0)] = Cell(kind: .Belt, direction: .North)
     gridNode.grid[GridCoord(1,1)] = Cell(kind: .PullerBR, direction: .North)
-    for i in 0 ..< gridNode.grid.cells.count {gridNode.cellNodes[i].applyCell(gridNode.grid.cells[i])}
+    for i in 0 ..< gridNode.grid.cells.count {gridNode.cellNodes[i].changeCell(gridNode.grid.cells[i], animate: false)}
     
     let freeCoords: [GridCoord] = [
       GridCoord(0,1),

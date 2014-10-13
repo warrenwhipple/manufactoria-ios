@@ -97,7 +97,7 @@ class GridNode: SKNode {
     for i in 0..<grid.space.columns {
       for j in 0..<grid.space.rows {
         self[GridCoord(i,j)].position = CGPoint(CGFloat(i) + 0.5, CGFloat(j) + 0.5)
-        self[GridCoord(i,j)].applyCell(grid[GridCoord(i,j)])
+        self[GridCoord(i,j)].changeCell(grid[GridCoord(i,j)], animate: false)
       }
     }
     
@@ -175,7 +175,7 @@ class GridNode: SKNode {
   func update(dt: NSTimeInterval, beltPercent: CGFloat) {
     clippedBeltTexture = SKTexture(rect: CGRect(x: 0, y: (1.0 - beltPercent) * 0.5, width: 1, height: 0.5), inTexture: beltTexture)
     for cellNode in cellNodes {
-      cellNode.update(dt, clippedBeltTexture: clippedBeltTexture)
+      cellNode.updateWithClippedBeltTexture(clippedBeltTexture)
     }
     liftedGridNode?.updateWithClippedBeltTexture(clippedBeltTexture)
     if !thinkNodes.isEmpty && (state == .Thinking || thinkCount > 0) {
@@ -251,7 +251,7 @@ class GridNode: SKNode {
             }
             grid[cellCoord] = liftedCell
             let cellNode = self[cellCoord]
-            cellNode.applyCell(liftedCell)
+            cellNode.changeCell(liftedCell, animate: true)
             cellNode.selectNode.alpha = 0.5
           }
         }
@@ -284,7 +284,7 @@ class GridNode: SKNode {
   func gridChanged() {
     var i = 0
     for cell in grid.cells {
-      cellNodes[i++].nextCell = cell
+      cellNodes[i++].changeCell(cell, animate: true)
     }
   }
     
@@ -323,7 +323,7 @@ class GridNode: SKNode {
             somethingIsSelected = true
             liftedGrid.cells[i] = grid.cells[i]
             grid.cells[i] = Cell()
-            cellNode.applyCell(Cell())
+            cellNode.changeCell(Cell(), animate: true)
             cellNode.isSelected = false
             cellNode.selectNode.alpha = 0
           }
@@ -383,7 +383,7 @@ class GridNode: SKNode {
         }
       }
       grid[editCoord] = cell
-      self[editCoord].nextCell = cell
+      self[editCoord].changeCell(cell, animate: true)
     }
   }
   
@@ -504,11 +504,11 @@ class GridNode: SKNode {
     
     if isEditCell {
       grid[editCoord] = editCell
-      self[editCoord].nextCell = editCell
+      self[editCoord].changeCell(editCell, animate: true)
     }
     if isTouchCell {
       grid[touchCoord] = touchCell
-      self[touchCoord].nextCell = touchCell
+      self[touchCoord].changeCell(touchCell, animate: true)
     }
     editCoord = touchCoord
     bridgeEditMemory = nil
