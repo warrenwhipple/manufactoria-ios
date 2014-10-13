@@ -22,7 +22,8 @@ class CellNode: SKNode {
   let enterExitArrow: SKSpriteNode?
   let shimmerNode: ShimmerNode
   var cell = Cell(kind: .Blank, direction: Direction.North)
-  var isSelected = false
+  var isSelected: Bool = false {didSet {if isSelected {pulseSelect()}}}
+  var selectPulseCountDown: NSTimeInterval = 0
   
   override init() {
     selectNode = SKSpriteNode()
@@ -42,6 +43,26 @@ class CellNode: SKNode {
     addChild(selectNode)
     addChild(shimmerNode)
     addChild(thinkNode)
+  }
+  
+  func update(dt: NSTimeInterval, clippedBeltTexture: SKTexture) {
+    belt?.texture = clippedBeltTexture
+    dyingBelt?.texture = clippedBeltTexture
+    bridge?.texture = clippedBeltTexture
+    dyingBridge?.texture = clippedBeltTexture
+    
+    if isSelected || selectPulseCountDown > 0 {
+      selectNode.alpha = min(0.5, selectNode.alpha + 2.5 * CGFloat(dt))
+    } else if selectNode.alpha > 0 {
+      selectNode.alpha = max(0, selectNode.alpha - 2.5 * CGFloat(dt))
+    }
+    if selectPulseCountDown > 0 {
+      selectPulseCountDown = max(0, selectPulseCountDown - dt)
+    }
+  }
+  
+  func pulseSelect() {
+    selectPulseCountDown = 0.2
   }
   
   func newBeltWithAnimate(animate: Bool) {
@@ -412,10 +433,4 @@ class CellNode: SKNode {
   class func sharedPullerHalfTexture() -> SKTexture {return pullerHalfTexture ?? SKTexture()}
   class func sharedEnterExitArrowTexture() -> SKTexture {return enterExitArrowTexture ?? SKTexture()}
   
-  func updateWithClippedBeltTexture(clippedBeltTexture: SKTexture) {
-    belt?.texture = clippedBeltTexture
-    dyingBelt?.texture = clippedBeltTexture
-    bridge?.texture = clippedBeltTexture
-    dyingBridge?.texture = clippedBeltTexture
-  }
 }

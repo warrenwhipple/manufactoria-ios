@@ -175,7 +175,7 @@ class GridNode: SKNode {
   func update(dt: NSTimeInterval, beltPercent: CGFloat) {
     clippedBeltTexture = SKTexture(rect: CGRect(x: 0, y: (1.0 - beltPercent) * 0.5, width: 1, height: 0.5), inTexture: beltTexture)
     for cellNode in cellNodes {
-      cellNode.updateWithClippedBeltTexture(clippedBeltTexture)
+      cellNode.update(dt, clippedBeltTexture: clippedBeltTexture)
     }
     liftedGridNode?.updateWithClippedBeltTexture(clippedBeltTexture)
     if !thinkNodes.isEmpty && (state == .Thinking || thinkCount > 0) {
@@ -364,6 +364,10 @@ class GridNode: SKNode {
         selectShouldUnselect = false
       }
       return
+    }
+    
+    if grid.space.contains(editCoord) && !coordIsLocked(editCoord) {
+      self[editCoord].isSelected = true
     }
   }
   
