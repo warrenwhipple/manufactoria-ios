@@ -377,7 +377,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, StatusNodeDelegate, Engine
   func undoEdit() {
     gridNode.editTouch = nil
     if levelData.undo() {
-      gridNode.gridChanged()
+      gridNode.changeCellNodesToMatchCellsWithAnimate(true)
       refreshUndoRedoButtonStatus()
     }
   }
@@ -385,7 +385,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, StatusNodeDelegate, Engine
   func redoEdit() {
     gridNode.editTouch = nil
     if levelData.redo() {
-      gridNode.gridChanged()
+      gridNode.changeCellNodesToMatchCellsWithAnimate(true)
       refreshUndoRedoButtonStatus()
     }
   }

@@ -281,25 +281,17 @@ class GridNode: SKNode {
     delegate.gridWasUnselected()
   }
   
-  func gridChanged() {
-    var i = 0
-    for cell in grid.cells {
-      cellNodes[i++].changeCell(cell, animate: true)
+  func changeCellNodesToMatchCellsWithAnimate(animate: Bool) {
+    for i in 0 ..< cellNodes.count {
+      let cell = grid.cells[i]
+      let cellNode = cellNodes[i]
+      if cell != cellNode.cell {
+        cellNode.changeCell(cell, animate: animate)
+        cellNode.pulseSelect()
+      }
     }
   }
     
-  func gridSelectionChanged() {
-    for j in 0 ..< grid.space.rows {
-      for i in 0 ..< grid.space.columns {
-        if self[GridCoord(i, j)].isSelected {
-          delegate.gridWasSelected()
-          return
-        }
-      }
-    }
-    delegate.gridWasUnselected()
-  }
-  
   func coordForTouch(touch: UITouch) -> GridCoord {
     let position = touch.locationInNode(wrapper)
     return GridCoord(Int(floor(position.x)), Int(floor(position.y)))
@@ -368,6 +360,11 @@ class GridNode: SKNode {
     
     if grid.space.contains(editCoord) && !coordIsLocked(editCoord) {
       self[editCoord].isSelected = true
+      if editMode == .Blank {
+        let cell = Cell()
+        grid[editCoord] = cell
+        self[editCoord].changeCell(cell, animate: true)
+      }
     }
   }
   
@@ -515,14 +512,20 @@ class GridNode: SKNode {
     
     if editMode == .SelectBox || editMode == .SelectCell {
       var i = 0
+      var someCellIsSelected = false
       for cellNode in cellNodes {
-        if cellNode.isSelected && grid.cells[i].kind == .Blank {
-          cellNode.isSelected = false
+        if cellNode.isSelected {
+          if grid.cells[i].kind == .Blank {
+            cellNode.isSelected = false
+          } else {
+            someCellIsSelected = true
+          }
         }
         i++
       }
       editTouch = nil
-      gridSelectionChanged()
+      if someCellIsSelected {delegate.gridWasSelected()}
+      else {delegate.gridWasUnselected()}
       return
     }
     

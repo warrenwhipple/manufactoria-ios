@@ -22,7 +22,7 @@ class CellNode: SKNode {
   let enterExitArrow: SKSpriteNode?
   let shimmerNode: ShimmerNode
   var cell = Cell(kind: .Blank, direction: Direction.North)
-  var isSelected: Bool = false {didSet {if isSelected {pulseSelect()}}}
+  var isSelected: Bool = false {didSet {if isSelected && !oldValue {pulseSelect()}}}
   var selectPulseCountDown: NSTimeInterval = 0
   
   override init() {
