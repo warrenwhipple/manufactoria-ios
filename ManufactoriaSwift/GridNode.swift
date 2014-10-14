@@ -29,7 +29,8 @@ enum EditMode {
 }
 
 protocol GridNodeDelegate: class {
-  func gridWasEdited()
+  func editGroupWasCompleted()
+  func cellWasEdited()
   func gridWasSelected()
   func gridWasUnselected()
   func liftedGridWasRemovedWithCancel()
@@ -227,38 +228,44 @@ class GridNode: SKNode {
         cellNode.isSelected = false
       }
     } else {
-    let settingDownGridPoint = wrapper.convertPoint(liftedGridNode!.wrapper.position, fromNode: liftedGridNode!)
-    let settingDownGridOrigin = GridCoord(Int(round(settingDownGridPoint.x)), Int(round(settingDownGridPoint.y)))
-    let liftedGrid = liftedGridNode!.grid
-    for i in 0 ..< grid.space.columns {
-      for j in 0 ..< grid.space.rows {
-        let cellCoord = GridCoord(i, j)
-        var liftedCellCoord = cellCoord - settingDownGridOrigin
-        switch liftedGridNode!.direction {
-        case .North: break
-        case .East: liftedCellCoord = GridCoord(-liftedCellCoord.j - 1, liftedCellCoord.i)
-        case .South: liftedCellCoord = GridCoord(-liftedCellCoord.i - 1, -liftedCellCoord.j - 1)
-        case .West: liftedCellCoord = GridCoord(liftedCellCoord.j, -liftedCellCoord.i - 1)
-        }
-        if liftedGrid.space.contains(liftedCellCoord) {
-          var liftedCell = liftedGrid[liftedCellCoord]
-          if liftedCell.kind != .Blank {
-            switch liftedGridNode!.direction {
-            case .North: break
-            case .East: liftedCell.direction = liftedCell.direction.cw()
-            case .South: liftedCell.direction = liftedCell.direction.flip()
-            case .West: liftedCell.direction = liftedCell.direction.ccw()
+      let settingDownGridPoint = wrapper.convertPoint(liftedGridNode!.wrapper.position, fromNode: liftedGridNode!)
+      let settingDownGridOrigin = GridCoord(Int(round(settingDownGridPoint.x)), Int(round(settingDownGridPoint.y)))
+      let liftedGrid = liftedGridNode!.grid
+      var someCellWasEdited = false
+      for i in 0 ..< grid.space.columns {
+        for j in 0 ..< grid.space.rows {
+          let cellCoord = GridCoord(i, j)
+          var liftedCellCoord = cellCoord - settingDownGridOrigin
+          switch liftedGridNode!.direction {
+          case .North: break
+          case .East: liftedCellCoord = GridCoord(-liftedCellCoord.j - 1, liftedCellCoord.i)
+          case .South: liftedCellCoord = GridCoord(-liftedCellCoord.i - 1, -liftedCellCoord.j - 1)
+          case .West: liftedCellCoord = GridCoord(liftedCellCoord.j, -liftedCellCoord.i - 1)
+          }
+          if liftedGrid.space.contains(liftedCellCoord) {
+            var liftedCell = liftedGrid[liftedCellCoord]
+            if liftedCell.kind != .Blank {
+              switch liftedGridNode!.direction {
+              case .North: break
+              case .East: liftedCell.direction = liftedCell.direction.cw()
+              case .South: liftedCell.direction = liftedCell.direction.flip()
+              case .West: liftedCell.direction = liftedCell.direction.ccw()
+              }
+              grid[cellCoord] = liftedCell
+              let cellNode = self[cellCoord]
+              cellNode.changeCell(liftedCell, animate: true)
+              cellNode.selectNode.alpha = 0.5
+              someCellWasEdited = true
             }
-            grid[cellCoord] = liftedCell
-            let cellNode = self[cellCoord]
-            cellNode.changeCell(liftedCell, animate: true)
-            cellNode.selectNode.alpha = 0.5
           }
         }
       }
-    }
-    liftedGridNode?.removeFromParent()
-    liftedGridNode = nil
+      liftedGridNode?.removeFromParent()
+      liftedGridNode = nil
+      if someCellWasEdited {
+        delegate.cellWasEdited()
+        delegate.editGroupWasCompleted()
+      }
     }
     delegate.gridWasUnselected()
   }
@@ -282,14 +289,17 @@ class GridNode: SKNode {
   }
   
   func changeCellNodesToMatchCellsWithAnimate(animate: Bool) {
+    var someCellWasEdited = false
     for i in 0 ..< cellNodes.count {
       let cell = grid.cells[i]
       let cellNode = cellNodes[i]
       if cell != cellNode.cell {
         cellNode.changeCell(cell, animate: animate)
         cellNode.pulseSelect()
+        someCellWasEdited = true
       }
     }
+    if someCellWasEdited {delegate.cellWasEdited()}
   }
     
   func coordForTouch(touch: UITouch) -> GridCoord {
@@ -326,7 +336,8 @@ class GridNode: SKNode {
           liftedGridNode = LiftedGridNode(grid: liftedGrid)
           liftedGridOrigin = GridCoord(0, 0)
           wrapper.addChild(liftedGridNode!)
-          delegate.gridWasEdited()
+          delegate.cellWasEdited()
+          delegate.editGroupWasCompleted()
         }
       }
       if liftedGridNode != nil {
@@ -364,6 +375,7 @@ class GridNode: SKNode {
         let cell = Cell()
         grid[editCoord] = cell
         self[editCoord].changeCell(cell, animate: true)
+        delegate.cellWasEdited()
       }
     }
   }
@@ -481,14 +493,18 @@ class GridNode: SKNode {
       }
     }
     
-    if isEditCell {
+    var someCellWasEdited = false
+    if isEditCell && grid[editCoord] != editCell {
       grid[editCoord] = editCell
       self[editCoord].changeCell(editCell, animate: true)
+      someCellWasEdited = true
     }
-    if isTouchCell {
+    if isTouchCell && grid[touchCoord] != touchCell {
       grid[touchCoord] = touchCell
       self[touchCoord].changeCell(touchCell, animate: true)
+      someCellWasEdited = true
     }
+    if someCellWasEdited {delegate.cellWasEdited()}
     editCoord = touchCoord
   }
   
@@ -543,13 +559,16 @@ class GridNode: SKNode {
             cell.kind = editModeCellKind
           }
         }
-        grid[editCoord] = cell
-        self[editCoord].changeCell(cell, animate: true)
+        if grid[editCoord] != cell {
+          grid[editCoord] = cell
+          self[editCoord].changeCell(cell, animate: true)
+          delegate.cellWasEdited()
+        }
       }
     }
     
     editTouch = nil
-    delegate.gridWasEdited()
+    delegate.editGroupWasCompleted()
   }
   
   override func touchesCancelled(touches: NSSet, withEvent event: UIEvent) {

@@ -285,7 +285,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, StatusNodeDelegate, Engine
     robotState = .Entering
     robotCoord = levelData.grid.startCoord + 1
     lastRobotCoord = levelData.grid.startCoord
-    robotNode = SKSpriteNode("robotOn64")
+    robotNode = SKSpriteNode("robotOn")
     //robotNode?.color = Globals.highlightColor
     robotNode?.position = CGPoint(CGFloat(lastRobotCoord.i) + 0.5, CGFloat(lastRobotCoord.j) + 0.5)
     robotNode?.zPosition = 2
@@ -349,7 +349,9 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, StatusNodeDelegate, Engine
   
   // MARK: - GridNodeDelegate Functions
   
-  func gridWasEdited() {
+  func cellWasEdited() {}
+  
+  func editGroupWasCompleted() {
     if levelData.editCompleted() {
       refreshUndoRedoButtonStatus()
     }

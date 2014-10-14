@@ -86,6 +86,7 @@ class BeltTutorialScene: GameScene {
     toolbarNode.robotButton.runAction(SKAction.fadeAlphaTo(0, duration: 0.4), withKey: "fade")
   }
   
+  /*
   override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
     super.touchesBegan(touches, withEvent: event)
     if state == State.Editing {
@@ -97,6 +98,14 @@ class BeltTutorialScene: GameScene {
     super.touchesEnded(touches, withEvent: event)
     if state == State.Editing && checkTutorialGrid() {
       showTestButton()
+    }
+  }
+  */
+  
+  override func cellWasEdited() {
+    if state == State.Editing {
+      if checkTutorialGrid() {showTestButton()}
+      else {hideTestButton()}
     }
   }
 }

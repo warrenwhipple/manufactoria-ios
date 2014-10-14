@@ -31,7 +31,7 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
   let redoButton = Button(iconOffNamed: "undoIconOff", iconOnNamed: "undoIconOn")
   let cancelButton = Button(iconOffNamed: "cancelIconOff", iconOnNamed: "cancelIconOn")
   let confirmButton = Button(iconOffNamed: "confirmIconOff", iconOnNamed: "confirmIconOn")
-  let robotButton = Button(iconOffNamed: "robotOff64", iconOnNamed: "robotOn64")
+  let robotButton = Button(iconOffNamed: "robotOff", iconOnNamed: "robotOn")
   let selectBoxMoveButton = SelectBoxMoveButton()
   let quickButtons: [Button]
   let drawToolButtons, selectionToolButtons: [ToolButton]
