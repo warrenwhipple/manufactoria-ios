@@ -10,11 +10,10 @@ import SpriteKit
 
 class SequenceTutorialScene: GameScene {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  var testButtonIsHidden = true
-  
+  var tutorialAction1, tutorialAction2: SKAction!
   init(size: CGSize) {
     super.init(size: size, levelNumber: 2)
-    statusNode.instructionsLabel.text = "Colors come in sequences.\n\nAccept #b#r#b.\nReject everything else."
+    statusNode.instructionsLabel.text = "Accept the sequence #b#r#b.\nReject everything else."
     statusNode.leftArrowWrapper.removeFromParent()
     statusNode.rightArrowWrapper.removeFromParent()
     toolbarNode.userInteractionEnabled = false
@@ -24,6 +23,8 @@ class SequenceTutorialScene: GameScene {
     toolbarNode.rightArrowWrapper.removeFromParent()
     toolbarNode.drawToolButtons[0].removeFromParent()
     toolbarNode.drawToolButtons[1].removeFromParent()
+    toolbarNode.drawToolButtons[2].touchUpInsideClosure!()
+    gridNode.animateThinking = false
     
     for i in 0 ..< gridNode.grid.cells.count {gridNode.grid.cells[i] = Cell()}
     gridNode.grid[GridCoord(2,0)] = Cell(kind: .Belt, direction: .North)
@@ -34,36 +35,27 @@ class SequenceTutorialScene: GameScene {
     gridNode.grid[GridCoord(2,4)] = Cell(kind: .Belt, direction: .North)
     for i in 0 ..< gridNode.grid.cells.count {gridNode.cellNodes[i].changeCell(gridNode.grid.cells[i], animate: false)}
     
-    var freeCoords: [GridCoord] = []
     var lockCoords: [GridCoord] = []
-    
     for i in 0 ..< gridNode.grid.space.columns {
       for j in 0 ..< gridNode.grid.space.rows {
         let coord = GridCoord(i,j)
-        if coord == GridCoord(2,1) || coord == GridCoord(0,1) || coord == GridCoord(0,3) {
-          freeCoords.append(coord)
-        } else {
-          lockCoords.append(coord)
-        }
+        if coord != GridCoord(2,1) && coord != GridCoord(0,1) {lockCoords.append(coord)}
       }
     }
-    
     gridNode.lockCoords(lockCoords)
     
-    for coord in freeCoords {
-      let shimmerNode = gridNode[coord].shimmerNode
-      shimmerNode.color = Globals.highlightColor
-      shimmerNode.alphaMin = 0.05
-      shimmerNode.alphaMax = 0.25
-      shimmerNode.shimmerDurationMax = 2
-      shimmerNode.startMidShimmer()
-    }
-    
-    for coord in lockCoords {
-      gridNode[coord].shimmerNode.removeFromParent()
-    }
-    
-    toolbarNode.drawToolButtons[2].touchUpInsideClosure!()
+    let pulse1 = gridNode[GridCoord(2,1)]
+    let pulse2 = gridNode[GridCoord(0,1)]
+    let pulse3 = gridNode[GridCoord(0,3)]
+    tutorialAction1 = SKAction.repeatActionForever(SKAction.sequence([
+      SKAction.waitForDuration(1.5),
+      SKAction.runBlock({pulse1.selectPulseCountDown = 0.5; pulse2.selectPulseCountDown = 0.5})
+      ]))
+    tutorialAction2 = SKAction.repeatActionForever(SKAction.sequence([
+      SKAction.waitForDuration(1.5),
+      SKAction.runBlock({pulse3.selectPulseCountDown = 0.5})
+      ]))
+    runAction(tutorialAction1, withKey: "pulse")
   }
   
   override func fitToSize() {

@@ -58,6 +58,7 @@ class GridNode: SKNode {
   var moveTouchBeganTimeStamp: NSTimeInterval = 0
   var moveTouchBeganPoint = CGPointZero
   var touchDidLeaveFirstCell = false
+  var animateThinking = true
   
   subscript(coord: GridCoord) -> CellNode {
     get {
@@ -179,7 +180,7 @@ class GridNode: SKNode {
       cellNode.update(dt, clippedBeltTexture: clippedBeltTexture)
     }
     liftedGridNode?.updateWithClippedBeltTexture(clippedBeltTexture)
-    if !thinkNodes.isEmpty && (state == .Thinking || thinkCount > 0) {
+    if animateThinking && !thinkNodes.isEmpty && (state == .Thinking || thinkCount > 0) {
       thinkCount--
       if thinkIndex < 0 {
         thinkNodes = thinkNodes.shuffled()
@@ -213,7 +214,13 @@ class GridNode: SKNode {
     }
     for coord in coords {
       locks?[grid.space.columns * coord.j + coord.i] = true
-      self[coord].shimmerNode.stopShimmer()
+    }
+  }
+  
+  func unlockCoords(coords: [GridCoord]) {
+    if locks == nil {return}
+    for coord in coords {
+      locks?[grid.space.columns * coord.j + coord.i] = false
     }
   }
   

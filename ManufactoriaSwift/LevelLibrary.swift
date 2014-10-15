@@ -12,9 +12,12 @@ typealias GenerationFunction = (Int) -> ([String])
 typealias AcceptFunction = (String) -> (Bool)
 typealias TransformFunction = (String) -> (String)
 
-let PassComments = ["Your factory is satisfactory."]
-let FailComments = ["Unsatisfactory.", "Incorrect.", "Sorry.", "Fail."]
-let LoopComments = ["Out of patience."]
+var PassCommentCounter = 0
+var FailCommentCounter = 0
+var LoopCommentCounter = 0
+let PassComments = ["sees no flaw!", "approves!", "is pleased!", "finds this acceptable!", "is pleasantly surprised!"]
+let FailComments = ["sees all flaws!", "is not happy!", "finds this disturbing!", "is displeased by failure!", "expects better than this!", "is not amused!"]
+let LoopComments = ["is out of patience!", "does not like waiting!", "is DIV BY ZERO OVERFLOW", "is getting bored!", "has fallen asleep!"]
 
 struct LevelSetup {
   let tag: String
@@ -125,7 +128,7 @@ private func toStr(var n: Int) -> String {
 var LevelLibrary: [LevelSetup] = [
   
   LevelSetup(
-    tag: "all",
+    tag: "t1",
     instructions: "Accept everything.",
     space: GridSpace(3),
     editModes: [],
@@ -135,8 +138,8 @@ var LevelLibrary: [LevelSetup] = [
   ),
   
   LevelSetup(
-    tag: "B",
-    instructions: "Accept #b.\nReject #r.",
+    tag: "t2",
+    instructions: "Accept #b. Reject #r.",
     space: GridSpace(3),
     editModes: [.PullerBR],
     exemplars: ["r", "b"],
@@ -145,8 +148,8 @@ var LevelLibrary: [LevelSetup] = [
   ),
   
   LevelSetup(
-    tag: "BRB...    ",
-    instructions: "Accept if it begins #b#r#b.",
+    tag: "t3",
+    instructions: "Accept if begins #b#r#b.",
     space: GridSpace(5),
     editModes: [.PullerBR],
     exemplars: ["brr", "brb"],
@@ -159,7 +162,7 @@ var LevelLibrary: [LevelSetup] = [
   
   LevelSetup(
     tag: "no R",
-    instructions: "Reject any #r anywhere.",
+    instructions: "Reject any #r.",
     space: GridSpace(3),
     editModes: [.PullerBR],
     exemplars: ["bbrb", "bbbb"],
@@ -173,7 +176,7 @@ var LevelLibrary: [LevelSetup] = [
   
   LevelSetup(
     tag: ">= 3B",
-    instructions: "Accept if there are\nthree or more #b.",
+    instructions: "Accept if three or more #b.",
     space: GridSpace(5),
     editModes: [.PullerBR],
     exemplars: ["rbrbr", "brbrb"],
@@ -187,7 +190,7 @@ var LevelLibrary: [LevelSetup] = [
   
   LevelSetup(
     tag: "BRBBR",
-    instructions: "Write the sequence #b#r#b#b#r.",
+    instructions: "Write #b#r#b#b#r.",
     space: GridSpace(5),
     editModes: [.PusherB, .PusherR],
     exemplars: [""],

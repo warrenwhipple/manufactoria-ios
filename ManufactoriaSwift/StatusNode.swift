@@ -21,7 +21,8 @@ class StatusNode: SwipeNode {
   let menuButton = Button(iconOffNamed: "menuIconOff", iconOnNamed: "menuIconOn", labelText: "menu")
   let instructionsPage = SKNode()
   let instructionsLabel = SmartLabel()
-  let tapeLabel = BreakingLabel()
+  let engineLabel = SKLabelNode()
+  let tapeLabel = SKLabelNode()
   let tapeNode = TapeNode()
   let instructions: String
   let failPage = SKNode()
@@ -30,6 +31,12 @@ class StatusNode: SwipeNode {
     self.instructions = instructions
     
     super.init(pages: [optionsPage, instructionsPage])
+    
+    engineLabel.fontMedium()
+    engineLabel.fontMedium()
+    engineLabel.fontColor = Globals.strokeColor
+    engineLabel.alpha = 0
+    engineLabel.text = "The malevolence engine"
     
     tapeLabel.fontMedium()
     tapeLabel.fontColor = Globals.strokeColor
@@ -49,9 +56,11 @@ class StatusNode: SwipeNode {
   
   override func fitToSize() {
     super.fitToSize()
+    let labelOffset = SKTexture(imageNamed: "dot").size().height * 0.75
     menuButton.position.y = roundPix(Globals.mediumEm)
     let yOffset = roundPix(size.height / 6)
-    tapeLabel.position.y = yOffset
+    engineLabel.position.y = yOffset + labelOffset
+    tapeLabel.position.y = yOffset - labelOffset
     tapeNode.position.y = -yOffset
     tapeNode.width = size.width
   }
@@ -61,13 +70,16 @@ class StatusNode: SwipeNode {
       if state == oldValue {return}
       switch state {
       case .Editing:
+        engineLabel.runAction(SKAction.sequence([
+          SKAction.fadeAlphaTo(0, duration: 0.2),
+          SKAction.removeFromParent()
+          ]), withKey: "fade")
         tapeLabel.runAction(SKAction.sequence([
           SKAction.fadeAlphaTo(0, duration: 0.2),
           SKAction.removeFromParent()
           ]), withKey: "fade")
         tapeNode.removeFromParent()
         tapeNode.unloadTape()
-        if failPage.parent == nil {addPageToRight(failPage)}
         goToIndexWithoutSnap(2)
         wrapper.alpha = 0
         wrapper.runAction(SKAction.sequence([
@@ -82,15 +94,18 @@ class StatusNode: SwipeNode {
           SKAction.fadeAlphaTo(0, duration: 0.2),
           SKAction.removeFromParent()
           ]), withKey: "fade")
-        if tapeNode.parent == nil {
-          addChild(tapeNode)
+        if engineLabel.parent == nil {
+          engineLabel.alpha = 0
+          addChild(engineLabel)
         }
+        engineLabel.runAction(SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")
       case .Testing:
         if tapeLabel.parent == nil {
           tapeLabel.alpha = 0
           addChild(tapeLabel)
         }
         tapeLabel.runAction(SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")
+        if tapeNode.parent == nil {addChild(tapeNode)}
       case .Congratulating:
         tapeNode.unloadTape()
       }
@@ -106,7 +121,7 @@ class StatusNode: SwipeNode {
     case .FailLoop:
       if result.input == "" {
         let label = SmartLabel()
-        label.text = "The blank sequence caused a loop."
+        label.text = "The blank sequence\ncaused a loop."
         failPage.addChild(label)
       } else {
         let tape = FailTapeNode(tape: result.input)
@@ -120,7 +135,7 @@ class StatusNode: SwipeNode {
     case .FailShouldAccept:
       if result.input == "" {
         let label = SmartLabel()
-        label.text = "The blank sequence should be accepted."
+        label.text = "The blank sequence\nshould be accepted."
         failPage.addChild(label)
       } else {
         let tape = FailTapeNode(tape: result.input)
@@ -134,7 +149,7 @@ class StatusNode: SwipeNode {
     case .FailShouldReject:
       if result.input == "" {
         let label = SmartLabel()
-        label.text = "The blank sequence should be rejected."
+        label.text = "The blank sequence\nshould be rejected."
         failPage.addChild(label)
       } else {
         let tape = FailTapeNode(tape: result.input)
@@ -149,7 +164,7 @@ class StatusNode: SwipeNode {
       let tapeOut = FailTapeNode(tape: result.correctOutput ?? "")
       if result.input == "" {
         let label = SmartLabel()
-        label.text = "The blank sequence should be transformed to"
+        label.text = "The blank sequence\nshould be transformed to"
         label.position.y = lineHeight * 0.5
         failPage.addChild(label)
         tapeOut.position.y = -lineHeight * 0.5
@@ -166,7 +181,7 @@ class StatusNode: SwipeNode {
     case .FailDroppedTransform:
       if result.input == "" {
         let label = SmartLabel()
-        label.text = "The blank sequence should not be dropped."
+        label.text = "The blank sequence\nshould not be dropped."
         failPage.addChild(label)
       } else {
         let tape = FailTapeNode(tape: result.input)
@@ -178,5 +193,6 @@ class StatusNode: SwipeNode {
         failPage.addChild(label)
       }
     }
+    if failPage.parent == nil {addPageToRight(failPage)}
   }
 }

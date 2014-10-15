@@ -54,7 +54,7 @@ class CellNode: SKNode {
     if isSelected || selectPulseCountDown > 0 {
       selectNode.alpha = min(0.5, selectNode.alpha + 2.5 * CGFloat(dt))
     } else if selectNode.alpha > 0 {
-      selectNode.alpha = max(0, selectNode.alpha - 2.5 * CGFloat(dt))
+      selectNode.alpha = max(0, selectNode.alpha - 1.25 * CGFloat(dt))
     }
     if selectPulseCountDown > 0 {
       selectPulseCountDown = max(0, selectPulseCountDown - dt)

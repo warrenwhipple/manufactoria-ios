@@ -10,11 +10,11 @@ import SpriteKit
 
 class SortTutorialScene: GameScene {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  var testButtonIsHidden = true
+  var tutorialAction: SKAction!
   
   init(size: CGSize) {
     super.init(size: size, levelNumber: 1)
-    statusNode.instructionsLabel.text = "Colors can be sorted.\n\nReject #r, dump it on the floor.\nAccept #b, send it to the exit."
+    statusNode.instructionsLabel.text = "Reject #r. Accept #b.\n\n#r to the floor.\n#b to the exit."
     statusNode.leftArrowWrapper.removeFromParent()
     statusNode.rightArrowWrapper.removeFromParent()
     toolbarNode.userInteractionEnabled = false
@@ -23,41 +23,35 @@ class SortTutorialScene: GameScene {
     toolbarNode.leftArrowWrapper.removeFromParent()
     toolbarNode.rightArrowWrapper.removeFromParent()
     for button in toolbarNode.drawToolButtons {button.removeFromParent()}
+    gridNode.animateThinking = false
     
     for i in 0 ..< gridNode.grid.cells.count {gridNode.grid.cells[i] = Cell()}
-    gridNode.grid[GridCoord(1,0)] = Cell(kind: .Belt, direction: .North)
-    gridNode.grid[GridCoord(1,1)] = Cell(kind: .PullerBR, direction: .North)
+    gridNode.grid[GridCoord(1,0)] = Cell(kind: .PullerBR, direction: .North)
     for i in 0 ..< gridNode.grid.cells.count {gridNode.cellNodes[i].changeCell(gridNode.grid.cells[i], animate: false)}
     
-    let freeCoords: [GridCoord] = [
-      GridCoord(0,1),
-      GridCoord(0,2),
-      GridCoord(1,2)
-    ]
-
-    let lockCoords: [GridCoord] = [
-      GridCoord(0,0),
+    gridNode.lockCoords([
       GridCoord(1,0),
       GridCoord(1,1),
       GridCoord(2,0),
       GridCoord(2,1),
       GridCoord(2,2)
-    ]
-
-    gridNode.lockCoords(lockCoords)
+      ])
     
-    for coord in freeCoords {
-      let shimmerNode = gridNode[coord].shimmerNode
-      shimmerNode.color = Globals.highlightColor
-      shimmerNode.alphaMin = 0.05
-      shimmerNode.alphaMax = 0.25
-      shimmerNode.shimmerDurationMax = 2
-      shimmerNode.startMidShimmer()
-    }
-    
-    for coord in lockCoords {
-      gridNode[coord].shimmerNode.removeFromParent()
-    }
+    let pulse1 = gridNode[GridCoord(0,0)]
+    let pulse2 = gridNode[GridCoord(0,1)]
+    let pulse3 = gridNode[GridCoord(0,2)]
+    let pulse4 = gridNode[GridCoord(1,2)]
+    tutorialAction = SKAction.repeatActionForever(SKAction.sequence([
+      SKAction.waitForDuration(2),
+      SKAction.runBlock({pulse1.selectPulseCountDown = 0.4}),
+      SKAction.waitForDuration(0.2),
+      SKAction.runBlock({pulse2.selectPulseCountDown = 0.4}),
+      SKAction.waitForDuration(0.2),
+      SKAction.runBlock({pulse3.selectPulseCountDown = 0.4}),
+      SKAction.waitForDuration(0.2),
+      SKAction.runBlock({pulse4.selectPulseCountDown = 0.4})
+      ]))
+    runAction(tutorialAction, withKey: "pulse")
   }
   
   override func fitToSize() {
@@ -68,14 +62,29 @@ class SortTutorialScene: GameScene {
   
   override var state: State {
     didSet {
-      statusNode.tapeNode.removeFromParent()
-      statusNode.tapeLabel.position.y = 0
-      if state == State.Editing {
-        statusNode.instructionsLabel.text = "Reject #r, dump it on the floor.\nAccept #b, send it to the exit."
+      switch state {
+      case .Editing:
+        statusNode.instructionsLabel.text = "#b to the exit."
         statusNode.goToIndexWithoutSnap(1)
         toolbarNode.robotButton.position.y = 0
+        runAction(tutorialAction, withKey: "pulse")
+      case .Thinking:
+        removeActionForKey("pulse")
+      case .Testing:
+        statusNode.tapeLabel.removeFromParent()
+        statusNode.tapeNode.removeFromParent()
+        statusNode.tapeLabel.position.y = 0
+      case .Congratulating: break
       }
     }
+  }
+  
+  override func gridTestFailedWithResult(result: TapeTestResult) {
+    tapeTestResults = [
+      TapeTestResult(input: "r", output: nil, correctOutput: nil, kind: .Pass),
+      result
+    ]
+    state = .Testing
   }
   
   override func loadTape(i: Int) {

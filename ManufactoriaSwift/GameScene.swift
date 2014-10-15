@@ -267,6 +267,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, StatusNodeDelegate, Engine
   }
   
   func loadTape(i: Int) {
+    removeActionForKey("skip")
     robotNode?.runAction(SKAction.sequence([
       SKAction.fadeAlphaTo(0, duration: 0.5),
       SKAction.removeFromParent()
@@ -307,23 +308,16 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, StatusNodeDelegate, Engine
 
   // MARK: - StatusNodeDelegate Functions
   
-  func testButtonPressed() {
-    levelData.saveWithLevelNumber(levelNumber)
-    state = .Thinking
-  }
-  
   func menuButtonPressed() {
     levelData.saveWithLevelNumber(levelNumber)
     transitionToMenuScene()
   }
   
-  func nextButtonPressed() {
-    transitionToGameSceneWithLevelNumber(levelNumber + 1)
-  }
-  
   // MARK: - EngineDelegate Functions
   
   func gridTestPassed() {
+    if PassCommentCounter >= PassComments.count {PassCommentCounter = 0}
+    statusNode.tapeLabel.text = PassComments[PassCommentCounter++]
     statusNode.tapeLabel.text = PassComments[Int(arc4random_uniform(UInt32(PassComments.count)))]
     statusNode.tapeLabel.runAction(SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")
     tapeTestResults = []
@@ -340,7 +334,13 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, StatusNodeDelegate, Engine
   }
   
   func gridTestFailedWithResult(result: TapeTestResult) {
-    statusNode.tapeLabel.text = FailComments[Int(arc4random_uniform(UInt32(FailComments.count)))]
+    if result.kind == TapeTestResult.Kind.FailLoop {
+      if LoopCommentCounter >= LoopComments.count {LoopCommentCounter = 0}
+      statusNode.tapeLabel.text = LoopComments[LoopCommentCounter++]
+    } else {
+      if FailCommentCounter >= FailComments.count {FailCommentCounter = 0}
+      statusNode.tapeLabel.text = FailComments[FailCommentCounter++]
+    }
     statusNode.tapeLabel.runAction(SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")
     statusNode.resetFailPageForTestResult(result)
     tapeTestResults = [result]
@@ -370,6 +370,11 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, StatusNodeDelegate, Engine
   }
   
   // MARK: - ToolbarNodeDelegate Functions
+  
+  func testButtonPressed() {
+    levelData.saveWithLevelNumber(levelNumber)
+    state = .Thinking
+  }
   
   var editMode: EditMode {
     get {return gridNode.editMode}
@@ -437,8 +442,17 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, StatusNodeDelegate, Engine
         SKAction.fadeAlphaTo(0, duration: 0.5),
         SKAction.removeFromParent()
         ]))
-      runAction(SKAction.waitForDuration(1), completion: {[weak self] in self!.loadNextTape()})
+      runAction(SKAction.sequence([
+        SKAction.waitForDuration(1),
+        SKAction.runBlock({[unowned self] in self.loadNextTape()})
+        ]), withKey: "skip")
     }
+  }
+  
+  // MARK: - CongratsMenuDelegate Function
+  
+  func nextButtonPressed() {
+    transitionToGameSceneWithLevelNumber(levelNumber + 1)
   }
   
   // MARK: - Touch Delegate Functions
