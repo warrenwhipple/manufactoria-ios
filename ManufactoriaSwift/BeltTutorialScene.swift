@@ -28,6 +28,9 @@ class BeltTutorialScene: GameScene {
     toolbarNode.robotButton.enableClosure = nil
     toolbarNode.robotButton.userInteractionEnabled = false
     toolbarNode.robotButton.alpha = 0
+    speedControlNode.backButton.removeFromParent()
+    speedControlNode.slowerButton.removeFromParent()
+    speedControlNode.skipButton.removeFromParent()
     gridNode.animateThinking = false
     
     for i in 0 ..< gridNode.grid.cells.count {
@@ -61,7 +64,7 @@ class BeltTutorialScene: GameScene {
   override func fitToSize() {
     super.fitToSize()
     toolbarNode.robotButton.position.y = 0
-    statusNode.tapeLabel.position.y = 0
+    speedControlNode.fasterButton.position.x = 0
   }
   
   override var state: State {
@@ -71,10 +74,10 @@ class BeltTutorialScene: GameScene {
         runAction(tutorialAction, withKey: "pulse")
       case .Thinking:
         removeActionForKey("pulse")
+        statusNode.engineLabel.removeFromParent()
       case .Testing:
         statusNode.tapeLabel.removeFromParent()
         statusNode.tapeNode.removeFromParent()
-        speedControlNode.removeFromParent()
       case .Congratulating: break
       }
     }

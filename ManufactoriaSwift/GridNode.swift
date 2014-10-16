@@ -224,6 +224,14 @@ class GridNode: SKNode {
     }
   }
   
+  func lockAllCoords() {
+    locks = [Bool](count: grid.cells.count, repeatedValue: true)
+  }
+  
+  func unlockAllCoords() {
+    locks = nil
+  }
+  
   func coordIsLocked(coord: GridCoord) -> Bool {
     if locks == nil {return false}
     return locks![grid.space.columns * coord.j + coord.i]

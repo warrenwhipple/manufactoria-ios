@@ -57,7 +57,6 @@ class SortTutorialScene: GameScene {
   override func fitToSize() {
     super.fitToSize()
     toolbarNode.robotButton.position.y = 0
-    statusNode.tapeLabel.position.y = 0
   }
   
   override var state: State {
@@ -66,10 +65,10 @@ class SortTutorialScene: GameScene {
       case .Editing:
         statusNode.instructionsLabel.text = "#b to the exit."
         statusNode.goToIndexWithoutSnap(1)
-        toolbarNode.robotButton.position.y = 0
         runAction(tutorialAction, withKey: "pulse")
       case .Thinking:
         removeActionForKey("pulse")
+        statusNode.engineLabel.removeFromParent()
       case .Testing:
         statusNode.tapeLabel.removeFromParent()
         statusNode.tapeNode.removeFromParent()

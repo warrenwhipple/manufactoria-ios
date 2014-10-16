@@ -16,7 +16,7 @@ var PassCommentCounter = 0
 var FailCommentCounter = 0
 var LoopCommentCounter = 0
 let PassComments = ["sees no flaw!", "approves!", "is pleased!", "finds this acceptable!", "is pleasantly surprised!"]
-let FailComments = ["sees all flaws!", "is not happy!", "finds this disturbing!", "is displeased by failure!", "expects better than this!", "is not amused!"]
+let FailComments = ["sees all flaws!", "is not happy!", "finds this disturbing!", "is displeased by failure!", "expects better than this!", "is not amused!", "is unimpressed!"]
 let LoopComments = ["is out of patience!", "does not like waiting!", "is DIV BY ZERO OVERFLOW", "is getting bored!", "has fallen asleep!"]
 
 struct LevelSetup {
