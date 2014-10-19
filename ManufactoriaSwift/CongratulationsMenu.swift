@@ -17,20 +17,18 @@ class CongratulationsMenu: SKNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   
   weak var delegate: CongratulationsMenuDelegate!
-  let menuButton = Button(iconOffNamed: "menuIconOff", iconOnNamed: "menuIconOn", labelText: "menu")
-  let nextButton = Button(iconOffNamed: "nextIconOff", iconOnNamed: "nextIconOn", labelText: "next")
+  let menuButton = Button(text: "continue", fixedWidth: Globals.mediumEm * 8)
 
   override init() {
     super.init()
     addChild(menuButton)
     menuButton.touchUpInsideClosure = {[unowned self] in self.delegate.menuButtonPressed()}
-    addChild(nextButton)
-    nextButton.touchUpInsideClosure = {[unowned self] in self.delegate.nextButtonPressed()}
   }
   
   var size: CGSize = CGSizeZero {didSet {if size != oldValue {fitToSize()}}}
   
   func fitToSize() {
+    /*
     let xPositions = distributionForChildren(count: 2, childSize: Globals.iconSpan, parentSize: size.width)
     let spacing = xPositions[1] - xPositions[0]
     let touchSize = CGSize(spacing)
@@ -40,5 +38,6 @@ class CongratulationsMenu: SKNode {
     nextButton.position.x = xPositions[1]
     menuButton.size = touchSize
     nextButton.size = touchSize
+    */
   }
 }

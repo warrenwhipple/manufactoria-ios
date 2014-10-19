@@ -12,8 +12,7 @@ class TitleScene: ManufactoriaScene {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   let gameData = GameData.sharedInstance
   let titleLabel = SKLabelNode()
-  let tapLabel = SKLabelNode()
-  let smartLabel = SmartLabel()
+  let button = Button(text: "play", fixedWidth: Globals.mediumEm * 8)
   
   override init(size: CGSize) {
     super.init(size: size)
@@ -21,29 +20,24 @@ class TitleScene: ManufactoriaScene {
     titleLabel.fontLarge()
     titleLabel.fontColor = Globals.strokeColor
     titleLabel.horizontalAlignmentMode = .Center
-    titleLabel.verticalAlignmentMode = .Center
     titleLabel.text = "Manufactoria"
+    button.touchUpInsideClosure = {
+      [unowned self] in
+      if self.gameData.levelsComplete == 0 {
+        self.transitionToGameSceneWithLevelNumber(0)
+      } else {
+        self.transitionToMenuScene()
+      }
+    }
     addChild(titleLabel)
-    tapLabel.fontMedium()
-    tapLabel.fontColor = Globals.strokeColor
-    tapLabel.horizontalAlignmentMode = .Center
-    tapLabel.text = "tap to play"
-    addChild(tapLabel)
+    addChild(button)
     fitToSize()
   }
   
   override var size: CGSize {didSet{if size != oldValue {fitToSize()}}}
   
   func fitToSize() {
-    titleLabel.position = size.center
-    tapLabel.position = CGPoint(x: titleLabel.position.x, y: 2 * Globals.mediumEm)
-  }
-  
-  override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
-    if gameData.levelsComplete == 0 {
-      self.transitionToGameSceneWithLevelNumber(0)
-    } else {
-      transitionToMenuScene()
-    }
+    titleLabel.position = CGPoint(size.center.x, size.center.y + Globals.mediumEm * 0.75)
+    button.position = CGPoint(size.center.x, size.center.y - Globals.mediumEm * 1.75)
   }
 }

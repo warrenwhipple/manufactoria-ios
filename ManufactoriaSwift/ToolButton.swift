@@ -246,7 +246,7 @@ class PullerButton: ToolButton {
     case .PullerBR: editMode = .PullerRB
     case .PullerRB: editMode = .PullerBR
     case .PullerGY: editMode = .PullerYG
-    default:        editMode = .PullerRB
+    default:        editMode = .PullerGY
     }
     return editMode
   }

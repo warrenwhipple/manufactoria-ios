@@ -14,6 +14,9 @@ class SequenceTutorialScene: GameScene {
   var coord2 = GridCoord(0,1)
   var coord3 = GridCoord(0,3)
   var flipButton: ToolButton!
+  //let flipGlow = SKSpriteNode()
+  let flipLabel = SKLabelNode()
+  //let flipLabelGlow = SKLabelNode()
   
   init(size: CGSize) {
     super.init(size: size, levelNumber: 2)
@@ -43,12 +46,29 @@ class SequenceTutorialScene: GameScene {
     
     flipButton = toolbarNode.drawToolButtons[2]
     flipButton.touchUpInsideClosure!()
+    /*flipGlow.colorBlendFactor = 1
+    flipGlow.color = Globals.highlightColor
+    flipGlow.alpha = 0
+    flipGlow.zPosition = -1
+    flipButton.addChild(flipGlow)*/
+    flipLabel.fontMedium()
+    flipLabel.fontColor = Globals.strokeColor
+    flipLabel.text = "flip"
+    flipButton.addChild(flipLabel)
+    /*flipLabelGlow.fontMedium()
+    flipLabelGlow.fontColor = Globals.highlightColor
+    flipLabelGlow.text = "flip"
+    flipLabelGlow.alpha = 0
+    flipLabel.addChild(flipLabelGlow)*/
+
   }
   
   override func fitToSize() {
     super.fitToSize()
     toolbarNode.robotButton.position.y = 0
     toolbarNode.drawToolButtons[2].position.y = 0
+    //flipGlow.size = CGSize(Globals.iconSpan + Globals.mediumEm)
+    flipLabel.position.y = -Globals.iconSpan / 2 - Globals.mediumEm * 2
   }
   
   override var state: State {
@@ -59,6 +79,7 @@ class SequenceTutorialScene: GameScene {
         startPulse()
       case .Thinking:
         removeActionForKey("pulse")
+        //flipLabelGlow.runAction(SKAction.fadeAlphaTo(0, duration: 0.4), withKey: "fade")
         statusNode.engineLabel.removeFromParent()
       case .Testing:
         statusNode.tapeLabel.removeFromParent()
@@ -81,6 +102,12 @@ class SequenceTutorialScene: GameScene {
     case .Cell1: pulse(coord1)
     case .Cell2: pulse(coord2)
     case .Flip: break
+      /*flipLabelGlow.runAction(SKAction.repeatActionForever(SKAction.sequence([
+        SKAction.waitForDuration(0.6),
+        SKAction.fadeAlphaTo(0.25, duration: 0.2),
+        SKAction.waitForDuration(0.3),
+        SKAction.fadeAlphaTo(0, duration: 0.4)
+        ])), withKey: "fade")*/
     case .Cell3: pulse(coord3)
     case .Done: break
     }
@@ -111,13 +138,15 @@ class SequenceTutorialScene: GameScene {
     case .Flip:
       if editMode == EditMode.PullerRB {
         gridNode.unlockCoords([coord3])
-        removeActionForKey("pulse")
+        //flipLabelGlow.runAction(SKAction.fadeAlphaTo(0, duration: 0.4), withKey: "fade")
+        flipLabel.runAction(SKAction.fadeAlphaTo(0, duration: 0.4), withKey: "fade")
         tutorialState = .Cell3
       }
     case .Cell3:
       if editMode != EditMode.PullerRB {
         gridNode.lockCoords([coord3])
         removeActionForKey("pulse")
+        flipLabel.runAction(SKAction.fadeAlphaTo(1, duration: 0.4))
         tutorialState = .Flip
       }
       else if gridNode.grid[coord3] == Cell(kind: .PullerRB, direction: .North) {

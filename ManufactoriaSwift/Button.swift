@@ -46,6 +46,41 @@ class Button: SKSpriteNode {
     }
   }
   
+  convenience init(text: String, fixedWidth: CGFloat?) {
+    let nodeOff = SKNode()
+    let nodeOn = SKNode()
+    
+    let buttonOff = SKSpriteNode("buttonOff")
+    buttonOff.centerRect = CGRect(centerX: 0.5, centerY: 0.5, width: 1 / buttonOff.size.width , height: 1)
+    let buttonOn = SKSpriteNode("buttonOn")
+    buttonOn.color = Globals.highlightColor
+    buttonOn.centerRect = buttonOff.centerRect
+
+    let labelOff = SKLabelNode()
+    labelOff.fontMedium()
+    labelOff.fontColor = Globals.strokeColor
+    labelOff.position.y = -0.375 * Globals.mediumEm
+    labelOff.text = text
+    
+    let labelOn = SKLabelNode()
+    labelOn.fontMedium()
+    labelOn.fontColor = Globals.backgroundColor
+    labelOn.position.y = labelOff.position.y
+    labelOn.text = text
+    
+    let width = fixedWidth ?? (labelOff.frame.size.width + labelOff.frame.size.height + Globals.mediumEm)
+    
+    buttonOff.xScale = width / buttonOff.size.width
+    buttonOn.xScale = buttonOff.xScale
+    
+    nodeOff.addChild(buttonOff)
+    nodeOn.addChild(buttonOn)
+    nodeOff.addChild(labelOff)
+    nodeOn.addChild(labelOn)
+    self.init(iconOff: nodeOff, iconOn: nodeOn)
+    size = CGSize(width + Globals.mediumEm, Globals.mediumEm * 3)
+  }
+  
   convenience init(iconOffNamed: String, iconOnNamed: String) {
     let iconOff = SKSpriteNode(iconOffNamed)
     let iconOn = SKSpriteNode(iconOnNamed)

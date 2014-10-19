@@ -128,7 +128,7 @@ private func toStr(var n: Int) -> String {
 var LevelLibrary: [LevelSetup] = [
   
   LevelSetup(
-    tag: "t1",
+    tag: "all",
     instructions: "Accept everything.",
     space: GridSpace(3),
     editModes: [],
@@ -138,7 +138,7 @@ var LevelLibrary: [LevelSetup] = [
   ),
   
   LevelSetup(
-    tag: "t2",
+    tag: "b",
     instructions: "Accept #b. Reject #r.",
     space: GridSpace(3),
     editModes: [.PullerBR],
@@ -148,7 +148,7 @@ var LevelLibrary: [LevelSetup] = [
   ),
   
   LevelSetup(
-    tag: "t3",
+    tag: "bbb...",
     instructions: "Accept if begins #b#r#b.",
     space: GridSpace(5),
     editModes: [.PullerBR],
@@ -162,7 +162,21 @@ var LevelLibrary: [LevelSetup] = [
   
   LevelSetup(
     tag: "no R",
-    instructions: "Reject any #r.",
+    instructions: "Reject if #r anywhere.",
+    space: GridSpace(3),
+    editModes: [.PullerBR],
+    exemplars: ["bbrb", "bbbb"],
+    generationFunction: {n in return generate("br", n)},
+    acceptFunction: {s in
+      var k = 0
+      for c in s {if c == "r" {return false}}
+      return true
+    }
+  ),
+  
+  LevelSetup(
+    tag: "no RR",
+    instructions: "Reject if #rr anywhere.",
     space: GridSpace(3),
     editModes: [.PullerBR],
     exemplars: ["bbrb", "bbbb"],
@@ -200,7 +214,7 @@ var LevelLibrary: [LevelSetup] = [
   
   LevelSetup(
     tag: "first last",
-    instructions: "Move the first color to the end.",
+    instructions: "Move the first to the end.",
     space: GridSpace(5),
     editModes: [.PullerBR, .PusherB, .PusherR],
     exemplars: ["brbr"],
@@ -213,7 +227,7 @@ var LevelLibrary: [LevelSetup] = [
   
   LevelSetup(
     tag: "alternates",
-    instructions: "Accept sequences that alternate.",
+    instructions: "Accept if alternating.",
     space: GridSpace(7),
     editModes: [.PullerBR],
     exemplars: ["brbb", "rbrb"],
@@ -249,7 +263,7 @@ var LevelLibrary: [LevelSetup] = [
   
   LevelSetup(
     tag: "...B",
-    instructions: "Accept sequences ending #b.",
+    instructions: "Accept if ends #b.",
     space: GridSpace(7),
     editModes: [.PullerBR],
     exemplars: ["bbr", "rbb"],
@@ -263,7 +277,7 @@ var LevelLibrary: [LevelSetup] = [
 
   LevelSetup(
     tag: "...BB",
-    instructions: "Accept sequences ending #b#b.",
+    instructions: "Accept if ends #b#b.",
     space: GridSpace(7),
     editModes: [.PullerBR],
     exemplars: ["bbrb", "rbbb"],
@@ -287,7 +301,7 @@ var LevelLibrary: [LevelSetup] = [
   
   LevelSetup(
     tag: "first = last",
-    instructions: "Accept if the first and\nlast colors are the same.",
+    instructions: "Accept if first and\nlast are the same.",
     space: GridSpace(7),
     editModes: [.PullerBR],
     exemplars: ["brrbr", "rbbbr"],
@@ -297,7 +311,7 @@ var LevelLibrary: [LevelSetup] = [
 
   LevelSetup(
     tag: "xB = xR",
-    instructions: "Accept sequences with\nthe same number of #b as #r.",
+    instructions: "Accept if same\nnumber of #b as #r.",
     space: GridSpace(7),
     editModes: [.PullerBR, .PullerGY, .PusherB, .PusherR, .PusherG, .PusherY],
     exemplars: ["brrbr", "rbbrbr"],

@@ -18,7 +18,7 @@ class StatusNode: SwipeNode {
   
   weak var delegate: StatusNodeDelegate!
   let optionsPage = SKNode()
-  let menuButton = Button(iconOffNamed: "menuIconOff", iconOnNamed: "menuIconOn", labelText: "menu")
+  let menuButton = Button(text: "menu", fixedWidth: Globals.mediumEm * 8)
   let instructionsPage = SKNode()
   let instructionsLabel = SmartLabel()
   let engineLabel = SKLabelNode()
@@ -57,7 +57,6 @@ class StatusNode: SwipeNode {
   override func fitToSize() {
     super.fitToSize()
     let labelOffset = SKTexture(imageNamed: "dot").size().height * 0.75
-    menuButton.position.y = roundPix(Globals.mediumEm)
     let yOffset = roundPix(size.height / 6)
     engineLabel.position.y = yOffset + labelOffset
     tapeLabel.position.y = yOffset - labelOffset

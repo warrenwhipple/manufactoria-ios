@@ -63,7 +63,7 @@ class GameViewController: UIViewController {
     let skView = view as SKView
     skView.showsFPS = false
     skView.showsNodeCount = false
-    skView.ignoresSiblingOrder = true
+    skView.ignoresSiblingOrder = false
     skView.backgroundColor = Globals.backgroundColor
     skView.frameInterval = 1
     
