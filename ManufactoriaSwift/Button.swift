@@ -21,6 +21,8 @@ class Button: SKSpriteNode {
   weak var swipeThroughDelegate: SwipeThroughDelegate?
   var swipeThroughTouch: UITouch?
   var touchBeganPoint: CGPoint = CGPointZero
+  var shouldStickyPress = false
+  var stickyPressIsActivating = false
   
   override init() {
     super.init(texture: nil, color: nil, size: CGSizeZero)
@@ -113,7 +115,11 @@ class Button: SKSpriteNode {
     didSet {
       if touch == oldValue {return}
       if touch == nil {
-        releaseClosure?()
+        if !stickyPressIsActivating {
+          releaseClosure?()
+        } else {
+          !stickyPressIsActivating
+        }
       } else {
         pressClosure?()
       }
@@ -165,6 +171,7 @@ class Button: SKSpriteNode {
   
   override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
     if touch != nil && touches.containsObject(touch!) {
+      if shouldStickyPress {stickyPressIsActivating = true}
       touch = nil
       touchUpInsideClosure?()
     } else if swipeThroughTouch != nil && touches.containsObject(swipeThroughTouch!) {

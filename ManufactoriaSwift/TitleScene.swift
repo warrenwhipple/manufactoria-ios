@@ -21,6 +21,7 @@ class TitleScene: ManufactoriaScene {
     titleLabel.fontColor = Globals.strokeColor
     titleLabel.horizontalAlignmentMode = .Center
     titleLabel.text = "Manufactoria"
+    button.shouldStickyPress = true
     button.touchUpInsideClosure = {
       [unowned self] in
       if self.gameData.levelsComplete == 0 {

@@ -52,16 +52,17 @@ class BeltTutorialScene: TutorialScene {
       GridCoord(2,2)
       ])
     
-    let pulse1 = gridNode[GridCoord(1,0)]
-    let pulse2 = gridNode[GridCoord(1,1)]
-    let pulse3 = gridNode[GridCoord(1,2)]
+    let cellNode1 = gridNode[GridCoord(1,0)]
+    let cellNode2 = gridNode[GridCoord(1,1)]
+    let cellNode3 = gridNode[GridCoord(1,2)]
+    let cell = Cell(kind: .Belt, direction: .North)
     gridPulseAction = SKAction.repeatActionForever(SKAction.sequence([
       SKAction.waitForDuration(2),
-      SKAction.runBlock({pulse1.selectPulseCountDown = 0.4}),
+      SKAction.runBlock({if cellNode1.cell != cell {cellNode1.selectPulseCountDown = 0.4}}),
       SKAction.waitForDuration(0.2),
-      SKAction.runBlock({pulse2.selectPulseCountDown = 0.4}),
+      SKAction.runBlock({if cellNode2.cell != cell {cellNode2.selectPulseCountDown = 0.4}}),
       SKAction.waitForDuration(0.2),
-      SKAction.runBlock({pulse3.selectPulseCountDown = 0.4})
+      SKAction.runBlock({if cellNode3.cell != cell {cellNode3.selectPulseCountDown = 0.4}})
       ]))
     
     startSwipePulse()
