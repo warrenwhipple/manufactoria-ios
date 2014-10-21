@@ -38,7 +38,7 @@ protocol GridNodeDelegate: class {
 
 class GridNode: SKNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  enum State {case Editing, Thinking, Waiting}
+  enum State {case Editing, EditingLocked, Thinking, Waiting}
   
   weak var delegate: GridNodeDelegate!
   let grid: Grid
@@ -152,6 +152,8 @@ class GridNode: SKNode {
         for cellNode in cellNodes {
           cellNode.shimmerNode.startShimmer()
         }
+      case .EditingLocked:
+        cancelAllEdits()
       case .Thinking:
         cancelAllEdits()
         for cellNode in cellNodes {

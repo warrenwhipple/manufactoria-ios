@@ -22,19 +22,17 @@ class BeltTutorialScene: TutorialScene {
     statusNode.addPageToRight(connectLabel)
     
     toolbarNode.userInteractionEnabled = false
+    toolbarNode.robotButton.removeFromParent()
     toolbarNode.undoCancelSwapper.removeFromParent()
     toolbarNode.redoConfirmSwapper.removeFromParent()
     toolbarNode.leftArrowWrapper.removeFromParent()
     toolbarNode.rightArrowWrapper.removeFromParent()
     for button in toolbarNode.drawToolButtons {button.removeFromParent()}
-    toolbarNode.robotButton.disableClosure = nil
-    toolbarNode.robotButton.enableClosure = nil
-    toolbarNode.robotButton.userInteractionEnabled = false
-    toolbarNode.robotButton.alpha = 0
     speedControlNode.backButton.removeFromParent()
     speedControlNode.slowerButton.removeFromParent()
     speedControlNode.skipButton.removeFromParent()
     gridNode.animateThinking = false
+    gridNode.state = .EditingLocked
     
     editGroupWasCompleted()
     for i in 0 ..< gridNode.grid.cells.count {
@@ -43,7 +41,6 @@ class BeltTutorialScene: TutorialScene {
     }
     editGroupWasCompleted()
     
-    gridNode.state = GridNode.State.Waiting
     for cellNode in gridNode.cellNodes {cellNode.shimmerNode.startShimmer()}
     
     gridNode.lockCoords([
@@ -98,7 +95,7 @@ class BeltTutorialScene: TutorialScene {
     switch tutorialState {
     case .FloorPlan:
       stopSwipePulse()
-      runAction(gridPulseAction, withKey: "pulse")
+      runAction(gridPulseAction, withKey: "gridPulse")
       gridNode.state = .Editing
       tutorialState = .Connect
     case .Connect:
@@ -108,7 +105,16 @@ class BeltTutorialScene: TutorialScene {
       robotLabel.text = "Tap the robot\nto begin the test."
       statusNode.addPageToRight(robotLabel)
       statusNode.snapToIndex(3, initialVelocityX: 0)
-      gridNode.state = .Waiting
+      gridNode.state = .EditingLocked
+      removeActionForKey("gridPulse")
+      toolbarNode.robotButton.alpha = 0
+      toolbarNode.robotButton.runAction(SKAction.sequence([
+        SKAction.waitForDuration(1),
+        SKAction.fadeAlphaTo(1, duration: 0.5)
+        ]), withKey: "fade")
+      if toolbarNode.robotButton.parent == nil {
+        toolbarNode.addChild(toolbarNode.robotButton)
+      }
       tutorialState = .Robot
     case .Robot: break
     }
@@ -128,6 +134,13 @@ class BeltTutorialScene: TutorialScene {
       if gridNode.grid[GridCoord(1,0)] == cell && gridNode.grid[GridCoord(1,1)] == cell && gridNode.grid[GridCoord(1,2)] == cell {
         nextTutorialState()
       }
+    }
+  }
+  
+  override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
+    super.touchesBegan(touches, withEvent: event)
+    if tutorialState == .FloorPlan {
+      statusNode.snapToIndex(2, initialVelocityX: 0)
     }
   }
 }
