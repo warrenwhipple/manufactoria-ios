@@ -24,6 +24,7 @@ class SwipeNode: SKSpriteNode, SwipeThroughDelegate {
   var lastLastTouchX: CGFloat = 0
   var lastTouchTime: NSTimeInterval = 0
   var lastLastTouchTime: NSTimeInterval = 0
+  var arrowHint: SKSpriteNode?
   
   init(pages: [SKNode]) {
     self.pages = pages
@@ -202,6 +203,18 @@ class SwipeNode: SKSpriteNode, SwipeThroughDelegate {
   
   func touchCancelled() {
     touchEnded()
+  }
+  
+  func swipeHintRight() {
+    
+  }
+  
+  func stopSwipeHint() {
+    
+  }
+  
+  func hideLeftArrowTemporarily() {
+    
   }
   
   // MARK: - SwipeThroughButtonDelegate Methods

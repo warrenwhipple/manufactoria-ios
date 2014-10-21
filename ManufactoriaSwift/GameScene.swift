@@ -313,6 +313,10 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, StatusNodeDelegate, Engine
     transitionToMenuScene()
   }
   
+  func statusNodeDidSnapToIndex(index: Int) {
+    
+  }
+  
   // MARK: - EngineDelegate Functions
   
   func gridTestPassed() {

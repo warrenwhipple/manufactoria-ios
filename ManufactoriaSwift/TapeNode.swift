@@ -92,7 +92,9 @@ class TapeNode: SKNode {
         let easeT = easeInOut(2 * tickPercent - 1)
         let easeTLeft = 1 - easeT
         let offsetX = -0.5 * (easeTLeft * CGFloat(dots.count) + easeT * CGFloat(dots.count + 1))
-        let tapeSpacing = easeTLeft * min(dotSpacing, (width - dotSpacing) / CGFloat(dots.count)) + easeT * min(dotSpacing, (width - dotSpacing) / CGFloat(dots.count + 1))
+        let tapeSpacingT0 =  min(dotSpacing, (width - dotSpacing) / CGFloat(dots.count))
+        let tapeSpacingT1 =  min(dotSpacing, (width - dotSpacing) / CGFloat(dots.count + 1))
+        let tapeSpacing = easeTLeft * tapeSpacingT0 + easeT * tapeSpacingT1
         var i = 1
         for dot in dots {dot.position.x = tapeSpacing * (CGFloat(i++) + offsetX)}
         dots.last?.alpha = 1
@@ -104,7 +106,9 @@ class TapeNode: SKNode {
         let easeT = easeInOut(2 * tickPercent)
         let easeTLeft = 1 - easeT
         let offsetX = -0.5 * (easeTLeft * CGFloat(dots.count) + easeT * CGFloat(dots.count + 1))
-        let tapeSpacing = easeTLeft * min(dotSpacing, (width - dotSpacing) / CGFloat(dots.count + 2)) + easeT * min(dotSpacing, (width - dotSpacing) / CGFloat(dots.count + 1))
+        let tapeSpacingT0 =  min(dotSpacing, (width - dotSpacing) / CGFloat(dots.count + 2))
+        let tapeSpacingT1 =  min(dotSpacing, (width - dotSpacing) / CGFloat(dots.count + 1))
+        let tapeSpacing =  easeTLeft * tapeSpacingT0 + easeT * tapeSpacingT1
         var i = 1
         for dot in dots {dot.position.x = tapeSpacing * (CGFloat(i++) + offsetX)}
         deletingDot?.position.x = tapeSpacing * offsetX

@@ -8,16 +8,19 @@
 
 import SpriteKit
 
-class BeltTutorialScene: GameScene {
+class BeltTutorialScene: TutorialScene {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  var testButtonIsHidden = true
-  var tutorialAction: SKAction!
+  var gridPulseAction: SKAction!
   
   init(size: CGSize) {
     super.init(size: size, levelNumber: 0)
-    statusNode.instructionsLabel.text = "A manufactory floor plan.\n\nConnect the entrance and exit."
-    statusNode.leftArrowWrapper.removeFromParent()
-    statusNode.rightArrowWrapper.removeFromParent()
+    statusNode.instructionsLabel.text = "This is a manufactory floor plan."
+    let connectLabel = BreakingLabel()
+    connectLabel.fontMedium()
+    connectLabel.fontColor = Globals.strokeColor
+    connectLabel.text = "Connect the entrance and exit."
+    statusNode.addPageToRight(connectLabel)
+    
     toolbarNode.userInteractionEnabled = false
     toolbarNode.undoCancelSwapper.removeFromParent()
     toolbarNode.redoConfirmSwapper.removeFromParent()
@@ -33,10 +36,15 @@ class BeltTutorialScene: GameScene {
     speedControlNode.skipButton.removeFromParent()
     gridNode.animateThinking = false
     
+    editGroupWasCompleted()
     for i in 0 ..< gridNode.grid.cells.count {
       gridNode.grid.cells[i] = Cell()
       gridNode.cellNodes[i].changeCell(gridNode.grid.cells[i], animate: false)
     }
+    editGroupWasCompleted()
+    
+    gridNode.state = GridNode.State.Waiting
+    for cellNode in gridNode.cellNodes {cellNode.shimmerNode.startShimmer()}
     
     gridNode.lockCoords([
       GridCoord(0,0),
@@ -50,7 +58,7 @@ class BeltTutorialScene: GameScene {
     let pulse1 = gridNode[GridCoord(1,0)]
     let pulse2 = gridNode[GridCoord(1,1)]
     let pulse3 = gridNode[GridCoord(1,2)]
-    tutorialAction = SKAction.repeatActionForever(SKAction.sequence([
+    gridPulseAction = SKAction.repeatActionForever(SKAction.sequence([
       SKAction.waitForDuration(2),
       SKAction.runBlock({pulse1.selectPulseCountDown = 0.4}),
       SKAction.waitForDuration(0.2),
@@ -58,7 +66,8 @@ class BeltTutorialScene: GameScene {
       SKAction.waitForDuration(0.2),
       SKAction.runBlock({pulse3.selectPulseCountDown = 0.4})
       ]))
-    runAction(tutorialAction, withKey: "pulse")
+    
+    startSwipePulse()
   }
   
   override func fitToSize() {
@@ -70,8 +79,7 @@ class BeltTutorialScene: GameScene {
   override var state: State {
     didSet {
       switch state {
-      case .Editing:
-        runAction(tutorialAction, withKey: "pulse")
+      case .Editing: break
       case .Thinking:
         removeActionForKey("pulse")
         statusNode.engineLabel.removeFromParent()
@@ -83,45 +91,43 @@ class BeltTutorialScene: GameScene {
     }
   }
   
-  func checkTutorialGrid() -> Bool {
-    let cell = Cell(kind: .Belt, direction: .North)
-    if gridNode.grid[GridCoord(1,0)] == cell && gridNode.grid[GridCoord(1,1)] == cell && gridNode.grid[GridCoord(1,2)] == cell {
-      return true
+  enum TutorialState {case FloorPlan, Connect, Robot}
+  var tutorialState: TutorialState = .FloorPlan
+  
+  func nextTutorialState() {
+    switch tutorialState {
+    case .FloorPlan:
+      stopSwipePulse()
+      runAction(gridPulseAction, withKey: "pulse")
+      gridNode.state = .Editing
+      tutorialState = .Connect
+    case .Connect:
+      let robotLabel = BreakingLabel()
+      robotLabel.fontMedium()
+      robotLabel.fontColor = Globals.strokeColor
+      robotLabel.text = "Tap the robot\nto begin the test."
+      statusNode.addPageToRight(robotLabel)
+      statusNode.snapToIndex(3, initialVelocityX: 0)
+      gridNode.state = .Waiting
+      tutorialState = .Robot
+    case .Robot: break
     }
-    return false
   }
   
-  func showTestButton() {
-    if !testButtonIsHidden {return}
-    testButtonIsHidden = false
-    statusNode.instructionsLabel.runAction(SKAction.sequence([
-      SKAction.fadeAlphaTo(0, duration: 0.2),
-      SKAction.runBlock({[unowned self] in self.statusNode.instructionsLabel.text = "Send the robot through."}),
-      SKAction.fadeAlphaTo(1, duration: 0.2)
-      ]), withKey: "fade")
-    toolbarNode.robotButton.userInteractionEnabled = true
-    toolbarNode.robotButton.runAction(SKAction.fadeAlphaTo(1, duration: 0.4), withKey: "fade")
-    removeActionForKey("pulse")
-  }
-  
-  func hideTestButton() {
-    if testButtonIsHidden {return}
-    testButtonIsHidden = true
-    statusNode.instructionsLabel.runAction(SKAction.sequence([
-      SKAction.fadeAlphaTo(0, duration: 0.2),
-      SKAction.runBlock({[unowned self] in self.statusNode.instructionsLabel.text = "Connect the entrance and exit."}),
-      SKAction.fadeAlphaTo(1, duration: 0.2)
-      ]), withKey: "fade")
-    toolbarNode.robotButton.userInteractionEnabled = false
-    toolbarNode.robotButton.runAction(SKAction.fadeAlphaTo(0, duration: 0.4), withKey: "fade")
-    runAction(tutorialAction, withKey: "pulse")
+  override func statusNodeDidSnapToIndex(index: Int) {
+    super.statusNodeDidSnapToIndex(index)
+    if index == 2 && tutorialState == .FloorPlan {
+      nextTutorialState()
+    }
   }
   
   override func cellWasEdited() {
     super.cellWasEdited()
-    if state == State.Editing {
-      if checkTutorialGrid() {showTestButton()}
-      else {hideTestButton()}
+    if tutorialState == .Connect {
+      let cell = Cell(kind: .Belt, direction: .North)
+      if gridNode.grid[GridCoord(1,0)] == cell && gridNode.grid[GridCoord(1,1)] == cell && gridNode.grid[GridCoord(1,2)] == cell {
+        nextTutorialState()
+      }
     }
-  }  
+  }
 }

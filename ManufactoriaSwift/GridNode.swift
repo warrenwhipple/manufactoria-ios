@@ -153,6 +153,7 @@ class GridNode: SKNode {
           cellNode.shimmerNode.startShimmer()
         }
       case .Thinking:
+        cancelAllEdits()
         for cellNode in cellNodes {
           cellNode.shimmerNode.stopShimmer()
         }
@@ -166,7 +167,7 @@ class GridNode: SKNode {
         thinkIndex = thinkNodes.count - 1
         thinkCount = min(30, max(12, thinkNodes.count))
       case .Waiting:
-        cancelSelection()
+        cancelAllEdits()
         for cellNode in cellNodes {
           cellNode.shimmerNode.stopShimmer()
         }
@@ -286,6 +287,11 @@ class GridNode: SKNode {
   }
   
   var liftedGridOrigin: GridCoord?
+  
+  func cancelAllEdits() {
+    cancelSelection()
+    editTouch = nil
+  }
   
   func cancelSelection() {
     if liftedGridNode == nil {

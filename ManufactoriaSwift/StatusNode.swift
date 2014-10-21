@@ -10,6 +10,7 @@ import SpriteKit
 
 protocol StatusNodeDelegate: class {
   func menuButtonPressed()
+  func statusNodeDidSnapToIndex(index: Int)
 }
 
 class StatusNode: SwipeNode {
@@ -109,6 +110,11 @@ class StatusNode: SwipeNode {
         tapeNode.unloadTape()
       }
     }
+  }
+  
+  override func snapToIndex(index: Int, initialVelocityX: CGFloat) {
+    super.snapToIndex(index, initialVelocityX: initialVelocityX)
+    delegate.statusNodeDidSnapToIndex(index)
   }
   
   func resetFailPageForTestResult(result: TapeTestResult) {
