@@ -36,7 +36,6 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, StatusNodeDelegate, Engine
   var robotCoord = GridCoord(0, 0)
   var lastRobotCoord = GridCoord(0, 0)
   var lastTapeLength: Int = 0
-  var lastUpdateTime: NSTimeInterval = 0
   var tickPercent: CGFloat = 0
   var beltPercent: CGFloat = 0
   var gridTestDidPass = false
@@ -172,14 +171,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, StatusNodeDelegate, Engine
     congratulationsMenu.size = bottomGapRect.size
   }
   
-  override func update(currentTime: NSTimeInterval) {
-    
-    // calculate dt
-    var dt: NSTimeInterval = currentTime - lastUpdateTime
-    lastUpdateTime = currentTime
-    if (dt > 0.25) {
-      dt = 1.0/60.0
-    }
+  override func updateDt(dt: NSTimeInterval) {
     
     // calculate belt percent
     beltPercent += CGFloat(dt) * 0.25

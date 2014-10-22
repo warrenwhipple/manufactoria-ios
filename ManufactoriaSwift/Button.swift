@@ -15,6 +15,142 @@ protocol SwipeThroughDelegate: class {
   func swipeThroughTouchCancelled(touch: UITouch)
 }
 
+
+class UpdateButton: SKSpriteNode {
+  required init(coder: NSCoder) {fatalError("NSCoding not supported")}
+  var touchDownClosure, touchUpInsideClosure: (()->())?
+  weak var swipeThroughDelegate: SwipeThroughDelegate?
+  var touch, swipeThroughTouch: UITouch?
+  var touchBeganPoint: CGPoint = CGPointZero
+  var shouldStickyGlow = false
+  var isStickyGlowing = false
+  var isActivateGlowing = false
+  var nodeOn, nodeOff: SKNode?
+  
+  init(nodeOff: SKNode, nodeOn: SKNode, touchSize: CGSize) {
+    self.nodeOff = nodeOff
+    self.nodeOn = nodeOn
+    super.init(texture: nil, color: nil, size: touchSize)
+    userInteractionEnabled = true
+    nodeOn.zPosition = nodeOff.zPosition + 1
+    nodeOn.alpha = 0
+    addChild(nodeOff)
+    addChild(nodeOn)
+  }
+  
+  convenience init(text: String, fixedWidth: CGFloat?) {
+    let wrapperOff = SKNode()
+    let wrapperOn = SKNode()
+    
+    let buttonOff = SKSpriteNode("buttonOff")
+    buttonOff.centerRect = CGRect(centerX: 0.5, centerY: 0.5, width: 1 / buttonOff.size.width , height: 1)
+    let buttonOn = SKSpriteNode("buttonOn")
+    buttonOn.color = Globals.highlightColor
+    buttonOn.centerRect = buttonOff.centerRect
+    
+    let labelOff = SKLabelNode()
+    labelOff.fontMedium()
+    labelOff.fontColor = Globals.strokeColor
+    labelOff.position.y = -0.375 * Globals.mediumEm
+    labelOff.text = text
+    
+    let labelOn = SKLabelNode()
+    labelOn.fontMedium()
+    labelOn.fontColor = Globals.backgroundColor
+    labelOn.position.y = labelOff.position.y
+    labelOn.text = text
+    
+    let width = fixedWidth ?? (labelOff.frame.size.width + labelOff.frame.size.height + Globals.mediumEm)
+    
+    buttonOff.xScale = width / buttonOff.size.width
+    buttonOn.xScale = buttonOff.xScale
+    
+    wrapperOff.addChild(buttonOff)
+    wrapperOn.addChild(buttonOn)
+    wrapperOff.addChild(labelOff)
+    wrapperOn.addChild(labelOn)
+    
+    self.init(nodeOff: wrapperOff, nodeOn: wrapperOn, touchSize: CGSize(width + Globals.mediumEm, Globals.mediumEm * 3))
+  }
+  
+  convenience init(iconOffNamed: String, iconOnNamed: String) {
+    let iconOff = SKSpriteNode(iconOffNamed)
+    let iconOn = SKSpriteNode(iconOnNamed)
+    self.init(nodeOff: iconOff, nodeOn: iconOn, touchSize: CGSize(Globals.touchSpan))
+    iconOn.color = Globals.highlightColor
+  }
+  
+  func update(dt: NSTimeInterval) {
+    if touch != nil || isActivateGlowing || isStickyGlowing {
+      if glow < 1 {
+        glow += 4 * CGFloat(dt)
+      } else {
+        isActivateGlowing = false
+      }
+    } else {
+      if glow > 0 {
+        glow -= 2 * CGFloat(dt)
+      }
+    }
+  }
+  
+  var glow: CGFloat = 0 {
+    didSet {
+      if glow == oldValue {return}
+      glow = min(1, max(0, glow))
+      nodeOff?.alpha = 1 - glow
+      nodeOn?.alpha = glow
+    }
+  }
+  
+  override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
+    if touch == nil && swipeThroughTouch == nil {
+      touch = touches.anyObject() as? UITouch
+      touchBeganPoint = touch!.locationInView(touch!.view)
+      touchDownClosure?()
+    }
+  }
+  
+  override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
+    if touch != nil && touches.containsObject(touch!) {
+      if swipeThroughDelegate == nil || !swipeThroughDelegate!.userInteractionEnabled {
+        if !frame.contains(touch!.locationInNode(parent)) {
+          touch = nil
+        }
+      } else {
+        if CGPointDistSq(p1: touch!.locationInView(touch!.view), p2: touchBeganPoint) >= 15*15 {
+          swipeThroughTouch = touch
+          touch = nil
+          swipeThroughDelegate?.swipeThroughTouchMoved(swipeThroughTouch!)
+        }
+      }
+    } else if swipeThroughTouch != nil && touches.containsObject(swipeThroughTouch!) {
+      swipeThroughDelegate?.swipeThroughTouchMoved(swipeThroughTouch!)
+    }
+  }
+  
+  override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
+    if touch != nil && touches.containsObject(touch!) {
+      isActivateGlowing = true
+      if shouldStickyGlow {isStickyGlowing = true}
+      touch = nil
+      touchUpInsideClosure?()
+    } else if swipeThroughTouch != nil && touches.containsObject(swipeThroughTouch!) {
+      swipeThroughDelegate?.swipeThroughTouchEnded(swipeThroughTouch!)
+      swipeThroughTouch = nil
+    }
+  }
+  
+  override func touchesCancelled(touches: NSSet, withEvent event: UIEvent) {
+    if touch != nil && touches.containsObject(touch!) {
+      touch = nil
+    } else if swipeThroughTouch != nil && touches.containsObject(swipeThroughTouch!) {
+      swipeThroughDelegate?.swipeThroughTouchCancelled(swipeThroughTouch!)
+      swipeThroughTouch = nil
+    }
+  }
+}
+
 class Button: SKSpriteNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   var pressClosure, releaseClosure, enableClosure, disableClosure, touchDownClosure, touchUpInsideClosure: (()->())?

@@ -11,9 +11,22 @@ import SpriteKit
 class ManufactoriaScene: SKScene {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   
+  var lastUpdateTime: NSTimeInterval = 0
+  
   override init(size: CGSize) {
     super.init(size: size)
   }
+  
+  override func update(currentTime: NSTimeInterval) {
+    // calculate dt
+    var dt: NSTimeInterval = currentTime - lastUpdateTime
+    lastUpdateTime = currentTime
+    if (dt > 0.25) {dt = 1.0/60.0}
+    updateDt(dt)
+  }
+  
+  func updateDt(dt: NSTimeInterval) {}
+
   
   func transitionToTitleScene() {
     view?.presentScene(
