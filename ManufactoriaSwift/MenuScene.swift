@@ -45,6 +45,7 @@ class MenuScene: ManufactoriaScene {
         glowNode.alpha = 0
         glowNodes.append(glowNode)
         button.addChild(glowNode)
+        button.shouldStickyPress = true
         button.pressClosure = {glowNode.runAction(SKAction.fadeAlphaTo(0.2, duration: 0.2), withKey: "fade")}
         button.releaseClosure = {glowNode.runAction(SKAction.fadeAlphaTo(0, duration: 0.2), withKey: "fade")}
       }

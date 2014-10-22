@@ -22,6 +22,7 @@ class CongratulationsMenu: SKNode {
   override init() {
     super.init()
     addChild(menuButton)
+    menuButton.shouldStickyPress = true
     menuButton.touchUpInsideClosure = {[unowned self] in self.delegate.menuButtonPressed()}
   }
   

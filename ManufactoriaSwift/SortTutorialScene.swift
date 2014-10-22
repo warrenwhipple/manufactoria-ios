@@ -8,90 +8,100 @@
 
 import SpriteKit
 
-class SortTutorialScene: GameScene {
+class SortTutorialScene: TutorialScene {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  var tutorialAction: SKAction!
   
   init(size: CGSize) {
-    super.init(size: size, levelNumber: 1)
-    statusNode.instructionsLabel.text = "Reject #r. Accept #b.\n\n#r to the floor.\n#b to the exit."
-    statusNode.leftArrowWrapper.removeFromParent()
-    statusNode.rightArrowWrapper.removeFromParent()
+    super.init(size: size, levelNumber: 0)
+    
+    statusNode.instructionsLabel.text = "This is a color reader."
+    
     toolbarNode.userInteractionEnabled = false
     toolbarNode.undoCancelSwapper.removeFromParent()
     toolbarNode.redoConfirmSwapper.removeFromParent()
     toolbarNode.leftArrowWrapper.removeFromParent()
     toolbarNode.rightArrowWrapper.removeFromParent()
     for button in toolbarNode.drawToolButtons {button.removeFromParent()}
+    
+    speedControlNode.backButton.removeFromParent()
+    speedControlNode.slowerButton.removeFromParent()
+    speedControlNode.skipButton.removeFromParent()
+    
+    congratulationsMenu.menuButton.touchUpInsideClosure = {[unowned self] in self.transitionToGameSceneWithLevelNumber(1)}
+    
     gridNode.animateThinking = false
+    gridNode.state = .EditingLocked
     
+    editGroupWasCompleted()
     for i in 0 ..< gridNode.grid.cells.count {gridNode.grid.cells[i] = Cell()}
-    gridNode.grid[GridCoord(1,0)] = Cell(kind: .PullerBR, direction: .North)
-    for i in 0 ..< gridNode.grid.cells.count {gridNode.cellNodes[i].changeCell(gridNode.grid.cells[i], animate: false)}
-    
-    gridNode.lockCoords([
-      GridCoord(1,0),
-      GridCoord(1,1),
-      GridCoord(2,0),
-      GridCoord(2,1),
-      GridCoord(2,2)
-      ])
-    
-    let pulse1 = gridNode[GridCoord(0,0)]
-    let pulse2 = gridNode[GridCoord(0,1)]
-    let pulse3 = gridNode[GridCoord(0,2)]
-    let pulse4 = gridNode[GridCoord(1,2)]
-    tutorialAction = SKAction.repeatActionForever(SKAction.sequence([
-      SKAction.waitForDuration(2),
-      SKAction.runBlock({pulse1.selectPulseCountDown = 0.4}),
-      SKAction.waitForDuration(0.2),
-      SKAction.runBlock({pulse2.selectPulseCountDown = 0.4}),
-      SKAction.waitForDuration(0.2),
-      SKAction.runBlock({pulse3.selectPulseCountDown = 0.4}),
-      SKAction.waitForDuration(0.2),
-      SKAction.runBlock({pulse4.selectPulseCountDown = 0.4})
-      ]))
-    runAction(tutorialAction, withKey: "pulse")
+    gridNode.grid[GridCoord(1,0)].kind = .Belt
+    gridNode.grid[GridCoord(1,1)].kind = .PullerBR
+    gridNode.changeCellNodesToMatchCellsWithAnimate(false)
+    editGroupWasCompleted()
   }
   
   override func fitToSize() {
     super.fitToSize()
     toolbarNode.robotButton.position.y = 0
+    speedControlNode.fasterButton.position.x = 0
   }
   
   override var state: State {
     didSet {
       switch state {
-      case .Editing:
-        statusNode.instructionsLabel.text = "#b to the exit."
-        statusNode.goToIndexWithoutSnap(1)
-        runAction(tutorialAction, withKey: "pulse")
+      case .Editing: break
       case .Thinking:
         removeActionForKey("pulse")
         statusNode.engineLabel.removeFromParent()
       case .Testing:
         statusNode.tapeLabel.removeFromParent()
         statusNode.tapeNode.removeFromParent()
-        statusNode.tapeLabel.position.y = 0
       case .Congratulating: break
       }
     }
   }
   
-  override func gridTestFailedWithResult(result: TapeTestResult) {
-    tapeTestResults = [
-      TapeTestResult(input: "r", output: nil, correctOutput: nil, kind: .Pass),
-      result
-    ]
-    state = .Testing
+  enum TutorialState {case Reader, Demo, Try}
+  var tutorialState: TutorialState = .Reader
+  
+  func nextTutorialState() {
+    switch tutorialState {
+    case .Reader:
+      stopSwipePulse()
+      tutorialState = .Demo
+    case .Demo:
+      let robotLabel = BreakingLabel()
+      robotLabel.fontMedium()
+      robotLabel.fontColor = Globals.strokeColor
+      robotLabel.text = "Tap the robot\nto begin the test."
+      statusNode.addPageToRight(robotLabel)
+      statusNode.snapToIndex(3, initialVelocityX: 0)
+      gridNode.state = .EditingLocked
+      removeActionForKey("gridPulse")
+      toolbarNode.robotButton.alpha = 0
+      toolbarNode.robotButton.runAction(SKAction.sequence([
+        SKAction.waitForDuration(1),
+        SKAction.fadeAlphaTo(1, duration: 0.5)
+        ]), withKey: "fade")
+      if toolbarNode.robotButton.parent == nil {
+        toolbarNode.addChild(toolbarNode.robotButton)
+      }
+      tutorialState = .Try
+    case .Try: break
+    }
   }
   
-  override func loadTape(i: Int) {
-    super.loadTape(i)
-    if tape == "b" {
-      robotNode?.color = Globals.blueColor.blend(UIColor.blackColor(), blendFactor: 0.3)
-    } else if tape == "r" {
-      robotNode?.color = Globals.redColor.blend(UIColor.blackColor(), blendFactor: 0.3)
+  override func statusNodeDidSnapToIndex(index: Int) {
+    super.statusNodeDidSnapToIndex(index)
+    if index == 2 && tutorialState == .Demo {
+      nextTutorialState()
+    }
+  }
+  
+  override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
+    super.touchesBegan(touches, withEvent: event)
+    if tutorialState == .Reader {
+      statusNode.snapToIndex(2, initialVelocityX: 0)
     }
   }
 }

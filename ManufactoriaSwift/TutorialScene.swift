@@ -27,7 +27,7 @@ class TutorialScene: GameScene {
         ]),
       SKAction.group([
         SKAction.fadeAlphaTo(0, duration: 0.5),
-        SKAction.moveToX(Globals.iconSpan, duration: 0.5).easeIn(),
+        SKAction.moveToX(Globals.iconSpan * 0.5, duration: 0.5).easeIn(),
         ])
       ]))
   }

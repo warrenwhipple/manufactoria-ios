@@ -28,9 +28,12 @@ class BeltTutorialScene: TutorialScene {
     toolbarNode.leftArrowWrapper.removeFromParent()
     toolbarNode.rightArrowWrapper.removeFromParent()
     for button in toolbarNode.drawToolButtons {button.removeFromParent()}
+    
     speedControlNode.backButton.removeFromParent()
     speedControlNode.slowerButton.removeFromParent()
     speedControlNode.skipButton.removeFromParent()
+    congratulationsMenu.menuButton.touchUpInsideClosure = {[unowned self] in self.transitionToGameSceneWithLevelNumber(1)}
+    
     gridNode.animateThinking = false
     gridNode.state = .EditingLocked
     
@@ -40,8 +43,6 @@ class BeltTutorialScene: TutorialScene {
       gridNode.cellNodes[i].changeCell(gridNode.grid.cells[i], animate: false)
     }
     editGroupWasCompleted()
-    
-    for cellNode in gridNode.cellNodes {cellNode.shimmerNode.startShimmer()}
     
     gridNode.lockCoords([
       GridCoord(0,0),
