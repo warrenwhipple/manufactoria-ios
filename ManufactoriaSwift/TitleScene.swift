@@ -44,5 +44,5 @@ class TitleScene: ManufactoriaScene {
   
   override func updateDt(dt: NSTimeInterval) {
     button.update(dt)
-  }
+  }  
 }
