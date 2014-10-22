@@ -12,7 +12,9 @@ class TransitionScene: SKScene {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   enum Kind {case Title, Menu, Game(Int), Unlock, Reset}
   let kind: Kind
+  var nextScene: SKScene?
   let secondTransition: SKTransition
+  
   init(size: CGSize, kind: Kind, secondTransition: SKTransition) {
     self.kind = kind
     self.secondTransition = secondTransition
@@ -20,27 +22,36 @@ class TransitionScene: SKScene {
     backgroundColor = Globals.backgroundColor
     runAction(SKAction.sequence([
       SKAction.waitForDuration(0),
-      SKAction.runBlock({[unowned self] in self.transitionToNextScene()})
+      SKAction.runBlock({[unowned self] in self.loadNextScene()})
       ]))
   }
-  func transitionToNextScene() {
+  func loadNextScene() {
     switch kind {
-    case .Title: view?.presentScene(TitleScene(size: size), transition: secondTransition)
-    case .Menu: view?.presentScene(MenuScene(size: size), transition: secondTransition)
-    case .Unlock: view?.presentScene(UnlockScene(size: size), transition: secondTransition)
-    case .Reset: view?.presentScene(ResetScene(size: size), transition: secondTransition)
+    case .Title: nextScene = TitleScene(size: size)
+    case .Menu: nextScene = MenuScene(size: size)
+    case .Unlock: nextScene = UnlockScene(size: size)
+    case .Reset: nextScene = ResetScene(size: size)
     case .Game(let levelNumber):
       if levelNumber == 0 && GameData.sharedInstance.levelsComplete == 0 {
-        view?.presentScene(BeltTutorialScene(size: view!.bounds.size), transition: secondTransition)
+        nextScene = BeltTutorialScene(size: view!.bounds.size)
       } else if levelNumber == 1 && GameData.sharedInstance.levelsComplete == 1 {
-        view?.presentScene(SortTutorialScene(size: view!.bounds.size), transition: secondTransition)
+        nextScene = SortTutorialScene(size: view!.bounds.size)
       } else if levelNumber == 2 && GameData.sharedInstance.levelsComplete == 2 {
-        view?.presentScene(SequenceTutorialScene(size: view!.bounds.size), transition: secondTransition)
+        nextScene = SequenceTutorialScene(size: view!.bounds.size)
       } else if levelNumber == 3 && GameData.sharedInstance.levelsComplete == 3 {
-        view?.presentScene(EngineTutorialScene(size: view!.bounds.size), transition: secondTransition)
+        nextScene = EngineTutorialScene(size: view!.bounds.size)
       } else {
-        view?.presentScene(GameScene(size: view!.bounds.size, levelNumber: levelNumber), transition: secondTransition)
+        nextScene = GameScene(size: view!.bounds.size, levelNumber: levelNumber)
       }
+    }
+    runAction(SKAction.sequence([
+      SKAction.waitForDuration(0),
+      SKAction.runBlock({[unowned self] in self.presentNextScene()})
+      ]))
+  }
+  func presentNextScene() {
+    if nextScene != nil {
+      view?.presentScene(nextScene!, transition: secondTransition)
     }
   }
 }
