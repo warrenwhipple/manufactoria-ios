@@ -60,7 +60,7 @@ class ManufactoriaScene: SKScene {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   
   var lastUpdateTime: NSTimeInterval = 0
-  
+  let transitionTime: NSTimeInterval = 0.3
   override init(size: CGSize) {
     super.init(size: size)
   }
@@ -77,31 +77,31 @@ class ManufactoriaScene: SKScene {
   
   func transitionToTitleScene() {
     view?.presentScene(TransitionScene(size: size, kind: .Title,
-      secondTransition: SKTransition.pushWithDirection(.Right, duration: 0.5).inPlay()),
-      transition: SKTransition.pushWithDirection(.Right, duration: 0.5).outPlay())
+      secondTransition: SKTransition.pushWithDirection(.Right, duration: transitionTime).inPlay()),
+      transition: SKTransition.pushWithDirection(.Right, duration: transitionTime).outPlay())
   }
   
   func transitionToMenuScene() {
     view?.presentScene(TransitionScene(size: size, kind: .Menu,
-      secondTransition: SKTransition.pushWithDirection(.Right, duration: 0.5).inPlay()),
-      transition: SKTransition.pushWithDirection(.Right, duration: 0.5).outPlay())
+      secondTransition: SKTransition.pushWithDirection(.Right, duration: transitionTime).inPlay()),
+      transition: SKTransition.pushWithDirection(.Right, duration: transitionTime).outPlay())
   }
   
   func transitionToUnlockScene() {
     view?.presentScene(TransitionScene(size: size, kind: .Unlock,
-      secondTransition: SKTransition.pushWithDirection(.Left, duration: 0.5).inPlay()),
-      transition: SKTransition.pushWithDirection(.Left, duration: 0.5).outPlay())
+      secondTransition: SKTransition.pushWithDirection(.Left, duration: transitionTime).inPlay()),
+      transition: SKTransition.pushWithDirection(.Left, duration: transitionTime).outPlay())
   }
   
   func transitionToResetScene() {
     view?.presentScene(TransitionScene(size: size, kind: .Reset,
-      secondTransition: SKTransition.pushWithDirection(.Left, duration: 0.5).inPlay()),
-      transition: SKTransition.pushWithDirection(.Left, duration: 0.5).outPlay())
+      secondTransition: SKTransition.pushWithDirection(.Left, duration: transitionTime).inPlay()),
+      transition: SKTransition.pushWithDirection(.Left, duration: transitionTime).outPlay())
   }
   
   func transitionToGameSceneWithLevelNumber(levelNumber: Int) {
     view?.presentScene(TransitionScene(size: size, kind: .Game(levelNumber),
-      secondTransition: SKTransition.pushWithDirection(.Left, duration: 0.5).inPlay()),
-      transition: SKTransition.pushWithDirection(.Left, duration: 0.5).outPlay())
+      secondTransition: SKTransition.pushWithDirection(.Left, duration: transitionTime).inPlay()),
+      transition: SKTransition.pushWithDirection(.Left, duration: transitionTime).outPlay())
   }
 }

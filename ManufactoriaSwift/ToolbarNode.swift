@@ -27,13 +27,13 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
   weak var delegate: ToolbarNodeDelegate!
   let drawPage = SKNode()
   let selectionPage = SKNode()
-  let undoButton = Button(iconOffNamed: "undoIconOff", iconOnNamed: "undoIconOn")
-  let redoButton = Button(iconOffNamed: "undoIconOff", iconOnNamed: "undoIconOn")
-  let cancelButton = Button(iconOffNamed: "cancelIconOff", iconOnNamed: "cancelIconOn")
-  let confirmButton = Button(iconOffNamed: "confirmIconOff", iconOnNamed: "confirmIconOn")
-  let robotButton = Button(iconOffNamed: "robotOff", iconOnNamed: "robotOn")
+  let undoButton = UpdateButton(iconOffNamed: "undoIconOff", iconOnNamed: "undoIconOn")
+  let redoButton = UpdateButton(iconOffNamed: "undoIconOff", iconOnNamed: "undoIconOn")
+  let cancelButton = UpdateButton(iconOffNamed: "cancelIconOff", iconOnNamed: "cancelIconOn")
+  let confirmButton = UpdateButton(iconOffNamed: "confirmIconOff", iconOnNamed: "confirmIconOn")
+  let robotButton = UpdateButton(iconOffNamed: "robotOff", iconOnNamed: "robotOn")
   let selectBoxMoveButton = SelectBoxMoveButton()
-  let quickButtons: [Button]
+  let quickButtons: [UpdateButton]
   let drawToolButtons, selectionToolButtons: [ToolButton]
   var buttonInFocus, lastDrawToolButton, lastSelectionToolButton: ToolButton
   var undoCancelSwapper, redoConfirmSwapper: ButtonSwapper
@@ -96,7 +96,6 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
     robotButton.touchUpInsideClosure = {[unowned self] in self.delegate.testButtonPressed()}
     
     for button in quickButtons {
-      button.generateDefaultDisableDimClosuresForSelf()
       button.swipeThroughDelegate = self
     }
     addChild(undoCancelSwapper)
@@ -123,7 +122,7 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
     super.fitToSize()
     let iconSize = CGSize(Globals.iconSpan)
     var buttonTouchHeight = min(iconSize.height * 2, size.height / 2)
-    func distributeButtons(buttons: [Button]) {
+    func distributeButtons(buttons: [SKSpriteNode]) {
       let buttonTouchWidth = min(iconSize.width * 2, size.width / CGFloat(buttons.count))
       let buttonXCenters = distributionForChildren(count: buttons.count, childSize: iconSize.width, parentSize: size.width)
       var i = 0
@@ -149,6 +148,12 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
     confirmButton.position = CGPointZero
     cancelButton.size = undoButton.size
     confirmButton.size = redoButton.size
+  }
+  
+  func update(dt: NSTimeInterval) {
+    for button in quickButtons {
+      button.update(dt)
+    }
   }
   
   var state: State = .Drawing {

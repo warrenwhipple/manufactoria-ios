@@ -255,6 +255,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, StatusNodeDelegate, Engine
     }
     
     // update child nodes
+    toolbarNode.update(dt)
     gridNode.update(dt, beltPercent: beltPercent)
   }
   

@@ -17,7 +17,7 @@ class TutorialScene: GameScene {
     super.init(size: size, levelNumber: levelNumber)
     statusNode.leftArrowWrapper.removeFromParent()
     swipeHint.color = Globals.highlightColor
-    swipeHint.anchorPoint.x = 0
+    //swipeHint.anchorPoint.x = 0
     swipeHint.zPosition = -1
     swipePulseAction = SKAction.repeatActionForever(SKAction.sequence([
       SKAction.waitForDuration(2),

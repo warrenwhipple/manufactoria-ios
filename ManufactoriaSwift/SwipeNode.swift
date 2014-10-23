@@ -33,9 +33,9 @@ class SwipeNode: SKSpriteNode, SwipeThroughDelegate {
     userInteractionEnabled = true
     
     for page in pages {wrapper.addChild(page)}
-    leftArrow.anchorPoint.x = 0
+    //leftArrow.anchorPoint.x = 0
     leftArrowWrapper.addChild(leftArrow)
-    rightArrow.anchorPoint.x = 0
+    //rightArrow.anchorPoint.x = 0
     rightArrow.xScale = -1
     rightArrowWrapper.addChild(rightArrow)
     wrapper.addChild(leftArrowWrapper)

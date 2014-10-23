@@ -25,6 +25,7 @@ class UpdateButton: SKSpriteNode {
   var shouldStickyGlow = false
   var isStickyGlowing = false
   var isActivateGlowing = false
+  var isPulseGlowing = false
   var nodeOn, nodeOff: SKNode?
   
   init(nodeOff: SKNode, nodeOn: SKNode, touchSize: CGSize) {
@@ -87,6 +88,12 @@ class UpdateButton: SKSpriteNode {
       } else {
         isActivateGlowing = false
       }
+    } else if isPulseGlowing {
+      if glow < 1 {
+        glow += 2 * CGFloat(dt)
+      } else {
+        isPulseGlowing = false
+      }
     } else {
       if glow > 0 {
         glow -= 2 * CGFloat(dt)
@@ -101,6 +108,17 @@ class UpdateButton: SKSpriteNode {
       nodeOff?.alpha = 1 - glow
       nodeOn?.alpha = glow
     }
+  }
+  
+  func startPulseGlowWithInterval(interval: NSTimeInterval) {
+    runAction(SKAction.repeatActionForever(SKAction.sequence([
+      SKAction.waitForDuration(interval),
+      SKAction.runBlock({[unowned self] in self.isPulseGlowing = true})
+      ])), withKey: "pulseGlow")
+  }
+  
+  func stopPulseGlow() {
+    removeActionForKey("pulseGlow")
   }
   
   override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
@@ -328,7 +346,7 @@ class Button: SKSpriteNode {
 
 class ButtonSwapper: SKNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  let buttons: [Button]
+  let buttons: [UpdateButton]
   let fadeNodes: [SKNode]
   let fadeOutAction = SKAction.fadeAlphaTo(0, duration: 0.2)
   let fadeInAction = SKAction.fadeAlphaTo(1, duration: 0.2)
@@ -336,7 +354,7 @@ class ButtonSwapper: SKNode {
   let rotateAction: SKAction
   let liftZPosition: CGFloat
   
-  init(buttons: [Button], rotateRadians: CGFloat, liftZPosition: CGFloat) {
+  init(buttons: [UpdateButton], rotateRadians: CGFloat, liftZPosition: CGFloat) {
     self.buttons = buttons
     self.rotateRadians = rotateRadians
     self.liftZPosition = liftZPosition
