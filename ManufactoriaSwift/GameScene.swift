@@ -255,7 +255,10 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, StatusNodeDelegate, Engine
     }
     
     // update child nodes
-    toolbarNode.update(dt)
+    statusNode.update(dt)
+    if toolbarNode.parent != nil {toolbarNode.update(dt)}
+    if speedControlNode.parent != nil {speedControlNode.update(dt)}
+    if congratulationsMenu.parent != nil {congratulationsMenu.update(dt)}
     gridNode.update(dt, beltPercent: beltPercent)
   }
   

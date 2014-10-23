@@ -46,7 +46,7 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
       rotateRadians: CGFloat(-2*M_PI), liftZPosition: 2)
     
     var tempDrawToolButtons: [ToolButton] = [
-      ToolButton(editMode: .Blank, iconOffNamed: "blankIconOff", iconOnNamed: "blankIconOn"),
+      ToolButton(iconOffNamed: "blankIconOff", iconOnNamed: "blankIconOn", editMode: .Blank),
       BeltBridgeButton()
     ]
     if contains(editModes, .PullerBR) || contains(editModes, .PullerRB) {
@@ -72,7 +72,7 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
     
     selectionToolButtons = [
       selectBoxMoveButton,
-      ToolButton(editMode: .SelectCell, iconOffNamed: "selectCellIconOff", iconOnNamed: "selectCellIconOn")
+      ToolButton(iconOffNamed: "selectCellIconOff", iconOnNamed: "selectCellIconOn", editMode: .SelectCell)
     ]
     
     if drawToolButtons.count > 1 {
@@ -152,6 +152,12 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
   
   func update(dt: NSTimeInterval) {
     for button in quickButtons {
+      button.update(dt)
+    }
+    for button in drawToolButtons {
+      button.update(dt)
+    }
+    for button in selectionToolButtons {
       button.update(dt)
     }
   }

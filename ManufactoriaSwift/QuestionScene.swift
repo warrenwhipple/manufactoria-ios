@@ -8,60 +8,17 @@
 
 import SpriteKit
 
-class QuestionScene: ManufactoriaScene {
+class ResetScene: ManufactoriaScene {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  let questionLabel = BreakingLabel()
-  let yesLabel = BreakingLabel()
-  let noLabel = BreakingLabel()
-  let yesButton = Button()
-  let noButton = Button()
-
+  let question = BreakingLabel()
+  let yesButton = UpdateButton(text: "reset", fixedWidth: Globals.touchSpan * 1.5)
+  let noButton = UpdateButton(text: "cancel", fixedWidth: Globals.touchSpan * 1.5)
   override init(size: CGSize) {
-    
-    questionLabel.fontMedium()
-    questionLabel.fontColor = Globals.strokeColor
-    questionLabel.verticalAlignmentMode = SKLabelVerticalAlignmentMode.Bottom
-    
-    yesLabel.fontMedium()
-    yesLabel.fontColor = Globals.strokeColor
-    
-    noLabel.fontMedium()
-    noLabel.fontColor = Globals.strokeColor
-    
-    yesButton.size = CGSize(100)
-    yesButton.addChild(yesLabel)
-    
-    noButton.size = CGSize(100)
-    noButton.addChild(noLabel)
-    
     super.init(size: size)
     backgroundColor = Globals.backgroundColor
-        
-    addChild(questionLabel)
-    addChild(yesButton)
-    addChild(noButton)
-    
-    fitToSize()
-  }
-  
-  override var size: CGSize {didSet{if size != oldValue {fitToSize()}}}
-  
-  func fitToSize() {
-    let midX = size.width * 0.5
-    let midY = size.height * 0.5
-    questionLabel.position = CGPoint(midX, midY + questionLabel.lineHeight * questionLabel.fontSize)
-    yesButton.position = CGPoint(midX - 70, midY - 40)
-    noButton.position = CGPoint(midX + 70, midY - 40)
-  }
-}
-
-class ResetScene: QuestionScene {
-  required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  override init(size: CGSize) {
-    super.init(size: size)
-    questionLabel.text = "Are you sure you want to\nerase all progress?"
-    yesLabel.text = "reset"
-    noLabel.text = "cancel"
+    question.text = "Are you sure you want to\nerase all progress?"
+    question.fontMedium()
+    question.fontColor = Globals.strokeColor
     yesButton.touchUpInsideClosure = {
       [unowned self] in
       GameData.sharedInstance.resetAllGameData()
@@ -71,16 +28,36 @@ class ResetScene: QuestionScene {
     noButton.touchUpInsideClosure = {
       self.transitionToMenuScene()
     }
+    addChild(question)
+    addChild(yesButton)
+    addChild(noButton)
+    fitToSize()
+  }
+  override var size: CGSize {didSet{if size != oldValue {fitToSize()}}}
+  func fitToSize() {
+    let midX = size.width * 0.5
+    let midY = size.height * 0.5
+    question.position = CGPoint(midX, midY + question.lineHeight * question.fontSize)
+    yesButton.position = CGPoint(midX - 70, midY - 40)
+    noButton.position = CGPoint(midX + 70, midY - 40)
+  }
+  override func updateDt(dt: NSTimeInterval) {
+    yesButton.update(dt)
+    noButton.update(dt)
   }
 }
 
-class UnlockScene: QuestionScene {
+class UnlockScene: ManufactoriaScene {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
+  let question = BreakingLabel()
+  let yesButton = UpdateButton(text: "unlock", fixedWidth: Globals.touchSpan * 1.5)
+  let noButton = UpdateButton(text: "cancel", fixedWidth: Globals.touchSpan * 1.5)
   override init(size: CGSize) {
     super.init(size: size)
-    questionLabel.text = "Are you sure you want to\nunlock all levels?"
-    yesLabel.text = "unlock"
-    noLabel.text = "cancel"
+    backgroundColor = Globals.backgroundColor
+    question.text = "Are you sure you want to\nunlock all levels?"
+    question.fontMedium()
+    question.fontColor = Globals.strokeColor
     yesButton.touchUpInsideClosure = {
       [unowned self] in
       GameData.sharedInstance.levelsComplete = LevelLibrary.count
@@ -90,5 +67,21 @@ class UnlockScene: QuestionScene {
     noButton.touchUpInsideClosure = {
       self.transitionToMenuScene()
     }
+    addChild(question)
+    addChild(yesButton)
+    addChild(noButton)
+    fitToSize()
+  }
+  override var size: CGSize {didSet{if size != oldValue {fitToSize()}}}
+  func fitToSize() {
+    let midX = size.width * 0.5
+    let midY = size.height * 0.5
+    question.position = CGPoint(midX, midY + question.lineHeight * question.fontSize)
+    yesButton.position = CGPoint(midX - 70, midY - 40)
+    noButton.position = CGPoint(midX + 70, midY - 40)
+  }
+  override func updateDt(dt: NSTimeInterval) {
+    yesButton.update(dt)
+    noButton.update(dt)
   }
 }

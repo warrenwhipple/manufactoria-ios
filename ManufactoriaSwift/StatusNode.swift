@@ -19,7 +19,7 @@ class StatusNode: SwipeNode {
   
   weak var delegate: StatusNodeDelegate!
   let optionsPage = SKNode()
-  let menuButton = Button(text: "menu", fixedWidth: Globals.mediumEm * 8)
+  let menuButton = UpdateButton(text: "menu", fixedWidth: Globals.mediumEm * 8)
   let instructionsPage = SKNode()
   let instructionsLabel = SmartLabel()
   let engineLabel = SKLabelNode()
@@ -50,7 +50,7 @@ class StatusNode: SwipeNode {
     instructionsPage.addChild(instructionsLabel)
     
     menuButton.swipeThroughDelegate = self
-    menuButton.shouldStickyPress = true
+    menuButton.shouldStickyGlow = true
     menuButton.touchUpInsideClosure = {[unowned self] in self.delegate.menuButtonPressed()}
     
     goToIndexWithoutSnap(1)
@@ -111,6 +111,10 @@ class StatusNode: SwipeNode {
         tapeNode.unloadTape()
       }
     }
+  }
+  
+  func update(dt: NSTimeInterval) {
+    menuButton.update(dt)
   }
   
   override func snapToIndex(index: Int, initialVelocityX: CGFloat) {

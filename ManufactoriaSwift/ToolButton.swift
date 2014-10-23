@@ -12,119 +12,40 @@ protocol ToolButtonDelegate: class {
   func toolButtonActivated(ToolButton)
 }
 
-class ToolButton: Button {
+class ToolButton: UpdateButton {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
+  
   weak var toolButtonDelegate: ToolButtonDelegate!
+  var isInFocus = false
   var editMode: EditMode
-  var focusClosure, unfocusClosure: (()->())?
-  var indicator: SKNode?
-  var multiIndicator: MultiIndicator?
   
-  init(editMode: EditMode) {
+  init(nodeOff: SKNode, nodeOn: SKNode, editMode: EditMode) {
     self.editMode = editMode
-    super.init()
+    super.init(nodeOff: nodeOff, nodeOn: nodeOn, touchSize: CGSize(Globals.touchSpan))
     touchUpInsideClosure = {[unowned self] in self.toolButtonDelegate.toolButtonActivated(self)}
-    pressClosure = {[unowned self] in if !self.isInFocus {self.focusClosure?()}}
-    releaseClosure = {[unowned self] in if !self.isInFocus {self.unfocusClosure?()}}
-  }
-  
-  init(editMode: EditMode, iconOff: SKNode, iconOn: SKNode) {
-    self.editMode = editMode
-    super.init()
-    touchUpInsideClosure = {[unowned self] in self.toolButtonDelegate.toolButtonActivated(self)}
-    pressClosure = {[unowned self] in if !self.isInFocus {self.focusClosure?()}}
-    releaseClosure = {[unowned self] in if !self.isInFocus {self.unfocusClosure?()}}
-    iconOn.alpha = 0
-    iconOn.zPosition = iconOff.zPosition + 1
-    addChild(iconOff)
-    addChild(iconOn)
-    let fadeOutAction = SKAction.fadeAlphaTo(0, duration: 0.2)
-    let fadeInAction = SKAction.fadeAlphaTo(1, duration: 0.2)
-    focusClosure = {
-      iconOff.runAction(fadeOutAction, withKey: "fade")
-      iconOn.runAction(fadeInAction, withKey: "fade")
-    }
-    unfocusClosure = {
-      iconOff.runAction(fadeInAction, withKey: "fade")
-      iconOn.runAction(fadeOutAction, withKey: "fade")
-    }
-  }
-  
-  convenience init(editMode: EditMode, iconOffNamed: String, iconOnNamed: String) {
-    let iconOff = SKSpriteNode(iconOffNamed)
-    let iconOn = SKSpriteNode(iconOnNamed)
-    iconOn.color = Globals.highlightColor
-    self.init(editMode: editMode, iconOff: iconOff, iconOn: iconOn)
-    //generateSimpleIndicator()
   }
 
-  var isInFocus: Bool = false {
-    didSet {
-      if isInFocus == oldValue {return}
-      if isInFocus {indicator?.runAction(SKAction.scaleTo(1, duration: 0.2))}
-      else {indicator?.runAction(SKAction.scaleTo(0, duration: 0.2))}
-      if touch != nil {return}
-      if isInFocus {focusClosure?()}
-      else {unfocusClosure?()}
-    }
+  init(iconOffNamed: String, iconOnNamed: String, editMode: EditMode) {
+    self.editMode = editMode
+    let iconOff = SKSpriteNode(iconOffNamed)
+    let iconOn = SKSpriteNode(iconOnNamed)
+    super.init(nodeOff: iconOff, nodeOn: iconOn, touchSize: CGSize(Globals.touchSpan))
+    iconOn.color = Globals.highlightColor
   }
-  
+
   func cycleEditMode() -> EditMode {
     return editMode
   }
   
-  func generateSimpleIndicator() {
-    let indicatorSprite = SKSpriteNode("indicator")
-    indicatorSprite.color = Globals.highlightColor
-    indicatorSprite.position.y = -0.75 * Globals.iconSpan
-    indicatorSprite.setScale(0)
-    addChild(indicatorSprite)
-    indicator = indicatorSprite
-  }
-  
-  func generateMultiIndicatorWithCount(count: Int) {
-    multiIndicator = MultiIndicator(count: count)
-    multiIndicator!.position.y = -0.75 * Globals.iconSpan
-    multiIndicator!.setScale(0)
-    addChild(multiIndicator!)
-    indicator = multiIndicator!
-  }
-  
-  class MultiIndicator: SKNode {
-    required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-    let dots: [SKSpriteNode] = []
-    init(count: Int) {
-      assert(count >= 2, "MultiIndicator must init with a count >= 2")
-      super.init()
-      let dotTexture = SKTexture(imageNamed: "indicator")
-      let spacing = 2 * dotTexture.size().width
-      let offset = -0.5 * CGFloat(count - 1) * spacing
-      for i in 0 ..< count {
-        let dot = SKSpriteNode(texture: dotTexture)
-        dot.colorBlendFactor = 1
-        dot.color = Globals.highlightColor
-        if i > 0 {dot.alpha = 0.2}
-        dot.position.x = offset + CGFloat(i) * spacing
-        addChild(dot)
-        dots.append(dot)
-      }
-    }
-    var index: Int = 0 {
-      didSet {
-        assert(index <= dots.count, "Index out of range")
-        if index == oldValue {return}
-        dots[oldValue].runAction(SKAction.fadeAlphaTo(0.2, duration: 0.2))
-        dots[index].runAction(SKAction.fadeAlphaTo(1, duration: 0.2))
-      }
-    }
-  }
 }
 
 class BeltBridgeButton: ToolButton {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  let spinNode = SKNode()
+  //let spinNode = SKNode()
   
   init() {
+    super.init(iconOffNamed: "beltIconOff", iconOnNamed: "beltIconOn", editMode: .Belt)
+    /*
     super.init(editMode: .Belt)
     let beltIconOff = SKSpriteNode("beltIconOff")
     let beltIconOn = SKSpriteNode("beltIconOn")
@@ -176,14 +97,17 @@ class BeltBridgeButton: ToolButton {
       editMode = .Belt
       return .Belt
     }
+    */
   }
 }
 
 class PullerButton: ToolButton {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  var spinNode = SKNode()
+  //var spinNode = SKNode()
   
   init(kind: EditMode) {
+    super.init(iconOffNamed: "beltIconOff", iconOnNamed: "beltIconOn", editMode: .Belt)
+    /*
     let beltIcon = SKSpriteNode("beltIconOff")
     beltIcon.alpha = 0
     let leftIconOff = SKSpriteNode("pullerHalfIconOff")
@@ -249,18 +173,21 @@ class PullerButton: ToolButton {
     default:        editMode = .PullerGY
     }
     return editMode
+    */
   }
 }
 
 class PusherButton: ToolButton {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  var editModes: [EditMode]
-  var editModeIndex = 0
-  let iconOff = SKSpriteNode("pusherIconOff")
-  let iconOn = SKSpriteNode("pusherIconOn")
-  let newIconOn = SKSpriteNode("pusherIconOn")
+  //var editModes: [EditMode]
+  //var editModeIndex = 0
+  //let iconOff = SKSpriteNode("pusherIconOff")
+  //let iconOn = SKSpriteNode("pusherIconOn")
+  //let newIconOn = SKSpriteNode("pusherIconOn")
   
   init(kinds: [EditMode]) {
+    super.init(iconOffNamed: "beltIconOff", iconOnNamed: "beltIconOn", editMode: .Belt)
+    /*
     assert(!kinds.isEmpty, "PusherButton must init with at least one kind")
     editModes = kinds
     super.init(editMode: editModes[0], iconOff: iconOff, iconOn: iconOn)
@@ -311,6 +238,7 @@ class PusherButton: ToolButton {
       })]), withKey: "scale")
     multiIndicator?.index = editModeIndex
     return editMode
+    */
   }
 }
 
@@ -321,6 +249,8 @@ class SelectBoxMoveButton: ToolButton {
   var multiIndicatorX: CGFloat = 0
   
   init() {
+    super.init(iconOffNamed: "beltIconOff", iconOnNamed: "beltIconOn", editMode: .Belt)
+    /*
     super.init(editMode: .SelectBox)
     
     let iconOff = SKSpriteNode("selectIconOff")
@@ -373,5 +303,6 @@ class SelectBoxMoveButton: ToolButton {
         moveOverlay.runAction(SKAction.scaleTo(0, duration: 0.2), withKey: "scale")
       }
     }
+    */
   }
 }
