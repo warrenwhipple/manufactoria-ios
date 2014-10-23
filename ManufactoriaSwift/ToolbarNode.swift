@@ -27,13 +27,13 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
   weak var delegate: ToolbarNodeDelegate!
   let drawPage = SKNode()
   let selectionPage = SKNode()
-  let undoButton = UpdateButton(iconOffNamed: "undoIconOff", iconOnNamed: "undoIconOn")
-  let redoButton = UpdateButton(iconOffNamed: "undoIconOff", iconOnNamed: "undoIconOn")
-  let cancelButton = UpdateButton(iconOffNamed: "cancelIconOff", iconOnNamed: "cancelIconOn")
-  let confirmButton = UpdateButton(iconOffNamed: "confirmIconOff", iconOnNamed: "confirmIconOn")
-  let robotButton = UpdateButton(iconOffNamed: "robotOff", iconOnNamed: "robotOn")
+  let undoButton = Button(iconOffNamed: "undoIconOff", iconOnNamed: "undoIconOn")
+  let redoButton = Button(iconOffNamed: "undoIconOff", iconOnNamed: "undoIconOn")
+  let cancelButton = Button(iconOffNamed: "cancelIconOff", iconOnNamed: "cancelIconOn")
+  let confirmButton = Button(iconOffNamed: "confirmIconOff", iconOnNamed: "confirmIconOn")
+  let robotButton = Button(iconOffNamed: "robotOff", iconOnNamed: "robotOn")
   let selectBoxMoveButton = SelectBoxMoveButton()
-  let quickButtons: [UpdateButton]
+  let quickButtons: [Button]
   let drawToolButtons, selectionToolButtons: [ToolButton]
   var buttonInFocus, lastDrawToolButton, lastSelectionToolButton: ToolButton
   var undoCancelSwapper, redoConfirmSwapper: ButtonSwapper
@@ -60,12 +60,8 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
       default: break
       }
     }
-    if IPAD {
-      for pusherKind in pusherKinds {
-        tempDrawToolButtons.append(PusherButton(kinds: [pusherKind]))
-      }
-    } else if !pusherKinds.isEmpty {
-      tempDrawToolButtons.append(PusherButton(kinds: pusherKinds))
+    for pusherKind in pusherKinds {
+      tempDrawToolButtons.append(PusherButton(kind: pusherKind))
     }
     
     drawToolButtons = tempDrawToolButtons

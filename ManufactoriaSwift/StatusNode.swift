@@ -19,7 +19,7 @@ class StatusNode: SwipeNode {
   
   weak var delegate: StatusNodeDelegate!
   let optionsPage = SKNode()
-  let menuButton = UpdateButton(text: "menu", fixedWidth: Globals.mediumEm * 8)
+  let menuButton = Button(text: "menu", fixedWidth: Globals.mediumEm * 8)
   let instructionsPage = SKNode()
   let instructionsLabel = SmartLabel()
   let engineLabel = SKLabelNode()

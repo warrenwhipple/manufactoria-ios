@@ -11,8 +11,8 @@ import SpriteKit
 class ResetScene: ManufactoriaScene {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   let question = BreakingLabel()
-  let yesButton = UpdateButton(text: "reset", fixedWidth: Globals.touchSpan * 1.5)
-  let noButton = UpdateButton(text: "cancel", fixedWidth: Globals.touchSpan * 1.5)
+  let yesButton = Button(text: "reset", fixedWidth: Globals.touchSpan * 1.5)
+  let noButton = Button(text: "cancel", fixedWidth: Globals.touchSpan * 1.5)
   override init(size: CGSize) {
     super.init(size: size)
     backgroundColor = Globals.backgroundColor
@@ -50,8 +50,8 @@ class ResetScene: ManufactoriaScene {
 class UnlockScene: ManufactoriaScene {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   let question = BreakingLabel()
-  let yesButton = UpdateButton(text: "unlock", fixedWidth: Globals.touchSpan * 1.5)
-  let noButton = UpdateButton(text: "cancel", fixedWidth: Globals.touchSpan * 1.5)
+  let yesButton = Button(text: "unlock", fixedWidth: Globals.touchSpan * 1.5)
+  let noButton = Button(text: "cancel", fixedWidth: Globals.touchSpan * 1.5)
   override init(size: CGSize) {
     super.init(size: size)
     backgroundColor = Globals.backgroundColor

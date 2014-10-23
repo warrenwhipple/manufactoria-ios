@@ -10,7 +10,7 @@ import SpriteKit
 
 class MenuScene: ManufactoriaScene {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  var buttons: [UpdateButton] = []
+  var buttons: [Button] = []
   var shimmerNodes: [ShimmerNode] = []
   var glowNodes: [SKSpriteNode] = []
   
@@ -22,7 +22,7 @@ class MenuScene: ManufactoriaScene {
     if IPAD {totalButtons = 35}
     
     for i in 0 ..< totalButtons {
-      let button = UpdateButton(nodeOff: SKNode(), nodeOn: SKNode(), touchSize: CGSizeZero)
+      let button = Button(nodeOff: SKNode(), nodeOn: SKNode(), touchSize: CGSizeZero)
       let shimmerNode = ShimmerNode()
       shimmerNode.startMidShimmer()
       button.addChild(shimmerNode)

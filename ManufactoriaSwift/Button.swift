@@ -15,7 +15,7 @@ protocol SwipeThroughDelegate: class {
   func swipeThroughTouchCancelled(touch: UITouch)
 }
 
-class UpdateButton: SKSpriteNode {
+class Button: SKSpriteNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   var touchDownClosure, touchUpInsideClosure: (()->())?
   weak var swipeThroughDelegate: SwipeThroughDelegate?
@@ -170,7 +170,7 @@ class UpdateButton: SKSpriteNode {
 
 class ButtonSwapper: SKNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  let buttons: [UpdateButton]
+  let buttons: [Button]
   let fadeNodes: [SKNode]
   let fadeOutAction = SKAction.fadeAlphaTo(0, duration: 0.2)
   let fadeInAction = SKAction.fadeAlphaTo(1, duration: 0.2)
@@ -178,7 +178,7 @@ class ButtonSwapper: SKNode {
   let rotateAction: SKAction
   let liftZPosition: CGFloat
   
-  init(buttons: [UpdateButton], rotateRadians: CGFloat, liftZPosition: CGFloat) {
+  init(buttons: [Button], rotateRadians: CGFloat, liftZPosition: CGFloat) {
     self.buttons = buttons
     self.rotateRadians = rotateRadians
     self.liftZPosition = liftZPosition

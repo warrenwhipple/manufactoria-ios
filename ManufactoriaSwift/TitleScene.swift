@@ -12,7 +12,7 @@ class TitleScene: ManufactoriaScene {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   let gameData = GameData.sharedInstance
   let titleLabel = SKLabelNode()
-  let button = UpdateButton(text: "play", fixedWidth: Globals.mediumEm * 8)
+  let button = Button(text: "play", fixedWidth: Globals.mediumEm * 8)
   
   override init(size: CGSize) {
     super.init(size: size)

@@ -45,7 +45,7 @@ class SequenceTutorialScene: GameScene {
     startPulse()
     
     flipButton = toolbarNode.drawToolButtons[2]
-    flipButton.touchUpInsideClosure!()
+    //flipButton.touchUpInsideClosure!()
     /*flipGlow.colorBlendFactor = 1
     flipGlow.color = Globals.highlightColor
     flipGlow.alpha = 0
