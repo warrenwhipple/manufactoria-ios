@@ -8,9 +8,14 @@
 
 import SpriteKit
 
+protocol SwipeNodeDelegate: class {
+  func swipeNodeDidSnapToIndex(index: Int)
+}
+
 class SwipeNode: SKSpriteNode, SwipeThroughDelegate {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   
+  var swipeSnapDelegate: SwipeNodeDelegate?
   let wrapper = SKNode()
   var currentIndex = 0
   var pages: [SKNode]
@@ -133,6 +138,7 @@ class SwipeNode: SKSpriteNode, SwipeThroughDelegate {
           self.updateArrowAlphas()})
         ]), withKey: "snap")
     }
+    swipeSnapDelegate?.swipeNodeDidSnapToIndex(index)
   }
   
   func snapToClosestWithInitialVelocityX(initialVelocityX: CGFloat) {

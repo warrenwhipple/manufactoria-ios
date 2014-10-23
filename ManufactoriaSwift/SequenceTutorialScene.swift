@@ -26,9 +26,9 @@ class SequenceTutorialScene: GameScene {
     toolbarNode.userInteractionEnabled = false
     toolbarNode.undoCancelSwapper.removeFromParent()
     toolbarNode.redoConfirmSwapper.removeFromParent()
-    toolbarNode.leftArrowWrapper.removeFromParent()
-    toolbarNode.rightArrowWrapper.removeFromParent()
-    for button in toolbarNode.drawToolButtons {button.removeFromParent()}
+    toolbarNode.swipeNode.leftArrowWrapper.removeFromParent()
+    toolbarNode.swipeNode.rightArrowWrapper.removeFromParent()
+    for button in toolbarNode.toolButtons {button.removeFromParent()}
     gridNode.animateThinking = false
     
     for i in 0 ..< gridNode.grid.cells.count {gridNode.grid.cells[i] = Cell()}
@@ -44,7 +44,7 @@ class SequenceTutorialScene: GameScene {
     gridNode.unlockCoords([GridCoord(2,1)])
     startPulse()
     
-    flipButton = toolbarNode.drawToolButtons[2]
+    flipButton = toolbarNode.toolButtons[2]
     //flipButton.touchUpInsideClosure!()
     /*flipGlow.colorBlendFactor = 1
     flipGlow.color = Globals.highlightColor
@@ -66,7 +66,7 @@ class SequenceTutorialScene: GameScene {
   override func fitToSize() {
     super.fitToSize()
     toolbarNode.robotButton.position.y = 0
-    toolbarNode.drawToolButtons[2].position.y = 0
+    toolbarNode.toolButtons[2].position.y = 0
     //flipGlow.size = CGSize(Globals.iconSpan + Globals.mediumEm)
     flipLabel.position.y = -Globals.iconSpan / 2 - Globals.mediumEm * 2
   }
@@ -132,7 +132,7 @@ class SequenceTutorialScene: GameScene {
         let buttonX = flipButton.position.x
         flipButton.position.x += size.width/2
         flipButton.runAction(SKAction.moveToX(buttonX, duration: 0.5).easeOut())
-        toolbarNode.drawPage.addChild(flipButton)
+        toolbarNode.swipeNode.pages[0].addChild(flipButton)
         tutorialState = .Flip
       }
     case .Flip:

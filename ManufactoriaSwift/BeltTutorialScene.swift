@@ -25,9 +25,9 @@ class BeltTutorialScene: TutorialScene {
     toolbarNode.robotButton.removeFromParent()
     toolbarNode.undoCancelSwapper.removeFromParent()
     toolbarNode.redoConfirmSwapper.removeFromParent()
-    toolbarNode.leftArrowWrapper.removeFromParent()
-    toolbarNode.rightArrowWrapper.removeFromParent()
-    for button in toolbarNode.drawToolButtons {button.removeFromParent()}
+    toolbarNode.swipeNode.leftArrowWrapper.removeFromParent()
+    toolbarNode.swipeNode.rightArrowWrapper.removeFromParent()
+    for button in toolbarNode.toolButtons {button.removeFromParent()}
     
     speedControlNode.backButton.removeFromParent()
     speedControlNode.slowerButton.removeFromParent()

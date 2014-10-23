@@ -22,6 +22,7 @@ class ToolButton: SKSpriteNode {
   var nodeOn, nodeOff: SKNode?
   var editMode: EditMode
   var isInFocus = false
+  var toolButtonGroupIndex = 0
   
   init(nodeOff: SKNode, nodeOn: SKNode, editMode: EditMode) {
     self.nodeOff = nodeOff

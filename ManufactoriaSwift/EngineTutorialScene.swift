@@ -17,14 +17,14 @@ class EngineTutorialScene: GameScene {
     statusNode.instructionsLabel.text = "The malevolence engine will\nfind a way to thwart you.\n\nReject if #r anywhere."
     statusNode.leftArrowWrapper.removeFromParent()
     statusNode.rightArrowWrapper.removeFromParent()
-    toolbarNode.leftArrowWrapper.removeFromParent()
-    toolbarNode.rightArrowWrapper.removeFromParent()
+    toolbarNode.swipeNode.leftArrowWrapper.removeFromParent()
+    toolbarNode.swipeNode.rightArrowWrapper.removeFromParent()
     toolbarNode.userInteractionEnabled = false
     toolbarNode.undoCancelSwapper.removeFromParent()
     toolbarNode.redoConfirmSwapper.removeFromParent()
-    toolbarNode.leftArrowWrapper.removeFromParent()
-    toolbarNode.rightArrowWrapper.removeFromParent()
-    for button in toolbarNode.drawToolButtons {button.removeFromParent()}
+    toolbarNode.swipeNode.leftArrowWrapper.removeFromParent()
+    toolbarNode.swipeNode.rightArrowWrapper.removeFromParent()
+    for button in toolbarNode.toolButtons {button.removeFromParent()}
     
     for i in 0 ..< gridNode.grid.cells.count {gridNode.grid.cells[i] = Cell()}
     gridNode.grid[GridCoord(0,0)] = Cell(kind: .Belt, direction: .North)
@@ -59,7 +59,7 @@ class EngineTutorialScene: GameScene {
         case .Fail2:
           for i in 0 ..< gridNode.grid.cells.count {gridNode.grid.cells[i] = Cell()}
           gridNode.changeCellNodesToMatchCellsWithAnimate(true)
-          for button in toolbarNode.drawToolButtons {toolbarNode.drawPage.addChild(button)}
+          for button in toolbarNode.toolButtonGroups[0] {toolbarNode.swipeNode.pages[0].addChild(button)}
           toolbarNode.robotButton.position.y = firstRobotButtonY ?? 0
         case .Try:
           break

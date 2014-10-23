@@ -20,140 +20,136 @@ protocol ToolbarNodeDelegate: class {
   func testButtonPressed()
 }
 
-class ToolbarNode: SwipeNode, ToolButtonDelegate {
+class ToolbarNode: SKNode, ToolButtonDelegate, SwipeNodeDelegate {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   enum State {case Drawing, Selecting, Disabled}
   
   weak var delegate: ToolbarNodeDelegate!
-  let drawPage = SKNode()
-  let selectionPage = SKNode()
+  
+  let staticButtons: [Button]
   let undoButton = Button(iconOffNamed: "undoIconOff", iconOnNamed: "undoIconOn")
   let redoButton = Button(iconOffNamed: "undoIconOff", iconOnNamed: "undoIconOn")
   let cancelButton = Button(iconOffNamed: "cancelIconOff", iconOnNamed: "cancelIconOn")
   let confirmButton = Button(iconOffNamed: "confirmIconOff", iconOnNamed: "confirmIconOn")
   let robotButton = Button(iconOffNamed: "robotOff", iconOnNamed: "robotOn")
-  let selectBoxMoveButton = SelectBoxMoveButton()
-  let quickButtons: [Button]
-  let drawToolButtons, selectionToolButtons: [ToolButton]
-  var buttonInFocus, lastDrawToolButton, lastSelectionToolButton: ToolButton
   var undoCancelSwapper, redoConfirmSwapper: ButtonSwapper
   
+  let swipeNode: SwipeNode
+  let toolButtons: [ToolButton]
+  let toolButtonGroups: [[ToolButton]]
+  var toolButtonMemories: [ToolButton] = []
+  let blankButton = ToolButton(iconOffNamed: "blankIconOff", iconOnNamed: "blankIconOn", editMode: .Blank)
+  let beltBridgeButton = BeltBridgeButton()
+  let selectBoxMoveButton = SelectBoxMoveButton()
+  let selectCellButton = ToolButton(iconOffNamed: "selectCellIconOff", iconOnNamed: "selectCellIconOn", editMode: .SelectCell)
+  var buttonInFocus: ToolButton
+  
   init(editModes: [EditMode]) {
-    quickButtons = [undoButton, redoButton, cancelButton, confirmButton, robotButton]
+    staticButtons = [undoButton, redoButton, cancelButton, confirmButton, robotButton]
     undoCancelSwapper = ButtonSwapper(buttons: [undoButton, cancelButton],
       rotateRadians: CGFloat(2*M_PI), liftZPosition: 2)
     redoConfirmSwapper = ButtonSwapper(buttons: [redoButton, confirmButton],
       rotateRadians: CGFloat(-2*M_PI), liftZPosition: 2)
     
-    var tempDrawToolButtons: [ToolButton] = [
-      ToolButton(iconOffNamed: "blankIconOff", iconOnNamed: "blankIconOn", editMode: .Blank),
-      BeltBridgeButton()
-    ]
-    if contains(editModes, .PullerBR) || contains(editModes, .PullerRB) {
-      tempDrawToolButtons.append(PullerButton(kind: .PullerBR))}
-    if contains(editModes, .PullerGY) || contains(editModes, .PullerYG) {
-      tempDrawToolButtons.append(PullerButton(kind: .PullerGY))}
-    var pusherKinds: [EditMode] = []
+    var groupA: [ToolButton] = [blankButton, beltBridgeButton]
+    var groupB: [ToolButton] = []
     for editMode in editModes {
       switch editMode {
-      case .PusherB, .PusherR, .PusherG, .PusherY: pusherKinds.append(editMode)
+      case .PullerBR, .PullerRB, .PullerGY, .PullerYG:
+        groupA.append(PullerButton(kind: editMode))
+      case .PusherB, .PusherR, .PusherG, .PusherY:
+        groupB.append(PusherButton(kind: editMode))
       default: break
       }
     }
-    for pusherKind in pusherKinds {
-      tempDrawToolButtons.append(PusherButton(kind: pusherKind))
-    }
+    let groupC: [ToolButton] = [selectBoxMoveButton, selectCellButton]
+    toolButtons = groupA + groupB + groupC
     
-    drawToolButtons = tempDrawToolButtons
-    
-    selectionToolButtons = [
-      selectBoxMoveButton,
-      ToolButton(iconOffNamed: "selectCellIconOff", iconOnNamed: "selectCellIconOn", editMode: .SelectCell)
-    ]
-    
-    if drawToolButtons.count > 1 {
-      buttonInFocus = drawToolButtons[1]
+    if IPAD {
+      if toolButtons.count <= 8 {
+        toolButtonGroups = [groupA + groupB + groupC]
+      } else {
+        toolButtonGroups = [groupA + groupB, groupC]
+      }
     } else {
-      buttonInFocus = drawToolButtons[0]
+      if toolButtons.count <= 6 {
+        toolButtonGroups = [groupA + groupB + groupC]
+      } else if groupA.count + groupB.count <= 6 {
+        toolButtonGroups = [groupA + groupB, groupC]
+      } else {
+        toolButtonGroups = [groupA, groupB, groupC]
+      }
     }
-    buttonInFocus.isInFocus = true
     
-    lastDrawToolButton = buttonInFocus
-    lastSelectionToolButton = selectionToolButtons[0]
+    var pages: [SKNode] = []
+    for toolButtonGroup in toolButtonGroups {
+      let page = SKNode()
+      for toolButton in toolButtonGroup {
+        page.addChild(toolButton)
+      }
+      pages.append(page)
+      toolButtonMemories.append(toolButtonGroup[0])
+    }
+    swipeNode = SwipeNode(pages: pages)
     
-    super.init(pages: [drawPage, selectionPage])
+    toolButtonMemories[0] = beltBridgeButton
+    buttonInFocus = beltBridgeButton
+    beltBridgeButton.isInFocus = true
+    
+    super.init()
     
     for node in redoButton.children {(node as SKNode).xScale = -1}
-    
     undoButton.touchUpInsideClosure = {[unowned self] in self.delegate.undoEdit()}
     redoButton.touchUpInsideClosure = {[unowned self] in self.delegate.redoEdit()}
     cancelButton.touchUpInsideClosure = {[unowned self] in self.delegate.cancelSelection()}
     confirmButton.touchUpInsideClosure = {[unowned self] in self.delegate.confirmSelection()}
     robotButton.touchUpInsideClosure = {[unowned self] in self.delegate.testButtonPressed()}
-    
-    for button in quickButtons {
-      button.swipeThroughDelegate = self
-    }
+    cancelButton.userInteractionEnabled = false
+    confirmButton.userInteractionEnabled = false
     addChild(undoCancelSwapper)
     addChild(redoConfirmSwapper)
     addChild(robotButton)
     
-    for button in drawToolButtons {
-      button.swipeThroughDelegate = self
+    swipeNode.swipeSnapDelegate = self
+    for button in toolButtons {
       button.toolButtonDelegate = self
-      drawPage.addChild(button)
     }
-    
-    for button in selectionToolButtons {
-      button.swipeThroughDelegate = self
-      button.toolButtonDelegate = self
-      selectionPage.addChild(button)
+    if toolButtonGroups.count > 1 {
+      for button in toolButtons {
+        button.swipeThroughDelegate = swipeNode
+      }
+    } else {
+      swipeNode.userInteractionEnabled = false
     }
-    
-    cancelButton.userInteractionEnabled = false
-    confirmButton.userInteractionEnabled = false    
+    addChild(swipeNode)
   }
   
-  override func fitToSize() {
-    super.fitToSize()
-    let iconSize = CGSize(Globals.iconSpan)
-    var buttonTouchHeight = min(iconSize.height * 2, size.height / 2)
-    func distributeButtons(buttons: [SKSpriteNode]) {
-      let buttonTouchWidth = min(iconSize.width * 2, size.width / CGFloat(buttons.count))
-      let buttonXCenters = distributionForChildren(count: buttons.count, childSize: iconSize.width, parentSize: size.width)
-      var i = 0
-      for button in buttons {
-        button.position.x = CGFloat(buttonXCenters[i++])
-        button.size = CGSize(buttonTouchWidth, buttonTouchHeight)
+  var size: CGSize = CGSizeZero {didSet{if size != oldValue {fitToSize()}}}
+  
+  func fitToSize() {
+    let yCenters = distributionForChildren(count: 2, childSize: Globals.iconSpan, parentSize: size.height)
+    for button in staticButtons {
+      button.position.y = yCenters[1]
+    }
+    swipeNode.position.y = yCenters[0]
+    swipeNode.size = CGSize(size.width, yCenters[0] * 2)
+    func distributeXs(nodes: [SKNode]) {
+      let xCenters = distributionForChildren(count: nodes.count, childSize: Globals.iconSpan, parentSize: size.width)
+      for i in 0 ..< nodes.count {
+        nodes[i].position.x = xCenters[i]
       }
     }
-    distributeButtons([undoButton, robotButton, redoButton])
-    distributeButtons(drawToolButtons)
-    distributeButtons(selectionToolButtons)
-    let buttonYCenters = distributionForChildren(count: 2, childSize: iconSize.height, parentSize: size.height)
-    for button in quickButtons {button.position.y = buttonYCenters[1]}
-    for button in drawToolButtons + selectionToolButtons {button.position.y = buttonYCenters[0]}
-    leftArrowWrapper.position.y = buttonYCenters[0]
-    rightArrowWrapper.position.y = buttonYCenters[0]
-    
-    undoCancelSwapper.position = undoButton.position
-    redoConfirmSwapper.position = redoButton.position
-    undoButton.position = CGPointZero
-    redoButton.position = CGPointZero
-    cancelButton.position = CGPointZero
-    confirmButton.position = CGPointZero
-    cancelButton.size = undoButton.size
-    confirmButton.size = redoButton.size
+    distributeXs([undoCancelSwapper, robotButton, redoConfirmSwapper])
+    for group in toolButtonGroups {
+      distributeXs(group)
+    }
   }
   
   func update(dt: NSTimeInterval) {
-    for button in quickButtons {
+    for button in staticButtons {
       button.update(dt)
     }
-    for button in drawToolButtons {
-      button.update(dt)
-    }
-    for button in selectionToolButtons {
+    for button in toolButtons {
       button.update(dt)
     }
   }
@@ -170,7 +166,7 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
         robotButton.userInteractionEnabled = true
         undoCancelSwapper.index = 0
         redoConfirmSwapper.index = 0
-        for button in drawToolButtons + selectionToolButtons {
+        for button in toolButtons {
           button.userInteractionEnabled = true
         }
         (selectBoxMoveButton as ToolButton).editMode = .SelectBox // ambiguity bug workaround
@@ -183,33 +179,14 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
         robotButton.userInteractionEnabled = true
         undoCancelSwapper.index = 1
         redoConfirmSwapper.index = 1
-        for button in drawToolButtons + selectionToolButtons {
+        for button in toolButtons {
           button.userInteractionEnabled = true
         }
         (selectBoxMoveButton as ToolButton).editMode = .Move // ambiguity bug workaround
         if delegate.editMode == .SelectBox {delegate.editMode = .Move}
       case .Disabled:
-        for button in quickButtons {button.userInteractionEnabled = false}
-        for button in drawToolButtons + selectionToolButtons {button.userInteractionEnabled = false}
-      }
-    }
-  }
-  
-  override func snapToIndex(index: Int, initialVelocityX: CGFloat) {
-    super.snapToIndex(index, initialVelocityX: initialVelocityX)
-    if index == 0 {
-      if buttonInFocus != lastDrawToolButton {
-        buttonInFocus.isInFocus = false
-        buttonInFocus = lastDrawToolButton
-        buttonInFocus.isInFocus = true
-        delegate.editMode = buttonInFocus.editMode
-      }
-    } else if index == 1 {
-      if buttonInFocus != lastSelectionToolButton {
-        buttonInFocus.isInFocus = false
-        buttonInFocus = lastSelectionToolButton
-        buttonInFocus.isInFocus = true
-        delegate.editMode = buttonInFocus.editMode
+        for button in staticButtons {button.userInteractionEnabled = false}
+        for button in toolButtons {button.userInteractionEnabled = false}
       }
     }
   }
@@ -228,21 +205,40 @@ class ToolbarNode: SwipeNode, ToolButtonDelegate {
     }
   }
   
+  func saveToolButtonToMemory(toolButton: ToolButton) {
+    for i in 0 ..< toolButtonGroups.count {
+      if contains(toolButtonGroups[i], toolButton) {
+        toolButtonMemories[i] = toolButton
+        return
+      }
+    }
+  }
+  
+  // Mark: - SwipeNodeDelegate
+  
+  func swipeNodeDidSnapToIndex(index: Int) {
+    if index >= 0 && index < toolButtonMemories.count {
+      let newButtonInFocus = toolButtonMemories[index]
+      if newButtonInFocus == buttonInFocus {return}
+      buttonInFocus.isInFocus = false
+      buttonInFocus = newButtonInFocus
+      buttonInFocus.isInFocus = true
+      delegate.editMode = buttonInFocus.editMode
+    }
+  }
+  
   // MARK: - ToolButtonDelegate Methods
   
   func toolButtonActivated(button: ToolButton) {
     if button == buttonInFocus {
       delegate.editMode = button.cycleEditMode()
     } else {
-      if contains(drawToolButtons, button) {
-        lastDrawToolButton = button
-      } else if contains(selectionToolButtons, button) {
-        lastSelectionToolButton = button
-      }
+      saveToolButtonToMemory(button)
       buttonInFocus.isInFocus = false
-      button.isInFocus = true
       buttonInFocus = button
-      delegate.editMode = button.editMode
+      buttonInFocus.isInFocus = true
+      delegate.editMode = buttonInFocus.editMode
+      saveToolButtonToMemory(buttonInFocus)
     }
   }
   
