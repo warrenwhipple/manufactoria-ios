@@ -41,7 +41,7 @@ class TutorialScene: GameScene {
     swipeHint.runAction(SKAction.sequence([SKAction.fadeAlphaTo(0, duration: 0.2), SKAction.removeFromParent()]))
   }
   
-  override func statusNodeDidSnapToIndex(index: Int) {
+  override func swipeNodeDidSnapToIndex(index: Int) {
     // show left swipe arrow on first swipe
     if index != 1 && statusNode.leftArrowWrapper.parent == nil {
       statusNode.leftArrowWrapper.alpha = 0

@@ -29,9 +29,6 @@ class BeltTutorialScene: TutorialScene {
     toolbarNode.swipeNode.rightArrowWrapper.removeFromParent()
     for button in toolbarNode.toolButtons {button.removeFromParent()}
     
-    speedControlNode.backButton.removeFromParent()
-    speedControlNode.slowerButton.removeFromParent()
-    speedControlNode.skipButton.removeFromParent()
     congratulationsMenu.menuButton.touchUpInsideClosure = {[unowned self] in self.transitionToGameSceneWithLevelNumber(1)}
     
     gridNode.animateThinking = false
@@ -85,6 +82,7 @@ class BeltTutorialScene: TutorialScene {
       case .Testing:
         statusNode.tapeLabel.removeFromParent()
         statusNode.tapeNode.removeFromParent()
+        speedControlNode.removeFromParent()
       case .Congratulating: break
       }
     }
@@ -122,8 +120,8 @@ class BeltTutorialScene: TutorialScene {
     }
   }
   
-  override func statusNodeDidSnapToIndex(index: Int) {
-    super.statusNodeDidSnapToIndex(index)
+  override func swipeNodeDidSnapToIndex(index: Int) {
+    super.swipeNodeDidSnapToIndex(index)
     if index == 2 && tutorialState == .FloorPlan {
       nextTutorialState()
     }

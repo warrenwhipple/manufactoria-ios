@@ -8,7 +8,7 @@
 
 import SpriteKit
 
-class GameScene: ManufactoriaScene, GridNodeDelegate, StatusNodeDelegate, EngineDelegate, ToolbarNodeDelegate, SpeedControlNodeDelegate, CongratulationsMenuDelegate {
+class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusNodeDelegate, EngineDelegate, ToolbarNodeDelegate, SpeedControlNodeDelegate, CongratulationsMenuDelegate {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   enum State {case Editing, Thinking, Testing, Congratulating}
   enum RobotState {case Entering, Testing, Exiting, Falling}
@@ -59,6 +59,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, StatusNodeDelegate, Engine
     
     addChild(gridNode)
     
+    statusNode.swipeSnapDelegate = self
     statusNode.delegate = self
     statusNode.zPosition = 10
     addChild(statusNode)
@@ -301,16 +302,16 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, StatusNodeDelegate, Engine
       loadTape(currentTapeTestIndex + 1)
     }
   }
+  
+  // MARK: - SwipeNodeDelegate Function
+  
+  func swipeNodeDidSnapToIndex(index: Int) {}
 
   // MARK: - StatusNodeDelegate Functions
   
   func menuButtonPressed() {
     levelData.saveWithLevelNumber(levelNumber)
     transitionToMenuScene()
-  }
-  
-  func statusNodeDidSnapToIndex(index: Int) {
-    
   }
   
   // MARK: - EngineDelegate Functions

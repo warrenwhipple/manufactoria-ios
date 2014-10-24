@@ -91,8 +91,8 @@ class SortTutorialScene: TutorialScene {
     }
   }
   
-  override func statusNodeDidSnapToIndex(index: Int) {
-    super.statusNodeDidSnapToIndex(index)
+  override func swipeNodeDidSnapToIndex(index: Int) {
+    super.swipeNodeDidSnapToIndex(index)
     if index == 2 && tutorialState == .Demo {
       nextTutorialState()
     }
