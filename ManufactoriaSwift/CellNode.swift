@@ -17,19 +17,20 @@ class CellNode: SKNode {
   
   var belt, dyingBelt, bridge, dyingBridge, pusher, dyingPusher, pullerLeft, pullerRight: SKSpriteNode?
   var puller, dyingPuller: SKNode?
-  let selectNode, thinkNode: SKSpriteNode
+  let glowNode, thinkNode: SKSpriteNode
   let pivot = SKNode()
   let enterExitArrow: SKSpriteNode?
   let shimmerNode: ShimmerNode
   var cell = Cell(kind: .Blank, direction: Direction.North)
-  var isSelected: Bool = false {didSet {if isSelected && !oldValue {pulseSelect()}}}
-  var selectPulseCountDown: NSTimeInterval = 0
+  var isSelected: Bool = false {didSet {if isSelected && !oldValue {isActivateGlowing = true}}}
+  var isActivateGlowing = false
+  var isPulseGlowing = false
   
   override init() {
-    selectNode = SKSpriteNode()
-    selectNode.color = Globals.highlightColor
-    selectNode.zPosition = 4
-    selectNode.alpha = 0
+    glowNode = SKSpriteNode()
+    glowNode.color = Globals.highlightColor
+    glowNode.zPosition = 4
+    glowNode.alpha = 0
 
     thinkNode = SKSpriteNode()
     thinkNode.zPosition = 4
@@ -40,7 +41,7 @@ class CellNode: SKNode {
     super.init()
     
     addChild(pivot)
-    addChild(selectNode)
+    addChild(glowNode)
     addChild(shimmerNode)
     addChild(thinkNode)
   }
@@ -51,18 +52,32 @@ class CellNode: SKNode {
     bridge?.texture = clippedBeltTexture
     dyingBridge?.texture = clippedBeltTexture
     
-    if isSelected || selectPulseCountDown > 0 {
-      selectNode.alpha = min(0.5, selectNode.alpha + 2.5 * CGFloat(dt))
-    } else if selectNode.alpha > 0 {
-      selectNode.alpha = max(0, selectNode.alpha - 1.25 * CGFloat(dt))
-    }
-    if selectPulseCountDown > 0 {
-      selectPulseCountDown = max(0, selectPulseCountDown - dt)
+    if isSelected || isActivateGlowing {
+      if glow < 1 {
+        glow += 4 * CGFloat(dt)
+      } else {
+        isActivateGlowing = false
+      }
+    } else if isPulseGlowing {
+      if glow < 1 {
+        glow += 2 * CGFloat(dt)
+      } else {
+        isPulseGlowing = false
+      }
+    } else {
+      if glow > 0 {
+        glow -= 2 * CGFloat(dt)
+      }
     }
   }
   
-  func pulseSelect() {
-    selectPulseCountDown = 0.2
+  var glow: CGFloat = 0 {
+    didSet {
+      if glow == oldValue {return}
+      glow = min(1, max(0, glow))
+      glowNode.alpha = 0.5 * (1 - glow)
+      glowNode.alpha = 0.5 * glow
+    }
   }
   
   func newBeltWithAnimate(animate: Bool) {
@@ -420,7 +435,7 @@ class CellNode: SKNode {
     pullerRight?.size = pullerHalfTexture?.size() ?? CGSizeZero
     enterExitArrow?.texture = enterExitArrowTexture
     enterExitArrow?.size = enterExitArrowTexture?.size() ?? CGSizeZero
-    selectNode.size = CGSize(pointSize)
+    glowNode.size = CGSize(pointSize)
     shimmerNode.size = CGSize(pointSize)
     thinkNode.size = CGSize(pointSize)
     self.setScale(1 / pointSize)

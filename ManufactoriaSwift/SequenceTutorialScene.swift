@@ -94,7 +94,7 @@ class SequenceTutorialScene: GameScene {
       let cellNode = gridNode[coord]
       runAction(SKAction.repeatActionForever(SKAction.sequence([
         SKAction.waitForDuration(0.75),
-        SKAction.runBlock({cellNode.selectPulseCountDown = 0.5}),
+        SKAction.runBlock({cellNode.isPulseGlowing = true}),
         SKAction.waitForDuration(0.75)
         ])), withKey: "pulse")
     }

@@ -272,7 +272,7 @@ class GridNode: SKNode {
               grid[cellCoord] = liftedCell
               let cellNode = self[cellCoord]
               cellNode.changeCell(liftedCell, animate: true)
-              cellNode.selectNode.alpha = 0.5
+              cellNode.glow = 1
               someCellWasEdited = true
             }
           }
@@ -318,7 +318,7 @@ class GridNode: SKNode {
       let cellNode = cellNodes[i]
       if cell != cellNode.cell {
         cellNode.changeCell(cell, animate: animate)
-        cellNode.pulseSelect()
+        cellNode.isActivateGlowing = true
         someCellWasEdited = true
       }
     }
@@ -351,7 +351,7 @@ class GridNode: SKNode {
             grid.cells[i] = Cell()
             cellNode.changeCell(Cell(), animate: true)
             cellNode.isSelected = false
-            cellNode.selectNode.alpha = 0
+            cellNode.glow = 0
           }
           i++
         }

@@ -56,11 +56,11 @@ class BeltTutorialScene: TutorialScene {
     let cell = Cell(kind: .Belt, direction: .North)
     gridPulseAction = SKAction.repeatActionForever(SKAction.sequence([
       SKAction.waitForDuration(2),
-      SKAction.runBlock({if cellNode1.cell != cell {cellNode1.selectPulseCountDown = 0.4}}),
+      SKAction.runBlock({if cellNode1.cell != cell {cellNode1.isPulseGlowing = true}}),
       SKAction.waitForDuration(0.2),
-      SKAction.runBlock({if cellNode2.cell != cell {cellNode2.selectPulseCountDown = 0.4}}),
+      SKAction.runBlock({if cellNode2.cell != cell {cellNode2.isPulseGlowing = true}}),
       SKAction.waitForDuration(0.2),
-      SKAction.runBlock({if cellNode3.cell != cell {cellNode3.selectPulseCountDown = 0.4}})
+      SKAction.runBlock({if cellNode3.cell != cell {cellNode3.isPulseGlowing = true}})
       ]))
     
     startSwipePulse()
@@ -115,6 +115,7 @@ class BeltTutorialScene: TutorialScene {
       if toolbarNode.robotButton.parent == nil {
         toolbarNode.addChild(toolbarNode.robotButton)
       }
+      toolbarNode.robotButton.startPulseGlowWithInterval(2)
       tutorialState = .Robot
     case .Robot: break
     }
