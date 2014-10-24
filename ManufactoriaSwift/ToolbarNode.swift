@@ -127,9 +127,10 @@ class ToolbarNode: SKNode, ToolButtonDelegate, SwipeNodeDelegate {
   var size: CGSize = CGSizeZero {didSet{if size != oldValue {fitToSize()}}}
   
   func fitToSize() {
+    let staticNodes = [undoCancelSwapper, robotButton, redoConfirmSwapper]
     let yCenters = distributionForChildren(count: 2, childSize: Globals.iconSpan, parentSize: size.height)
-    for button in staticButtons {
-      button.position.y = yCenters[1]
+    for node in staticNodes {
+      node.position.y = yCenters[1]
     }
     swipeNode.position.y = yCenters[0]
     swipeNode.size = CGSize(size.width, yCenters[0] * 2)
@@ -139,7 +140,7 @@ class ToolbarNode: SKNode, ToolButtonDelegate, SwipeNodeDelegate {
         nodes[i].position.x = xCenters[i]
       }
     }
-    distributeXs([undoCancelSwapper, robotButton, redoConfirmSwapper])
+    distributeXs(staticNodes)
     for group in toolButtonGroups {
       distributeXs(group)
     }

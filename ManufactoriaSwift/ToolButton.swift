@@ -244,68 +244,42 @@ class PusherButton: ToolButton {
 
 class SelectBoxMoveButton: ToolButton {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  let boxOverlay = SKSpriteNode("selectBoxIconOverlay")
-  let moveOverlay = SKSpriteNode("selectMoveIconOverlay")
-  var multiIndicatorX: CGFloat = 0
+  let boxOverlayOff = SKSpriteNode("selectBoxIconOverlay")
+  let boxOverlayOn = SKSpriteNode("selectBoxIconOverlay")
+  let moveOverlayOff = SKSpriteNode("selectMoveIconOverlay")
+  let moveOverlayOn = SKSpriteNode("selectMoveIconOverlay")
   
   init() {
-    let beltIconOff = SKSpriteNode("beltIconOff")
-    let beltIconOn = SKSpriteNode("beltIconOn")
-    super.init(nodeOff: beltIconOff, nodeOn: beltIconOn, editMode: .Belt)
-    beltIconOn.color = Globals.highlightColor
-    /*
-    super.init(editMode: .SelectBox)
-    
     let iconOff = SKSpriteNode("selectIconOff")
-    addChild(iconOff)
-    
     let iconOn = SKSpriteNode("selectIconOn")
+    super.init(nodeOff: iconOff, nodeOn: iconOn, editMode: .SelectBox)
     iconOn.color = Globals.highlightColor
-    iconOn.alpha = 0
-    iconOn.zPosition = 1
-    addChild(iconOn)
-    
-    boxOverlay.color = Globals.strokeColor
-    boxOverlay.zPosition = 2
-    addChild(boxOverlay)
-    
-    moveOverlay.color = Globals.strokeColor
-    moveOverlay.zPosition = 2
-    moveOverlay.setScale(0)
-    addChild(moveOverlay)
-    
-    let fadeOutAction = SKAction.fadeAlphaTo(0, duration: 0.2)
-    let fadeInAction = SKAction.fadeAlphaTo(1, duration: 0.2)
-    let strokeColorAction = SKAction.colorizeWithColor(Globals.strokeColor, colorBlendFactor: 1, duration: 0.2)
-    let backgroundColorAction = SKAction.colorizeWithColor(Globals.backgroundColor, colorBlendFactor: 1, duration: 0.2)
-    focusClosure = {
-      [unowned self] in
-      iconOff.runAction(fadeOutAction, withKey: "fade")
-      iconOn.runAction(fadeInAction, withKey: "fade")
-      self.boxOverlay.runAction(backgroundColorAction, withKey: "colorize")
-      self.moveOverlay.runAction(backgroundColorAction, withKey: "colorize")
-    }
-    unfocusClosure = {
-      [unowned self] in
-      iconOff.runAction(fadeInAction, withKey: "fade")
-      iconOn.runAction(fadeOutAction, withKey: "fade")
-      self.boxOverlay.runAction(strokeColorAction, withKey: "colorize")
-      self.moveOverlay.runAction(strokeColorAction, withKey: "colorize")
-    }
-    //generateSimpleIndicator()
+    boxOverlayOn.color = Globals.backgroundColor
+    moveOverlayOn.color = Globals.backgroundColor
+    moveOverlayOff.setScale(0)
+    moveOverlayOn.setScale(0)
+    iconOff.addChild(boxOverlayOff)
+    iconOff.addChild(moveOverlayOff)
+    iconOn.addChild(boxOverlayOn)
+    iconOn.addChild(moveOverlayOn)
   }
   
   override var editMode: EditMode {
     didSet {
       if editMode == oldValue {return}
+      let scale0 = SKAction.scaleTo(0, duration: 0.2)
+      let scale1 = SKAction.scaleTo(1, duration: 0.2)
       if editMode == .Move {
-        boxOverlay.runAction(SKAction.scaleTo(0, duration: 0.2), withKey: "scale")
-        moveOverlay.runAction(SKAction.scaleTo(1, duration: 0.2), withKey: "scale")
+        boxOverlayOff.runAction(scale0, withKey: "scale")
+        boxOverlayOn.runAction(scale0, withKey: "scale")
+        moveOverlayOff.runAction(scale1, withKey: "scale")
+        moveOverlayOn.runAction(scale1, withKey: "scale")
       } else {
-        boxOverlay.runAction(SKAction.scaleTo(1, duration: 0.2), withKey: "scale")
-        moveOverlay.runAction(SKAction.scaleTo(0, duration: 0.2), withKey: "scale")
+        boxOverlayOff.runAction(scale1, withKey: "scale")
+        boxOverlayOn.runAction(scale1, withKey: "scale")
+        moveOverlayOff.runAction(scale0, withKey: "scale")
+        moveOverlayOn.runAction(scale0, withKey: "scale")
       }
     }
-    */
   }
 }
