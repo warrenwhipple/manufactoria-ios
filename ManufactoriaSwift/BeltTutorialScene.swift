@@ -14,19 +14,19 @@ class BeltTutorialScene: TutorialScene {
   
   init(size: CGSize) {
     super.init(size: size, levelNumber: 0)
+    
     statusNode.instructionsLabel.text = "This is a manufactory floor plan."
     let connectLabel = BreakingLabel()
     connectLabel.fontMedium()
     connectLabel.fontColor = Globals.strokeColor
     connectLabel.text = "Connect the entrance and exit."
     statusNode.addPageToRight(connectLabel)
+    startSwipePulse()
     
     toolbarNode.userInteractionEnabled = false
     toolbarNode.robotButton.removeFromParent()
     toolbarNode.undoCancelSwapper.removeFromParent()
     toolbarNode.redoConfirmSwapper.removeFromParent()
-    toolbarNode.swipeNode.leftArrowWrapper.removeFromParent()
-    toolbarNode.swipeNode.rightArrowWrapper.removeFromParent()
     for button in toolbarNode.toolButtons {button.removeFromParent()}
     
     congratulationsMenu.menuButton.touchUpInsideClosure = {[unowned self] in self.transitionToGameSceneWithLevelNumber(1)}
@@ -37,8 +37,8 @@ class BeltTutorialScene: TutorialScene {
     editGroupWasCompleted()
     for i in 0 ..< gridNode.grid.cells.count {
       gridNode.grid.cells[i] = Cell()
-      gridNode.cellNodes[i].changeCell(gridNode.grid.cells[i], animate: false)
     }
+    gridNode.changeCellNodesToMatchCellsWithAnimate(false)
     editGroupWasCompleted()
     
     gridNode.lockCoords([
@@ -62,8 +62,6 @@ class BeltTutorialScene: TutorialScene {
       SKAction.waitForDuration(0.2),
       SKAction.runBlock({if cellNode3.cell != cell {cellNode3.isPulseGlowing = true}})
       ]))
-    
-    startSwipePulse()
   }
   
   override func fitToSize() {
@@ -142,6 +140,8 @@ class BeltTutorialScene: TutorialScene {
     super.touchesBegan(touches, withEvent: event)
     if tutorialState == .FloorPlan {
       statusNode.snapToIndex(2, initialVelocityX: 0)
+    } else if state == .Testing {
+      fasterButtonPressed()
     }
   }
 }

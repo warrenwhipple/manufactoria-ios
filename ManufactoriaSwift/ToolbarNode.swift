@@ -62,7 +62,7 @@ class ToolbarNode: SKNode, ToolButtonDelegate, SwipeNodeDelegate {
       default: break
       }
     }
-    let groupC: [ToolButton] = [selectBoxMoveButton, selectCellButton]
+    let groupC: [ToolButton] = [selectBoxMoveButton]
     toolButtons = groupA + groupB + groupC
     
     if IPAD {
@@ -72,9 +72,9 @@ class ToolbarNode: SKNode, ToolButtonDelegate, SwipeNodeDelegate {
         toolButtonGroups = [groupA + groupB, groupC]
       }
     } else {
-      if toolButtons.count <= 6 {
+      if toolButtons.count <= 5 {
         toolButtonGroups = [groupA + groupB + groupC]
-      } else if groupA.count + groupB.count <= 6 {
+      } else if groupA.count + groupB.count <= 5 {
         toolButtonGroups = [groupA + groupB, groupC]
       } else {
         toolButtonGroups = [groupA, groupB, groupC]

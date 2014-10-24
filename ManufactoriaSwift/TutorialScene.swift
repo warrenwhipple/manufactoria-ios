@@ -33,6 +33,8 @@ class TutorialScene: GameScene {
   }
   
   func startSwipePulse() {
+    swipeHint.alpha = 0
+    swipeHint.position.x = 0
     swipeHint.runAction(swipePulseAction, withKey: "pulse")
     if swipeHint.parent == nil {statusNode.rightArrow.addChild(swipeHint)}
   }

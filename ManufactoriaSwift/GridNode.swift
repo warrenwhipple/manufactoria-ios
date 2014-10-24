@@ -318,7 +318,9 @@ class GridNode: SKNode {
       let cellNode = cellNodes[i]
       if cell != cellNode.cell {
         cellNode.changeCell(cell, animate: animate)
-        cellNode.isActivateGlowing = true
+        if animate {
+          cellNode.isActivateGlowing = true          
+        }
         someCellWasEdited = true
       }
     }
