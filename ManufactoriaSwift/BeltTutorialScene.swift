@@ -62,6 +62,8 @@ class BeltTutorialScene: TutorialScene {
       SKAction.waitForDuration(0.2),
       SKAction.runBlock({if cellNode3.cell != cell {cellNode3.isPulseGlowing = true}})
       ]))
+    
+    fitToSize()
   }
   
   override func fitToSize() {

@@ -23,6 +23,7 @@ class ToolButton: SKSpriteNode {
   var editMode: EditMode
   var isInFocus = false
   var toolButtonGroupIndex = 0
+  var editModeIsLocked = false
   
   init(nodeOff: SKNode, nodeOn: SKNode, editMode: EditMode) {
     self.nodeOff = nodeOff
@@ -135,6 +136,7 @@ class BeltBridgeButton: ToolButton {
   }
   
   override func cycleEditMode() -> EditMode {
+    if editModeIsLocked {return editMode}
     if editMode == EditMode.Belt {
       spinNode.alpha = 1
       spinNode.runAction(SKAction.rotateToAngle(CGFloat(-M_PI_2), duration: 0.2).ease(), withKey: "rotate")
@@ -200,6 +202,7 @@ class PullerButton: ToolButton {
   }
   
   override func cycleEditMode() -> EditMode {
+    if editModeIsLocked {return editMode}
     if editMode == EditMode.PullerBR || editMode == EditMode.PullerGY {
       spinNode.runAction(SKAction.rotateToAngle(CGFloat(-M_PI), duration: 0.2).ease(), withKey: "rotate")
     } else {

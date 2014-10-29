@@ -50,6 +50,7 @@ class Grid {
   var cells: [Cell]
   var startCoord: GridCoord {return GridCoord(space.columns / 2, -1)}
   var endCoord: GridCoord {return GridCoord(space.columns / 2, space.rows)}
+  var consumeColorWhenReading = true
   
   subscript(coord: GridCoord) -> Cell {
     get {
@@ -169,10 +170,10 @@ class Grid {
       if !tape.isEmpty {
         let color = tape[0].color()
         if color == Color.Blue {
-          tape = tape.from(1)
+          if consumeColorWhenReading {tape = tape.from(1)}
           return cell.direction.ccw().tickTestResult()
         } else if color == Color.Red {
-          tape = tape.from(1)
+          if consumeColorWhenReading {tape = tape.from(1)}
           return cell.direction.cw().tickTestResult()
         }
       }
@@ -181,10 +182,10 @@ class Grid {
       if !tape.isEmpty {
         let color = tape[0].color()
         if color == Color.Red {
-          tape = tape.from(1)
+          if consumeColorWhenReading {tape = tape.from(1)}
           return cell.direction.ccw().tickTestResult()
         } else if color == Color.Blue {
-          tape = tape.from(1)
+          if consumeColorWhenReading {tape = tape.from(1)}
           return cell.direction.cw().tickTestResult()
         }
       }
@@ -193,10 +194,10 @@ class Grid {
       if !tape.isEmpty {
         let color = tape[0].color()
         if color == Color.Green {
-          tape = tape.from(1)
+          if consumeColorWhenReading {tape = tape.from(1)}
           return cell.direction.ccw().tickTestResult()
         } else if color == Color.Yellow {
-          tape = tape.from(1)
+          if consumeColorWhenReading {tape = tape.from(1)}
           return cell.direction.cw().tickTestResult()
         }
       }
@@ -205,10 +206,10 @@ class Grid {
       if !tape.isEmpty {
         let color = tape[0].color()
         if color == Color.Yellow {
-          tape = tape.from(1)
+          if consumeColorWhenReading {tape = tape.from(1)}
           return cell.direction.ccw().tickTestResult()
         } else if color == Color.Green {
-          tape = tape.from(1)
+          if consumeColorWhenReading {tape = tape.from(1)}
           return cell.direction.cw().tickTestResult()
         }
       }

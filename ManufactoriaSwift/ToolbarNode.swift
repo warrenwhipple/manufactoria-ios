@@ -45,6 +45,7 @@ class ToolbarNode: SKNode, ToolButtonDelegate, SwipeNodeDelegate {
   var buttonInFocus: ToolButton
   
   init(editModes: [EditMode]) {
+    (robotButton.nodeOn as SKSpriteNode).color = Globals.strokeColor
     staticButtons = [undoButton, redoButton, cancelButton, confirmButton, robotButton]
     undoCancelSwapper = ButtonSwapper(buttons: [undoButton, cancelButton],
       rotateRadians: CGFloat(2*M_PI), liftZPosition: 2)

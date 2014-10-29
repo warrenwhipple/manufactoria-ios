@@ -437,7 +437,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
   
   func skipButtonPressed() {
     gameSpeed = 32
-    if tapeTestResults[currentTapeTestIndex].kind == TapeTestResult.Kind.FailLoop {
+    //if tapeTestResults[currentTapeTestIndex].kind == TapeTestResult.Kind.FailLoop {
       robotNode?.runAction(SKAction.sequence([
         SKAction.waitForDuration(0.5),
         SKAction.fadeAlphaTo(0, duration: 0.5),
@@ -447,7 +447,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
         SKAction.waitForDuration(1),
         SKAction.runBlock({[unowned self] in self.loadNextTape()})
         ]), withKey: "skip")
-    }
+    //}
   }
   
   // MARK: - CongratsMenuDelegate Function

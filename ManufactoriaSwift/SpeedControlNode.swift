@@ -23,7 +23,7 @@ class SpeedControlNode: SKNode {
   let backButton = Button(iconOffNamed: "skipIconOff", iconOnNamed: "skipIconOn")
   let slowerButton = Button(iconOffNamed: "speedIconOff", iconOnNamed: "speedIconOn")
   let fasterButton = Button(iconOffNamed: "speedIconOff", iconOnNamed: "speedIconOn")
-  let skipButton = Button(iconOffNamed: "skipIconOff", iconOnNamed: "skipIconOn")
+  let skipButton = Button(iconOffNamed: "cancelIconOff", iconOnNamed: "cancelIconOn")
   //let speedLabel = SKLabelNode()
   
   override init() {
@@ -45,7 +45,7 @@ class SpeedControlNode: SKNode {
     fasterButton.touchDownClosure = {[unowned self] in self.delegate.fasterButtonPressed()}
     skipButton.touchDownClosure = {[unowned self] in self.delegate.skipButtonPressed()}
     
-    addChild(backButton)
+    //addChild(backButton)
     addChild(slowerButton)
     addChild(fasterButton)
     addChild(skipButton)
@@ -55,12 +55,12 @@ class SpeedControlNode: SKNode {
   var size: CGSize = CGSizeZero {didSet{if size != oldValue {fitToSize()}}}
 
   func fitToSize() {
-    let positions = distributionForChildren(count: 4, childSize: Globals.iconSpan, parentSize: size.width)
-    backButton.position.x = positions[0]
-    slowerButton.position.x = positions[1]
+    let positions = distributionForChildren(count: 3, childSize: Globals.iconSpan, parentSize: size.width)
+    //backButton.position.x = positions[0]
+    slowerButton.position.x = positions[0]
     //speedLabel.position.x = positions[2]
     fasterButton.position.x = positions[2]
-    skipButton.position.x = positions[3]
+    skipButton.position.x = positions[1]
   }
   
   func update(dt: NSTimeInterval) {

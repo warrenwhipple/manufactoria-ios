@@ -36,10 +36,13 @@ class TransitionScene: SKScene {
         nextScene = BeltTutorialScene(size: view!.bounds.size)
       } else if levelNumber == 1 && GameData.sharedInstance.levelsComplete == 1 {
         nextScene = SortTutorialScene(size: view!.bounds.size)
+      
       } else if levelNumber == 2 && GameData.sharedInstance.levelsComplete == 2 {
         nextScene = SequenceTutorialScene(size: view!.bounds.size)
+      /*
       } else if levelNumber == 3 && GameData.sharedInstance.levelsComplete == 3 {
         nextScene = EngineTutorialScene(size: view!.bounds.size)
+      */
       } else {
         nextScene = GameScene(size: view!.bounds.size, levelNumber: levelNumber)
       }
