@@ -64,6 +64,7 @@ class ManufactoriaScene: SKScene {
   
   var lastUpdateTime: NSTimeInterval = 0
   let transitionTime: NSTimeInterval = 0.3
+  
   override init(size: CGSize) {
     super.init(size: size)
   }

@@ -160,10 +160,10 @@ class SequenceTutorialScene: TutorialScene {
     super.loadTape(i)
     if tape == "r" {
       testingR = true
-      robotNode?.color = Globals.redColor.blend(UIColor.blackColor(), blendFactor: 0.2)
+      //robotNode?.color = Globals.redColor.blend(UIColor.blackColor(), blendFactor: 0.2)
     } else if tape == "b" {
       testingB = true
-      robotNode?.color = Globals.blueColor.blend(UIColor.blackColor(), blendFactor: 0.2)
+      //robotNode?.color = Globals.blueColor.blend(UIColor.blackColor(), blendFactor: 0.2)
     }
   }
   

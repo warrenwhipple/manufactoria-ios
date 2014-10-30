@@ -11,7 +11,7 @@ import SpriteKit
 class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusNodeDelegate, EngineDelegate, ToolbarNodeDelegate, SpeedControlNodeDelegate, CongratulationsMenuDelegate {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   enum State {case Editing, Thinking, Testing, Congratulating}
-  enum RobotState {case Entering, Testing, Exiting, Falling}
+  enum TestingState {case Entering, Testing, Exiting, Falling}
   
   // model objects
   let levelNumber: Int
@@ -28,8 +28,8 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
   let toolbarNode: ToolbarNode
   let speedControlNode = SpeedControlNode()
   let congratulationsMenu = CongratulationsMenu()
-  var robotNode: SKSpriteNode?
-  var robotState: RobotState = .Entering
+  var robotNode: RobotNode?
+  var testingState: TestingState = .Entering
   
   // variables
   var gameSpeed: CGFloat = 0
@@ -98,6 +98,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
           SKAction.fadeAlphaTo(0, duration: 0.2),
           SKAction.removeFromParent()
           ]), withKey: "fade")
+        toolbarNode.robotButton.alpha = 1
         if toolbarNode.parent == nil {addChild(toolbarNode)}
         toolbarNode.runAction(SKAction.sequence([
           SKAction.waitForDuration(0.2),
@@ -107,6 +108,8 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
         statusNode.state = .Thinking
         gridTestDidPass = false
         gridNode.state = .Thinking
+        newRobotNode()
+        toolbarNode.robotButton.alpha = 0
         toolbarNode.runAction(SKAction.sequence([
           SKAction.fadeAlphaTo(0, duration: 0.2),
           SKAction.removeFromParent()
@@ -182,16 +185,14 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
     
     if state == .Testing {
       tickPercent += CGFloat(dt) * gameSpeed
-      switch robotState {
+      switch testingState {
       case .Entering:
         if tickPercent >= 1 {
           tickPercent -= 1
           statusNode.tapeNode.state = .Waiting
-          robotNode?.setScale(1 / gridNode.wrapper.xScale)
-          robotState = .Testing
+          testingState = .Testing
+          robotNode?.loadNextGridCoord(robotCoord)
           fallthrough
-        } else {
-          robotNode?.setScale(tickPercent / gridNode.wrapper.xScale)
         }
       case .Testing:
         while tickPercent >= 1 {
@@ -207,52 +208,44 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
           }
           lastTapeLength = tapeLength
           lastRobotCoord = robotCoord
-          var fallthroughRobotStateSwitch = false
+          var fallthroughTestingStateSwitch = false
           switch testResult {
           case .Accept:
             statusNode.tapeNode.state = .Exiting
-            robotNode?.setScale(1 / gridNode.wrapper.xScale)
-            robotNode?.position = CGPoint(x: CGFloat(robotCoord.i) + 0.5,y: CGFloat(robotCoord.j) + 0.5)
-            robotState = .Exiting
-            fallthroughRobotStateSwitch = true
+            testingState = .Exiting
+            fallthroughTestingStateSwitch = true
           case .Reject:
             statusNode.tapeNode.state = .Exiting
-            robotNode?.setScale(1 / gridNode.wrapper.xScale)
-            robotNode?.position = CGPoint(x: CGFloat(robotCoord.i) + 0.5,y: CGFloat(robotCoord.j) + 0.5)
-            robotState = .Falling
-            fallthroughRobotStateSwitch = true
+            robotNode?.state = .Falling
+            testingState = .Falling
+            fallthroughTestingStateSwitch = true
           case .North: robotCoord.j++
           case .East: robotCoord.i++
           case .South: robotCoord.j--
           case .West: robotCoord.i--
           }
-          if fallthroughRobotStateSwitch {fallthrough}
+          if fallthroughTestingStateSwitch {fallthrough}
+          robotNode?.loadNextGridCoord(robotCoord)
         }
-        robotNode?.position = CGPoint(
-          x: CGFloat(lastRobotCoord.i) + CGFloat(tickPercent) * CGFloat(robotCoord.i - lastRobotCoord.i) + 0.5,
-          y: CGFloat(lastRobotCoord.j) + CGFloat(tickPercent) * CGFloat(robotCoord.j - lastRobotCoord.j) + 0.5
-        )
       case .Exiting:
-        if robotState == .Falling {fallthrough}
-        robotNode?.position = CGPoint(x: CGFloat(robotCoord.i) + 0.5, y: CGFloat(robotCoord.j) + 0.5)
-        if tickPercent < 1 {
-          robotNode?.setScale((1 - tickPercent) / gridNode.wrapper.xScale)
-        } else {
-          robotNode?.setScale(0)
+        if testingState == .Falling {fallthrough}
+        robotNode?.loadNextPosition(gridNode.wrapper.convertPoint(
+          CGPoint(size.width / 2,size.height + Globals.touchSpan), fromNode: self))
+        if tickPercent >= 1 {
           loadNextTape()
         }
       case .Falling:
-        robotNode?.position = CGPoint(x: CGFloat(robotCoord.i) + 0.5, y: CGFloat(robotCoord.j) + 0.5)
         if tickPercent < 0.5 {
-          robotNode?.setScale((1 - 0.5 * tickPercent) / gridNode.wrapper.xScale)
+          //robotNode?.setScale((1 - 0.5 * tickPercent) / gridNode.wrapper.xScale)
         } else if tickPercent < 1 {
-          robotNode?.setScale(0.75 / gridNode.wrapper.xScale)
+          //robotNode?.setScale(0.75 / gridNode.wrapper.xScale)
         } else {
-          robotNode?.setScale(0.75 / gridNode.wrapper.xScale)
+          //robotNode?.setScale(0.75 / gridNode.wrapper.xScale)
           loadNextTape()
         }
       }
       statusNode.tapeNode.update(tickPercent)
+      robotNode?.update(tickPercent)
     }
     
     // update child nodes
@@ -263,12 +256,22 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
     gridNode.update(dt, beltPercent: beltPercent)
   }
   
+  func newRobotNode() {
+    robotNode?.runAction(SKAction.sequence([SKAction.fadeAlphaTo(0, duration: 0.5), SKAction.removeFromParent()]))
+    if state == .Thinking {
+      robotNode = RobotNode(
+        button: toolbarNode.robotButton,
+        initialPosition: gridNode.wrapper.convertPoint(toolbarNode.robotButton.position, fromNode: toolbarNode)
+      )
+    } else {
+      robotNode = RobotNode(initialPosition: gridNode.wrapper.convertPoint(CGPoint(size.width/2, -Globals.touchSpan), fromNode: self))
+    }
+    robotNode?.setScale(1/gridNode.wrapper.xScale)
+    gridNode.wrapper.addChild(robotNode!)
+  }
+  
   func loadTape(i: Int) {
     removeActionForKey("skip")
-    robotNode?.runAction(SKAction.sequence([
-      SKAction.fadeAlphaTo(0, duration: 0.5),
-      SKAction.removeFromParent()
-      ]))
     currentTapeTestIndex = i
     gameSpeed = 1
     tickPercent = 0
@@ -280,20 +283,15 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
     statusNode.tapeNode.loadTape(tape)
     statusNode.tapeNode.state = .Entering
     lastTapeLength = tape.length()
-    robotState = .Entering
+    testingState = .Entering
     robotCoord = levelData.grid.startCoord + 1
     lastRobotCoord = levelData.grid.startCoord
-    robotNode = SKSpriteNode("robotOn")
-    //robotNode?.color = Globals.highlightColor
-    robotNode?.position = CGPoint(CGFloat(lastRobotCoord.i) + 0.5, CGFloat(lastRobotCoord.j) + 0.5)
-    robotNode?.zPosition = 2
-    robotNode?.setScale(0)
-    gridNode.wrapper.addChild(robotNode!)
+    if i > 0 {newRobotNode()}
+    robotNode?.loadNextGridCoord(lastRobotCoord)
   }
   
   func loadNextTape() {
-    robotNode?.position = CGPoint(CGFloat(robotCoord.i) + 0.5, CGFloat(robotCoord.j) + 0.5)
-    robotNode?.runAction(SKAction.sequence([SKAction.fadeAlphaTo(0, duration: 1), SKAction.removeFromParent()]))
+    robotNode?.runAction(SKAction.sequence([SKAction.fadeAlphaTo(0, duration: 0.5), SKAction.removeFromParent()]))
     robotNode = nil
     if currentTapeTestIndex >= tapeTestResults.count - 1 {
       if gridTestDidPass {state = .Congratulating}

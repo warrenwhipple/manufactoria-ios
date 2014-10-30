@@ -161,9 +161,9 @@ class SortTutorialScene: TutorialScene {
   override func loadTape(i: Int) {
     super.loadTape(i)
     if tape == "r" {
-      robotNode?.color = Globals.redColor.blend(UIColor.blackColor(), blendFactor: 0.2)
+      //robotNode?.color = Globals.redColor.blend(UIColor.blackColor(), blendFactor: 0.2)
     } else if tape == "b" {
-      robotNode?.color = Globals.blueColor.blend(UIColor.blackColor(), blendFactor: 0.2)
+      //robotNode?.color = Globals.blueColor.blend(UIColor.blackColor(), blendFactor: 0.2)
     }
   }
   
