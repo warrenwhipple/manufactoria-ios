@@ -10,19 +10,21 @@ import SpriteKit
 
 class RobotNode: SKNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  enum State {case Moving, Falling, Waiting}
   
+  let fallScaleNode = SKNode()
   let robotOff: SKSpriteNode?
   let robotOn: SKSpriteNode
-  var lastPosition, nextPosition: CGPoint
+  var lastLastPosition, lastPosition, nextPosition: CGPoint
   
   init(initialPosition: CGPoint) {
     robotOn = SKSpriteNode("robotOn")
+    lastLastPosition = initialPosition
     lastPosition = initialPosition
     nextPosition = initialPosition
     super.init()
     position = initialPosition
-    addChild(robotOn)
+    fallScaleNode.addChild(robotOn)
+    addChild(fallScaleNode)
   }
   
   init(button: Button, initialPosition: CGPoint) {
@@ -40,6 +42,7 @@ class RobotNode: SKNode {
     } else {
       robotOn = SKSpriteNode("robotOn")
     }
+    lastLastPosition = initialPosition
     lastPosition = initialPosition
     nextPosition = initialPosition
     super.init()
@@ -47,34 +50,60 @@ class RobotNode: SKNode {
     if robotOff != nil {
       let glowTimeLeft = NSTimeInterval(1 - button.glow) / 4
       robotOff?.runAction(SKAction.sequence([SKAction.fadeAlphaTo(0, duration: glowTimeLeft), SKAction.removeFromParent()]))
-      addChild(robotOff!)
+      fallScaleNode.addChild(robotOff!)
       robotOn.runAction(SKAction.fadeAlphaTo(1, duration: glowTimeLeft))
     }
-    addChild(robotOn)
+    fallScaleNode.addChild(robotOn)
+    addChild(fallScaleNode)
   }
   
+  enum State {case Moving, Falling}
   var state: State = .Moving
   
   func update(tickPercent: CGFloat) {
     switch state {
     case .Moving:
-      let ease = easeInOut(tickPercent)
-      let easeLeft = 1 - ease
-      position = CGPoint(
-        lastPosition.x * easeLeft + nextPosition.x * ease,
-        lastPosition.y * easeLeft + nextPosition.y * ease
-      )
-    case .Falling: break
-    case .Waiting: break
+      if tickPercent < 0.5 {
+        let ease = easeInOut(tickPercent + 0.5)
+        let easeLeft = 1 - ease
+        position = CGPoint(
+          lastLastPosition.x * easeLeft + lastPosition.x * ease,
+          lastLastPosition.y * easeLeft + lastPosition.y * ease
+        )
+      } else {
+        let ease = easeInOut(tickPercent - 0.5)
+        let easeLeft = 1 - ease
+        position = CGPoint(
+          lastPosition.x * easeLeft + nextPosition.x * ease,
+          lastPosition.y * easeLeft + nextPosition.y * ease
+        )
+      }
+    case .Falling:
+      if tickPercent < 0.5 {
+        let ease = easeInOut(tickPercent + 0.5)
+        let easeLeft = 1 - ease
+        position = CGPoint(
+          lastPosition.x * easeLeft + nextPosition.x * ease,
+          lastPosition.y * easeLeft + nextPosition.y * ease
+        )
+        let fallEase = easeIn(tickPercent * 2)
+        fallScaleNode.setScale(1 - fallEase + 0.75 * fallEase)
+      } else {
+        position = nextPosition
+        fallScaleNode.setScale(0.75)
+      }
     }
+    
   }
   
   func loadNextPosition(newNextPosition: CGPoint) {
+    lastLastPosition = lastPosition
     lastPosition = nextPosition
     nextPosition = newNextPosition
   }
   
   func loadNextGridCoord(nextGridCoord: GridCoord) {
+    lastLastPosition = lastPosition
     lastPosition = nextPosition
     nextPosition = CGPoint(CGFloat(nextGridCoord.i) + 0.5, CGFloat(nextGridCoord.j) + 0.5)
   }
