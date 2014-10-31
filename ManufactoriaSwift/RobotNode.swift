@@ -58,10 +58,11 @@ class RobotNode: SKNode {
   func update(tickPercent: CGFloat) {
     switch state {
     case .Moving:
-      let tickPercentLeft = 1 - tickPercent
+      let ease = easeInOut(tickPercent)
+      let easeLeft = 1 - ease
       position = CGPoint(
-        lastPosition.x * tickPercentLeft + nextPosition.x * tickPercent,
-        lastPosition.y * tickPercentLeft + nextPosition.y * tickPercent
+        lastPosition.x * easeLeft + nextPosition.x * ease,
+        lastPosition.y * easeLeft + nextPosition.y * ease
       )
     case .Falling: break
     case .Waiting: break
