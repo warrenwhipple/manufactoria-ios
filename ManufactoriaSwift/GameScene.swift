@@ -30,6 +30,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
   let congratulationsMenu = CongratulationsMenu()
   var robotNode: RobotNode?
   var testingState: TestingState = .Entering
+  var lastTestingState: TestingState = .Entering
   
   // variables
   var gameSpeed: CGFloat = 0
@@ -37,7 +38,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
   var lastRobotCoord = GridCoord(0, 0)
   var lastTapeLength: Int = 0
   var tickPercent: CGFloat = 0
-  var beltPercent: CGFloat = 0
+  var beltPosition: CGFloat = 0
   var gridTestDidPass = false
   
   init(size: CGSize, var levelNumber: Int) {
@@ -177,12 +178,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
   
   override func updateDt(dt: NSTimeInterval) {
     
-    // calculate belt percent
-    beltPercent += CGFloat(dt) * 0.25
-    while beltPercent >= 1.0 {
-      beltPercent -= 1.0
-    }
-    
+    // update test
     if state == .Testing {
       tickPercent += CGFloat(dt) * gameSpeed
       switch testingState {
@@ -197,6 +193,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
       case .Testing:
         while tickPercent >= 1 {
           tickPercent -= 1
+          lastTestingState = testingState
           let testResult = levelData.grid.testCoord(robotCoord, lastCoord: lastRobotCoord, tape: &tape)
           let tapeLength = tape.length()
           if tapeLength > lastTapeLength && tapeLength > 0 {
@@ -248,12 +245,34 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
       robotNode?.update(tickPercent)
     }
     
+    
+    // update belts
+    beltPosition += 0.25 * CGFloat(dt)
+    while beltPosition >= 1 {beltPosition -= 1}
+    var beltFlowSum = beltPosition
+    if state == .Testing {
+      switch testingState {
+      case .Entering: break
+      case .Testing:
+        if tickPercent >= 0.5 {
+          beltFlowSum += easeInOut(tickPercent - 0.5)
+        } else if lastTestingState != .Entering {
+          beltFlowSum += easeInOut(tickPercent + 0.5)
+        }
+      case .Falling, .Exiting:
+        if tickPercent < 0.5 {
+          beltFlowSum += easeInOut(tickPercent + 0.5)
+        }
+      }
+    }
+    if beltFlowSum >= 1 {beltFlowSum -= 1}
+    gridNode.update(dt, beltPercent: beltFlowSum)
+    
     // update child nodes
     statusNode.update(dt)
     if toolbarNode.parent != nil {toolbarNode.update(dt)}
     if speedControlNode.parent != nil {speedControlNode.update(dt)}
     if congratulationsMenu.parent != nil {congratulationsMenu.update(dt)}
-    gridNode.update(dt, beltPercent: beltPercent)
   }
   
   func newRobotNode() {
@@ -284,6 +303,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
     statusNode.tapeNode.state = .Entering
     lastTapeLength = tape.length()
     testingState = .Entering
+    lastTestingState = .Entering
     robotCoord = levelData.grid.startCoord + 1
     lastRobotCoord = levelData.grid.startCoord
     if i > 0 {newRobotNode()}

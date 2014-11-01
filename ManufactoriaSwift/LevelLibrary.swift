@@ -138,7 +138,7 @@ var LevelLibrary: [LevelSetup] = [
   ),
   
   LevelSetup(
-    tag: "b",
+    tag: "B",
     instructions: "Accept #b. Reject #r.",
     space: GridSpace(3),
     editModes: [.PullerBR],
@@ -148,7 +148,7 @@ var LevelLibrary: [LevelSetup] = [
   ),
   
   LevelSetup(
-    tag: "bbb...",
+    tag: "BRB...",
     instructions: "Robots are programmed\nwith sequences of colors.\n\nAccept if begins #b#r#b.",
     space: GridSpace(5),
     editModes: [.PullerBR],

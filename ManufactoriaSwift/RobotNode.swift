@@ -93,7 +93,6 @@ class RobotNode: SKNode {
         fallScaleNode.setScale(0.75)
       }
     }
-    
   }
   
   func loadNextPosition(newNextPosition: CGPoint) {
