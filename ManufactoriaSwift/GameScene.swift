@@ -38,7 +38,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
   var lastRobotCoord = GridCoord(0, 0)
   var lastTapeLength: Int = 0
   var tickPercent: CGFloat = 0
-  var beltPosition: CGFloat = 0
+  var beltFlowPercent: CGFloat = 0
   var gridTestDidPass = false
   
   init(size: CGSize, var levelNumber: Int) {
@@ -88,6 +88,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
       if state == oldValue {return}
       switch state {
       case .Editing:
+        beltIsFlowing = true
         statusNode.state = .Editing
         gridNode.state = .Editing
         robotNode?.runAction(SKAction.sequence([
@@ -106,6 +107,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
           SKAction.fadeAlphaTo(1, duration: 0.2)
           ]), withKey: "fade")
       case .Thinking:
+        beltIsFlowing = false
         statusNode.state = .Thinking
         gridTestDidPass = false
         gridNode.state = .Thinking
@@ -117,6 +119,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
           ]), withKey: "fade")
         engine.beginGridTest()
       case .Testing:
+        beltIsFlowing = false
         gridNode.state = .Waiting
         var isPuller = false
         var isPusher = false
@@ -139,6 +142,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
         speedControlNode.runAction(SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")
         speedControlNode.isEnabled = true
       case .Congratulating:
+        beltIsFlowing = false
         gridNode.state = .Waiting
         statusNode.state = .Congratulating
         speedControlNode.isEnabled = false
@@ -247,32 +251,64 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
     
     
     // update belts
-    beltPosition += 0.25 * CGFloat(dt)
-    while beltPosition >= 1 {beltPosition -= 1}
-    var beltFlowSum = beltPosition
+    if beltIsFlowing {
+      beltFlowPercent += CGFloat(dt) / 4
+      while beltFlowPercent >= 1 {beltFlowPercent -= 1}
+    }
+    var beltPercentSum = beltFlowPercent
     if state == .Testing {
       switch testingState {
       case .Entering: break
       case .Testing:
         if tickPercent >= 0.5 {
-          beltFlowSum += easeInOut(tickPercent - 0.5)
+          beltPercentSum += easeInOut(tickPercent - 0.5)
         } else if lastTestingState != .Entering {
-          beltFlowSum += easeInOut(tickPercent + 0.5)
+          beltPercentSum += easeInOut(tickPercent + 0.5)
         }
       case .Falling, .Exiting:
         if tickPercent < 0.5 {
-          beltFlowSum += easeInOut(tickPercent + 0.5)
+          beltPercentSum += easeInOut(tickPercent + 0.5)
         }
       }
     }
-    if beltFlowSum >= 1 {beltFlowSum -= 1}
-    gridNode.update(dt, beltPercent: beltFlowSum)
+    if beltPercentSum >= 1 {beltPercentSum -= 1}
+    gridNode.update(dt, beltPercent: beltPercentSum)
     
     // update child nodes
     statusNode.update(dt)
     if toolbarNode.parent != nil {toolbarNode.update(dt)}
     if speedControlNode.parent != nil {speedControlNode.update(dt)}
     if congratulationsMenu.parent != nil {congratulationsMenu.update(dt)}
+  }
+  
+  var beltIsFlowing: Bool = true {
+    didSet {
+      if beltIsFlowing == oldValue {return}
+      if beltFlowPercent < 0.25 {beltFlowPercent += 0.5}
+      else if beltFlowPercent > 0.75 {beltFlowPercent -= 0.5}
+      let p0 = beltFlowPercent
+      let dp = 1 - beltFlowPercent
+      let dt = dp * 8
+      if beltIsFlowing {
+        runAction(SKAction.sequence([
+          SKAction.customActionWithDuration(NSTimeInterval(dt), actionBlock: {
+            [unowned self]
+            node, t in
+            self.beltFlowPercent = p0 + dp * easeIn(t / dt)
+          }),
+          SKAction.runBlock({[unowned self] in self.beltFlowPercent = 0})
+          ]))
+      } else {
+        runAction(SKAction.sequence([
+          SKAction.customActionWithDuration(NSTimeInterval(dt), actionBlock: {
+            [unowned self]
+            node, t in
+            self.beltFlowPercent = p0 + dp * easeOut(t / dt)
+          }),
+          SKAction.runBlock({[unowned self] in self.beltFlowPercent = 0})
+          ]))
+      }
+    }
   }
   
   func newRobotNode() {

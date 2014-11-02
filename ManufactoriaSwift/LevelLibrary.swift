@@ -168,7 +168,6 @@ var LevelLibrary: [LevelSetup] = [
     exemplars: ["bbrb", "bbbb"],
     generationFunction: {n in return generate("br", n)},
     acceptFunction: {s in
-      var k = 0
       for c in s {if c == "r" {return false}}
       return true
     }
@@ -177,13 +176,23 @@ var LevelLibrary: [LevelSetup] = [
   LevelSetup(
     tag: "no RR",
     instructions: "Reject if #r#r anywhere.",
-    space: GridSpace(3),
+    space: GridSpace(5),
     editModes: [.PullerBR],
-    exemplars: ["bbrb", "bbbb"],
+    exemplars: ["brrb", "bbbb"],
     generationFunction: {n in return generate("br", n)},
     acceptFunction: {s in
-      var k = 0
-      for c in s {if c == "r" {return false}}
+      var lastR = false
+      for c in s {
+        if c == "r" {
+          if lastR {
+            return false
+          } else {
+            lastR = true
+          }
+        } else {
+          lastR = false
+        }
+      }
       return true
     }
   ),
