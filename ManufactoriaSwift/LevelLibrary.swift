@@ -368,7 +368,7 @@ var LevelLibrary: [LevelSetup] = [
   LevelSetup(
     tag: "last first",
     instructions: "Move the last color to the front.",
-    space: GridSpace(7),
+    space: GridSpace(9),
     editModes: [.PullerBR, .PullerGY, .PusherB, .PusherR, .PusherG, .PusherY],
     exemplars: ["brbbrr"],
     generationFunction: {n in return generate("br", n, {$0 != ""})},

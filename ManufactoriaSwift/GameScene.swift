@@ -142,7 +142,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
         speedControlNode.runAction(SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")
         speedControlNode.isEnabled = true
       case .Congratulating:
-        beltIsFlowing = false
+        beltIsFlowing = true
         gridNode.state = .Waiting
         statusNode.state = .Congratulating
         speedControlNode.isEnabled = false
