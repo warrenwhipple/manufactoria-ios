@@ -121,11 +121,15 @@ class CellNode: SKNode {
     bridge?.size = beltHalfTexture?.size() ?? CGSizeZero
     if animateFade {
       bridge?.alpha = 0
+      bridge?.zRotation = -PI/2
       bridge?.runAction(SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")
     } else if animateRotate {
+      bridge?.alpha = 1
+      bridge?.zRotation = 0
       bridge?.runAction(SKAction.rotateToAngle(-PI/2, duration: 0.2).ease(), withKey: "rotate")
     } else {
-      belt?.zRotation = -PI/2
+      bridge?.alpha = 1
+      bridge?.zRotation = -PI/2
     }
     pivot.addChild(bridge!)
   }
