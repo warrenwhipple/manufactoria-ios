@@ -19,6 +19,16 @@ extension Array {
   }
 }
 
+func findIdentical<T: AnyObject>(array: [T], value: T) -> Int? {
+  for (index, element) in enumerate(array) {if element === value {return index}}
+  return nil
+}
+
+func containsIdentical<T: AnyObject>(array: [T], value: T) -> Bool {
+  for element in array {if element === value {return true}}
+  return false
+}
+
 extension String {
     
   subscript(i: Int) -> Character {

@@ -390,9 +390,9 @@ var LevelLibrary: [LevelSetup] = [
     acceptFunction: {s in
       let len = s.length()
       if len % 2 != 0 {return false}
-      let s1 = s[0 ..< len % 2]
+      let s1 = s[0 ..< len / 2]
       for c in s1 {if c == "r"{return false}}
-      let s2 = s[len % 2 ..< len]
+      let s2 = s[len / 2 ..< len]
       for c in s2 {if c == "b"{return false}}
       return true
     }
@@ -408,11 +408,11 @@ var LevelLibrary: [LevelSetup] = [
     acceptFunction: {s in
       let len = s.length()
       if len % 3 != 0 {return false}
-      let s1 = s[0 ..< len % 3]
+      let s1 = s[0 ..< len / 3]
       for c in s1 {if c == "r"{return false}}
-      let s2 = s[len % 3 ..< len % 3 * 2]
+      let s2 = s[len / 3 ..< 2 * len / 3]
       for c in s2 {if c == "b"{return false}}
-      let s3 = s[len % 3 * 2 ..< len]
+      let s3 = s[2 * len / 3 ..< len]
       for c in s3 {if c == "r"{return false}}
       return true
     }

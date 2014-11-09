@@ -26,6 +26,18 @@ enum EditMode {
     default: return nil
     }
   }
+  func isPuller() -> Bool {
+    switch self {
+    case .PullerBR, .PullerRB, .PullerGY, .PullerYG: return true
+    default: return false
+    }
+  }
+  func isPusher() -> Bool {
+    switch self {
+    case .PusherB, .PusherR, .PusherG, .PusherY: return true
+    default: return false
+    }
+  }
 }
 
 protocol GridNodeDelegate: class {

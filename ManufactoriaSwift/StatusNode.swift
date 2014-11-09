@@ -116,10 +116,6 @@ class StatusNode: SwipeNode {
     menuButton.update(dt)
   }
   
-  override func snapToIndex(index: Int, initialVelocityX: CGFloat) {
-    super.snapToIndex(index, initialVelocityX: initialVelocityX)
-  }
-  
   func resetFailPageForTestResult(result: TapeTestResult) {
     failPage.removeAllChildren()
     let lineHeight = SKTexture(imageNamed: "dot").size().height * 1.5

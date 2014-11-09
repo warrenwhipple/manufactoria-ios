@@ -213,6 +213,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
           switch testResult {
           case .Accept:
             statusNode.tapeNode.state = .Exiting
+            robotNode?.state = .Falling
             testingState = .Exiting
             fallthroughTestingStateSwitch = true
           case .Reject:
@@ -230,18 +231,12 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
         }
       case .Exiting:
         if testingState == .Falling {fallthrough}
-        robotNode?.loadNextPosition(gridNode.wrapper.convertPoint(
-          CGPoint(size.width / 2,size.height + Globals.touchSpan), fromNode: self))
+        //robotNode?.loadNextPosition(gridNode.wrapper.convertPoint(CGPoint(size.width / 2,size.height + Globals.touchSpan), fromNode: self))
         if tickPercent >= 1 {
           loadNextTape()
         }
       case .Falling:
-        if tickPercent < 0.5 {
-          //robotNode?.setScale((1 - 0.5 * tickPercent) / gridNode.wrapper.xScale)
-        } else if tickPercent < 1 {
-          //robotNode?.setScale(0.75 / gridNode.wrapper.xScale)
-        } else {
-          //robotNode?.setScale(0.75 / gridNode.wrapper.xScale)
+        if tickPercent >= 1 {
           loadNextTape()
         }
       }
@@ -458,16 +453,6 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
   
   func confirmSelection() {
     gridNode.confirmSelection()
-  }
-  
-  func flipXSelection() {
-    // TODO: finish
-    println("gameScene.flipXSelection()")
-  }
-  
-  func flipYSelection() {
-    // TODO: finish
-    println("gameScene.flipYSelection()")
   }
   
   func refreshUndoRedoButtonStatus() {

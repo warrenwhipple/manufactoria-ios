@@ -14,8 +14,6 @@ protocol ToolbarNodeDelegate: class {
   func redoEdit()
   func cancelSelection()
   func confirmSelection()
-  func flipXSelection()
-  func flipYSelection()
   func refreshUndoRedoButtonStatus()
   func testButtonPressed()
 }
@@ -37,7 +35,7 @@ class ToolbarNode: SKNode, ToolButtonDelegate, SwipeNodeDelegate {
   let swipeNode: SwipeNode
   let toolButtons: [ToolButton]
   let toolButtonGroups: [[ToolButton]]
-  var toolButtonMemories: [ToolButton] = []
+  var toolButtonMemories: [ToolButton]
   let blankButton = ToolButton(iconOffNamed: "blankIconOff", iconOnNamed: "blankIconOn", editMode: .Blank)
   let beltBridgeButton = BeltBridgeButton()
   let selectBoxMoveButton = SelectBoxMoveButton()
@@ -52,50 +50,41 @@ class ToolbarNode: SKNode, ToolButtonDelegate, SwipeNodeDelegate {
     redoConfirmSwapper = ButtonSwapper(buttons: [redoButton, confirmButton],
       rotateRadians: CGFloat(-2*M_PI), liftZPosition: 2)
     
-    var groupA: [ToolButton] = [blankButton, beltBridgeButton]
-    var groupB: [ToolButton] = []
-    for editMode in editModes {
-      switch editMode {
-      case .PullerBR, .PullerRB, .PullerGY, .PullerYG:
-        groupA.append(PullerButton(kind: editMode))
-      case .PusherB, .PusherR, .PusherG, .PusherY:
-        groupB.append(PusherButton(kind: editMode))
-      default: break
-      }
-    }
-    let groupC: [ToolButton] = [selectBoxMoveButton]
-    toolButtons = groupA + groupB + groupC
+    let groupA: [ToolButton] = [blankButton, beltBridgeButton]
+    let groupB: [ToolButton] = editModes.filter {$0.isPuller()} .map {PullerButton(kind: $0)}
+    let groupC: [ToolButton] = editModes.filter {$0.isPusher()} .map {PusherButton(kind: $0)}
+    let groupD: [ToolButton] = [selectBoxMoveButton]
+    
+    toolButtons = groupA + groupB + groupC + groupD
     
     if IPAD {
       if toolButtons.count <= 8 {
-        toolButtonGroups = [groupA + groupB + groupC]
+        toolButtonGroups = [groupA + groupB + groupC + groupD]
       } else {
-        toolButtonGroups = [groupA + groupB, groupC]
+        toolButtonGroups = [groupA + groupB, groupC + groupD]
       }
     } else {
       if toolButtons.count <= 5 {
-        toolButtonGroups = [groupA + groupB + groupC]
-      } else if groupA.count + groupB.count <= 5 {
-        toolButtonGroups = [groupA + groupB, groupC]
+        toolButtonGroups = [groupA + groupB + groupC + groupD]
+      } else if groupA.count + groupB.count + groupC.count <= 5 {
+        toolButtonGroups = [groupA + groupB + groupC, groupD]
       } else {
-        toolButtonGroups = [groupA, groupB, groupC]
+        toolButtonGroups = [groupA + groupB, groupC, groupD]
       }
     }
     
-    var pages: [SKNode] = []
-    for toolButtonGroup in toolButtonGroups {
+    let pages: [SKNode] = toolButtonGroups.map {
       let page = SKNode()
-      for toolButton in toolButtonGroup {
-        page.addChild(toolButton)
-      }
-      pages.append(page)
-      toolButtonMemories.append(toolButtonGroup[0])
+      page.addChildren($0)
+      return page
     }
     swipeNode = SwipeNode(pages: pages)
     
+    toolButtonMemories = toolButtonGroups.map {$0[0]}
     toolButtonMemories[0] = beltBridgeButton
+    
     buttonInFocus = beltBridgeButton
-    beltBridgeButton.isInFocus = true
+    buttonInFocus.isInFocus = true
     
     super.init()
     
@@ -209,7 +198,7 @@ class ToolbarNode: SKNode, ToolButtonDelegate, SwipeNodeDelegate {
   
   func saveToolButtonToMemory(toolButton: ToolButton) {
     for i in 0 ..< toolButtonGroups.count {
-      if contains(toolButtonGroups[i], toolButton) {
+      if containsIdentical(toolButtonGroups[i], toolButton) {
         toolButtonMemories[i] = toolButton
         return
       }
@@ -221,11 +210,12 @@ class ToolbarNode: SKNode, ToolButtonDelegate, SwipeNodeDelegate {
   func swipeNodeDidSnapToIndex(index: Int) {
     if index >= 0 && index < toolButtonMemories.count {
       let newButtonInFocus = toolButtonMemories[index]
-      if newButtonInFocus == buttonInFocus {return}
-      buttonInFocus.isInFocus = false
-      buttonInFocus = newButtonInFocus
-      buttonInFocus.isInFocus = true
-      delegate.editMode = buttonInFocus.editMode
+      if newButtonInFocus != buttonInFocus {
+        buttonInFocus.isInFocus = false
+        buttonInFocus = newButtonInFocus
+        buttonInFocus.isInFocus = true
+        delegate.editMode = buttonInFocus.editMode
+      }
     }
   }
   
@@ -235,7 +225,6 @@ class ToolbarNode: SKNode, ToolButtonDelegate, SwipeNodeDelegate {
     if button == buttonInFocus {
       delegate.editMode = button.cycleEditMode()
     } else {
-      saveToolButtonToMemory(button)
       buttonInFocus.isInFocus = false
       buttonInFocus = button
       buttonInFocus.isInFocus = true
