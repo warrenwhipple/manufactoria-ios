@@ -39,6 +39,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
   var lastTapeLength: Int = 0
   var tickPercent: CGFloat = 0
   var beltFlowPercent: CGFloat = 0
+  var beltFlowVelocity: CGFloat = 0.25
   var gridTestDidPass = false
   
   init(size: CGSize, var levelNumber: Int) {
@@ -247,7 +248,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
     
     // update belts
     if beltIsFlowing {
-      beltFlowPercent += CGFloat(dt) / 4
+      beltFlowPercent += CGFloat(dt) * beltFlowVelocity
       while beltFlowPercent >= 1 {beltFlowPercent -= 1}
     }
     var beltPercentSum = beltFlowPercent
@@ -279,29 +280,28 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
   var beltIsFlowing: Bool = true {
     didSet {
       if beltIsFlowing == oldValue {return}
-      if beltFlowPercent < 0.25 {beltFlowPercent += 0.5}
-      else if beltFlowPercent > 0.75 {beltFlowPercent -= 0.5}
-      let p0 = beltFlowPercent
-      let dp = 1 - beltFlowPercent
-      let dt = dp * 8
       if beltIsFlowing {
-        runAction(SKAction.sequence([
-          SKAction.customActionWithDuration(NSTimeInterval(dt), actionBlock: {
-            [unowned self]
-            node, t in
-            self.beltFlowPercent = p0 + dp * easeIn(t / dt)
-          }),
-          SKAction.runBlock({[unowned self] in self.beltFlowPercent = 0})
-          ]))
+        runAction(SKAction.customActionWithDuration(1) {
+          [unowned self] node, t in
+          self.beltFlowVelocity = t * 0.25
+          }, withKey: "changeBeltSpeed")
       } else {
-        runAction(SKAction.sequence([
-          SKAction.customActionWithDuration(NSTimeInterval(dt), actionBlock: {
-            [unowned self]
-            node, t in
-            self.beltFlowPercent = p0 + dp * easeOut(t / dt)
-          }),
-          SKAction.runBlock({[unowned self] in self.beltFlowPercent = 0})
-          ]))
+        beltFlowVelocity = 0
+        if beltFlowPercent < 0.375 {beltFlowPercent += 0.5}
+        else if beltFlowPercent >= 0.875 {beltFlowPercent -= 0.5}
+        let p0 = beltFlowPercent
+        let t1 = (0.875 - beltFlowPercent) * 4
+        let t2 = t1 + 1
+        runAction(SKAction.customActionWithDuration(NSTimeInterval(t2)) {
+          [unowned self] node, t in
+          if t < t1 {
+            self.beltFlowPercent = p0 + t * 0.25
+          } else if t < t2 {
+            self.beltFlowPercent = 0.875 + easeOut(t - t1) * 0.125
+          } else {
+            self.beltFlowPercent = 0
+          }
+          }, withKey: "changeBeltSpeed")
       }
     }
   }
