@@ -41,6 +41,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
   var beltFlowPercent: CGFloat = 0
   var beltFlowVelocity: CGFloat = 0.25
   var gridTestDidPass = false
+  var didAnimateRobotComplete = false
   
   init(size: CGSize, var levelNumber: Int) {
     if levelNumber > LevelLibrary.count - 1 {levelNumber = 0}
@@ -232,11 +233,16 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
         }
       case .Exiting:
         if testingState == .Falling {fallthrough}
-        //robotNode?.loadNextPosition(gridNode.wrapper.convertPoint(CGPoint(size.width / 2,size.height + Globals.touchSpan), fromNode: self))
+        if !didAnimateRobotComplete && tickPercent >= 0.5 {
+          animateRobotCompleteWithCoord(robotCoord, didPass: gridTestDidPass)
+        }
         if tickPercent >= 1 {
           loadNextTape()
         }
       case .Falling:
+        if !didAnimateRobotComplete && tickPercent >= 0.5 {
+          animateRobotCompleteWithCoord(robotCoord, didPass: gridTestDidPass)
+        }
         if tickPercent >= 1 {
           loadNextTape()
         }
@@ -339,6 +345,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
     lastRobotCoord = levelData.grid.startCoord
     if i > 0 {newRobotNode()}
     robotNode?.loadNextGridCoord(lastRobotCoord)
+    didAnimateRobotComplete = false
   }
   
   func loadNextTape() {
@@ -350,6 +357,26 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
     } else {
       loadTape(currentTapeTestIndex + 1)
     }
+  }
+  
+  func animateRobotCompleteWithCoord(coord: GridCoord, didPass: Bool) {
+    let icon = SKSpriteNode(didPass ? "confirmIconOn" : "cancelIconOn")
+    //icon.color = didPass ? Globals.blueColor : Globals.redColor
+    icon.color = Globals.highlightColor
+    icon.position = CGPoint(CGFloat(coord.i) + 0.5, CGFloat(coord.j) + 0.5)
+    icon.zPosition = 20
+    icon.alpha = 1
+    let scaleMultiplier = 1 / gridNode.wrapper.xScale
+    icon.setScale(0)
+    icon.runAction(SKAction.sequence([
+      SKAction.group([SKAction.fadeAlphaTo(1, duration: 0.5), SKAction.scaleTo(scaleMultiplier * 2, duration: 0.5).easeOut()]),
+      SKAction.waitForDuration(0.5),
+      //SKAction.scaleTo(scaleMultiplier * 0.875, duration: 0.5).ease(),
+      SKAction.group([SKAction.fadeAlphaTo(0, duration: 0.5), SKAction.scaleTo(scaleMultiplier * 4, duration: 0.5).easeIn()]),
+      SKAction.removeFromParent()
+      ]))
+    gridNode.wrapper.addChild(icon)
+    didAnimateRobotComplete = true
   }
   
   // MARK: - SwipeNodeDelegate Function
