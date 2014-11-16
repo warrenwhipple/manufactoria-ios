@@ -395,11 +395,7 @@ class SequenceTutorialSceneOld: GameScene {
   
   override func gridTestPassed() {
     tapeTestResults = [TapeTestResult(input: "brb", output: nil, correctOutput: nil, kind: .Pass)]
-    let gameData = GameData.sharedInstance
-    if gameData.levelsComplete < levelNumber + 1 {
-      gameData.levelsComplete = levelNumber + 1
-      gameData.save()
-    }
+    GameData.sharedInstance.completedLevel(levelNumber)
     gridTestDidPass = true
     state = .Testing
   }

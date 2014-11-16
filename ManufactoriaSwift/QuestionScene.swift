@@ -60,8 +60,7 @@ class UnlockScene: ManufactoriaScene {
     question.fontColor = Globals.strokeColor
     yesButton.touchUpInsideClosure = {
       [unowned self] in
-      GameData.sharedInstance.levelsComplete = LevelLibrary.count
-      GameData.sharedInstance.save()
+      GameData.sharedInstance.unlockAllLevels()
       self.transitionToMenuScene()
     }
     noButton.touchUpInsideClosure = {

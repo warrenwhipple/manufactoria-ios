@@ -33,7 +33,8 @@ class OldMenuScene: ManufactoriaScene {
       } else if i == totalButtons - 1 {
         button.addChild(buttonLabel("reset"))
         button.touchUpInsideClosure = {[unowned self] in self.transitionToResetScene()}
-      } else if i < LevelLibrary.count && i <= gameData.levelsComplete {
+//      } else if i < LevelLibrary.count && i <= gameData.levelsComplete {
+      } else if i < LevelLibrary.count {
         button.addChild(buttonLabel(LevelLibrary[i].tag))
         button.touchUpInsideClosure = {[unowned self] in self.transitionToGameSceneWithLevelNumber(i)}
       } else {

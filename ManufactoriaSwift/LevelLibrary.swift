@@ -214,7 +214,7 @@ var LevelLibrary: [LevelSetup] = [
   LevelSetup(
     tag: "BRBBR",
     instructions: "Write #b#r#b#b#r.",
-    space: GridSpace(5),
+    space: GridSpace(3),
     editModes: [.PusherB, .PusherR],
     exemplars: [""],
     generationFunction: {n in return [""]},
@@ -273,7 +273,7 @@ var LevelLibrary: [LevelSetup] = [
   LevelSetup(
     tag: "...B",
     instructions: "Accept if ends #b.",
-    space: GridSpace(7),
+    space: GridSpace(5),
     editModes: [.PullerBR],
     exemplars: ["bbr", "rbb"],
     generationFunction: {n in return generate("br", n)},

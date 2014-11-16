@@ -33,7 +33,7 @@ class MenuScene: ManufactoriaScene {
       } else if i == totalButtons - 1 {
         button.addChild(buttonLabel("reset"))
         button.touchUpInsideClosure = {[unowned self] in self.transitionToResetScene()}
-      } else if i < LevelLibrary.count && i <= gameData.levelsComplete {
+      } else if i < LevelLibrary.count {
         button.addChild(buttonLabel(LevelLibrary[i].tag))
         button.touchUpInsideClosure = {[unowned self] in self.transitionToGameSceneWithLevelNumber(i)}
       } else {
@@ -46,8 +46,6 @@ class MenuScene: ManufactoriaScene {
         glowNodes.append(glowNode)
         button.addChild(glowNode)
         button.shouldStickyGlow = true
-        //button.pressClosure = {glowNode.runAction(SKAction.fadeAlphaTo(0.2, duration: 0.2), withKey: "fade")}
-        //button.releaseClosure = {glowNode.runAction(SKAction.fadeAlphaTo(0, duration: 0.2), withKey: "fade")}
       }
       buttons.append(button)
       addChild(button)

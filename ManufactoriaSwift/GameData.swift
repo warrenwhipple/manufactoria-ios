@@ -13,34 +13,35 @@ private let _gameDataFilePath = NSSearchPathForDirectoriesInDomains(.DocumentDir
 private var _gameDataSharedInstance: GameData?
 
 class GameData: NSObject, NSCoding {
-  var levelsComplete: Int
+  var tutorialsOn: Bool
+  var progressArray: [LevelProgressData]
   
   class var sharedInstance: GameData {
     if _gameDataSharedInstance == nil {
-      if NSFileManager.defaultManager().fileExistsAtPath(_gameDataFilePath) {
-        _gameDataSharedInstance =  NSKeyedUnarchiver.unarchiveObjectWithFile(_gameDataFilePath) as? GameData
-      }
-      if _gameDataSharedInstance == nil {
-        _gameDataSharedInstance = GameData()
-      }
+      _gameDataSharedInstance = NSKeyedUnarchiver.unarchiveObjectWithFile(_gameDataFilePath) as? GameData ?? GameData()
     }
     return _gameDataSharedInstance!
   }
   
   override init() {
-    levelsComplete = 0
+    //levelsComplete = 0
+    tutorialsOn = true
+    progressArray = LevelLibrary.map {return LevelProgressData(levelSetup: $0)}
   }
   
   required init(coder aDecoder: NSCoder) {
-    if let decoded = aDecoder.decodeObjectForKey("levelsComplete") as Int? {
-      levelsComplete = decoded
-    } else {
-      levelsComplete = 0
+    tutorialsOn = aDecoder.decodeObjectForKey("tutorialsOn") as? Bool ?? true
+    progressArray = aDecoder.decodeObjectForKey("progressArray") as? [LevelProgressData] ?? [LevelProgressData]()
+    let pCount = progressArray.count
+    let lCount = LevelLibrary.count
+    if pCount < lCount {
+      progressArray += LevelLibrary[lCount-pCount ..< lCount].map {return LevelProgressData(levelSetup: $0)}
     }
   }
   
   func encodeWithCoder(aCoder: NSCoder)  {
-    aCoder.encodeObject(levelsComplete, forKey: "levelsComplete")
+    aCoder.encodeObject(tutorialsOn, forKey: "tutorialsOn")
+    aCoder.encodeObject(progressArray, forKey: "progressArray")
   }
   
   func save() {
@@ -48,12 +49,43 @@ class GameData: NSObject, NSCoding {
   }
   
   func resetAllGameData() {
-    levelsComplete = 0
+    tutorialsOn = true
+    progressArray = LevelLibrary.map {return LevelProgressData(levelSetup: $0)}
+    save()
+  }
+  
+  func unlockAllLevels() {
+    tutorialsOn = false
+    for progress in progressArray {
+      progress.isComplete = true
+    }
     save()
   }
     
   func completedLevel(levelNumber: Int) {
-    levelsComplete = max(levelsComplete, levelNumber + 1)
-    save()
+    if levelNumber < progressArray.count && !progressArray[levelNumber].isComplete {
+      progressArray[levelNumber].isComplete = true
+      save()
+    }
+  }
+}
+
+class LevelProgressData: NSObject, NSCoding {
+  var isComplete: Bool
+  
+  override init() {
+    isComplete = false
+  }
+  
+  init(levelSetup: LevelSetup) {
+    isComplete = false
+  }
+  
+  required init(coder aDecoder: NSCoder) {
+    isComplete = aDecoder.decodeObjectForKey("isComplete") as? Bool ?? false
+  }
+  
+  func encodeWithCoder(aCoder: NSCoder) {
+    aCoder.encodeObject(isComplete, forKey: "isComplete")
   }
 }

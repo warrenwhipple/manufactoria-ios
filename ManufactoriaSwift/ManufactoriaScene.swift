@@ -32,18 +32,15 @@ class TransitionScene: SKScene {
     case .Unlock: nextScene = UnlockScene(size: size)
     case .Reset: nextScene = ResetScene(size: size)
     case .Game(let levelNumber):
-      if levelNumber == 0 && GameData.sharedInstance.levelsComplete == 0 {
-        nextScene = BeltTutorialScene(size: view!.bounds.size)
-      } else if levelNumber == 1 && GameData.sharedInstance.levelsComplete == 1 {
-        nextScene = SortTutorialScene(size: view!.bounds.size)
-      
-      } else if levelNumber == 2 && GameData.sharedInstance.levelsComplete == 2 {
-        nextScene = SequenceTutorialScene(size: view!.bounds.size)
-      /*
-      } else if levelNumber == 3 && GameData.sharedInstance.levelsComplete == 3 {
-        nextScene = EngineTutorialScene(size: view!.bounds.size)
-      */
-      } else {
+      if GameData.sharedInstance.tutorialsOn {
+        switch levelNumber {
+        case 0: nextScene = BeltTutorialScene(size: view!.bounds.size)
+        case 1: nextScene = SortTutorialScene(size: view!.bounds.size)
+        case 2: nextScene = SequenceTutorialScene(size: view!.bounds.size)
+        default: break
+        }
+      }
+      if nextScene == nil {
         nextScene = GameScene(size: view!.bounds.size, levelNumber: levelNumber)
       }
     }
