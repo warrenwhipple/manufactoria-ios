@@ -8,6 +8,7 @@
 
 import SpriteKit
 
+/*
 class OldMenuScene: ManufactoriaScene {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   var buttons: [Button] = []
@@ -88,3 +89,4 @@ class OldMenuScene: ManufactoriaScene {
     for glowNode in glowNodes {glowNode.size = buttonSize}
   }
 }
+*/

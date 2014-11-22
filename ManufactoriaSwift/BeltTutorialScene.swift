@@ -13,7 +13,7 @@ class BeltTutorialScene: TutorialScene {
   var gridPulseAction: SKAction!
   
   init(size: CGSize) {
-    super.init(size: size, levelNumber: 0)
+    super.init(size: size, levelKey: "all")
     
     statusNode.instructionsLabel.text = "This is a manufactory floor plan."
     let connectLabel = BreakingLabel()
@@ -29,7 +29,7 @@ class BeltTutorialScene: TutorialScene {
     toolbarNode.redoConfirmSwapper.removeFromParent()
     for button in toolbarNode.toolButtons {button.removeFromParent()}
     
-    congratulationsMenu.menuButton.touchUpInsideClosure = {[unowned self] in self.transitionToGameSceneWithLevelNumber(1)}
+    congratulationsMenu.menuButton.touchUpInsideClosure = {[unowned self] in self.transitionToGameSceneWithLevelKey("sort")}
     
     gridNode.animateThinking = false
     gridNode.state = .EditingLocked

@@ -15,7 +15,7 @@ class SequenceTutorialScene: TutorialScene {
   let coord3 = GridCoord(1,3)
   
   init(size: CGSize) {
-    super.init(size: size, levelNumber: 2)
+    super.init(size: size, levelKey: "sequence")
     
     statusNode.instructionsLabel.text = "Robots are programmed\nwith color sequences."
     let demoLabel = SmartLabel()
@@ -33,7 +33,7 @@ class SequenceTutorialScene: TutorialScene {
     toolbarNode.toolButtons[1].editModeIsLocked = true
     toolbarNode.toolButtons[2].editModeIsLocked = true
     
-    congratulationsMenu.menuButton.touchUpInsideClosure = {[unowned self] in self.transitionToGameSceneWithLevelNumber(2)}
+    congratulationsMenu.menuButton.touchUpInsideClosure = {[unowned self] in self.transitionToGameSceneWithLevelKey("sequence")}
     
     gridNode.animateThinking = false
     gridNode.state = .Waiting
@@ -234,6 +234,7 @@ class SequenceTutorialScene: TutorialScene {
 }
 
 
+/*
 class SequenceTutorialSceneOld: GameScene {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   var coord1 = GridCoord(2,1)
@@ -400,3 +401,4 @@ class SequenceTutorialSceneOld: GameScene {
     state = .Testing
   }
 }
+*/

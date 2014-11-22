@@ -10,7 +10,7 @@ import SpriteKit
 
 class TransitionScene: SKScene {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  enum Kind {case Title, Menu, Game(Int), Unlock, Reset}
+  enum Kind {case Title, Menu, Game(String), Unlock, Reset}
   let kind: Kind
   var nextScene: SKScene?
   let secondTransition: SKTransition
@@ -31,17 +31,17 @@ class TransitionScene: SKScene {
     case .Menu: nextScene = MenuScene(size: size)
     case .Unlock: nextScene = UnlockScene(size: size)
     case .Reset: nextScene = ResetScene(size: size)
-    case .Game(let levelNumber):
+    case .Game(let levelKey):
       if GameData.sharedInstance.tutorialsOn {
-        switch levelNumber {
-        case 0: nextScene = BeltTutorialScene(size: view!.bounds.size)
-        case 1: nextScene = SortTutorialScene(size: view!.bounds.size)
-        case 2: nextScene = SequenceTutorialScene(size: view!.bounds.size)
+        switch levelKey {
+        case "all": nextScene = BeltTutorialScene(size: view!.bounds.size)
+        case "sort": nextScene = SortTutorialScene(size: view!.bounds.size)
+        case "sequence": nextScene = SequenceTutorialScene(size: view!.bounds.size)
         default: break
         }
       }
       if nextScene == nil {
-        nextScene = GameScene(size: view!.bounds.size, levelNumber: levelNumber)
+        nextScene = GameScene(size: view!.bounds.size, levelKey: levelKey)
       }
     }
     runAction(SKAction.sequence([
@@ -100,8 +100,8 @@ class ManufactoriaScene: SKScene {
       transition: SKTransition.pushWithDirection(.Left, duration: transitionTime).outPlay())
   }
   
-  func transitionToGameSceneWithLevelNumber(levelNumber: Int) {
-    view?.presentScene(TransitionScene(size: size, kind: .Game(levelNumber),
+  func transitionToGameSceneWithLevelKey(levelKey: String) {
+    view?.presentScene(TransitionScene(size: size, kind: .Game(levelKey),
       secondTransition: SKTransition.pushWithDirection(.Left, duration: transitionTime).inPlay()),
       transition: SKTransition.pushWithDirection(.Left, duration: transitionTime).outPlay())
   }

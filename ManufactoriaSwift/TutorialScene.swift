@@ -13,8 +13,8 @@ class TutorialScene: GameScene {
   var swipeHint = SKSpriteNode("swipeArrow")
   var swipePulseAction: SKAction!
   
-  override init(size: CGSize, var levelNumber: Int) {
-    super.init(size: size, levelNumber: levelNumber)
+  override init(size: CGSize, var levelKey: String) {
+    super.init(size: size, levelKey: levelKey)
     statusNode.leftArrowWrapper.removeFromParent()
     swipeHint.color = Globals.highlightColor
     //swipeHint.anchorPoint.x = 0

@@ -19,6 +19,25 @@ extension Array {
   }
 }
 
+extension Dictionary {
+  func filter(includeElement: Value -> Bool) -> [Key:Value] {
+    var result = [Key:Value]()
+    for (key, value) in self {
+      if includeElement(value) {
+        result[key] = value
+      }
+    }
+    return result
+  }
+  func map<U>(transform: Value -> U) -> [Key:U] {
+    var result = [Key:U](minimumCapacity: count)
+    for (key, value) in self {
+      result[key] = transform(value)
+    }
+    return result
+  }
+}
+
 func findIdentical<T: AnyObject>(array: [T], value: T) -> Int? {
   for (index, element) in enumerate(array) {if element === value {return index}}
   return nil

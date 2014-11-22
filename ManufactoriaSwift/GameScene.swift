@@ -14,7 +14,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
   enum TestingState {case Entering, Testing, Exiting, Falling}
   
   // model objects
-  let levelNumber: Int
+  let levelKey: String
   let levelSetup: LevelSetup
   let levelData: LevelData
   var tapeTestResults: [TapeTestResult] = []
@@ -43,11 +43,10 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
   var gridTestDidPass = false
   var didAnimateRobotComplete = false
   
-  init(size: CGSize, var levelNumber: Int) {
-    if levelNumber > LevelLibrary.count - 1 {levelNumber = 0}
-    self.levelNumber = levelNumber
-    levelSetup = LevelLibrary[levelNumber]
-    levelData = LevelData(levelNumber: levelNumber)
+  init(size: CGSize, levelKey: String) {
+    self.levelKey = levelKey
+    levelSetup = LevelLibrary[self.levelKey]!
+    levelData = LevelData(levelKey: levelKey)
     engine = Engine(levelSetup: levelSetup)
     statusNode = StatusNode(instructions: levelSetup.instructions)
     gridNode = GridNode(grid: levelData.grid)
@@ -386,7 +385,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
   // MARK: - StatusNodeDelegate Functions
   
   func menuButtonPressed() {
-    levelData.saveWithLevelNumber(levelNumber)
+    levelData.saveWithLevelKey(levelKey)
     transitionToMenuScene()
   }
   
@@ -402,7 +401,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
       tapeTestResults.append(TapeTestResult(input: exemplar, output: nil, correctOutput: nil, kind: .Pass))
     }
     let gameData = GameData.sharedInstance
-    GameData.sharedInstance.completedLevel(levelNumber)
+    GameData.sharedInstance.completedLevelWithKey(levelKey)
     gridTestDidPass = true
     state = .Testing
   }
@@ -446,7 +445,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
   // MARK: - ToolbarNodeDelegate Functions
   
   func testButtonPressed() {
-    levelData.saveWithLevelNumber(levelNumber)
+    levelData.saveWithLevelKey(levelKey)
     state = .Thinking
   }
   
@@ -511,12 +510,6 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
         SKAction.runBlock({[unowned self] in self.loadNextTape()})
         ]), withKey: "skip")
     //}
-  }
-  
-  // MARK: - CongratsMenuDelegate Function
-  
-  func nextButtonPressed() {
-    transitionToGameSceneWithLevelNumber(levelNumber + 1)
   }
   
   // MARK: - Touch Delegate Functions

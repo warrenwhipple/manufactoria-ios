@@ -17,6 +17,7 @@
 		2D436D4019F6B0F2001E9FF6 /* TutorialScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D436D3F19F6B0F2001E9FF6 /* TutorialScene.swift */; };
 		2D4729CD19BB91110072E52D /* LiftedGridNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4729CC19BB91110072E52D /* LiftedGridNode.swift */; };
 		2D4729CF19BC92650072E52D /* ToolButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4729CE19BC92650072E52D /* ToolButton.swift */; };
+		2D4862D01A1BEC21000421E5 /* MenuLevelButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4862CF1A1BEC21000421E5 /* MenuLevelButton.swift */; };
 		2D4A92DB1A01CB1E00BE3C4C /* belt@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2D4A92D51A01CB1E00BE3C4C /* belt@2x.png */; };
 		2D4A92DC1A01CB1E00BE3C4C /* belt29@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2D4A92D61A01CB1E00BE3C4C /* belt29@2x.png */; };
 		2D4A92DD1A01CB1E00BE3C4C /* belt36@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2D4A92D71A01CB1E00BE3C4C /* belt36@2x.png */; };
@@ -79,6 +80,7 @@
 		2D436D3F19F6B0F2001E9FF6 /* TutorialScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TutorialScene.swift; sourceTree = "<group>"; };
 		2D4729CC19BB91110072E52D /* LiftedGridNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LiftedGridNode.swift; sourceTree = "<group>"; };
 		2D4729CE19BC92650072E52D /* ToolButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToolButton.swift; sourceTree = "<group>"; };
+		2D4862CF1A1BEC21000421E5 /* MenuLevelButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuLevelButton.swift; sourceTree = "<group>"; };
 		2D4A92D51A01CB1E00BE3C4C /* belt@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "belt@2x.png"; path = "../../../Manufactoria Assets/gameScene/belt@2x.png"; sourceTree = "<group>"; };
 		2D4A92D61A01CB1E00BE3C4C /* belt29@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "belt29@2x.png"; path = "../../../Manufactoria Assets/gameScene/belt29@2x.png"; sourceTree = "<group>"; };
 		2D4A92D71A01CB1E00BE3C4C /* belt36@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "belt36@2x.png"; path = "../../../Manufactoria Assets/gameScene/belt36@2x.png"; sourceTree = "<group>"; };
@@ -158,6 +160,7 @@
 			isa = PBXGroup;
 			children = (
 				2DD23D70196F223E00838E96 /* MenuScene.swift */,
+				2D4862CF1A1BEC21000421E5 /* MenuLevelButton.swift */,
 				2D93CEFB1A129DC600037036 /* OldMenuScene.swift */,
 			);
 			name = MenuScene;
@@ -413,6 +416,7 @@
 				2D03B93A197EB89700715176 /* SwiftExtensions.swift in Sources */,
 				2D6867F919EF2D8E000F4427 /* EngineTutorialScene.swift in Sources */,
 				2DC0168319CEF41D003D922A /* ManufactoriaScene.swift in Sources */,
+				2D4862D01A1BEC21000421E5 /* MenuLevelButton.swift in Sources */,
 				2D5E583F19A5265500F10DD3 /* ShimmerNode.swift in Sources */,
 				2DD23D731974730F00838E96 /* Engine.swift in Sources */,
 				2DCA18A71985AA0200DF3118 /* QuestionScene.swift in Sources */,

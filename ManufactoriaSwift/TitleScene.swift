@@ -24,8 +24,8 @@ class TitleScene: ManufactoriaScene {
     button.shouldStickyGlow = true
     button.touchUpInsideClosure = {
       [unowned self] in
-      if !self.gameData.progressArray[0].isComplete {
-        self.transitionToGameSceneWithLevelNumber(0)
+      if !(self.gameData.levelProgressDictionary["all"]?.isComplete ?? false) {
+        self.transitionToGameSceneWithLevelKey("all")
       } else {
         self.transitionToMenuScene()
       }

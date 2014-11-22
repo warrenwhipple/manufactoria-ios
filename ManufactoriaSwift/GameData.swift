@@ -14,7 +14,7 @@ private var _gameDataSharedInstance: GameData?
 
 class GameData: NSObject, NSCoding {
   var tutorialsOn: Bool
-  var progressArray: [LevelProgressData]
+  var levelProgressDictionary: [String:LevelProgressData]
   
   class var sharedInstance: GameData {
     if _gameDataSharedInstance == nil {
@@ -24,24 +24,23 @@ class GameData: NSObject, NSCoding {
   }
   
   override init() {
-    //levelsComplete = 0
     tutorialsOn = true
-    progressArray = LevelLibrary.map {return LevelProgressData(levelSetup: $0)}
+    levelProgressDictionary = LevelLibrary.map {return LevelProgressData(levelSetup: $0)}
   }
   
   required init(coder aDecoder: NSCoder) {
     tutorialsOn = aDecoder.decodeObjectForKey("tutorialsOn") as? Bool ?? true
-    progressArray = aDecoder.decodeObjectForKey("progressArray") as? [LevelProgressData] ?? [LevelProgressData]()
-    let pCount = progressArray.count
-    let lCount = LevelLibrary.count
-    if pCount < lCount {
-      progressArray += LevelLibrary[lCount-pCount ..< lCount].map {return LevelProgressData(levelSetup: $0)}
+    levelProgressDictionary = aDecoder.decodeObjectForKey("levelProgressDictionary") as? [String:LevelProgressData] ?? [String:LevelProgressData]()
+    for key in LevelLibrary.keys {
+      if levelProgressDictionary[key] == nil {
+        levelProgressDictionary[key] = LevelProgressData(levelSetup: LevelLibrary[key]!)
+      }
     }
   }
   
   func encodeWithCoder(aCoder: NSCoder)  {
     aCoder.encodeObject(tutorialsOn, forKey: "tutorialsOn")
-    aCoder.encodeObject(progressArray, forKey: "progressArray")
+    aCoder.encodeObject(levelProgressDictionary, forKey: "levelProgressDictionary")
   }
   
   func save() {
@@ -50,21 +49,21 @@ class GameData: NSObject, NSCoding {
   
   func resetAllGameData() {
     tutorialsOn = true
-    progressArray = LevelLibrary.map {return LevelProgressData(levelSetup: $0)}
+    levelProgressDictionary = LevelLibrary.map {return LevelProgressData(levelSetup: $0)}
     save()
   }
   
   func unlockAllLevels() {
     tutorialsOn = false
-    for progress in progressArray {
-      progress.isComplete = true
+    for levelProgressData in levelProgressDictionary.values {
+      levelProgressData.isComplete = true
     }
     save()
   }
     
-  func completedLevel(levelNumber: Int) {
-    if levelNumber < progressArray.count && !progressArray[levelNumber].isComplete {
-      progressArray[levelNumber].isComplete = true
+  func completedLevelWithKey(levelKey: String) {
+    if let levelProgressData = levelProgressDictionary[levelKey] {
+      levelProgressData.isComplete = true
       save()
     }
   }

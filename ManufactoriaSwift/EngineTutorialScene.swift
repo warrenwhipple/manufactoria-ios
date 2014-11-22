@@ -13,7 +13,7 @@ class EngineTutorialScene: GameScene {
   var firstRobotButtonY: CGFloat?
   
   init(size: CGSize) {
-    super.init(size: size, levelNumber: 3)
+    super.init(size: size, levelKey: "nor")
     statusNode.instructionsLabel.text = "The malevolence engine will\nfind a way to thwart you.\n\nReject if #r anywhere."
     statusNode.leftArrowWrapper.removeFromParent()
     statusNode.rightArrowWrapper.removeFromParent()

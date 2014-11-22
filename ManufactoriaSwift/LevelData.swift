@@ -14,9 +14,9 @@ class LevelData: NSObject, NSCoding {
   var undoStrings: [String]
   var redoStrings: [String]
   
-  init(levelNumber: Int) {
-    let space = LevelLibrary[levelNumber].space
-    let filePath = LevelData.filePathForLevelNumber(levelNumber)
+  init(levelKey: String) {
+    let space = LevelLibrary[levelKey]?.space ?? GridSpace(3)
+    let filePath = LevelData.filePathForLevelKey(levelKey)
     if NSFileManager.defaultManager().fileExistsAtPath(filePath) {
       if let levelData = NSKeyedUnarchiver.unarchiveObjectWithFile(filePath) as? LevelData {
         if levelData.grid.space == space {
@@ -37,18 +37,18 @@ class LevelData: NSObject, NSCoding {
   }
   
   class func resetDataForAllLevels() {
-    for i in 0 ..< LevelLibrary.count {
-      NSFileManager.defaultManager().removeItemAtPath(filePathForLevelNumber(i), error: nil)
+    for levelKey in LevelLibrary.keys {
+      NSFileManager.defaultManager().removeItemAtPath(filePathForLevelKey(levelKey), error: nil)
     }
   }
   
-  func saveWithLevelNumber(levelNumber: Int) {
-    NSKeyedArchiver.archivedDataWithRootObject(self).writeToFile(LevelData.filePathForLevelNumber(levelNumber), atomically: true)
+  func saveWithLevelKey(levelKey: String) {
+    NSKeyedArchiver.archivedDataWithRootObject(self).writeToFile(LevelData.filePathForLevelKey(levelKey), atomically: true)
   }
   
-  class func filePathForLevelNumber(levelNumber: Int) -> String {
+  class func filePathForLevelKey(levelKey: String) -> String {
     return NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
-      .stringByAppendingPathComponent("level\(levelNumber)Data")
+      .stringByAppendingPathComponent("level" + levelKey + "data")
   }
   
   func editCompleted() -> Bool {

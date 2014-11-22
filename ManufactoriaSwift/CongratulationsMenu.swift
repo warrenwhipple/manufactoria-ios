@@ -10,7 +10,6 @@ import SpriteKit
 
 protocol CongratulationsMenuDelegate: class {
   func menuButtonPressed()
-  func nextButtonPressed()
 }
 
 class CongratulationsMenu: SKNode {

@@ -16,7 +16,7 @@ class SortTutorialScene: TutorialScene {
   let secondInstructions = SmartLabel()
   
   init(size: CGSize) {
-    super.init(size: size, levelNumber: 1)
+    super.init(size: size, levelKey: "sort")
     
     statusNode.instructionsLabel.text = "This is a color reader."
     let demoLabel = SmartLabel()
@@ -34,7 +34,7 @@ class SortTutorialScene: TutorialScene {
     toolbarNode.toolButtons[1].editModeIsLocked = true
     toolbarNode.toolButtons[2].editModeIsLocked = true
     
-    congratulationsMenu.menuButton.touchUpInsideClosure = {[unowned self] in self.transitionToGameSceneWithLevelNumber(2)}
+    congratulationsMenu.menuButton.touchUpInsideClosure = {[unowned self] in self.transitionToGameSceneWithLevelKey("sequence")}
     
     gridNode.animateThinking = false
     gridNode.state = .Waiting
