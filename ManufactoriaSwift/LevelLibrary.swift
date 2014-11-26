@@ -20,7 +20,6 @@ let FailComments = ["sees all flaws!", "is not happy!", "finds this disturbing!"
 let LoopComments = ["is out of patience!", "does not like waiting!", "is DIV BY ZERO OVERFLOW", "is getting bored!", "has fallen asleep!"]
 
 struct LevelSetup {
-  let unlockKeys: [String]
   let tag: String
   let instructions: String
   let space: GridSpace
@@ -31,9 +30,8 @@ struct LevelSetup {
   let transformFunction: TransformFunction?
   let cleanBinaryOutput: Bool
   
-  init(unlockKeys: [String] = [], tag: String, instructions: String, space: GridSpace, editModes: [EditMode], exemplars: [String],
+  init(tag: String, instructions: String, space: GridSpace, editModes: [EditMode], exemplars: [String],
     generationFunction: GenerationFunction, acceptFunction: AcceptFunction? = nil, transformFunction: TransformFunction? = nil, cleanBinaryOutput: Bool = false) {
-      self.unlockKeys = unlockKeys
       self.tag = tag
       self.instructions = instructions
       self.space = space
@@ -103,10 +101,9 @@ private func toStr(var n: Int) -> String {
 
 var LevelLibrary: [String:LevelSetup] = [
   
-  "all":
+  "move":
   LevelSetup(
-    unlockKeys: ["sort"],
-    tag: "all",
+    tag: "move",
     instructions: "Accept everything.",
     space: GridSpace(3),
     editModes: [],
@@ -115,10 +112,9 @@ var LevelLibrary: [String:LevelSetup] = [
     acceptFunction: {s in return true}
   ),
   
-  "sort":
+  "read":
   LevelSetup(
-    unlockKeys: ["sequence"],
-    tag: "#B",
+    tag: "read",
     instructions: "Accept #b. Reject #r.",
     space: GridSpace(3),
     editModes: [.PullerBR],
@@ -127,10 +123,9 @@ var LevelLibrary: [String:LevelSetup] = [
     acceptFunction: {s in return s == "b"}
   ),
   
-  "sequence":
+  "readseq":
   LevelSetup(
-    unlockKeys: ["nor"],
-    tag: "#BRB...",
+    tag: "read seq",
     instructions: "Robots are programmed\nwith sequences of colors.\n\nAccept if begins #b#r#b.",
     space: GridSpace(5),
     editModes: [.PullerBR],
@@ -142,10 +137,9 @@ var LevelLibrary: [String:LevelSetup] = [
     }
   ),
   
-  "nor":
+  "exclude":
   LevelSetup(
-    unlockKeys: ["norr", "3ormoreb", "endsb"],
-    tag: "no #R",
+    tag: "exclude",
     instructions: "Reject if #r anywhere.",
     space: GridSpace(3),
     editModes: [.PullerBR],
@@ -157,10 +151,10 @@ var LevelLibrary: [String:LevelSetup] = [
     }
   ),
   
-  "norr":
+  "exclude2":
   LevelSetup(
-    tag: "no #RR",
-    instructions: "Reject if #r#r anywhere.",
+    tag: "exclude 2",
+    instructions: "Reject if #rr anywhere.",
     space: GridSpace(5),
     editModes: [.PullerBR],
     exemplars: ["brrb", "bbbb"],
@@ -182,10 +176,9 @@ var LevelLibrary: [String:LevelSetup] = [
     }
   ),
   
-  "3ormoreb":
+  "gte3n":
   LevelSetup(
-    unlockKeys: ["write"],
-    tag: ">= 3B",
+    tag: "≥3n",
     instructions: "Accept if three or more #b.",
     space: GridSpace(5),
     editModes: [.PullerBR],
@@ -200,9 +193,8 @@ var LevelLibrary: [String:LevelSetup] = [
   
   "write":
   LevelSetup(
-    unlockKeys: ["firstlast", "btogrtoy"],
-    tag: "BRBBR",
-    instructions: "Write #b#r#b#b#r.",
+    tag: "write",
+    instructions: "Write #brbbr.",
     space: GridSpace(3),
     editModes: [.PusherB, .PusherR],
     exemplars: [""],
@@ -210,9 +202,9 @@ var LevelLibrary: [String:LevelSetup] = [
     transformFunction: {s in return "brbbr"}
   ),
   
-  "firstlast":
+  "firsttolast":
   LevelSetup(
-    tag: "first last",
+    tag: "first→last",
     instructions: "Move the first to the end.",
     space: GridSpace(5),
     editModes: [.PullerBR, .PusherB, .PusherR],
@@ -244,10 +236,9 @@ var LevelLibrary: [String:LevelSetup] = [
     }
   ),
   
-  "btogrtoy":
+  "recolor":
   LevelSetup(
-    unlockKeys: ["gstartyend"],
-    tag: "B → G\nR → Y",
+    tag: "recolor",
     instructions: "Change #b → #g and #r → #y.",
     space: GridSpace(5),
     editModes: [.PullerBR, .PusherG, .PusherY],
@@ -263,10 +254,9 @@ var LevelLibrary: [String:LevelSetup] = [
     }
   ),
   
-  "endsb":
+  "last":
   LevelSetup(
-    unlockKeys: ["endsbb", "firstislast", "alternates"],
-    tag: "...B",
+    tag: "last",
     instructions: "Accept if ends #b.",
     space: GridSpace(5),
     editModes: [.PullerBR],
@@ -279,10 +269,10 @@ var LevelLibrary: [String:LevelSetup] = [
     }
   ),
   
-  "endsbb":
+  "last2":
   LevelSetup(
-    tag: "...BB",
-    instructions: "Accept if ends #b#b.",
+    tag: "last 2",
+    instructions: "Accept if ends #bb.",
     space: GridSpace(7),
     editModes: [.PullerBR],
     exemplars: ["bbrb", "rbbb"],
@@ -294,10 +284,9 @@ var LevelLibrary: [String:LevelSetup] = [
     }
   ),
   
-  "gstartyend":
+  "enclose":
   LevelSetup(
-    unlockKeys: ["remover", "swap", "odd"],
-    tag: "G + ... + Y",
+    tag: "enclose",
     instructions: "Add #g to the start\nand #y to the end.",
     space: GridSpace(5),
     editModes: [.PullerBR, .PusherB, .PusherR, .PusherG, .PusherY],
@@ -308,7 +297,7 @@ var LevelLibrary: [String:LevelSetup] = [
   
   "firstislast":
   LevelSetup(
-    tag: "first = last",
+    tag: "first=last",
     instructions: "Accept if first and\nlast are the same.",
     space: GridSpace(7),
     editModes: [.PullerBR],
@@ -317,10 +306,9 @@ var LevelLibrary: [String:LevelSetup] = [
     acceptFunction: {s in return s[0] == s[-1]}
   ),
 
-  "xbisxr":
+  "nisn":
   LevelSetup(
-    unlockKeys: ["xbis2xr"],
-    tag: "xB = xR",
+    tag: "n=n",
     instructions: "Accept if same\nnumber of #b as #r.",
     space: GridSpace(7),
     editModes: [.PullerBR, .PullerGY, .PusherB, .PusherR, .PusherG, .PusherY],
@@ -336,10 +324,9 @@ var LevelLibrary: [String:LevelSetup] = [
     }
   ),
   
-  "remover":
+  "remove":
   LevelSetup(
-    unlockKeys: ["btofront", "xbxr"],
-    tag: "remove R",
+    tag: "remove",
     instructions: "Remove all #r.",
     space: GridSpace(5),
     editModes: [.PullerBR, .PullerGY, .PusherB, .PusherR, .PusherG, .PusherY],
@@ -354,7 +341,6 @@ var LevelLibrary: [String:LevelSetup] = [
   
   "swap":
   LevelSetup(
-    unlockKeys: ["lastfirst", "copy"],
     tag: "swap",
     instructions: "Swap #b and #r.",
     space: GridSpace(5),
@@ -370,10 +356,9 @@ var LevelLibrary: [String:LevelSetup] = [
       return out}
   ),
   
-  "lastfirst":
+  "lasttofirst":
   LevelSetup(
-    unlockKeys: ["reverse"],
-    tag: "last first",
+    tag: "last→first",
     instructions: "Move the last color to the front.",
     space: GridSpace(9),
     editModes: [.PullerBR, .PullerGY, .PusherB, .PusherR, .PusherG, .PusherY],
@@ -387,10 +372,9 @@ var LevelLibrary: [String:LevelSetup] = [
     }
   ),
   
-  "xbxr":
+  "nn":
   LevelSetup(
-    unlockKeys: ["xbxrxb", "xbisxr"],
-    tag: "xB xR",
+    tag: "nn",
     instructions: "Accept a number of #b\nfollowed by the same number of #r.",
     space: GridSpace(9),
     editModes: [.PullerBR, .PullerGY, .PusherB, .PusherR, .PusherG, .PusherY],
@@ -407,10 +391,9 @@ var LevelLibrary: [String:LevelSetup] = [
     }
   ),
   
-  "xbxrxb":
+  "nnn":
   LevelSetup(
-    unlockKeys: ["symmetric", "middle"],
-    tag: "xB xR xB",
+    tag: "nnn",
     instructions: "Accept a number of #b followed by the same\nnumber of #r followed by the same number of #b.",
     space: GridSpace(9),
     editModes: [.PullerBR, .PullerGY, .PusherB, .PusherR, .PusherG, .PusherY],
@@ -429,10 +412,9 @@ var LevelLibrary: [String:LevelSetup] = [
     }
   ),
 
-  "middle":
+  "halve":
   LevelSetup(
-    unlockKeys: ["copied", "thirds"],
-    tag: "middle",
+    tag: "halve",
     instructions: "Insert a #g in the middle of the sequence.",
     space: GridSpace(11),
     editModes: [.PullerBR, .PullerGY, .PusherB, .PusherR, .PusherG, .PusherY],
@@ -444,9 +426,9 @@ var LevelLibrary: [String:LevelSetup] = [
     }
   ),
   
-  "btofront":
+  "sort":
   LevelSetup(
-    tag: "B → front",
+    tag: "sort",
     instructions: "Move all #b\nto the front of the sequence.",
     space: GridSpace(9),
     editModes: [.PullerBR, .PullerGY, .PusherB, .PusherR, .PusherG, .PusherY],
@@ -464,7 +446,6 @@ var LevelLibrary: [String:LevelSetup] = [
   
   "copied":
   LevelSetup(
-    unlockKeys: ["thirds"],
     tag: "copied",
     instructions: "Accept sequences that repeat\nmid way through.",
     space: GridSpace(11),
@@ -478,9 +459,9 @@ var LevelLibrary: [String:LevelSetup] = [
     }
   ),
   
-  "xbis2xr":
+  "nis2n":
   LevelSetup(
-    tag: "xB = 2xR",
+    tag: "n=2n",
     instructions: "Accept sequences with\ntwice as many #b as #r.",
     space: GridSpace(11),
     editModes: [.PullerBR, .PullerGY, .PusherB, .PusherR, .PusherG, .PusherY],

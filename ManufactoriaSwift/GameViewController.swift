@@ -42,7 +42,7 @@ class GameViewController: UIViewController {
     if IPAD {
       Globals.iconSpan = 64
       Globals.touchSpan = 92
-      Globals.smallFontSize = 19 // em = 12px
+      Globals.smallFontSize = 19 // em = 16px
       Globals.mediumFontSize = 30 // em = 24px
       Globals.largeFontSize = 52 // em = 40px
       Globals.smallFont = "HelveticaNeue-Light"

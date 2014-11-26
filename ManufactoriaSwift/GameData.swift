@@ -24,7 +24,7 @@ class GameData: NSObject, NSCoding {
   }
   
   override init() {
-    tutorialsOn = true
+    tutorialsOn = false
     levelProgressDictionary = LevelLibrary.map {return LevelProgressData(levelSetup: $0)}
   }
   
@@ -48,7 +48,7 @@ class GameData: NSObject, NSCoding {
   }
   
   func resetAllGameData() {
-    tutorialsOn = true
+    tutorialsOn = false
     levelProgressDictionary = LevelLibrary.map {return LevelProgressData(levelSetup: $0)}
     save()
   }

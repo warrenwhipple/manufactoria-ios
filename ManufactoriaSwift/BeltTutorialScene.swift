@@ -16,9 +16,7 @@ class BeltTutorialScene: TutorialScene {
     super.init(size: size, levelKey: "all")
     
     statusNode.instructionsLabel.text = "This is a manufactory floor plan."
-    let connectLabel = BreakingLabel()
-    connectLabel.fontMedium()
-    connectLabel.fontColor = Globals.strokeColor
+    let connectLabel = SmartLabel()
     connectLabel.text = "Connect the entrance and exit."
     statusNode.addPageToRight(connectLabel)
     startSwipePulse()
@@ -99,9 +97,7 @@ class BeltTutorialScene: TutorialScene {
       gridNode.state = .Editing
       tutorialState = .Connect
     case .Connect:
-      let robotLabel = BreakingLabel()
-      robotLabel.fontMedium()
-      robotLabel.fontColor = Globals.strokeColor
+      let robotLabel = SmartLabel()
       robotLabel.text = "Tap the robot\nto begin the test."
       statusNode.addPageToRight(robotLabel)
       statusNode.snapToIndex(3, initialVelocityX: 0)

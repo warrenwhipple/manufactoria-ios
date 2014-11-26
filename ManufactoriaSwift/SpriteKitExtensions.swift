@@ -58,9 +58,3 @@ extension SKLabelNode {
   func fontMedium() {fontSize = Globals.mediumFontSize; fontName = Globals.mediumFont}
   func fontLarge()  {fontSize = Globals.largeFontSize; fontName = Globals.largeFont}
 }
-
-extension BreakingLabel {
-  func fontSmall()  {fontSize = Globals.smallFontSize; fontName = Globals.smallFont}
-  func fontMedium() {fontSize = Globals.mediumFontSize; fontName = Globals.mediumFont}
-  func fontLarge()  {fontSize = Globals.largeFontSize; fontName = Globals.largeFont}
-}

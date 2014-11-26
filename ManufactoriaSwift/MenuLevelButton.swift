@@ -8,21 +8,36 @@
 
 import SpriteKit
 
+protocol MenuLevelButtonDelegate: class {
+  func transitionToGameSceneWithLevelKey(levelKey: String)
+}
+
 class MenuLevelButton: Button {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
+  weak var delegate: MenuLevelButtonDelegate!
   let spriteOff = SKSpriteNode()
   let spriteOn = SKSpriteNode()
   
   init(levelKey: String) {
-    let label = SmartLabel()
+    super.init(nodeOff: spriteOff, nodeOn: spriteOn, touchSize: CGSizeZero)
+    spriteOn.color = Globals.highlightColor
+    let labelOff = SKLabelNode()
+    let labelOn = SKLabelNode()
+    labelOff.fontColor = Globals.strokeColor
+    labelOn.fontColor = Globals.backgroundColor
+    labelOff.fontSmall()
+    labelOn.fontSmall()
+    labelOff.position.y = -Globals.smallEm / 2
+    labelOn.position.y = -Globals.smallEm / 2
     if let levelSetup = LevelLibrary[levelKey] {
-      label.text = levelSetup.tag
-      label.zPosition = 2
+      touchUpInsideClosure = {[unowned self] in self.delegate.transitionToGameSceneWithLevelKey(levelKey)}
+      labelOff.text = levelSetup.tag
+      labelOn.text = levelSetup.tag
     } else {
       println("MenuLevelButton.init: No key for: " + levelKey)
     }
-    super.init(nodeOff: spriteOff, nodeOn: spriteOn, touchSize: CGSizeZero)
-    addChild(label)
+    spriteOff.addChild(labelOff)
+    spriteOn.addChild(labelOn)
   }
   
   override var size: CGSize {

@@ -10,7 +10,7 @@ import SpriteKit
 
 class ResetScene: ManufactoriaScene {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  let question = BreakingLabel()
+  let question = SmartLabel()
   let yesButton = Button(text: "reset", fixedWidth: Globals.touchSpan * 1.5)
   let noButton = Button(text: "cancel", fixedWidth: Globals.touchSpan * 1.5)
   override init(size: CGSize) {
@@ -49,7 +49,7 @@ class ResetScene: ManufactoriaScene {
 
 class UnlockScene: ManufactoriaScene {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  let question = BreakingLabel()
+  let question = SmartLabel()
   let yesButton = Button(text: "unlock", fixedWidth: Globals.touchSpan * 1.5)
   let noButton = Button(text: "cancel", fixedWidth: Globals.touchSpan * 1.5)
   override init(size: CGSize) {

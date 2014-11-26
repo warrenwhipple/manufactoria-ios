@@ -29,8 +29,8 @@ extension Dictionary {
     }
     return result
   }
-  func map<U>(transform: Value -> U) -> [Key:U] {
-    var result = [Key:U](minimumCapacity: count)
+  func map<T>(transform: Value -> T) -> [Key:T] {
+    var result = [Key:T](minimumCapacity: count)
     for (key, value) in self {
       result[key] = transform(value)
     }

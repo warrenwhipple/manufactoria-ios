@@ -12,10 +12,11 @@ class SmartLabel: SKNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   var rows: [[SKNode]] = []
   var labels: [SKLabelNode] = []
-  var fontName: String {didSet {for label in labels {label.fontName = fontName}; alignNodes()}}
-  var fontSize: CGFloat {didSet {for label in labels {label.fontSize = fontSize}; alignNodes()}}
+  var fontName: String {didSet {for label in labels {label.fontName = fontName}}}
+  var fontSize: CGFloat {didSet {for label in labels {label.fontSize = fontSize}}}
+  var dotTexture = SKTexture(imageNamed: "dot")
   var fontColor: UIColor {didSet {for label in labels {label.fontColor = fontColor}}}
-  var lineHeight: CGFloat = 1.5 {didSet{ alignNodes()}}
+  var lineHeight: CGFloat = 1.5
   
   var text: String? {
     didSet {
@@ -41,17 +42,12 @@ class SmartLabel: SKNode {
             label.text = string
             row.append(label)
             labels.append(label)
+            string = ""
           }
-          string = ""
         }
-        var lastHash = false
-        let dotTexture = SKTexture(imageNamed: "dot")
+        var shouldAddDots = false
         for nextCharacter in text! {
-          if nextCharacter == "\n" {
-            clipLabel()
-            rows.append(row)
-            row = []
-          } else if lastHash {
+          if shouldAddDots {
             switch nextCharacter {
             case "b", "B", "r", "R", "g", "G", "y", "Y":
               clipLabel()
@@ -66,14 +62,21 @@ class SmartLabel: SKNode {
               default: break
               }
               row.append(sprite)
-            default:
-              string += "#"
-              string.append(nextCharacter)
+              continue
+            default: shouldAddDots = false
             }
-          } else if nextCharacter != "#" {
-            string.append(nextCharacter)
           }
-          lastHash = nextCharacter == "#"
+          if nextCharacter == "#" {
+            shouldAddDots = true
+            continue
+          }
+          if nextCharacter == "\n" {
+            clipLabel()
+            rows.append(row)
+            row = []
+            continue
+          }
+          string.append(nextCharacter)
         }
         clipLabel()
         rows.append(row)
@@ -104,28 +107,55 @@ class SmartLabel: SKNode {
     var lineIndex = 0
     for row in rows {
       var xShift: CGFloat = 0
+      var lastWasDot = false
       for i in 0 ..< row.count {
         let node = row[i]
         node.position.y = -CGFloat(lineIndex) * lineHeight * em + yShift
         if node is SKLabelNode {
           let label = node as SKLabelNode
           if !label.text.isEmpty {
-            if label.text[0] == " " {xShift += em * 0.5}
+            if label.text[0] == " " {xShift += em * 0.125}
             label.position.x = xShift
             xShift += label.frame.width
-            if label.text[-1] == " " {xShift += em * 0.25}
+            if label.text[-1] == " " {xShift += em * 0.125}
           }
-        } else {
-          xShift += em * 0.25
-          node.position.x = xShift
+          lastWasDot = false
+        } else if node is SKSpriteNode {
+          let sprite = node as SKSpriteNode
+          sprite.texture = dotTexture
+          xShift += em * (lastWasDot ? 0.25 : 0.125)
+          sprite.position.x = xShift
           xShift += em
+          lastWasDot = true
         }
       }
       xShift *= -0.5
       for node in row {
         node.position.x += xShift
+        node.position.x = roundPix(node.position.x)
       }
       lineIndex++
     }
+  }
+  
+  func fontSmall() {
+    fontSize = Globals.smallFontSize
+    fontName = Globals.smallFont
+    dotTexture = SKTexture(imageNamed: "dotSmall")
+    alignNodes()
+  }
+  
+  func fontMedium() {
+    fontSize = Globals.mediumFontSize
+    fontName = Globals.mediumFont
+    dotTexture = SKTexture(imageNamed: "dot")
+    alignNodes()
+  }
+  
+  func fontLarge() {
+    fontSize = Globals.largeFontSize
+    fontName = Globals.largeFont
+    dotTexture = SKTexture(imageNamed: "dot")
+    alignNodes()
   }
 }
