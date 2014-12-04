@@ -5,7 +5,7 @@
 //  Created by Warren Whipple on 11/26/14.
 //  Copyright (c) 2014 Warren Whipple. All rights reserved.
 //
-
+/*
 import SpriteKit
 
 protocol DragThroughDelegate: class {
@@ -158,3 +158,4 @@ class BetterButton: SKSpriteNode {
     }
   }
 }
+*/

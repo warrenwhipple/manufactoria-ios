@@ -23,6 +23,13 @@ private let levelKeyLayout: [[String?]] = [
   [nil, "power", nil, nil]
 ]
 
+private func levelKeyAtCoord(i: Int, j: Int) -> String? {
+  if j >= 0 && j < levelKeyLayout.count && i >= 0 && i < levelKeyLayout[j].count {
+    return levelKeyLayout[j][i]
+  }
+  return nil
+}
+
 private let levelKeyLinks: [String:[String]] = [
   "move": ["read"],
   "read": ["readseq"],
@@ -50,6 +57,7 @@ private let levelKeyLinks: [String:[String]] = [
   "add": ["multiply"],
 ]
 
+/*
 func linksToTiers<T:Hashable>(var links: [T:[T]], first: T) -> [[T]] {
   var result = [[first]]
   var previousCount = 0
@@ -69,16 +77,18 @@ func linksToTiers<T:Hashable>(var links: [T:[T]], first: T) -> [[T]] {
   }
   return result
 }
-
 private let levelKeyTiers = linksToTiers(levelKeyLinks, "move")
+*/
 
 class MenuScene: ManufactoriaScene, MenuLevelButtonDelegate {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   let levelButtons: [MenuLevelButton]
   let levelButtonLayout: [[MenuLevelButton?]]
-  let levelButtonTiers: [[MenuLevelButton]]
-  let topSettingsButton = Button(iconOffNamed: "settingsIconOff", iconOnNamed: "settingsIconOn")
-  let bottomSettingsButton = Button(iconOffNamed: "settingsIconOff", iconOnNamed: "settingsIconOn")
+  //let levelButtonTiers: [[MenuLevelButton]]
+  //let topSettingsButton = Button(iconOffNamed: "settingsIconOff", iconOnNamed: "settingsIconOn")
+  //let bottomSettingsButton = Button(iconOffNamed: "settingsIconOff", iconOnNamed: "settingsIconOn")
+  let resetButton = Button(iconOffNamed: "resetIconOff", iconOnNamed: "resetIconOn")
+  let unlockButton = Button(iconOffNamed: "unlockIconOff", iconOnNamed: "unlockIconOn")
   let scrollNode = ScrollNode()
   
   override init(size: CGSize) {
@@ -88,20 +98,58 @@ class MenuScene: ManufactoriaScene, MenuLevelButtonDelegate {
     }
     levelButtonLayout = levelKeyLayout.map(){$0.map(){levelButtonDictionary[$0 ?? ""] ?? nil}}
     levelButtons = levelButtonLayout.reduce([MenuLevelButton]()){$0 + $1.filter(){$0 != nil}.map(){$0!}}
-    levelButtonTiers = []
+    //levelButtonTiers = levelKeyTiers.map(){$0.map(){levelButtonDictionary[$0] ?? MenuLevelButton(levelKey: "")}}
     super.init(size: size)
+    resetButton.touchUpInsideClosure = {[unowned self] in self.transitionToResetScene()}
+    unlockButton.touchUpInsideClosure = {[unowned self] in self.transitionToUnlockScene()}
     for button in levelButtons {
       button.delegate = self
       button.swipeThroughDelegate = scrollNode
     }
-    topSettingsButton.swipeThroughDelegate = scrollNode
-    bottomSettingsButton.swipeThroughDelegate = scrollNode
+    //topSettingsButton.swipeThroughDelegate = scrollNode
+    //bottomSettingsButton.swipeThroughDelegate = scrollNode
+    resetButton.swipeThroughDelegate = scrollNode
+    unlockButton.swipeThroughDelegate = scrollNode
     backgroundColor = Globals.backgroundColor
     scrollNode.wrapper.addChildren(levelButtons)
-    scrollNode.wrapper.addChild(topSettingsButton)
-    scrollNode.wrapper.addChild(bottomSettingsButton)
+    //scrollNode.wrapper.addChild(topSettingsButton)
+    //scrollNode.wrapper.addChild(bottomSettingsButton)
+    scrollNode.wrapper.addChild(resetButton)
+    scrollNode.wrapper.addChild(unlockButton)
     addChild(scrollNode)
-    fitToSize()
+    
+    for (j, row) in enumerate(levelButtonLayout) {
+      for (i, buttonOptional) in enumerate(row) {
+        if let button = buttonOptional {
+          if let parentKey = levelKeyLayout[j][i] {
+            if let childKeys = levelKeyLinks[parentKey] {
+              if let northKey = levelKeyAtCoord(i, j-1) {
+                if contains(childKeys, northKey) {
+                  button.addArrowForDirection(.North)
+                }
+              }
+              if let eastKey = levelKeyAtCoord(i+1, j) {
+                if contains(childKeys, eastKey) {
+                  button.addArrowForDirection(.East)
+                }
+              }
+              if let southKey = levelKeyAtCoord(i, j+1) {
+                if contains(childKeys, southKey) {
+                  button.addArrowForDirection(.South)
+                }
+              }
+              if let westKey = levelKeyAtCoord(i-1, j) {
+                if contains(childKeys, westKey) {
+                  button.addArrowForDirection(.West)
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    fitToSize()    
   }
   
   override var size: CGSize {didSet{fitToSize()}}
@@ -116,23 +164,26 @@ class MenuScene: ManufactoriaScene, MenuLevelButtonDelegate {
         if let button = slot {
           button.size = CGSize(spacing)
           button.position = CGPoint(offset + CGFloat(i) * spacing, -offset - CGFloat(j) * spacing)
-          button.color = Globals.backgroundColor.blend(Globals.strokeColor, blendFactor: 0.3 * randCGFloat())
         }
       }
     }
-    topSettingsButton.size = CGSize(spacing)
-    bottomSettingsButton.size = CGSize(spacing)
-    topSettingsButton.position = CGPoint(offset, -offset)
-    bottomSettingsButton.position = CGPoint(
-      offset + CGFloat(levelButtonLayout[0].count - 1) * spacing,
-      -offset - CGFloat(levelButtonLayout.count - 1) * spacing
-    )
+    //topSettingsButton.size = CGSize(spacing)
+    //bottomSettingsButton.size = CGSize(spacing)
+    resetButton.size = CGSize(spacing)
+    unlockButton.size = CGSize(spacing)
+    //topSettingsButton.position = CGPoint(offset, -offset)
+    //bottomSettingsButton.position = CGPoint(offset + CGFloat(levelButtonLayout[0].count - 1) * spacing, -offset - CGFloat(levelButtonLayout.count - 1) * spacing)
+    resetButton.position = CGPoint(offset, -offset)
+    unlockButton.position = CGPoint(offset + spacing, -offset)
   }
   
   override func updateDt(dt: NSTimeInterval) {
     for button in levelButtons {button.update(dt)}
-    topSettingsButton.update(dt)
-    bottomSettingsButton.update(dt)
+    
+    //topSettingsButton.update(dt)
+    //bottomSettingsButton.update(dt)
+    unlockButton.update(dt)
+    resetButton.update(dt)
   }
   
   // MARK: - Touch Delegate Methods

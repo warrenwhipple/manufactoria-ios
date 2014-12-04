@@ -10,7 +10,7 @@ import Foundation
 
 // when class variables become available, move into class
 private let _gameDataFilePath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0].stringByAppendingPathComponent("gameData")
-private var _gameDataSharedInstance: GameData?
+private let _gameDataSharedInstance = GameData()
 
 class GameData: NSObject, NSCoding {
   var tutorialsOn: Bool

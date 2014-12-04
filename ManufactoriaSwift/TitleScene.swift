@@ -12,7 +12,7 @@ class TitleScene: ManufactoriaScene {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   let gameData = GameData.sharedInstance
   let titleLabel = SKLabelNode()
-  let button = BetterButton(text: "play", fixedWidth: Globals.mediumEm * 8)
+  let button = Button(text: "play", fixedWidth: Globals.mediumEm * 8)
   
   override init(size: CGSize) {
     super.init(size: size)
@@ -21,11 +21,11 @@ class TitleScene: ManufactoriaScene {
     titleLabel.fontColor = Globals.strokeColor
     titleLabel.horizontalAlignmentMode = .Center
     titleLabel.text = "Manufactoria"
-    button.shouldStickyOn = true
+    button.shouldStickyGlow = true
     button.touchUpInsideClosure = {
       [unowned self] in
-      if !(self.gameData.levelProgressDictionary["all"]?.isComplete ?? false) {
-        self.transitionToGameSceneWithLevelKey("all")
+      if !(self.gameData.levelProgressDictionary["move"]?.isComplete ?? false) {
+        self.transitionToGameSceneWithLevelKey("move")
       } else {
         self.transitionToMenuScene()
       }
@@ -40,5 +40,8 @@ class TitleScene: ManufactoriaScene {
   func fitToSize() {
     titleLabel.position = CGPoint(size.center.x, size.center.y + Globals.mediumEm * 0.75)
     button.position = CGPoint(size.center.x, size.center.y - Globals.mediumEm * 1.75)
-  }  
+  }
+  override func updateDt(dt: NSTimeInterval) {
+    button.update(dt)
+  }
 }
