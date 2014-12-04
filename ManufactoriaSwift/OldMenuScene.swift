@@ -18,7 +18,7 @@ class OldMenuScene: ManufactoriaScene {
   override init(size: CGSize) {
     super.init(size: size)
     backgroundColor = Globals.backgroundColor
-    let gameData = GameData.sharedInstance
+    let gameProgressData = GameProgressData.sharedInstance
     var totalButtons = 28
     if IPAD {totalButtons = 35}
     
@@ -34,7 +34,7 @@ class OldMenuScene: ManufactoriaScene {
       } else if i == totalButtons - 1 {
         button.addChild(buttonLabel("reset"))
         button.touchUpInsideClosure = {[unowned self] in self.transitionToResetScene()}
-//      } else if i < LevelLibrary.count && i <= gameData.levelsComplete {
+//      } else if i < LevelLibrary.count && i <= gameProgressData.levelsComplete {
       } else if i < LevelLibrary.count {
         button.addChild(buttonLabel(LevelLibrary[i].tag))
         button.touchUpInsideClosure = {[unowned self] in self.transitionToGameSceneWithLevelNumber(i)}

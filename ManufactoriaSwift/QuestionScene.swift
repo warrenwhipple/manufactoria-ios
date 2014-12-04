@@ -21,7 +21,7 @@ class ResetScene: ManufactoriaScene {
     question.fontColor = Globals.strokeColor
     yesButton.touchUpInsideClosure = {
       [unowned self] in
-      GameData.sharedInstance.resetAllGameData()
+      GameProgressData.sharedInstance.resetAllGameProgressData()
       LevelData.resetDataForAllLevels()
       self.transitionToTitleScene()
     }
@@ -60,7 +60,7 @@ class UnlockScene: ManufactoriaScene {
     question.fontColor = Globals.strokeColor
     yesButton.touchUpInsideClosure = {
       [unowned self] in
-      GameData.sharedInstance.unlockAllLevels()
+      GameProgressData.sharedInstance.unlockAllLevels()
       self.transitionToMenuScene()
     }
     noButton.touchUpInsideClosure = {

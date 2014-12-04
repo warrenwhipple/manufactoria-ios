@@ -30,33 +30,6 @@ private func levelKeyAtCoord(i: Int, j: Int) -> String? {
   return nil
 }
 
-private let levelKeyLinks: [String:[String]] = [
-  "move": ["read"],
-  "read": ["readseq"],
-  "exclude": ["gte3n"],
-  "readseq": ["exclude"],
-  "last": ["last2", "firstislast", "alternates"],
-  "gte3n": ["last", "exclude2", "write"],
-  "write": ["firsttolast", "recolor"],
-  "nisn": ["nis2n"],
-  "recolor": ["enclose"],
-  "nn": ["nisn", "nnn"],
-  "remove": ["sort", "nn"],
-  "enclose": ["remove", "swap", "odd"],
-  "swap": ["copy", "lasttofirst"],
-  "nnn": ["symmetric", "halve"],
-  "odd": ["times8"],
-  "lasttofirst": ["reverse"],
-  "halve": ["copied"],
-  "times8": ["gt15", "increment"],
-  "increment": ["length", "decrement"],
-  "divide": ["modulo"],
-  "subtract": ["divide"],
-  "decrement": ["subtract", "greaterthan", "add"],
-  "multiply": ["power"],
-  "add": ["multiply"],
-]
-
 /*
 func linksToTiers<T:Hashable>(var links: [T:[T]], first: T) -> [[T]] {
   var result = [[first]]
@@ -122,25 +95,27 @@ class MenuScene: ManufactoriaScene, MenuLevelButtonDelegate {
       for (i, buttonOptional) in enumerate(row) {
         if let button = buttonOptional {
           if let parentKey = levelKeyLayout[j][i] {
-            if let childKeys = levelKeyLinks[parentKey] {
-              if let northKey = levelKeyAtCoord(i, j-1) {
-                if contains(childKeys, northKey) {
-                  button.addArrowForDirection(.North)
+            if GameProgressData.sharedInstance.level(parentKey)?.isComplete ?? false {
+              if let childKeys = GameProgressData.levelKeyLinks[parentKey] {
+                if let northKey = levelKeyAtCoord(i, j-1) {
+                  if contains(childKeys, northKey) {
+                    button.addArrowForDirection(.North)
+                  }
                 }
-              }
-              if let eastKey = levelKeyAtCoord(i+1, j) {
-                if contains(childKeys, eastKey) {
-                  button.addArrowForDirection(.East)
+                if let eastKey = levelKeyAtCoord(i+1, j) {
+                  if contains(childKeys, eastKey) {
+                    button.addArrowForDirection(.East)
+                  }
                 }
-              }
-              if let southKey = levelKeyAtCoord(i, j+1) {
-                if contains(childKeys, southKey) {
-                  button.addArrowForDirection(.South)
+                if let southKey = levelKeyAtCoord(i, j+1) {
+                  if contains(childKeys, southKey) {
+                    button.addArrowForDirection(.South)
+                  }
                 }
-              }
-              if let westKey = levelKeyAtCoord(i-1, j) {
-                if contains(childKeys, westKey) {
-                  button.addArrowForDirection(.West)
+                if let westKey = levelKeyAtCoord(i-1, j) {
+                  if contains(childKeys, westKey) {
+                    button.addArrowForDirection(.West)
+                  }
                 }
               }
             }

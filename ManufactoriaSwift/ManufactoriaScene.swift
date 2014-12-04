@@ -32,7 +32,7 @@ class TransitionScene: SKScene {
     case .Unlock: nextScene = UnlockScene(size: size)
     case .Reset: nextScene = ResetScene(size: size)
     case .Game(let levelKey):
-      if GameData.sharedInstance.tutorialsOn {
+      if GameProgressData.sharedInstance.tutorialsOn {
         switch levelKey {
         case "all": nextScene = BeltTutorialScene(size: view!.bounds.size)
         case "sort": nextScene = SortTutorialScene(size: view!.bounds.size)

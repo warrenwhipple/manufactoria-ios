@@ -10,7 +10,7 @@ import SpriteKit
 
 class TitleScene: ManufactoriaScene {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  let gameData = GameData.sharedInstance
+  let gameProgressData = GameProgressData.sharedInstance
   let titleLabel = SKLabelNode()
   let button = Button(text: "play", fixedWidth: Globals.mediumEm * 8)
   
@@ -24,7 +24,7 @@ class TitleScene: ManufactoriaScene {
     button.shouldStickyGlow = true
     button.touchUpInsideClosure = {
       [unowned self] in
-      if !(self.gameData.levelProgressDictionary["move"]?.isComplete ?? false) {
+      if !(self.gameProgressData.levelProgressDictionary["move"]?.isComplete ?? false) {
         self.transitionToGameSceneWithLevelKey("move")
       } else {
         self.transitionToMenuScene()

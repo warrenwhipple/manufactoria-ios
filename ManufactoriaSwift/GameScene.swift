@@ -400,8 +400,8 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
     for exemplar in levelSetup.exemplars {
       tapeTestResults.append(TapeTestResult(input: exemplar, output: nil, correctOutput: nil, kind: .Pass))
     }
-    let gameData = GameData.sharedInstance
-    GameData.sharedInstance.completedLevelWithKey(levelKey)
+    let gameProgressData = GameProgressData.sharedInstance
+    GameProgressData.sharedInstance.completedLevelWithKey(levelKey)
     gridTestDidPass = true
     state = .Testing
   }

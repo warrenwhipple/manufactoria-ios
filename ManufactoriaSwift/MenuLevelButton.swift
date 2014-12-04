@@ -15,46 +15,52 @@ protocol MenuLevelButtonDelegate: class {
 class MenuLevelButton: Button {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   weak var delegate: MenuLevelButtonDelegate!
-  let spriteOff = SKSpriteNode()
-  let spriteOn = SKSpriteNode()
+  let labelOff = SKLabelNode()
+  let spriteOn: SKSpriteNode?
+  let labelOn: SKLabelNode?
   let shimmerNode = ShimmerNode()
   var arrowN, arrowE, arrowS, arrowW: SKSpriteNode?
   
   init(levelKey: String) {
-    super.init(nodeOff: spriteOff, nodeOn: spriteOn, touchSize: CGSizeZero)
-    shimmerNode.zPosition = -1
-    shimmerNode.startMidShimmer()
-    addChild(shimmerNode)
-    spriteOn.color = Globals.highlightColor
-    let labelOff = SKLabelNode()
-    let labelOn = SKLabelNode()
-    labelOff.fontColor = Globals.highlightColor
-    labelOn.fontColor = Globals.backgroundColor
-    labelOff.fontSmall()
-    labelOn.fontSmall()
+    if GameProgressData.sharedInstance.level(levelKey)?.isUnlocked ?? false {
+      spriteOn = SKSpriteNode()
+      labelOn = SKLabelNode()
+      spriteOn?.addChild(labelOn!)
+    }
+    super.init(nodeOff: SKNode(), nodeOn: spriteOn ?? SKNode(), touchSize: CGSizeZero)
+    nodeOff?.addChild(labelOff)
+    spriteOn?.color = Globals.highlightColor
+    if let levelProgressData = GameProgressData.sharedInstance.level(levelKey) {
+      labelOff.fontSmall()
+      labelOn?.fontSmall()
+      labelOn?.fontColor = Globals.backgroundColor
+      if levelProgressData.isUnlocked {
+        if levelProgressData.isComplete {
+          labelOff.fontColor = Globals.strokeColor
+        } else {
+          labelOff.fontColor = Globals.highlightColor
+        }
+      } else {
+        labelOff.fontColor = Globals.backgroundColor
+        userInteractionEnabled = false
+      }
+    }
     labelOff.position.y = -Globals.smallEm / 2
-    labelOn.position.y = -Globals.smallEm / 2
+    labelOn?.position.y = -Globals.smallEm / 2
     if let levelSetup = LevelLibrary[levelKey] {
       touchUpInsideClosure = {[unowned self] in self.delegate.transitionToGameSceneWithLevelKey(levelKey)}
       labelOff.text = levelSetup.tag
-      labelOn.text = levelSetup.tag
-    } else {
-      println("MenuLevelButton.init: No key for: " + levelKey)
+      labelOn?.text = levelSetup.tag
     }
-    if let levelProgressData = GameData.sharedInstance.levelProgressDictionary[levelKey] {
-      if levelProgressData.isComplete {
-        labelOff.color = Globals.strokeColor
-      }
-    }
-    spriteOff.addChild(labelOff)
-    spriteOn.addChild(labelOn)
+    shimmerNode.zPosition = -1
+    shimmerNode.startMidShimmer()
+    addChild(shimmerNode)
   }
   
   override var size: CGSize {
     didSet {
       shimmerNode.size = size
-      spriteOff.size = size
-      spriteOn.size = size
+      spriteOn?.size = size
       arrowN?.position.y = size.height/2
       arrowE?.position.x = size.width/2
       arrowS?.position.y = -size.height/2
