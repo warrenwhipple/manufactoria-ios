@@ -48,7 +48,7 @@ class StatusNode: SwipeNode {
     
     instructionsPage.addChild(instructionsLabel)
     
-    menuButton.swipeThroughDelegate = self
+    menuButton.dragThroughDelegate = self
     menuButton.shouldStickyGlow = true
     menuButton.touchUpInsideClosure = {[unowned self] in self.delegate.menuButtonPressed()}
     

@@ -77,12 +77,12 @@ class MenuScene: ManufactoriaScene, MenuLevelButtonDelegate {
     unlockButton.touchUpInsideClosure = {[unowned self] in self.transitionToUnlockScene()}
     for button in levelButtons {
       button.delegate = self
-      button.swipeThroughDelegate = scrollNode
+      button.dragThroughDelegate = scrollNode
     }
-    //topSettingsButton.swipeThroughDelegate = scrollNode
-    //bottomSettingsButton.swipeThroughDelegate = scrollNode
-    resetButton.swipeThroughDelegate = scrollNode
-    unlockButton.swipeThroughDelegate = scrollNode
+    //topSettingsButton.dragThroughDelegate = scrollNode
+    //bottomSettingsButton.dragThroughDelegate = scrollNode
+    resetButton.dragThroughDelegate = scrollNode
+    unlockButton.dragThroughDelegate = scrollNode
     backgroundColor = Globals.backgroundColor
     scrollNode.wrapper.addChildren(levelButtons)
     //scrollNode.wrapper.addChild(topSettingsButton)

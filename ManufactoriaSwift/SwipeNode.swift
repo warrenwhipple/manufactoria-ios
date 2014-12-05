@@ -12,7 +12,7 @@ protocol SwipeNodeDelegate: class {
   func swipeNodeDidSnapToIndex(index: Int)
 }
 
-class SwipeNode: SKSpriteNode, SwipeThroughDelegate {
+class SwipeNode: SKSpriteNode, DragThroughDelegate {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   
   var swipeSnapDelegate: SwipeNodeDelegate?
@@ -225,25 +225,29 @@ class SwipeNode: SKSpriteNode, SwipeThroughDelegate {
   
   // MARK: - SwipeThroughButtonDelegate Methods
   
-  func swipeThroughTouchMoved(swipeThroughTouch: UITouch) {
+  func dragThroughTouchBegan(touch: UITouch) {
+    
+  }
+  
+  func dragThroughTouchMoved(dragThroughTouch: UITouch) {
     if userInteractionEnabled {
       if touch == nil {
-        touch = swipeThroughTouch
+        touch = dragThroughTouch
         touchBegan()
-      } else if touch == swipeThroughTouch {
+      } else if touch == dragThroughTouch {
         touchMoved()
       }
     }
   }
   
-  func swipeThroughTouchEnded(swipeThroughTouch: UITouch) {
-    if userInteractionEnabled && touch == swipeThroughTouch {
+  func dragThroughTouchEnded(dragThroughTouch: UITouch) {
+    if userInteractionEnabled && touch == dragThroughTouch {
       touchEnded()
     }
   }
   
-  func swipeThroughTouchCancelled(swipeThroughTouch: UITouch) {
-    if userInteractionEnabled && touch == swipeThroughTouch {
+  func dragThroughTouchCancelled(dragThroughTouch: UITouch) {
+    if userInteractionEnabled && touch == dragThroughTouch {
       touchCancelled()
     }
   }

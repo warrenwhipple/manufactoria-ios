@@ -126,6 +126,6 @@ class LevelProgressData: NSObject, NSCoding {
   
   func encodeWithCoder(aCoder: NSCoder) {
     aCoder.encodeObject(isComplete, forKey: "isComplete")
-    aCoder.encodeObject(isUnlockedprint, forKey: "isUnlocked")
+    aCoder.encodeObject(isUnlocked, forKey: "isUnlocked")
   }
 }

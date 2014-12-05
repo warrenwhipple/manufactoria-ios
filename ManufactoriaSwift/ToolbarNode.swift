@@ -106,7 +106,7 @@ class ToolbarNode: SKNode, ToolButtonDelegate, SwipeNodeDelegate {
     }
     if toolButtonGroups.count > 1 {
       for button in toolButtons {
-        button.swipeThroughDelegate = swipeNode
+        button.dragThroughDelegate = swipeNode
       }
     } else {
       swipeNode.userInteractionEnabled = false

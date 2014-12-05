@@ -8,18 +8,20 @@
 
 import SpriteKit
 
-protocol SwipeThroughDelegate: class {
+protocol DragThroughDelegate: class {
   var userInteractionEnabled: Bool {get}
-  func swipeThroughTouchMoved(touch: UITouch)
-  func swipeThroughTouchEnded(touch: UITouch)
-  func swipeThroughTouchCancelled(touch: UITouch)
+  func dragThroughTouchBegan(touch: UITouch)
+  func dragThroughTouchMoved(touch: UITouch)
+  func dragThroughTouchEnded(touch: UITouch)
+  func dragThroughTouchCancelled(touch: UITouch)
 }
 
 class Button: SKSpriteNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  var touchDownClosure, touchUpInsideClosure: (()->())?
-  weak var swipeThroughDelegate: SwipeThroughDelegate?
-  var touch, swipeThroughTouch: UITouch?
+  var touchDownClosure, touchUpInsideClosure, touchCancelledClosure: (()->())?
+  weak var dragThroughDelegate: DragThroughDelegate?
+  var touch: UITouch?
+  var touchIsDraggingThrough: Bool = false
   var touchBeganPoint: CGPoint = CGPointZero
   var shouldStickyGlow = false
   var isStickyGlowing = false
@@ -81,7 +83,7 @@ class Button: SKSpriteNode {
   }
   
   func update(dt: NSTimeInterval) {
-    if touch != nil || isActivateGlowing || isStickyGlowing {
+    if (touch != nil && !touchIsDraggingThrough) || isActivateGlowing || isStickyGlowing {
       if glow < 1 {
         glow += 4 * CGFloat(dt)
       } else {
@@ -120,50 +122,67 @@ class Button: SKSpriteNode {
     removeActionForKey("pulseGlow")
   }
   
+  // MARK: - UITouch Methods
+  
   override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
-    if touch == nil && swipeThroughTouch == nil {
-      touch = touches.anyObject() as? UITouch
-      touchBeganPoint = touch!.locationInView(touch!.view)
+    if let touch = touch {
+      if touchIsDraggingThrough {
+        dragThroughDelegate?.dragThroughTouchCancelled(touch)
+      }
+    }
+    touch = touches.anyObject() as? UITouch
+    if let touch = touch {
+      touchIsDraggingThrough = false
+      touchBeganPoint = touch.locationInView(touch.view)
       touchDownClosure?()
     }
   }
   
   override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
-    if touch != nil && touches.containsObject(touch!) {
-      if swipeThroughDelegate == nil || !swipeThroughDelegate!.userInteractionEnabled {
-        if !frame.contains(touch!.locationInNode(parent)) {
-          touch = nil
-        }
-      } else {
-        if CGPointDistSq(p1: touch!.locationInView(touch!.view), p2: touchBeganPoint) >= 15*15 {
-          swipeThroughTouch = touch
-          touch = nil
-          swipeThroughDelegate?.swipeThroughTouchMoved(swipeThroughTouch!)
+    if let touch = touch {
+      if touches.containsObject(touch) {
+        if touchIsDraggingThrough {
+          dragThroughDelegate?.dragThroughTouchMoved(touch)
+        } else if dragThroughDelegate?.userInteractionEnabled ?? false
+          && CGPointDistSq(p1: touch.locationInView(touch.view), p2: touchBeganPoint) >= 15*15 {
+            touchIsDraggingThrough = true
+            dragThroughDelegate?.dragThroughTouchBegan(touch)
+            touchCancelledClosure?()
+        } else if !frame.contains(touch.locationInNode(parent)) {
+          self.touch = nil
+          touchCancelledClosure?()
         }
       }
-    } else if swipeThroughTouch != nil && touches.containsObject(swipeThroughTouch!) {
-      swipeThroughDelegate?.swipeThroughTouchMoved(swipeThroughTouch!)
     }
   }
   
   override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
-    if touch != nil && touches.containsObject(touch!) {
-      isActivateGlowing = true
-      if shouldStickyGlow {isStickyGlowing = true}
-      touch = nil
-      touchUpInsideClosure?()
-    } else if swipeThroughTouch != nil && touches.containsObject(swipeThroughTouch!) {
-      swipeThroughDelegate?.swipeThroughTouchEnded(swipeThroughTouch!)
-      swipeThroughTouch = nil
+    if let touch = touch {
+      if touches.containsObject(touch) {
+        if touchIsDraggingThrough {
+          dragThroughDelegate?.dragThroughTouchEnded(touch)
+          touchIsDraggingThrough = false
+        } else {
+          isActivateGlowing = true
+          isStickyGlowing = shouldStickyGlow
+          touchUpInsideClosure?()
+        }
+        self.touch = nil
+      }
     }
   }
   
   override func touchesCancelled(touches: NSSet, withEvent event: UIEvent) {
-    if touch != nil && touches.containsObject(touch!) {
-      touch = nil
-    } else if swipeThroughTouch != nil && touches.containsObject(swipeThroughTouch!) {
-      swipeThroughDelegate?.swipeThroughTouchCancelled(swipeThroughTouch!)
-      swipeThroughTouch = nil
+    if let touch = touch {
+      if touches.containsObject(touch) {
+        if touchIsDraggingThrough {
+          dragThroughDelegate?.dragThroughTouchCancelled(touch)
+          touchIsDraggingThrough = false
+        } else {
+          touchCancelledClosure?()
+        }
+        self.touch = nil
+      }
     }
   }
 }

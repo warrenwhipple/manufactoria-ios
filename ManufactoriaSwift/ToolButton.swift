@@ -15,9 +15,9 @@ protocol ToolButtonDelegate: class {
 class ToolButton: SKSpriteNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   
-  weak var swipeThroughDelegate: SwipeThroughDelegate?
+  weak var dragThroughDelegate: DragThroughDelegate?
   weak var toolButtonDelegate: ToolButtonDelegate!
-  var touch, swipeThroughTouch: UITouch?
+  var touch, dragThroughTouch: UITouch?
   var touchBeganPoint: CGPoint = CGPointZero
   var nodeOn, nodeOff: SKNode?
   var editMode: EditMode
@@ -70,7 +70,7 @@ class ToolButton: SKSpriteNode {
   }
   
   override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
-    if touch == nil && swipeThroughTouch == nil {
+    if touch == nil && dragThroughTouch == nil {
       touch = touches.anyObject() as? UITouch
       touchBeganPoint = touch!.locationInView(touch!.view)
     }
@@ -78,19 +78,19 @@ class ToolButton: SKSpriteNode {
   
   override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
     if touch != nil && touches.containsObject(touch!) {
-      if swipeThroughDelegate == nil || !swipeThroughDelegate!.userInteractionEnabled {
+      if dragThroughDelegate == nil || !dragThroughDelegate!.userInteractionEnabled {
         if !frame.contains(touch!.locationInNode(parent)) {
           touch = nil
         }
       } else {
         if CGPointDistSq(p1: touch!.locationInView(touch!.view), p2: touchBeganPoint) >= 15*15 {
-          swipeThroughTouch = touch
+          dragThroughTouch = touch
           touch = nil
-          swipeThroughDelegate?.swipeThroughTouchMoved(swipeThroughTouch!)
+          dragThroughDelegate?.dragThroughTouchMoved(dragThroughTouch!)
         }
       }
-    } else if swipeThroughTouch != nil && touches.containsObject(swipeThroughTouch!) {
-      swipeThroughDelegate?.swipeThroughTouchMoved(swipeThroughTouch!)
+    } else if dragThroughTouch != nil && touches.containsObject(dragThroughTouch!) {
+      dragThroughDelegate?.dragThroughTouchMoved(dragThroughTouch!)
     }
   }
   
@@ -98,18 +98,18 @@ class ToolButton: SKSpriteNode {
     if touch != nil && touches.containsObject(touch!) {
       touch = nil
       toolButtonDelegate.toolButtonActivated(self)
-    } else if swipeThroughTouch != nil && touches.containsObject(swipeThroughTouch!) {
-      swipeThroughDelegate?.swipeThroughTouchEnded(swipeThroughTouch!)
-      swipeThroughTouch = nil
+    } else if dragThroughTouch != nil && touches.containsObject(dragThroughTouch!) {
+      dragThroughDelegate?.dragThroughTouchEnded(dragThroughTouch!)
+      dragThroughTouch = nil
     }
   }
   
   override func touchesCancelled(touches: NSSet, withEvent event: UIEvent) {
     if touch != nil && touches.containsObject(touch!) {
       touch = nil
-    } else if swipeThroughTouch != nil && touches.containsObject(swipeThroughTouch!) {
-      swipeThroughDelegate?.swipeThroughTouchCancelled(swipeThroughTouch!)
-      swipeThroughTouch = nil
+    } else if dragThroughTouch != nil && touches.containsObject(dragThroughTouch!) {
+      dragThroughDelegate?.dragThroughTouchCancelled(dragThroughTouch!)
+      dragThroughTouch = nil
     }
   }
 }
