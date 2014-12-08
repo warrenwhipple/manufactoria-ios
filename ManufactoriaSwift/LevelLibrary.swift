@@ -465,7 +465,7 @@ var LevelLibrary: [String:LevelSetup] = [
     instructions: "Accept sequences with\ntwice as many #b as #r.",
     space: GridSpace(11),
     editModes: [.PullerBR, .PullerGY, .PusherB, .PusherR, .PusherG, .PusherY],
-    exemplars: ["brrbr", "rbbrbr"],
+    exemplars: ["rbbbrr", "brbrbb"],
     generationFunction: {n in return generate("br", n)},
     acceptFunction: {s in
       var b = 0, r = 0

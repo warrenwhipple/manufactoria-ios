@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Warren Whipple. All rights reserved.
 //
 
+/*
 import SpriteKit
 
 class BeltTutorialScene: TutorialScene {
@@ -143,3 +144,5 @@ class BeltTutorialScene: TutorialScene {
     }
   }
 }
+
+*/

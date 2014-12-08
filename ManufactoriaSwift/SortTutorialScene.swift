@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Warren Whipple. All rights reserved.
 //
 
+/*
+
 import SpriteKit
 
 class SortTutorialScene: TutorialScene {
@@ -214,3 +216,5 @@ class SortTutorialScene: TutorialScene {
     statusNode.tapeLabel.text = "Good."
   }
 }
+
+*/

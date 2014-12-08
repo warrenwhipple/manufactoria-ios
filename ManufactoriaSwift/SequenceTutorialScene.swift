@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Warren Whipple. All rights reserved.
 //
 
+/*
+
 import SpriteKit
 
 class SequenceTutorialScene: TutorialScene {
@@ -401,4 +403,5 @@ class SequenceTutorialSceneOld: GameScene {
     state = .Testing
   }
 }
+*/
 */

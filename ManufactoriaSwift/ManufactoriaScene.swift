@@ -31,7 +31,8 @@ class TransitionScene: SKScene {
     case .Menu: nextScene = MenuScene(size: size)
     case .Unlock: nextScene = UnlockScene(size: size)
     case .Reset: nextScene = ResetScene(size: size)
-    case .Game(let levelKey):
+    case .Game(let levelKey): nextScene = GameScene(size: view!.bounds.size, levelKey: levelKey)
+      /*
       if GameProgressData.sharedInstance.tutorialsOn {
         switch levelKey {
         case "all": nextScene = BeltTutorialScene(size: view!.bounds.size)
@@ -43,6 +44,7 @@ class TransitionScene: SKScene {
       if nextScene == nil {
         nextScene = GameScene(size: view!.bounds.size, levelKey: levelKey)
       }
+      */
     }
     runAction(SKAction.sequence([
       SKAction.waitForDuration(0),

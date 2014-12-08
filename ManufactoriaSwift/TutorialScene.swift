@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Warren Whipple. All rights reserved.
 //
 
+/*
 import SpriteKit
 
 class TutorialScene: GameScene {
@@ -53,3 +54,4 @@ class TutorialScene: GameScene {
   }
 
 }
+*/
