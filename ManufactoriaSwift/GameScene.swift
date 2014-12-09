@@ -8,9 +8,9 @@
 
 import SpriteKit
 
-class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusNodeDelegate, EngineDelegate, ToolbarNodeDelegate, SpeedControlNodeDelegate, CongratulationsMenuDelegate {
+class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusNodeDelegate, EngineDelegate, ToolbarNodeDelegate, ReportNodeDelegate, SpeedControlNodeDelegate, CongratulationsMenuDelegate {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  enum State {case Editing, Thinking, Testing, Congratulating}
+  enum State {case Editing, Thinking, Reporting, Testing, Congratulating}
   enum TestingState {case Entering, Testing, Exiting, Falling}
   
   // model objects
@@ -26,6 +26,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
   let statusNode: StatusNode
   let gridNode: GridNode
   let toolbarNode: ToolbarNode
+  let reportNode = ReportNode()
   let speedControlNode = SpeedControlNode()
   let congratulationsMenu = CongratulationsMenu()
   var robotNode: RobotNode?
@@ -70,6 +71,9 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
     gridNode.editMode = toolbarNode.buttonInFocus.editMode
     toolbarNode.zPosition = 10
     addChild(toolbarNode)
+    
+    reportNode.delegate = self
+    reportNode.zPosition = 100
     
     speedControlNode.delegate = self
     speedControlNode.alpha = 0
@@ -119,9 +123,12 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
           SKAction.removeFromParent()
           ]), withKey: "fade")
         engine.beginGridTest()
-      case .Testing:
+      case .Reporting:
         beltIsFlowing = false
         gridNode.state = .Waiting
+        reportNode.appearWithParent(self)
+      case .Testing:
+        reportNode.disappear()
         var isPuller = false
         var isPusher = false
         for cell in gridNode.grid.cells {
@@ -136,7 +143,6 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
         else {statusNode.tapeNode.scanner.alpha = 0}
         if isPusher {statusNode.tapeNode.printer.alpha = 1}
         else {statusNode.tapeNode.printer.alpha = 0}
-        
         loadTape(0)
         statusNode.state = .Testing
         if speedControlNode.parent == nil {addChild(speedControlNode)}
@@ -175,6 +181,8 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
     statusNode.size = topGapRect.size
     toolbarNode.position = bottomGapRect.center
     toolbarNode.size = topGapRect.size
+    reportNode.position = size.center
+    reportNode.size = size
     speedControlNode.position = bottomGapRect.center
     speedControlNode.size = bottomGapRect.size
     congratulationsMenu.position = bottomGapRect.center
@@ -395,7 +403,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
     if PassCommentCounter >= PassComments.count {PassCommentCounter = 0}
     statusNode.tapeLabel.text = PassComments[PassCommentCounter++]
     statusNode.tapeLabel.text = PassComments[Int(arc4random_uniform(UInt32(PassComments.count)))]
-    statusNode.tapeLabel.runAction(SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")
+    //statusNode.tapeLabel.runAction(SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")
     tapeTestResults = []
     for exemplar in levelSetup.exemplars {
       tapeTestResults.append(TapeTestResult(input: exemplar, output: nil, correctOutput: nil, kind: .Pass))
@@ -403,7 +411,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
     let gameProgressData = GameProgressData.sharedInstance
     GameProgressData.sharedInstance.completedLevelWithKey(levelKey)
     gridTestDidPass = true
-    state = .Testing
+    state = .Reporting
   }
   
   func gridTestFailedWithResult(result: TapeTestResult) {
@@ -414,10 +422,10 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
       if FailCommentCounter >= FailComments.count {FailCommentCounter = 0}
       statusNode.tapeLabel.text = FailComments[FailCommentCounter++]
     }
-    statusNode.tapeLabel.runAction(SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")
+    //statusNode.tapeLabel.runAction(SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")
     statusNode.resetFailPageForTestResult(result)
     tapeTestResults = [result]
-    state = .Testing
+    state = .Reporting
   }
   
   // MARK: - GridNodeDelegate Functions
@@ -483,7 +491,13 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
     toolbarNode.redoQueueIsEmpty = levelData.redoStrings.isEmpty
   }
   
-  // MARK: - SpeedControlNodeDelegate Functions {
+  // MARK: - ReportNodeDelegate Functions
+  
+  func reportNodeWasTapped() {
+    state = .Testing
+  }
+
+  // MARK: - SpeedControlNodeDelegate Functions
   
   func backButtonPressed() {
     loadTape(currentTapeTestIndex)

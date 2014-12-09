@@ -36,6 +36,7 @@
 		2D8C19A3199696A90064B790 /* SwipeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8C19A2199696A90064B790 /* SwipeNode.swift */; };
 		2D93CEFC1A129DC600037036 /* OldMenuScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D93CEFB1A129DC600037036 /* OldMenuScene.swift */; };
 		2DAB2B331A2116D4005D50C7 /* ScrollNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DAB2B321A2116D4005D50C7 /* ScrollNode.swift */; };
+		2DB8E3E91A3655B100898BD1 /* ReportNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB8E3E81A3655B100898BD1 /* ReportNode.swift */; };
 		2DBABC401A006E6400223A69 /* RobotNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBABC3F1A006E6400223A69 /* RobotNode.swift */; };
 		2DC0167D19CDC32E003D922A /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2DC0167C19CDC32E003D922A /* Media.xcassets */; };
 		2DC0168319CEF41D003D922A /* ManufactoriaScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC0168219CEF41D003D922A /* ManufactoriaScene.swift */; };
@@ -100,6 +101,7 @@
 		2D8C19A2199696A90064B790 /* SwipeNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwipeNode.swift; sourceTree = "<group>"; };
 		2D93CEFB1A129DC600037036 /* OldMenuScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = OldMenuScene.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		2DAB2B321A2116D4005D50C7 /* ScrollNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrollNode.swift; sourceTree = "<group>"; };
+		2DB8E3E81A3655B100898BD1 /* ReportNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReportNode.swift; sourceTree = "<group>"; };
 		2DBABC3F1A006E6400223A69 /* RobotNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RobotNode.swift; sourceTree = "<group>"; };
 		2DC0167C19CDC32E003D922A /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
 		2DC0168219CEF41D003D922A /* ManufactoriaScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ManufactoriaScene.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
@@ -259,6 +261,7 @@
 			isa = PBXGroup;
 			children = (
 				2DC49134194F45B800053237 /* GameScene.swift */,
+				2DB8E3E81A3655B100898BD1 /* ReportNode.swift */,
 				2DC4915C194F621A00053237 /* Grid.swift */,
 				2D15929919514B4900A96BCC /* GridNode.swift */,
 				2DBABC3F1A006E6400223A69 /* RobotNode.swift */,
@@ -423,6 +426,7 @@
 				2D4862D01A1BEC21000421E5 /* MenuLevelButton.swift in Sources */,
 				2D5E583F19A5265500F10DD3 /* ShimmerNode.swift in Sources */,
 				2DD23D731974730F00838E96 /* Engine.swift in Sources */,
+				2DB8E3E91A3655B100898BD1 /* ReportNode.swift in Sources */,
 				2DCA18A71985AA0200DF3118 /* QuestionScene.swift in Sources */,
 				2DC49131194F45B800053237 /* AppDelegate.swift in Sources */,
 				2DF749FF19D627B800EBE94D /* SequenceTutorialScene.swift in Sources */,
