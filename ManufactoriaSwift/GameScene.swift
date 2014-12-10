@@ -8,7 +8,7 @@
 
 import SpriteKit
 
-class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusNodeDelegate, EngineDelegate, ToolbarNodeDelegate, ReportNodeDelegate, SpeedControlNodeDelegate, CongratulationsMenuDelegate {
+class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, InstructionNodeDelegate, EngineDelegate, ToolbarNodeDelegate, ReportNodeDelegate, SpeedControlNodeDelegate, CongratulationsMenuDelegate {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   enum State {case Editing, Thinking, Reporting, Testing, Congratulating}
   enum TestingState {case Entering, Testing, Exiting, Falling}
@@ -23,10 +23,13 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
   let engine: Engine
   
   // view objects
-  let statusNode: StatusNode
+  let instructionNode: InstructionNode
+  let tapeNode = TapeNode()
+  //let statusNode: StatusNode
   let gridNode: GridNode
   let toolbarNode: ToolbarNode
   let reportNode = ReportNode()
+  let thinkingCancelButton = BetterButton(iconOffNamed: "cancelIconOff", iconOnNamed: "cancelIconOn")
   let speedControlNode = SpeedControlNode()
   let congratulationsMenu = CongratulationsMenu()
   var robotNode: RobotNode?
@@ -49,7 +52,8 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
     levelSetup = LevelLibrary[self.levelKey]!
     levelData = LevelData(levelKey: levelKey)
     engine = Engine(levelSetup: levelSetup)
-    statusNode = StatusNode(instructions: levelSetup.instructions)
+    instructionNode = InstructionNode(instructions: levelSetup.instructions)
+    //statusNode = StatusNode(instructions: levelSetup.instructions)
     gridNode = GridNode(grid: levelData.grid)
     toolbarNode = ToolbarNode(editModes: levelSetup.editModes)
     
@@ -62,11 +66,18 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
     
     addChild(gridNode)
     
+    instructionNode.swipeSnapDelegate = self
+    instructionNode.delegate = self
+    instructionNode.zPosition = 10
+    addChild(instructionNode)
+    
+    /*
     statusNode.swipeSnapDelegate = self
     statusNode.delegate = self
     statusNode.zPosition = 10
     addChild(statusNode)
-        
+    */
+    
     toolbarNode.delegate = self
     gridNode.editMode = toolbarNode.buttonInFocus.editMode
     toolbarNode.zPosition = 10
@@ -74,6 +85,8 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
     
     reportNode.delegate = self
     reportNode.zPosition = 100
+    
+    thinkingCancelButton.touchUpInsideClosure = {[unowned self] in self.cancelThinking()}
     
     speedControlNode.delegate = self
     speedControlNode.alpha = 0
@@ -94,7 +107,8 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
       switch state {
       case .Editing:
         beltIsFlowing = true
-        statusNode.state = .Editing
+        instructionNode.appearWithParent(self, animate: true)
+        //statusNode.state = .Editing
         gridNode.state = .Editing
         robotNode?.runAction(SKAction.sequence([
           SKAction.fadeAlphaTo(0, duration: 1),
@@ -113,7 +127,8 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
           ]), withKey: "fade")
       case .Thinking:
         beltIsFlowing = false
-        statusNode.state = .Thinking
+        instructionNode.disappearWithAnimate(true)
+        //statusNode.state = .Thinking
         gridTestDidPass = false
         gridNode.state = .Thinking
         newRobotNode()
@@ -126,9 +141,9 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
       case .Reporting:
         beltIsFlowing = false
         gridNode.state = .Waiting
-        reportNode.appearWithParent(self)
+        reportNode.appearWithParent(self, animate: true)
       case .Testing:
-        reportNode.disappear()
+        reportNode.disappearWithAnimate(true)
         var isPuller = false
         var isPusher = false
         for cell in gridNode.grid.cells {
@@ -139,19 +154,23 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
           }
           if isPusher && isPuller {break}
         }
+        tapeNode.scanner.alpha = isPuller ? 1 : 0
+        tapeNode.printer.alpha = isPusher ? 1 : 0
+        /*
         if isPuller {statusNode.tapeNode.scanner.alpha = 1}
         else {statusNode.tapeNode.scanner.alpha = 0}
         if isPusher {statusNode.tapeNode.printer.alpha = 1}
         else {statusNode.tapeNode.printer.alpha = 0}
+        */
         loadTape(0)
-        statusNode.state = .Testing
+        //statusNode.state = .Testing
         if speedControlNode.parent == nil {addChild(speedControlNode)}
         speedControlNode.runAction(SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")
         speedControlNode.isEnabled = true
       case .Congratulating:
         beltIsFlowing = true
         gridNode.state = .Waiting
-        statusNode.state = .Congratulating
+        //statusNode.state = .Congratulating
         speedControlNode.isEnabled = false
         speedControlNode.runAction(SKAction.sequence([
           SKAction.fadeAlphaTo(0, duration: 0.2),
@@ -177,12 +196,13 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
     let topGapRect = roundPix(CGRect(x: 0, y: gridRect.maxY,
       width: size.width, height: bottomGapRect.height))
     
-    statusNode.position = topGapRect.center
-    statusNode.size = topGapRect.size
+    instructionNode.position = topGapRect.center
+    instructionNode.size = topGapRect.size
     toolbarNode.position = bottomGapRect.center
     toolbarNode.size = topGapRect.size
     reportNode.position = size.center
     reportNode.size = size
+    thinkingCancelButton.position = bottomGapRect.center
     speedControlNode.position = bottomGapRect.center
     speedControlNode.size = bottomGapRect.size
     congratulationsMenu.position = bottomGapRect.center
@@ -198,7 +218,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
       case .Entering:
         if tickPercent >= 1 {
           tickPercent -= 1
-          statusNode.tapeNode.state = .Waiting
+          tapeNode.state = .Waiting
           testingState = .Testing
           robotNode?.loadNextGridCoord(robotCoord)
           fallthrough
@@ -210,23 +230,23 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
           let testResult = levelData.grid.testCoord(robotCoord, lastCoord: lastRobotCoord, tape: &tape)
           let tapeLength = tape.length()
           if tapeLength > lastTapeLength && tapeLength > 0 {
-            statusNode.tapeNode.writeColor(tape[-1].color())
+            tapeNode.writeColor(tape[-1].color())
           } else if tapeLength < lastTapeLength {
-            statusNode.tapeNode.deleteColor()
+            tapeNode.deleteColor()
           } else {
-            statusNode.tapeNode.state = .Waiting
+            tapeNode.state = .Waiting
           }
           lastTapeLength = tapeLength
           lastRobotCoord = robotCoord
           var fallthroughTestingStateSwitch = false
           switch testResult {
           case .Accept:
-            statusNode.tapeNode.state = .Exiting
+            tapeNode.state = .Exiting
             robotNode?.state = .Falling
             testingState = .Exiting
             fallthroughTestingStateSwitch = true
           case .Reject:
-            statusNode.tapeNode.state = .Exiting
+            tapeNode.state = .Exiting
             robotNode?.state = .Falling
             testingState = .Falling
             fallthroughTestingStateSwitch = true
@@ -254,7 +274,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
           loadNextTape()
         }
       }
-      statusNode.tapeNode.update(tickPercent)
+      tapeNode.update(tickPercent)
       robotNode?.update(tickPercent)
     }
     
@@ -284,10 +304,8 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
     gridNode.update(dt, beltPercent: beltPercentSum)
     
     // update child nodes
-    statusNode.update(dt)
+    //statusNode.update(dt)
     if toolbarNode.parent != nil {toolbarNode.update(dt)}
-    if speedControlNode.parent != nil {speedControlNode.update(dt)}
-    if congratulationsMenu.parent != nil {congratulationsMenu.update(dt)}
   }
   
   var beltIsFlowing: Bool = true {
@@ -319,11 +337,23 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
     }
   }
   
+  func showThinkingCancelButtonWithAnimate(animate: Bool) {
+    thinkingCancelButton.appearWithParent(self, animate: animate)
+  }
+  
+  func hideThinkingCancelButtonWithAnimate(animate: Bool) {
+    thinkingCancelButton.disappearWithAnimate(animate)
+  }
+  
+  func cancelThinking() {
+    state = .Editing
+  }
+  
   func newRobotNode() {
     robotNode?.runAction(SKAction.sequence([SKAction.fadeAlphaTo(0, duration: 0.5), SKAction.removeFromParent()]))
     if state == .Thinking {
       robotNode = RobotNode(
-        button: toolbarNode.robotButton,
+        //button: toolbarNode.robotButton,
         initialPosition: gridNode.wrapper.convertPoint(toolbarNode.robotButton.position, fromNode: toolbarNode)
       )
     } else {
@@ -343,8 +373,8 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
     } else {
       tape = (tapeTestResults[i].input)
     }
-    statusNode.tapeNode.loadTape(tape)
-    statusNode.tapeNode.state = .Entering
+    tapeNode.loadTape(tape)
+    tapeNode.state = .Entering
     lastTapeLength = tape.length()
     testingState = .Entering
     lastTestingState = .Entering
@@ -401,8 +431,8 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
   
   func gridTestPassed() {
     if PassCommentCounter >= PassComments.count {PassCommentCounter = 0}
-    statusNode.tapeLabel.text = PassComments[PassCommentCounter++]
-    statusNode.tapeLabel.text = PassComments[Int(arc4random_uniform(UInt32(PassComments.count)))]
+    //statusNode.tapeLabel.text = PassComments[PassCommentCounter++]
+    //statusNode.tapeLabel.text = PassComments[Int(arc4random_uniform(UInt32(PassComments.count)))]
     //statusNode.tapeLabel.runAction(SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")
     tapeTestResults = []
     for exemplar in levelSetup.exemplars {
@@ -417,13 +447,14 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, StatusN
   func gridTestFailedWithResult(result: TapeTestResult) {
     if result.kind == TapeTestResult.Kind.FailLoop {
       if LoopCommentCounter >= LoopComments.count {LoopCommentCounter = 0}
-      statusNode.tapeLabel.text = LoopComments[LoopCommentCounter++]
+      //statusNode.tapeLabel.text = LoopComments[LoopCommentCounter++]
     } else {
       if FailCommentCounter >= FailComments.count {FailCommentCounter = 0}
-      statusNode.tapeLabel.text = FailComments[FailCommentCounter++]
+      //statusNode.tapeLabel.text = FailComments[FailCommentCounter++]
     }
     //statusNode.tapeLabel.runAction(SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")
-    statusNode.resetFailPageForTestResult(result)
+    //statusNode.resetFailPageForTestResult(result)
+    instructionNode.resetFailPageForTestResult(result)
     tapeTestResults = [result]
     state = .Reporting
   }

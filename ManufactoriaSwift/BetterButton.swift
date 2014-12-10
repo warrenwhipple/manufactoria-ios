@@ -5,15 +5,8 @@
 //  Created by Warren Whipple on 11/26/14.
 //  Copyright (c) 2014 Warren Whipple. All rights reserved.
 //
-/*
-import SpriteKit
 
-protocol DragThroughDelegate: class {
-  var userInteractionEnabled: Bool {get}
-  func dragThroughTouchMoved(touch: UITouch)
-  func dragThroughTouchEnded(touch: UITouch)
-  func dragThroughTouchCancelled(touch: UITouch)
-}
+import SpriteKit
 
 private let nodeOnFadeOutAction = SKAction.fadeAlphaTo(0, duration: 0.2)
 private let nodeOffFadeInAction = SKAction.fadeAlphaTo(1, duration: 0.1)
@@ -22,7 +15,8 @@ class BetterButton: SKSpriteNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   var touchDownClosure, touchUpInsideClosure, touchCancelledClosure: (()->())?
   weak var dragThroughDelegate: DragThroughDelegate?
-  var buttonTouch, dragThroughTouch: UITouch?
+  var touch: UITouch?
+  var touchIsDraggingThrough: Bool = false
   var touchBeganPoint: CGPoint = CGPointZero
   var shouldStickyOn = false
   var nodeOn, nodeOff: SKNode?
@@ -105,57 +99,65 @@ class BetterButton: SKSpriteNode {
   // MARK: Touch Delegate Methods
   
   override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
-    if buttonTouch == nil && dragThroughTouch == nil {
-      buttonTouch = touches.anyObject() as? UITouch
-      touchBeganPoint = buttonTouch?.locationInView(buttonTouch?.view) ?? CGPointZero
-      isOn = true
-      touchDownClosure?()
+    if let touch = touch {
+      if touchIsDraggingThrough {
+        dragThroughDelegate?.dragThroughTouchCancelled(touch)
+      }
     }
+    touch = touches.anyObject() as? UITouch
+    isOn = true
+    touchIsDraggingThrough = false
+    if let touch = touch {touchBeganPoint = touch.locationInView(touch.view)}
+    touchDownClosure?()
   }
   
   override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
-    if buttonTouch != nil && touches.containsObject(buttonTouch!) {
-      if dragThroughDelegate == nil || !dragThroughDelegate!.userInteractionEnabled {
-        if !frame.contains(buttonTouch!.locationInNode(parent)) {
-          buttonTouch = nil
+    if let touch = touch {
+      if touches.containsObject(touch) {
+        if touchIsDraggingThrough {
+          dragThroughDelegate?.dragThroughTouchMoved(touch)
+        } else if dragThroughDelegate?.userInteractionEnabled ?? false
+          && CGPointDistSq(p1: touch.locationInView(touch.view), p2: touchBeganPoint) >= 15*15 {
+            isOn = false
+            touchIsDraggingThrough = true
+            dragThroughDelegate?.dragThroughTouchBegan(touch)
+            touchCancelledClosure?()
+        } else if !frame.contains(touch.locationInNode(parent)) {
+          self.touch = nil
           isOn = false
           touchCancelledClosure?()
         }
-      } else {
-        if CGPointDistSq(p1: buttonTouch!.locationInView(buttonTouch!.view), p2: touchBeganPoint) >= 15*15 {
-          dragThroughTouch = buttonTouch
-          buttonTouch = nil
-          isOn = false
-          dragThroughDelegate?.dragThroughTouchMoved(dragThroughTouch!)
-        }
       }
-    } else if dragThroughTouch != nil && touches.containsObject(dragThroughTouch!) {
-      dragThroughDelegate?.dragThroughTouchMoved(dragThroughTouch!)
     }
   }
   
   override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
-    if buttonTouch != nil && touches.containsObject(buttonTouch!) {
-      buttonTouch = nil
-      if !shouldStickyOn {
-        isOn = false
+    if let touch = touch {
+      if touches.containsObject(touch) {
+        if touchIsDraggingThrough {
+          dragThroughDelegate?.dragThroughTouchEnded(touch)
+          touchIsDraggingThrough = false
+        } else {
+          isOn = shouldStickyOn
+          touchUpInsideClosure?()
+        }
+        self.touch = nil
       }
-      touchUpInsideClosure?()
-    } else if dragThroughTouch != nil && touches.containsObject(dragThroughTouch!) {
-      dragThroughDelegate?.dragThroughTouchEnded(dragThroughTouch!)
-      dragThroughTouch = nil
     }
   }
   
   override func touchesCancelled(touches: NSSet, withEvent event: UIEvent) {
-    if buttonTouch != nil && touches.containsObject(buttonTouch!) {
-      buttonTouch = nil
-      isOn = false
-      touchCancelledClosure?()
-    } else if dragThroughTouch != nil && touches.containsObject(dragThroughTouch!) {
-      dragThroughDelegate?.dragThroughTouchCancelled(dragThroughTouch!)
-      dragThroughTouch = nil
+    if let touch = touch {
+      if touches.containsObject(touch) {
+        if touchIsDraggingThrough {
+          dragThroughDelegate?.dragThroughTouchCancelled(touch)
+          touchIsDraggingThrough = false
+        } else {
+          isOn = false
+          touchCancelledClosure?()
+        }
+        self.touch = nil
+      }
     }
   }
 }
-*/

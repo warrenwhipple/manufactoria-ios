@@ -12,7 +12,7 @@ protocol MenuLevelButtonDelegate: class {
   func transitionToGameSceneWithLevelKey(levelKey: String)
 }
 
-class MenuLevelButton: Button {
+class MenuLevelButton: BetterButton {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   weak var delegate: MenuLevelButtonDelegate!
   let labelOff = SKLabelNode()

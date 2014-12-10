@@ -27,7 +27,8 @@ class RobotNode: SKNode {
     addChild(fallScaleNode)
   }
   
-  init(button: Button, initialPosition: CGPoint) {
+  /*
+  init(button: BetterButton, initialPosition: CGPoint) {
     if button.nodeOff != nil && button.glow < 1 && button.nodeOff is SKSpriteNode {
       let iconOff = button.nodeOff as SKSpriteNode
       robotOff = SKSpriteNode(texture: iconOff.texture, color: iconOff.color, size: iconOff.size)
@@ -56,6 +57,7 @@ class RobotNode: SKNode {
     fallScaleNode.addChild(robotOn)
     addChild(fallScaleNode)
   }
+  */
   
   enum State {case Moving, Falling}
   var state: State = .Moving

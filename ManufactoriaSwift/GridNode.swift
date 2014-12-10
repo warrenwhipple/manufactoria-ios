@@ -46,6 +46,7 @@ protocol GridNodeDelegate: class {
   func gridWasSelected()
   func gridWasUnselected()
   func liftedGridWasRemovedWithCancel()
+  func showThinkingCancelButtonWithAnimate(animate: Bool)
 }
 
 class GridNode: SKNode {
@@ -347,6 +348,10 @@ class GridNode: SKNode {
   // MARK: Touch Delegate Methods
   
   override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
+    if state == .Thinking {
+      delegate.showThinkingCancelButtonWithAnimate(true)
+      return
+    }
     if state != .Editing {return}
     if editTouch != nil {return}
     editTouch = touches.anyObject() as? UITouch

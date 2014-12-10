@@ -26,26 +26,6 @@ class ReportNode: SKSpriteNode {
     addChild(label)
   }
   
-  func appearWithParent(newParent: SKNode) {
-    if parent == nil {newParent.addChild(self)}
-    alpha = 0
-    setScale(2)
-    runAction(SKAction.group([
-      SKAction.fadeAlphaTo(1, duration: 0.2),
-      SKAction.scaleTo(1, duration: 0.2).easeOut()
-      ]), withKey: "fadescale")
-  }
-  
-  func disappear() {
-    runAction(SKAction.sequence([
-      SKAction.group([
-        SKAction.fadeAlphaTo(0, duration: 0.2),
-        SKAction.scaleTo(2, duration: 0.2).easeIn()
-        ]),
-      SKAction.removeFromParent()
-      ]), withKey: "fadescale")
-  }
-  
   // MARK: - Touch Functions
   
   override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {

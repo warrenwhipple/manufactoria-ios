@@ -34,9 +34,10 @@
 		2D7F922C195C61FA00F04F63 /* ToolbarNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7F922B195C61FA00F04F63 /* ToolbarNode.swift */; };
 		2D849F3619A39EB6008F3D69 /* CoreGraphicsExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D849F3519A39EB6008F3D69 /* CoreGraphicsExtensions.swift */; };
 		2D8C19A3199696A90064B790 /* SwipeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8C19A2199696A90064B790 /* SwipeNode.swift */; };
-		2D93CEFC1A129DC600037036 /* OldMenuScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D93CEFB1A129DC600037036 /* OldMenuScene.swift */; };
 		2DAB2B331A2116D4005D50C7 /* ScrollNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DAB2B321A2116D4005D50C7 /* ScrollNode.swift */; };
 		2DB8E3E91A3655B100898BD1 /* ReportNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB8E3E81A3655B100898BD1 /* ReportNode.swift */; };
+		2DB8E3ED1A379EA000898BD1 /* InstructionNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB8E3EC1A379EA000898BD1 /* InstructionNode.swift */; };
+		2DB8E3F31A38D72D00898BD1 /* ButtonSwapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB8E3F21A38D72D00898BD1 /* ButtonSwapper.swift */; };
 		2DBABC401A006E6400223A69 /* RobotNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBABC3F1A006E6400223A69 /* RobotNode.swift */; };
 		2DC0167D19CDC32E003D922A /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2DC0167C19CDC32E003D922A /* Media.xcassets */; };
 		2DC0168319CEF41D003D922A /* ManufactoriaScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC0168219CEF41D003D922A /* ManufactoriaScene.swift */; };
@@ -99,9 +100,10 @@
 		2D7F922B195C61FA00F04F63 /* ToolbarNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToolbarNode.swift; sourceTree = "<group>"; };
 		2D849F3519A39EB6008F3D69 /* CoreGraphicsExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreGraphicsExtensions.swift; sourceTree = "<group>"; };
 		2D8C19A2199696A90064B790 /* SwipeNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwipeNode.swift; sourceTree = "<group>"; };
-		2D93CEFB1A129DC600037036 /* OldMenuScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = OldMenuScene.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		2DAB2B321A2116D4005D50C7 /* ScrollNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrollNode.swift; sourceTree = "<group>"; };
 		2DB8E3E81A3655B100898BD1 /* ReportNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReportNode.swift; sourceTree = "<group>"; };
+		2DB8E3EC1A379EA000898BD1 /* InstructionNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InstructionNode.swift; sourceTree = "<group>"; };
+		2DB8E3F21A38D72D00898BD1 /* ButtonSwapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ButtonSwapper.swift; sourceTree = "<group>"; };
 		2DBABC3F1A006E6400223A69 /* RobotNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RobotNode.swift; sourceTree = "<group>"; };
 		2DC0167C19CDC32E003D922A /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
 		2DC0168219CEF41D003D922A /* ManufactoriaScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ManufactoriaScene.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
@@ -166,7 +168,6 @@
 				2DD23D70196F223E00838E96 /* MenuScene.swift */,
 				2D4862CF1A1BEC21000421E5 /* MenuLevelButton.swift */,
 				2DAB2B321A2116D4005D50C7 /* ScrollNode.swift */,
-				2D93CEFB1A129DC600037036 /* OldMenuScene.swift */,
 			);
 			name = MenuScene;
 			sourceTree = "<group>";
@@ -218,6 +219,7 @@
 				2DD23D6D196F0BF900838E96 /* LevelLibrary.swift */,
 				2D37934419965135000B10EB /* Button.swift */,
 				2D6B03421A2680DB002A6CAC /* BetterButton.swift */,
+				2DB8E3F21A38D72D00898BD1 /* ButtonSwapper.swift */,
 				2D5E583E19A5265500F10DD3 /* ShimmerNode.swift */,
 				2DC0168219CEF41D003D922A /* ManufactoriaScene.swift */,
 				2D60F5C6198041BD0032860B /* TitleScene.swift */,
@@ -261,6 +263,7 @@
 			isa = PBXGroup;
 			children = (
 				2DC49134194F45B800053237 /* GameScene.swift */,
+				2DB8E3EC1A379EA000898BD1 /* InstructionNode.swift */,
 				2DB8E3E81A3655B100898BD1 /* ReportNode.swift */,
 				2DC4915C194F621A00053237 /* Grid.swift */,
 				2D15929919514B4900A96BCC /* GridNode.swift */,
@@ -389,7 +392,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2D93CEFC1A129DC600037036 /* OldMenuScene.swift in Sources */,
 				2DC49135194F45B800053237 /* GameScene.swift in Sources */,
 				2D37934519965135000B10EB /* Button.swift in Sources */,
 				2D4729CD19BB91110072E52D /* LiftedGridNode.swift in Sources */,
@@ -413,6 +415,7 @@
 				2DC49137194F45B800053237 /* GameViewController.swift in Sources */,
 				2D15929C19514B5400A96BCC /* CellNode.swift in Sources */,
 				2D36614E19E6D46D0050F34E /* SmartLabel.swift in Sources */,
+				2DB8E3F31A38D72D00898BD1 /* ButtonSwapper.swift in Sources */,
 				2D436D4019F6B0F2001E9FF6 /* TutorialScene.swift in Sources */,
 				2DD23D6E196F0BF900838E96 /* LevelLibrary.swift in Sources */,
 				2D5C7319199FE80600D53D0D /* SpeedControlNode.swift in Sources */,
@@ -424,6 +427,7 @@
 				2D6867F919EF2D8E000F4427 /* EngineTutorialScene.swift in Sources */,
 				2DC0168319CEF41D003D922A /* ManufactoriaScene.swift in Sources */,
 				2D4862D01A1BEC21000421E5 /* MenuLevelButton.swift in Sources */,
+				2DB8E3ED1A379EA000898BD1 /* InstructionNode.swift in Sources */,
 				2D5E583F19A5265500F10DD3 /* ShimmerNode.swift in Sources */,
 				2DD23D731974730F00838E96 /* Engine.swift in Sources */,
 				2DB8E3E91A3655B100898BD1 /* ReportNode.swift in Sources */,

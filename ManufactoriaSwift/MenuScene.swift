@@ -60,8 +60,8 @@ class MenuScene: ManufactoriaScene, MenuLevelButtonDelegate {
   //let levelButtonTiers: [[MenuLevelButton]]
   //let topSettingsButton = Button(iconOffNamed: "settingsIconOff", iconOnNamed: "settingsIconOn")
   //let bottomSettingsButton = Button(iconOffNamed: "settingsIconOff", iconOnNamed: "settingsIconOn")
-  let resetButton = Button(iconOffNamed: "resetIconOff", iconOnNamed: "resetIconOn")
-  let unlockButton = Button(iconOffNamed: "unlockIconOff", iconOnNamed: "unlockIconOn")
+  let resetButton = BetterButton(iconOffNamed: "resetIconOff", iconOnNamed: "resetIconOn")
+  let unlockButton = BetterButton(iconOffNamed: "unlockIconOff", iconOnNamed: "unlockIconOn")
   let scrollNode = ScrollNode()
   
   override init(size: CGSize) {
@@ -150,16 +150,7 @@ class MenuScene: ManufactoriaScene, MenuLevelButtonDelegate {
     //bottomSettingsButton.position = CGPoint(offset + CGFloat(levelButtonLayout[0].count - 1) * spacing, -offset - CGFloat(levelButtonLayout.count - 1) * spacing)
     resetButton.position = CGPoint(offset, -offset)
     unlockButton.position = CGPoint(offset + spacing, -offset)
-  }
-  
-  override func updateDt(dt: NSTimeInterval) {
-    for button in levelButtons {button.update(dt)}
-    
-    //topSettingsButton.update(dt)
-    //bottomSettingsButton.update(dt)
-    unlockButton.update(dt)
-    resetButton.update(dt)
-  }
+  }  
   
   // MARK: - Touch Delegate Methods
   

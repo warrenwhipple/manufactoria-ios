@@ -24,13 +24,13 @@ class ToolbarNode: SKNode, ToolButtonDelegate, SwipeNodeDelegate {
   
   weak var delegate: ToolbarNodeDelegate!
   
-  let staticButtons: [Button]
-  let undoButton = Button(iconOffNamed: "undoIconOff", iconOnNamed: "undoIconOn")
-  let redoButton = Button(iconOffNamed: "undoIconOff", iconOnNamed: "undoIconOn")
-  let cancelButton = Button(iconOffNamed: "cancelIconOff", iconOnNamed: "cancelIconOn")
-  let confirmButton = Button(iconOffNamed: "confirmIconOff", iconOnNamed: "confirmIconOn")
-  let robotButton = Button(iconOffNamed: "robotOff", iconOnNamed: "robotOn")
-  var undoCancelSwapper, redoConfirmSwapper: ButtonSwapper
+  let staticButtons: [BetterButton]
+  let undoButton = BetterButton(iconOffNamed: "undoIconOff", iconOnNamed: "undoIconOn")
+  let redoButton = BetterButton(iconOffNamed: "undoIconOff", iconOnNamed: "undoIconOn")
+  let cancelButton = BetterButton(iconOffNamed: "cancelIconOff", iconOnNamed: "cancelIconOn")
+  let confirmButton = BetterButton(iconOffNamed: "confirmIconOff", iconOnNamed: "confirmIconOn")
+  let robotButton = BetterButton(iconOffNamed: "robotOff", iconOnNamed: "robotOn")
+  var undoCancelSwapper, redoConfirmSwapper: BetterButtonSwapper
   
   let swipeNode: SwipeNode
   let toolButtons: [ToolButton]
@@ -45,9 +45,9 @@ class ToolbarNode: SKNode, ToolButtonDelegate, SwipeNodeDelegate {
   init(editModes: [EditMode]) {
     (robotButton.nodeOn as SKSpriteNode).color = Globals.strokeColor
     staticButtons = [undoButton, redoButton, cancelButton, confirmButton, robotButton]
-    undoCancelSwapper = ButtonSwapper(buttons: [undoButton, cancelButton],
+    undoCancelSwapper = BetterButtonSwapper(buttons: [undoButton, cancelButton],
       rotateRadians: CGFloat(2*M_PI), liftZPosition: 2)
-    redoConfirmSwapper = ButtonSwapper(buttons: [redoButton, confirmButton],
+    redoConfirmSwapper = BetterButtonSwapper(buttons: [redoButton, confirmButton],
       rotateRadians: CGFloat(-2*M_PI), liftZPosition: 2)
     
     let groupA: [ToolButton] = [blankButton, beltBridgeButton]
@@ -137,9 +137,6 @@ class ToolbarNode: SKNode, ToolButtonDelegate, SwipeNodeDelegate {
   }
   
   func update(dt: NSTimeInterval) {
-    for button in staticButtons {
-      button.update(dt)
-    }
     for button in toolButtons {
       button.update(dt)
     }

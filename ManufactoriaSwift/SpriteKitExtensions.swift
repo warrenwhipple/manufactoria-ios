@@ -31,6 +31,41 @@ extension SKNode {
       addChild(node)
     }
   }
+  
+  func appearWithParent(newParent: SKNode, animate: Bool) {
+    if parent != newParent {
+      removeFromParent()
+      newParent.addChild(self)
+    }
+    if animate {
+      alpha = 0
+      setScale(1.5)
+      runAction(SKAction.group([
+        SKAction.fadeAlphaTo(1, duration: 0.2),
+        SKAction.scaleTo(1, duration: 0.2).easeOut()
+        ]), withKey: "trans")
+    } else {
+      removeActionForKey("trans")
+      alpha = 1
+      setScale(1)
+    }
+  }
+  
+  func disappearWithAnimate(animate: Bool) {
+    if animate {
+      runAction(SKAction.sequence([
+        SKAction.group([
+          SKAction.fadeAlphaTo(0, duration: 0.2),
+          SKAction.scaleTo(1.5, duration: 0.2).easeIn()
+          ]),
+        SKAction.removeFromParent()
+        ]), withKey: "trans")
+    } else {
+      removeActionForKey("trans")
+      removeFromParent()
+    }
+  }
+
 }
  
 extension SKSpriteNode {

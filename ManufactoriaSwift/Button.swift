@@ -121,7 +121,7 @@ class Button: SKSpriteNode {
   func stopPulseGlow() {
     removeActionForKey("pulseGlow")
   }
-  
+    
   // MARK: - UITouch Methods
   
   override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {

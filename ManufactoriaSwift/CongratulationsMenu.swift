@@ -16,12 +16,12 @@ class CongratulationsMenu: SKNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   
   weak var delegate: CongratulationsMenuDelegate!
-  let menuButton = Button(text: "continue", fixedWidth: Globals.mediumEm * 8)
+  let menuButton = BetterButton(text: "continue", fixedWidth: Globals.mediumEm * 8)
 
   override init() {
     super.init()
     addChild(menuButton)
-    menuButton.shouldStickyGlow = true
+    menuButton.shouldStickyOn = true
     menuButton.touchUpInsideClosure = {[unowned self] in self.delegate.menuButtonPressed()}
   }
   
@@ -39,9 +39,5 @@ class CongratulationsMenu: SKNode {
     menuButton.size = touchSize
     nextButton.size = touchSize
     */
-  }
-  
-  func update(dt: NSTimeInterval) {
-    menuButton.update(dt)
   }
 }
