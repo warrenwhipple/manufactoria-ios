@@ -9,7 +9,6 @@
 import SpriteKit
 
 protocol SpeedControlNodeDelegate: class {
-  func backButtonPressed()
   func slowerButtonPressed()
   func fasterButtonPressed()
   func skipButtonPressed()
@@ -19,17 +18,15 @@ class SpeedControlNode: SKNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   
   weak var delegate: SpeedControlNodeDelegate!
-  
-  let backButton = Button(iconOffNamed: "skipIconOff", iconOnNamed: "skipIconOn")
   let slowerButton = Button(iconOffNamed: "speedIconOff", iconOnNamed: "speedIconOn")
   let fasterButton = Button(iconOffNamed: "speedIconOff", iconOnNamed: "speedIconOn")
   let skipButton = Button(iconOffNamed: "cancelIconOff", iconOnNamed: "cancelIconOn")
   //let speedLabel = SKLabelNode()
+  let buttons: [Button]
   
   override init() {
+    buttons = [slowerButton, skipButton, fasterButton]
     super.init()
-    
-    for child in backButton.children {(child as SKNode).xScale = -1}
     for child in slowerButton.children {(child as SKNode).xScale = -1}
 
     /*
@@ -40,43 +37,37 @@ class SpeedControlNode: SKNode {
     speedLabel.text = "1X"
     */
     
-    backButton.touchDownClosure = {[unowned self] in self.delegate.backButtonPressed()}
     slowerButton.touchDownClosure = {[unowned self] in self.delegate.slowerButtonPressed()}
     fasterButton.touchDownClosure = {[unowned self] in self.delegate.fasterButtonPressed()}
     skipButton.touchDownClosure = {[unowned self] in self.delegate.skipButtonPressed()}
-    
-    //addChild(backButton)
-    addChild(slowerButton)
-    addChild(fasterButton)
-    addChild(skipButton)
-    //addChild(speedLabel)
+    addChildren(buttons)
   }
   
   var size: CGSize = CGSizeZero {didSet{if size != oldValue {fitToSize()}}}
 
   func fitToSize() {
-    let positions = distributionForChildren(count: 3, childSize: Globals.iconSpan, parentSize: size.width)
-    //backButton.position.x = positions[0]
-    slowerButton.position.x = positions[0]
-    //speedLabel.position.x = positions[2]
-    fasterButton.position.x = positions[2]
-    skipButton.position.x = positions[1]
-  }
-  
-  var isEnabled: Bool = false {
-    didSet {
-      if isEnabled == oldValue {return}
-      let buttons: [Button] = [backButton, slowerButton, fasterButton, skipButton]
-      if isEnabled == true {
-        for button in buttons {
-          button.userInteractionEnabled = true
-        }
-      } else {
-        for button in buttons {
-          button.userInteractionEnabled = false
-          button.touch = nil
-        }
-      }
+    let positions = distributionForChildren(count: buttons.count, childSize: Globals.iconSpan, parentSize: size.width)
+    for (i, button) in enumerate(buttons) {
+      button.position.x = positions[i]
     }
   }
+  
+  override func appearWithParent(newParent: SKNode, animate: Bool) {
+    super.appearWithParent(newParent, animate: animate)
+    resetButtons()
+  }
+  
+  func disableButtons() {
+    for button in buttons {
+      button.userInteractionEnabled = false
+    }
+  }
+  
+  func resetButtons() {
+    for button in buttons {
+      button.userInteractionEnabled = true
+      button.reset()
+    }
+  }
+  
 }

@@ -105,6 +105,18 @@ class Button: SKSpriteNode {
     nodeOn?.runAction(nodeOnFadeOutAction, withKey: "fade")
   }
   
+  func reset() {
+    if let touch = touch {
+      dragThroughDelegate?.dragThroughTouchCancelled(touch)
+      self.touch = nil
+    }
+    isOn = false
+    nodeOn?.removeActionForKey("fade")
+    nodeOff?.removeActionForKey("fade")
+    nodeOn?.alpha = 0
+    nodeOff?.alpha = 1
+  }
+  
   // MARK: Touch Delegate Methods
   
   override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {

@@ -107,16 +107,13 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
       switch state {
       case .Editing:
         beltIsFlowing = true
+        thinkingCancelButton.disappearWithAnimate(true)
+        speedControlNode.disappearWithAnimate(true)
         instructionNode.appearWithParent(self, animate: true)
         //statusNode.state = .Editing
         gridNode.state = .Editing
         robotNode?.runAction(SKAction.sequence([
           SKAction.fadeAlphaTo(0, duration: 1),
-          SKAction.removeFromParent()
-          ]), withKey: "fade")
-        speedControlNode.isEnabled = false
-        speedControlNode.runAction(SKAction.sequence([
-          SKAction.fadeAlphaTo(0, duration: 0.2),
           SKAction.removeFromParent()
           ]), withKey: "fade")
         toolbarNode.robotButton.alpha = 1
@@ -143,6 +140,8 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
         gridNode.state = .Waiting
         reportNode.appearWithParent(self, animate: true)
       case .Testing:
+        thinkingCancelButton.disappearWithAnimate(false)
+        speedControlNode.appearWithParent(self, animate: false)
         reportNode.disappearWithAnimate(true)
         var isPuller = false
         var isPusher = false
@@ -164,23 +163,12 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
         */
         loadTape(0)
         //statusNode.state = .Testing
-        if speedControlNode.parent == nil {addChild(speedControlNode)}
-        speedControlNode.runAction(SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")
-        speedControlNode.isEnabled = true
       case .Congratulating:
         beltIsFlowing = true
         gridNode.state = .Waiting
         //statusNode.state = .Congratulating
-        speedControlNode.isEnabled = false
-        speedControlNode.runAction(SKAction.sequence([
-          SKAction.fadeAlphaTo(0, duration: 0.2),
-          SKAction.removeFromParent()
-          ]), withKey: "fade")
-        addChild(congratulationsMenu)
-        congratulationsMenu.runAction(SKAction.sequence([
-          SKAction.waitForDuration(0.2),
-          SKAction.fadeAlphaTo(1, duration: 0.2)
-          ]), withKey: "fade")
+        speedControlNode.disappearWithAnimate(true)
+        congratulationsMenu.appearWithParent(self, animate: true)
       }
     }
   }
