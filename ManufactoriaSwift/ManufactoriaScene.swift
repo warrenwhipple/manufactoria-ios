@@ -31,20 +31,12 @@ class TransitionScene: SKScene {
     case .Menu: nextScene = MenuScene(size: size)
     case .Unlock: nextScene = UnlockScene(size: size)
     case .Reset: nextScene = ResetScene(size: size)
-    case .Game(let levelKey): nextScene = GameScene(size: view!.bounds.size, levelKey: levelKey)
-      /*
-      if GameProgressData.sharedInstance.tutorialsOn {
-        switch levelKey {
-        case "all": nextScene = BeltTutorialScene(size: view!.bounds.size)
-        case "sort": nextScene = SortTutorialScene(size: view!.bounds.size)
-        case "sequence": nextScene = SequenceTutorialScene(size: view!.bounds.size)
-        default: break
-        }
-      }
-      if nextScene == nil {
+    case .Game(let levelKey):
+      if levelKey == "move" && (GameProgressData.sharedInstance.level("move")?.tutorialIsOn ?? false){
+        nextScene = MoveTutorialScene(size: view!.bounds.size)
+      } else {
         nextScene = GameScene(size: view!.bounds.size, levelKey: levelKey)
       }
-      */
     }
     runAction(SKAction.sequence([
       SKAction.waitForDuration(0),

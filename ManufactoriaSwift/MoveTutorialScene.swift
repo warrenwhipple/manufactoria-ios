@@ -1,25 +1,24 @@
 //
-//  BeltTutorialScene.swift
+//  MoveTutorialScene.swift
 //  ManufactoriaSwift
 //
 //  Created by Warren Whipple on 8/15/14.
 //  Copyright (c) 2014 Warren Whipple. All rights reserved.
 //
 
-/*
 import SpriteKit
 
-class BeltTutorialScene: TutorialScene {
+class MoveTutorialScene: TutorialScene {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   var gridPulseAction: SKAction!
   
   init(size: CGSize) {
-    super.init(size: size, levelKey: "all")
+    super.init(size: size, levelKey: "move")
     
-    statusNode.instructionsLabel.text = "This is a manufactory floor plan."
+    instructionNode.instructionsLabel.text = "This is a manufactory floor plan."
     let connectLabel = SmartLabel()
     connectLabel.text = "Connect the entrance and exit."
-    statusNode.addPageToRight(connectLabel)
+    instructionNode.addPageToRight(connectLabel)
     startSwipePulse()
     
     toolbarNode.userInteractionEnabled = false
@@ -28,7 +27,7 @@ class BeltTutorialScene: TutorialScene {
     toolbarNode.redoConfirmSwapper.removeFromParent()
     for button in toolbarNode.toolButtons {button.removeFromParent()}
     
-    congratulationsMenu.menuButton.touchUpInsideClosure = {[unowned self] in self.transitionToGameSceneWithLevelKey("sort")}
+    congratulationsMenu.menuButton.touchUpInsideClosure = {[unowned self] in self.transitionToGameSceneWithLevelKey("read")}
     
     gridNode.animateThinking = false
     gridNode.state = .EditingLocked
@@ -77,10 +76,10 @@ class BeltTutorialScene: TutorialScene {
       case .Editing: break
       case .Thinking:
         removeActionForKey("pulse")
-        statusNode.engineLabel.removeFromParent()
+      case .Reporting:
+        reportNode.disappearWithAnimate(false)
+        state = .Testing
       case .Testing:
-        statusNode.tapeLabel.removeFromParent()
-        statusNode.tapeNode.removeFromParent()
         speedControlNode.removeFromParent()
       case .Congratulating: break
       }
@@ -100,8 +99,8 @@ class BeltTutorialScene: TutorialScene {
     case .Connect:
       let robotLabel = SmartLabel()
       robotLabel.text = "Tap the robot\nto begin the test."
-      statusNode.addPageToRight(robotLabel)
-      statusNode.snapToIndex(3, initialVelocityX: 0)
+      instructionNode.addPageToRight(robotLabel)
+      instructionNode.snapToIndex(3, initialVelocityX: 0)
       gridNode.state = .EditingLocked
       removeActionForKey("gridPulse")
       toolbarNode.robotButton.alpha = 0
@@ -112,7 +111,6 @@ class BeltTutorialScene: TutorialScene {
       if toolbarNode.robotButton.parent == nil {
         toolbarNode.addChild(toolbarNode.robotButton)
       }
-      toolbarNode.robotButton.startPulseGlowWithInterval(2)
       tutorialState = .Robot
     case .Robot: break
     }
@@ -138,11 +136,9 @@ class BeltTutorialScene: TutorialScene {
   override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
     super.touchesBegan(touches, withEvent: event)
     if tutorialState == .FloorPlan {
-      statusNode.snapToIndex(2, initialVelocityX: 0)
+      instructionNode.snapToIndex(2, initialVelocityX: 0)
     } else if state == .Testing {
       fasterButtonPressed()
     }
   }
 }
-
-*/

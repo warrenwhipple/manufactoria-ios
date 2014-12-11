@@ -10,7 +10,7 @@
 		2D03B93A197EB89700715176 /* SwiftExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D03B939197EB89700715176 /* SwiftExtensions.swift */; };
 		2D15929A19514B4900A96BCC /* GridNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D15929919514B4900A96BCC /* GridNode.swift */; };
 		2D15929C19514B5400A96BCC /* CellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D15929B19514B5400A96BCC /* CellNode.swift */; };
-		2D2D26AB199E610D00EC4A45 /* BeltTutorialScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2D26AA199E610D00EC4A45 /* BeltTutorialScene.swift */; };
+		2D2D26AB199E610D00EC4A45 /* MoveTutorialScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2D26AA199E610D00EC4A45 /* MoveTutorialScene.swift */; };
 		2D336E8919534044008E55A9 /* MathFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D336E8819534044008E55A9 /* MathFunctions.swift */; };
 		2D36614E19E6D46D0050F34E /* SmartLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D36614D19E6D46D0050F34E /* SmartLabel.swift */; };
 		2D436D4019F6B0F2001E9FF6 /* TutorialScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D436D3F19F6B0F2001E9FF6 /* TutorialScene.swift */; };
@@ -75,7 +75,7 @@
 		2D03B939197EB89700715176 /* SwiftExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftExtensions.swift; sourceTree = "<group>"; };
 		2D15929919514B4900A96BCC /* GridNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridNode.swift; sourceTree = "<group>"; };
 		2D15929B19514B5400A96BCC /* CellNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CellNode.swift; sourceTree = "<group>"; };
-		2D2D26AA199E610D00EC4A45 /* BeltTutorialScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BeltTutorialScene.swift; sourceTree = "<group>"; };
+		2D2D26AA199E610D00EC4A45 /* MoveTutorialScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoveTutorialScene.swift; sourceTree = "<group>"; };
 		2D336E8819534044008E55A9 /* MathFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MathFunctions.swift; sourceTree = "<group>"; };
 		2D36614D19E6D46D0050F34E /* SmartLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SmartLabel.swift; sourceTree = "<group>"; };
 		2D436D3F19F6B0F2001E9FF6 /* TutorialScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TutorialScene.swift; sourceTree = "<group>"; };
@@ -152,7 +152,7 @@
 			isa = PBXGroup;
 			children = (
 				2D436D3F19F6B0F2001E9FF6 /* TutorialScene.swift */,
-				2D2D26AA199E610D00EC4A45 /* BeltTutorialScene.swift */,
+				2D2D26AA199E610D00EC4A45 /* MoveTutorialScene.swift */,
 				2D54B24719CF27BB00DF68C5 /* SortTutorialScene.swift */,
 				2DF749FE19D627B800EBE94D /* SequenceTutorialScene.swift */,
 				2D6867F819EF2D8E000F4427 /* EngineTutorialScene.swift */,
@@ -415,7 +415,7 @@
 				2D436D4019F6B0F2001E9FF6 /* TutorialScene.swift in Sources */,
 				2DD23D6E196F0BF900838E96 /* LevelLibrary.swift in Sources */,
 				2D5C7319199FE80600D53D0D /* SpeedControlNode.swift in Sources */,
-				2D2D26AB199E610D00EC4A45 /* BeltTutorialScene.swift in Sources */,
+				2D2D26AB199E610D00EC4A45 /* MoveTutorialScene.swift in Sources */,
 				2D60F5C7198041BD0032860B /* TitleScene.swift in Sources */,
 				2DC4915F194F671F00053237 /* Cell.swift in Sources */,
 				2DD23D71196F223E00838E96 /* MenuScene.swift in Sources */,

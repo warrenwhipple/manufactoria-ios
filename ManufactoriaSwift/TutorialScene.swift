@@ -6,7 +6,6 @@
 //  Copyright (c) 2014 Warren Whipple. All rights reserved.
 //
 
-/*
 import SpriteKit
 
 class TutorialScene: GameScene {
@@ -16,9 +15,8 @@ class TutorialScene: GameScene {
   
   override init(size: CGSize, var levelKey: String) {
     super.init(size: size, levelKey: levelKey)
-    statusNode.leftArrowWrapper.removeFromParent()
+    instructionNode.leftArrowWrapper.removeFromParent()
     swipeHint.color = Globals.highlightColor
-    //swipeHint.anchorPoint.x = 0
     swipeHint.zPosition = -1
     swipePulseAction = SKAction.repeatActionForever(SKAction.sequence([
       SKAction.waitForDuration(2),
@@ -37,7 +35,7 @@ class TutorialScene: GameScene {
     swipeHint.alpha = 0
     swipeHint.position.x = 0
     swipeHint.runAction(swipePulseAction, withKey: "pulse")
-    if swipeHint.parent == nil {statusNode.rightArrow.addChild(swipeHint)}
+    if swipeHint.parent == nil {instructionNode.rightArrow.addChild(swipeHint)}
   }
   
   func stopSwipePulse() {
@@ -46,12 +44,11 @@ class TutorialScene: GameScene {
   
   override func swipeNodeDidSnapToIndex(index: Int) {
     // show left swipe arrow on first swipe
-    if index != 1 && statusNode.leftArrowWrapper.parent == nil {
-      statusNode.leftArrowWrapper.alpha = 0
-      statusNode.leftArrowWrapper.runAction(SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")
-      statusNode.wrapper.addChild(statusNode.leftArrowWrapper)
+    if index != 1 && instructionNode.leftArrowWrapper.parent == nil {
+      instructionNode.leftArrowWrapper.alpha = 0
+      instructionNode.leftArrowWrapper.runAction(SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")
+      instructionNode.wrapper.addChild(instructionNode.leftArrowWrapper)
     }
   }
 
 }
-*/

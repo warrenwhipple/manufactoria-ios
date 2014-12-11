@@ -40,22 +40,18 @@ private let _classLevelKeyLinks: [String:[String]] = [
 class GameProgressData: NSObject, NSCoding {
   class var sharedInstance: GameProgressData {return _classSharedInstance}
   class var levelKeyLinks: [String:[String]] {return _classLevelKeyLinks}
-  var tutorialsOn: Bool
   var levelProgressDictionary: [String:LevelProgressData]
   
   override init() {
     if let loadedGameProgressData = NSKeyedUnarchiver.unarchiveObjectWithFile(filePath) as? GameProgressData {
-      tutorialsOn = loadedGameProgressData.tutorialsOn
       levelProgressDictionary = loadedGameProgressData.levelProgressDictionary
     } else {
-      tutorialsOn = false
       levelProgressDictionary = LevelLibrary.map {return LevelProgressData(levelSetup: $0)}
     }
     levelProgressDictionary["move"]?.isUnlocked = true
   }
   
   required init(coder aDecoder: NSCoder) {
-    tutorialsOn = aDecoder.decodeObjectForKey("tutorialsOn") as? Bool ?? true
     levelProgressDictionary = aDecoder.decodeObjectForKey("levelProgressDictionary") as? [String:LevelProgressData] ?? [String:LevelProgressData]()
     for key in LevelLibrary.keys {
       if levelProgressDictionary[key] == nil {
@@ -65,7 +61,6 @@ class GameProgressData: NSObject, NSCoding {
   }
   
   func encodeWithCoder(aCoder: NSCoder)  {
-    aCoder.encodeObject(tutorialsOn, forKey: "tutorialsOn")
     aCoder.encodeObject(levelProgressDictionary, forKey: "levelProgressDictionary")
   }
   
@@ -74,14 +69,12 @@ class GameProgressData: NSObject, NSCoding {
   }
   
   func resetAllGameProgressData() {
-    tutorialsOn = false
     levelProgressDictionary = LevelLibrary.map {return LevelProgressData(levelSetup: $0)}
     levelProgressDictionary["move"]?.isUnlocked = true
     save()
   }
   
   func unlockAllLevels() {
-    tutorialsOn = false
     for levelProgressData in levelProgressDictionary.values {
       levelProgressData.isUnlocked = true
     }
@@ -91,6 +84,7 @@ class GameProgressData: NSObject, NSCoding {
   func completedLevelWithKey(levelKey: String) {
     if let levelProgressData = levelProgressDictionary[levelKey] {
       levelProgressData.isComplete = true
+      levelProgressData.tutorialIsOn = false
       if let unlockKeys = GameProgressData.levelKeyLinks[levelKey] {
         for unlockKey in unlockKeys {
           levelProgressDictionary[unlockKey]?.isUnlocked = true
@@ -106,26 +100,25 @@ class GameProgressData: NSObject, NSCoding {
 }
 
 class LevelProgressData: NSObject, NSCoding {
-  var isComplete: Bool
-  var isUnlocked: Bool
+  var isComplete: Bool = false
+  var isUnlocked: Bool = false
+  var tutorialIsOn: Bool = true
   
   override init() {
-    isComplete = false
-    isUnlocked = false
   }
   
   init(levelSetup: LevelSetup) {
-    isComplete = false
-    isUnlocked = false
   }
   
   required init(coder aDecoder: NSCoder) {
     isComplete = aDecoder.decodeObjectForKey("isComplete") as? Bool ?? false
     isUnlocked = aDecoder.decodeObjectForKey("isUnlocked") as? Bool ?? false
+    tutorialIsOn = aDecoder.decodeObjectForKey("tutorialIsOn") as? Bool ?? true
   }
   
   func encodeWithCoder(aCoder: NSCoder) {
     aCoder.encodeObject(isComplete, forKey: "isComplete")
     aCoder.encodeObject(isUnlocked, forKey: "isUnlocked")
+    aCoder.encodeObject(tutorialIsOn, forKey: "tutorialIsOn")
   }
 }
