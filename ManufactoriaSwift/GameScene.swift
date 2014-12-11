@@ -202,8 +202,9 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     toolbarNode.size = topGapRect.size
     reportNode.position = size.center
     reportNode.size = size
-    thinkingCancelButton.position = bottomGapRect.center
-    speedControlNode.position = bottomGapRect.center
+    thinkingCancelButton.position.x = bottomGapRect.center.x
+    thinkingCancelButton.position.y = bottomGapRect.center.y + toolbarNode.swipeNode.position.y
+    speedControlNode.position = thinkingCancelButton.position
     speedControlNode.size = bottomGapRect.size
     congratulationsMenu.position = bottomGapRect.center
     congratulationsMenu.size = bottomGapRect.size

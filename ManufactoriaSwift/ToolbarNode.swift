@@ -214,7 +214,7 @@ class ToolbarNode: SKNode, ToolButtonDelegate, SwipeNodeDelegate {
   func toolButtonTouchBegan(button: ToolButton) {
     for buttonToCancel in toolButtons {
       if buttonToCancel != button {
-        button.cancelTouch()
+        buttonToCancel.cancelTouch()
       }
     }
   }

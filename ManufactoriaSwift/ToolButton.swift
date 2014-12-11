@@ -13,32 +13,19 @@ protocol ToolButtonDelegate: class {
   func toolButtonActivated(ToolButton)
 }
 
-private let nodeOnFadeOutAction = SKAction.fadeAlphaTo(0, duration: 0.2)
-private let nodeOffFadeInAction = SKAction.fadeAlphaTo(1, duration: 0.1)
-
-class ToolButton: SKSpriteNode {
+class ToolButton: Button {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   
-  weak var dragThroughDelegate: DragThroughDelegate?
   weak var toolButtonDelegate: ToolButtonDelegate!
-  var touch: UITouch?
-  var touchIsDraggingThrough: Bool = false
-  var touchBeganPoint: CGPoint = CGPointZero
-  var nodeOn, nodeOff: SKNode?
   var editMode: EditMode
   var toolButtonGroupIndex = 0
   var editModeIsLocked = false
   
   init(nodeOff: SKNode, nodeOn: SKNode, editMode: EditMode) {
-    self.nodeOff = nodeOff
-    self.nodeOn = nodeOn
     self.editMode = editMode
-    super.init(texture: nil, color: nil, size: CGSize(Globals.touchSpan))
-    userInteractionEnabled = true
-    nodeOn.zPosition = nodeOff.zPosition + 1
-    nodeOn.alpha = 0
-    addChild(nodeOff)
-    addChild(nodeOn)
+    super.init(nodeOff: nodeOff, nodeOn: nodeOn, touchSize: CGSize(Globals.touchSpan))
+    touchDownClosure = {[unowned self] in self.toolButtonDelegate.toolButtonTouchBegan(self)}
+    touchUpInsideClosure = {[unowned self] in self.toolButtonDelegate.toolButtonActivated(self)}
   }
   
   convenience init(iconOffNamed: String, iconOnNamed: String, editMode: EditMode) {
@@ -58,28 +45,6 @@ class ToolButton: SKSpriteNode {
     }
   }
   
-  var isOn: Bool = false {
-    didSet {
-      if isOn && !oldValue {
-        turnOn()
-      } else if !isOn && oldValue {
-        turnOff()
-      }
-    }
-  }
-  
-  private func turnOn() {
-    nodeOn?.removeActionForKey("fade")
-    nodeOn?.alpha = 1
-    nodeOff?.removeActionForKey("fade")
-    nodeOff?.alpha = 0
-  }
-  
-  private func turnOff() {
-    nodeOff?.runAction(nodeOffFadeInAction, withKey: "fade")
-    nodeOn?.runAction(nodeOnFadeOutAction, withKey: "fade")
-  }
-  
   func cycleEditMode() -> EditMode {
     return editMode
   }
@@ -96,28 +61,24 @@ class ToolButton: SKSpriteNode {
     }
   }
   
-  override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
-    if let touch = touch {
-      if touchIsDraggingThrough {
-        dragThroughDelegate?.dragThroughTouchCancelled(touch)
-      }
-    }
-    toolButtonDelegate.toolButtonTouchBegan(self)
-    touch = touches.anyObject() as? UITouch
-    isOn = true
-    touchIsDraggingThrough = false
-    if let touch = touch {touchBeganPoint = touch.locationInView(touch.view)}
-  }
+  // MARK: Touch Delegate Methods
   
   override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
     if let touch = touch {
       if touches.containsObject(touch) {
         if touchIsDraggingThrough {
           dragThroughDelegate?.dragThroughTouchMoved(touch)
-        } else if (!frame.contains(touch.locationInNode(parent))) || ((dragThroughDelegate?.userInteractionEnabled ?? false) && (abs(touch.locationInView(touch.view).x - touchBeganPoint.x) >= 30)) { // if touch left button or dragged too far x
-            isOn = isInFocus
+        } else if dragThroughDelegate?.userInteractionEnabled ?? false {
+          if !frame.contains(touch.locationInNode(parent)) || (abs(shouldDragThroughY ? touch.locationInView(touch.view).y - touchBeganPoint.y : touch.locationInView(touch.view).x - touchBeganPoint.x) >= 30) {
+            isOn = isInFocus // ToolButton difference
             touchIsDraggingThrough = true
             dragThroughDelegate?.dragThroughTouchBegan(touch)
+            touchCancelledClosure?()
+          }
+        } else if !frame.contains(touch.locationInNode(parent)) {
+          self.touch = nil
+          isOn = isInFocus // ToolButton difference
+          touchCancelledClosure?()
         }
       }
     }
@@ -130,7 +91,8 @@ class ToolButton: SKSpriteNode {
           dragThroughDelegate?.dragThroughTouchEnded(touch)
           touchIsDraggingThrough = false
         } else {
-          toolButtonDelegate.toolButtonActivated(self)
+          isOn = isInFocus // ToolButton difference
+          touchUpInsideClosure?()
         }
         self.touch = nil
       }
@@ -140,7 +102,14 @@ class ToolButton: SKSpriteNode {
   override func touchesCancelled(touches: NSSet, withEvent event: UIEvent) {
     if let touch = touch {
       if touches.containsObject(touch) {
-        cancelTouch()
+        if touchIsDraggingThrough {
+          dragThroughDelegate?.dragThroughTouchCancelled(touch)
+          touchIsDraggingThrough = false
+        } else {
+          isOn = isInFocus // ToolButton difference
+          touchCancelledClosure?()
+        }
+        self.touch = nil
       }
     }
   }

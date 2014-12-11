@@ -42,6 +42,7 @@ class TitleScene: ManufactoriaScene {
     button.position = CGPoint(size.center.x, size.center.y - Globals.mediumEm * 1.75)
   }
   
+  /*
   var touch: UITouch?
   var touchBeganPoint = CGPointZero
   override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
@@ -73,4 +74,5 @@ class TitleScene: ManufactoriaScene {
       }
     }
   }
+  */
 }
