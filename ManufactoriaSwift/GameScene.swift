@@ -385,10 +385,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
   // MARK: - EngineDelegate Functions
   
   func gridTestPassed() {
-    if PassCommentCounter >= PassComments.count {PassCommentCounter = 0}
-    //statusNode.tapeLabel.text = PassComments[PassCommentCounter++]
-    //statusNode.tapeLabel.text = PassComments[Int(arc4random_uniform(UInt32(PassComments.count)))]
-    //statusNode.tapeLabel.runAction(SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")
+    reportNode.preparePassMessage()
     tapeTestResults = []
     for exemplar in levelSetup.exemplars {
       tapeTestResults.append(TapeTestResult(input: exemplar, output: nil, correctOutput: nil, kind: .Pass))
@@ -401,14 +398,10 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
   
   func gridTestFailedWithResult(result: TapeTestResult) {
     if result.kind == TapeTestResult.Kind.FailLoop {
-      if LoopCommentCounter >= LoopComments.count {LoopCommentCounter = 0}
-      //statusNode.tapeLabel.text = LoopComments[LoopCommentCounter++]
+      reportNode.prepareLoopMessage()
     } else {
-      if FailCommentCounter >= FailComments.count {FailCommentCounter = 0}
-      //statusNode.tapeLabel.text = FailComments[FailCommentCounter++]
+      reportNode.prepareFailMessage()
     }
-    //statusNode.tapeLabel.runAction(SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")
-    //statusNode.resetFailPageForTestResult(result)
     instructionNode.resetFailPageForTestResult(result)
     tapeTestResults = [result]
     state = .Reporting
