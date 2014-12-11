@@ -114,14 +114,10 @@ class ToolButton: SKSpriteNode {
       if touches.containsObject(touch) {
         if touchIsDraggingThrough {
           dragThroughDelegate?.dragThroughTouchMoved(touch)
-        } else if dragThroughDelegate?.userInteractionEnabled ?? false
-          && CGPointDistSq(p1: touch.locationInView(touch.view), p2: touchBeganPoint) >= 900 {
+        } else if (!frame.contains(touch.locationInNode(parent))) || ((dragThroughDelegate?.userInteractionEnabled ?? false) && (abs(touch.locationInView(touch.view).x - touchBeganPoint.x) >= 30)) { // if touch left button or dragged too far x
             isOn = isInFocus
             touchIsDraggingThrough = true
             dragThroughDelegate?.dragThroughTouchBegan(touch)
-        } else if !frame.contains(touch.locationInNode(parent)) {
-          self.touch = nil
-          isOn = isInFocus
         }
       }
     }

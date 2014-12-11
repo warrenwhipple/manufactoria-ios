@@ -23,6 +23,7 @@ class Button: SKSpriteNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   var touchDownClosure, touchUpInsideClosure, touchCancelledClosure: (()->())?
   weak var dragThroughDelegate: DragThroughDelegate?
+  var shouldDragThroughY = false
   var touch: UITouch?
   var touchIsDraggingThrough: Bool = false
   var touchBeganPoint: CGPoint = CGPointZero
@@ -124,12 +125,13 @@ class Button: SKSpriteNode {
       if touches.containsObject(touch) {
         if touchIsDraggingThrough {
           dragThroughDelegate?.dragThroughTouchMoved(touch)
-        } else if dragThroughDelegate?.userInteractionEnabled ?? false
-          && CGPointDistSq(p1: touch.locationInView(touch.view), p2: touchBeganPoint) >= 900 {
-            isOn = false
-            touchIsDraggingThrough = true
-            dragThroughDelegate?.dragThroughTouchBegan(touch)
-            touchCancelledClosure?()
+        } else if dragThroughDelegate?.userInteractionEnabled ?? false {
+          if !frame.contains(touch.locationInNode(parent)) || (abs(shouldDragThroughY ? touch.locationInView(touch.view).y - touchBeganPoint.y : touch.locationInView(touch.view).x - touchBeganPoint.x) >= 30) {
+                isOn = false
+                touchIsDraggingThrough = true
+                dragThroughDelegate?.dragThroughTouchBegan(touch)
+                touchCancelledClosure?()
+          }
         } else if !frame.contains(touch.locationInNode(parent)) {
           self.touch = nil
           isOn = false

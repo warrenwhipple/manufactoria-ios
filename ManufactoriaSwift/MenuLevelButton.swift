@@ -28,6 +28,7 @@ class MenuLevelButton: Button {
       spriteOn?.addChild(labelOn!)
     }
     super.init(nodeOff: SKNode(), nodeOn: spriteOn ?? SKNode(), touchSize: CGSizeZero)
+    shouldDragThroughY = true
     nodeOff?.addChild(labelOff)
     spriteOn?.color = Globals.highlightColor
     if let levelProgressData = GameProgressData.sharedInstance.level(levelKey) {
