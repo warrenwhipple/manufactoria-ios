@@ -20,10 +20,10 @@ class SpeedControlNode: SKNode {
   
   weak var delegate: SpeedControlNodeDelegate!
   
-  let backButton = BetterButton(iconOffNamed: "skipIconOff", iconOnNamed: "skipIconOn")
-  let slowerButton = BetterButton(iconOffNamed: "speedIconOff", iconOnNamed: "speedIconOn")
-  let fasterButton = BetterButton(iconOffNamed: "speedIconOff", iconOnNamed: "speedIconOn")
-  let skipButton = BetterButton(iconOffNamed: "cancelIconOff", iconOnNamed: "cancelIconOn")
+  let backButton = Button(iconOffNamed: "skipIconOff", iconOnNamed: "skipIconOn")
+  let slowerButton = Button(iconOffNamed: "speedIconOff", iconOnNamed: "speedIconOn")
+  let fasterButton = Button(iconOffNamed: "speedIconOff", iconOnNamed: "speedIconOn")
+  let skipButton = Button(iconOffNamed: "cancelIconOff", iconOnNamed: "cancelIconOn")
   //let speedLabel = SKLabelNode()
   
   override init() {
@@ -66,7 +66,7 @@ class SpeedControlNode: SKNode {
   var isEnabled: Bool = false {
     didSet {
       if isEnabled == oldValue {return}
-      let buttons: [BetterButton] = [backButton, slowerButton, fasterButton, skipButton]
+      let buttons: [Button] = [backButton, slowerButton, fasterButton, skipButton]
       if isEnabled == true {
         for button in buttons {
           button.userInteractionEnabled = true

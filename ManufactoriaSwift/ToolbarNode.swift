@@ -24,13 +24,13 @@ class ToolbarNode: SKNode, ToolButtonDelegate, SwipeNodeDelegate {
   
   weak var delegate: ToolbarNodeDelegate!
   
-  let staticButtons: [BetterButton]
-  let undoButton = BetterButton(iconOffNamed: "undoIconOff", iconOnNamed: "undoIconOn")
-  let redoButton = BetterButton(iconOffNamed: "undoIconOff", iconOnNamed: "undoIconOn")
-  let cancelButton = BetterButton(iconOffNamed: "cancelIconOff", iconOnNamed: "cancelIconOn")
-  let confirmButton = BetterButton(iconOffNamed: "confirmIconOff", iconOnNamed: "confirmIconOn")
-  let robotButton = BetterButton(iconOffNamed: "robotOff", iconOnNamed: "robotOn")
-  var undoCancelSwapper, redoConfirmSwapper: BetterButtonSwapper
+  let staticButtons: [Button]
+  let undoButton = Button(iconOffNamed: "undoIconOff", iconOnNamed: "undoIconOn")
+  let redoButton = Button(iconOffNamed: "undoIconOff", iconOnNamed: "undoIconOn")
+  let cancelButton = Button(iconOffNamed: "cancelIconOff", iconOnNamed: "cancelIconOn")
+  let confirmButton = Button(iconOffNamed: "confirmIconOff", iconOnNamed: "confirmIconOn")
+  let robotButton = Button(iconOffNamed: "robotOff", iconOnNamed: "robotOn")
+  var undoCancelSwapper, redoConfirmSwapper: ButtonSwapper
   
   let swipeNode: SwipeNode
   let toolButtons: [ToolButton]
@@ -43,11 +43,10 @@ class ToolbarNode: SKNode, ToolButtonDelegate, SwipeNodeDelegate {
   var buttonInFocus: ToolButton
   
   init(editModes: [EditMode]) {
-    (robotButton.nodeOn as SKSpriteNode).color = Globals.strokeColor
     staticButtons = [undoButton, redoButton, cancelButton, confirmButton, robotButton]
-    undoCancelSwapper = BetterButtonSwapper(buttons: [undoButton, cancelButton],
+    undoCancelSwapper = ButtonSwapper(buttons: [undoButton, cancelButton],
       rotateRadians: CGFloat(2*M_PI), liftZPosition: 2)
-    redoConfirmSwapper = BetterButtonSwapper(buttons: [redoButton, confirmButton],
+    redoConfirmSwapper = ButtonSwapper(buttons: [redoButton, confirmButton],
       rotateRadians: CGFloat(-2*M_PI), liftZPosition: 2)
     
     let groupA: [ToolButton] = [blankButton, beltBridgeButton]
@@ -135,13 +134,7 @@ class ToolbarNode: SKNode, ToolButtonDelegate, SwipeNodeDelegate {
       distributeXs(group)
     }
   }
-  
-  func update(dt: NSTimeInterval) {
-    for button in toolButtons {
-      button.update(dt)
-    }
-  }
-  
+    
   var state: State = .Drawing {
     didSet {
       if state == oldValue {return}
@@ -217,6 +210,14 @@ class ToolbarNode: SKNode, ToolButtonDelegate, SwipeNodeDelegate {
   }
   
   // MARK: - ToolButtonDelegate Methods
+  
+  func toolButtonTouchBegan(button: ToolButton) {
+    for buttonToCancel in toolButtons {
+      if buttonToCancel != button {
+        button.cancelTouch()
+      }
+    }
+  }
   
   func toolButtonActivated(button: ToolButton) {
     if button == buttonInFocus {

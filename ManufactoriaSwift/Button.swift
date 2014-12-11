@@ -2,7 +2,7 @@
 //  Button.swift
 //  ManufactoriaSwift
 //
-//  Created by Warren Whipple on 8/9/14.
+//  Created by Warren Whipple on 11/26/14.
 //  Copyright (c) 2014 Warren Whipple. All rights reserved.
 //
 
@@ -16,6 +16,9 @@ protocol DragThroughDelegate: class {
   func dragThroughTouchCancelled(touch: UITouch)
 }
 
+private let nodeOnFadeOutAction = SKAction.fadeAlphaTo(0, duration: 0.2)
+private let nodeOffFadeInAction = SKAction.fadeAlphaTo(1, duration: 0.1)
+
 class Button: SKSpriteNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   var touchDownClosure, touchUpInsideClosure, touchCancelledClosure: (()->())?
@@ -23,10 +26,7 @@ class Button: SKSpriteNode {
   var touch: UITouch?
   var touchIsDraggingThrough: Bool = false
   var touchBeganPoint: CGPoint = CGPointZero
-  var shouldStickyGlow = false
-  var isStickyGlowing = false
-  var isActivateGlowing = false
-  var isPulseGlowing = false
+  var shouldStickyOn = false
   var nodeOn, nodeOff: SKNode?
   
   init(nodeOff: SKNode, nodeOn: SKNode, touchSize: CGSize) {
@@ -34,7 +34,7 @@ class Button: SKSpriteNode {
     self.nodeOn = nodeOn
     super.init(texture: nil, color: nil, size: touchSize)
     userInteractionEnabled = true
-    nodeOn.zPosition = nodeOff.zPosition + 1
+    nodeOn.zPosition = 1
     nodeOn.alpha = 0
     addChild(nodeOff)
     addChild(nodeOn)
@@ -82,47 +82,29 @@ class Button: SKSpriteNode {
     iconOn.color = Globals.highlightColor
   }
   
-  func update(dt: NSTimeInterval) {
-    if (touch != nil && !touchIsDraggingThrough) || isActivateGlowing || isStickyGlowing {
-      if glow < 1 {
-        glow += 4 * CGFloat(dt)
-      } else {
-        isActivateGlowing = false
-      }
-    } else if isPulseGlowing {
-      if glow < 1 {
-        glow += 2 * CGFloat(dt)
-      } else {
-        isPulseGlowing = false
-      }
-    } else {
-      if glow > 0 {
-        glow -= 2 * CGFloat(dt)
-      }
-    }
-  }
-  
-  var glow: CGFloat = 0 {
+  var isOn: Bool = false {
     didSet {
-      if glow == oldValue {return}
-      glow = min(1, max(0, glow))
-      nodeOff?.alpha = 1 - glow
-      nodeOn?.alpha = glow
+      if isOn && !oldValue {
+        turnOn()
+      } else if !isOn && oldValue {
+        turnOff()
+      }
     }
   }
   
-  func startPulseGlowWithInterval(interval: NSTimeInterval) {
-    runAction(SKAction.repeatActionForever(SKAction.sequence([
-      SKAction.waitForDuration(interval),
-      SKAction.runBlock({[unowned self] in self.isPulseGlowing = true})
-      ])), withKey: "pulseGlow")
+  private func turnOn() {
+    nodeOn?.removeActionForKey("fade")
+    nodeOn?.alpha = 1
+    nodeOff?.removeActionForKey("fade")
+    nodeOff?.alpha = 0
   }
   
-  func stopPulseGlow() {
-    removeActionForKey("pulseGlow")
+  private func turnOff() {
+    nodeOff?.runAction(nodeOffFadeInAction, withKey: "fade")
+    nodeOn?.runAction(nodeOnFadeOutAction, withKey: "fade")
   }
-    
-  // MARK: - UITouch Methods
+  
+  // MARK: Touch Delegate Methods
   
   override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
     if let touch = touch {
@@ -131,11 +113,10 @@ class Button: SKSpriteNode {
       }
     }
     touch = touches.anyObject() as? UITouch
-    if let touch = touch {
-      touchIsDraggingThrough = false
-      touchBeganPoint = touch.locationInView(touch.view)
-      touchDownClosure?()
-    }
+    isOn = true
+    touchIsDraggingThrough = false
+    if let touch = touch {touchBeganPoint = touch.locationInView(touch.view)}
+    touchDownClosure?()
   }
   
   override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
@@ -144,12 +125,14 @@ class Button: SKSpriteNode {
         if touchIsDraggingThrough {
           dragThroughDelegate?.dragThroughTouchMoved(touch)
         } else if dragThroughDelegate?.userInteractionEnabled ?? false
-          && CGPointDistSq(p1: touch.locationInView(touch.view), p2: touchBeganPoint) >= 15*15 {
+          && CGPointDistSq(p1: touch.locationInView(touch.view), p2: touchBeganPoint) >= 900 {
+            isOn = false
             touchIsDraggingThrough = true
             dragThroughDelegate?.dragThroughTouchBegan(touch)
             touchCancelledClosure?()
         } else if !frame.contains(touch.locationInNode(parent)) {
           self.touch = nil
+          isOn = false
           touchCancelledClosure?()
         }
       }
@@ -163,8 +146,7 @@ class Button: SKSpriteNode {
           dragThroughDelegate?.dragThroughTouchEnded(touch)
           touchIsDraggingThrough = false
         } else {
-          isActivateGlowing = true
-          isStickyGlowing = shouldStickyGlow
+          isOn = shouldStickyOn
           touchUpInsideClosure?()
         }
         self.touch = nil
@@ -179,53 +161,11 @@ class Button: SKSpriteNode {
           dragThroughDelegate?.dragThroughTouchCancelled(touch)
           touchIsDraggingThrough = false
         } else {
+          isOn = false
           touchCancelledClosure?()
         }
         self.touch = nil
       }
-    }
-  }
-}
-
-class ButtonSwapper: SKNode {
-  required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  let buttons: [Button]
-  let fadeNodes: [SKNode]
-  let fadeOutAction = SKAction.fadeAlphaTo(0, duration: 0.2)
-  let fadeInAction = SKAction.fadeAlphaTo(1, duration: 0.2)
-  let rotateRadians: CGFloat
-  let rotateAction: SKAction
-  let liftZPosition: CGFloat
-  
-  init(buttons: [Button], rotateRadians: CGFloat, liftZPosition: CGFloat) {
-    self.buttons = buttons
-    self.rotateRadians = rotateRadians
-    self.liftZPosition = liftZPosition
-    rotateAction = SKAction.rotateToAngle(rotateRadians, duration: 0.2).easeOut()
-    var tempFadeNodes: [SKNode] = []
-    for _ in 0 ..< buttons.count {tempFadeNodes.append(SKNode())}
-    fadeNodes = tempFadeNodes
-    super.init()
-    for i in 0 ..< buttons.count {
-      fadeNodes[i].alpha = 0
-      fadeNodes[i].addChild(buttons[i])
-      addChild(fadeNodes[i])
-    }
-    fadeNodes[0].alpha = 1
-    fadeNodes[0].zPosition = liftZPosition
-  }
-  
-  var index: Int = 0 {
-    didSet {
-      if index == oldValue {return}
-      let oldNode = fadeNodes[oldValue]
-      let newNode = fadeNodes[index]
-      oldNode.zPosition = 0
-      newNode.zPosition = liftZPosition
-      oldNode.runAction(fadeOutAction, withKey: "fade")
-      newNode.runAction(fadeInAction, withKey: "fade")
-      self.zRotation -= rotateRadians
-      self.runAction(rotateAction, withKey: "rotate")
     }
   }
 }

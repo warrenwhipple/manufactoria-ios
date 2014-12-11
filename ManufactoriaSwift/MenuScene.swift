@@ -60,8 +60,8 @@ class MenuScene: ManufactoriaScene, MenuLevelButtonDelegate {
   //let levelButtonTiers: [[MenuLevelButton]]
   //let topSettingsButton = Button(iconOffNamed: "settingsIconOff", iconOnNamed: "settingsIconOn")
   //let bottomSettingsButton = Button(iconOffNamed: "settingsIconOff", iconOnNamed: "settingsIconOn")
-  let resetButton = BetterButton(iconOffNamed: "resetIconOff", iconOnNamed: "resetIconOn")
-  let unlockButton = BetterButton(iconOffNamed: "unlockIconOff", iconOnNamed: "unlockIconOn")
+  let resetButton = Button(iconOffNamed: "resetIconOff", iconOnNamed: "resetIconOn")
+  let unlockButton = Button(iconOffNamed: "unlockIconOff", iconOnNamed: "unlockIconOn")
   let scrollNode = ScrollNode()
   
   override init(size: CGSize) {

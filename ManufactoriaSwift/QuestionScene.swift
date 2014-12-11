@@ -41,10 +41,6 @@ class ResetScene: ManufactoriaScene {
     yesButton.position = CGPoint(midX - 70, midY - 40)
     noButton.position = CGPoint(midX + 70, midY - 40)
   }
-  override func updateDt(dt: NSTimeInterval) {
-    yesButton.update(dt)
-    noButton.update(dt)
-  }
 }
 
 class UnlockScene: ManufactoriaScene {
@@ -78,9 +74,5 @@ class UnlockScene: ManufactoriaScene {
     question.position = CGPoint(midX, midY + question.lineHeight * question.fontSize)
     yesButton.position = CGPoint(midX - 70, midY - 40)
     noButton.position = CGPoint(midX + 70, midY - 40)
-  }
-  override func updateDt(dt: NSTimeInterval) {
-    yesButton.update(dt)
-    noButton.update(dt)
   }
 }

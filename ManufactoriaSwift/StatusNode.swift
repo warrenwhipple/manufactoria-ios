@@ -8,6 +8,7 @@
 
 import SpriteKit
 
+/*
 protocol StatusNodeDelegate: class {
   func menuButtonPressed()
 }
@@ -200,3 +201,4 @@ class StatusNode: SwipeNode {
     if failPage.parent == nil {addPageToRight(failPage)}
   }
 }
+*/

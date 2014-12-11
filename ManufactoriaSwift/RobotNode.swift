@@ -28,7 +28,7 @@ class RobotNode: SKNode {
   }
   
   /*
-  init(button: BetterButton, initialPosition: CGPoint) {
+  init(button: Button, initialPosition: CGPoint) {
     if button.nodeOff != nil && button.glow < 1 && button.nodeOff is SKSpriteNode {
       let iconOff = button.nodeOff as SKSpriteNode
       robotOff = SKSpriteNode(texture: iconOff.texture, color: iconOff.color, size: iconOff.size)

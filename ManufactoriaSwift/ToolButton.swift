@@ -9,19 +9,23 @@
 import SpriteKit
 
 protocol ToolButtonDelegate: class {
+  func toolButtonTouchBegan(ToolButton)
   func toolButtonActivated(ToolButton)
 }
+
+private let nodeOnFadeOutAction = SKAction.fadeAlphaTo(0, duration: 0.2)
+private let nodeOffFadeInAction = SKAction.fadeAlphaTo(1, duration: 0.1)
 
 class ToolButton: SKSpriteNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   
   weak var dragThroughDelegate: DragThroughDelegate?
   weak var toolButtonDelegate: ToolButtonDelegate!
-  var touch, dragThroughTouch: UITouch?
+  var touch: UITouch?
+  var touchIsDraggingThrough: Bool = false
   var touchBeganPoint: CGPoint = CGPointZero
   var nodeOn, nodeOff: SKNode?
   var editMode: EditMode
-  var isInFocus = false
   var toolButtonGroupIndex = 0
   var editModeIsLocked = false
   
@@ -44,72 +48,104 @@ class ToolButton: SKSpriteNode {
     iconOn.color = Globals.highlightColor
   }
   
-  func update(dt: NSTimeInterval) {
-    if touch != nil || isInFocus {
-      if glow < 1 {
-        glow += 4 * CGFloat(dt)
-      }
-    } else {
-      if glow > 0 {
-        glow -= 2 * CGFloat(dt)
+  var isInFocus: Bool = false {
+    didSet {
+      if isInFocus && !oldValue {
+        isOn = true
+      } else if !isInFocus && oldValue {
+        isOn = false
       }
     }
   }
   
-  var glow: CGFloat = 0 {
+  var isOn: Bool = false {
     didSet {
-      if glow == oldValue {return}
-      glow = min(1, max(0, glow))
-      nodeOff?.alpha = 1 - glow
-      nodeOn?.alpha = glow
+      if isOn && !oldValue {
+        turnOn()
+      } else if !isOn && oldValue {
+        turnOff()
+      }
     }
+  }
+  
+  private func turnOn() {
+    nodeOn?.removeActionForKey("fade")
+    nodeOn?.alpha = 1
+    nodeOff?.removeActionForKey("fade")
+    nodeOff?.alpha = 0
+  }
+  
+  private func turnOff() {
+    nodeOff?.runAction(nodeOffFadeInAction, withKey: "fade")
+    nodeOn?.runAction(nodeOnFadeOutAction, withKey: "fade")
   }
   
   func cycleEditMode() -> EditMode {
     return editMode
   }
   
-  override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
-    if touch == nil && dragThroughTouch == nil {
-      touch = touches.anyObject() as? UITouch
-      touchBeganPoint = touch!.locationInView(touch!.view)
+  func cancelTouch() {
+    if let touch = touch {
+      if touchIsDraggingThrough {
+        dragThroughDelegate?.dragThroughTouchCancelled(touch)
+        touchIsDraggingThrough = false
+      } else {
+        isOn = isInFocus
+      }
+      self.touch = nil
     }
   }
   
+  override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
+    if let touch = touch {
+      if touchIsDraggingThrough {
+        dragThroughDelegate?.dragThroughTouchCancelled(touch)
+      }
+    }
+    toolButtonDelegate.toolButtonTouchBegan(self)
+    touch = touches.anyObject() as? UITouch
+    isOn = true
+    touchIsDraggingThrough = false
+    if let touch = touch {touchBeganPoint = touch.locationInView(touch.view)}
+  }
+  
   override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
-    if touch != nil && touches.containsObject(touch!) {
-      if dragThroughDelegate == nil || !dragThroughDelegate!.userInteractionEnabled {
-        if !frame.contains(touch!.locationInNode(parent)) {
-          touch = nil
-        }
-      } else {
-        if CGPointDistSq(p1: touch!.locationInView(touch!.view), p2: touchBeganPoint) >= 15*15 {
-          dragThroughTouch = touch
-          touch = nil
-          dragThroughDelegate?.dragThroughTouchMoved(dragThroughTouch!)
+    if let touch = touch {
+      if touches.containsObject(touch) {
+        if touchIsDraggingThrough {
+          dragThroughDelegate?.dragThroughTouchMoved(touch)
+        } else if dragThroughDelegate?.userInteractionEnabled ?? false
+          && CGPointDistSq(p1: touch.locationInView(touch.view), p2: touchBeganPoint) >= 900 {
+            isOn = isInFocus
+            touchIsDraggingThrough = true
+            dragThroughDelegate?.dragThroughTouchBegan(touch)
+        } else if !frame.contains(touch.locationInNode(parent)) {
+          self.touch = nil
+          isOn = isInFocus
         }
       }
-    } else if dragThroughTouch != nil && touches.containsObject(dragThroughTouch!) {
-      dragThroughDelegate?.dragThroughTouchMoved(dragThroughTouch!)
     }
   }
   
   override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
-    if touch != nil && touches.containsObject(touch!) {
-      touch = nil
-      toolButtonDelegate.toolButtonActivated(self)
-    } else if dragThroughTouch != nil && touches.containsObject(dragThroughTouch!) {
-      dragThroughDelegate?.dragThroughTouchEnded(dragThroughTouch!)
-      dragThroughTouch = nil
+    if let touch = touch {
+      if touches.containsObject(touch) {
+        if touchIsDraggingThrough {
+          dragThroughDelegate?.dragThroughTouchEnded(touch)
+          touchIsDraggingThrough = false
+        } else {
+          toolButtonDelegate.toolButtonActivated(self)
+        }
+        self.touch = nil
+      }
     }
   }
   
   override func touchesCancelled(touches: NSSet, withEvent event: UIEvent) {
-    if touch != nil && touches.containsObject(touch!) {
-      touch = nil
-    } else if dragThroughTouch != nil && touches.containsObject(dragThroughTouch!) {
-      dragThroughDelegate?.dragThroughTouchCancelled(dragThroughTouch!)
-      dragThroughTouch = nil
+    if let touch = touch {
+      if touches.containsObject(touch) {
+        cancelTouch()
+      }
     }
   }
 }
@@ -152,12 +188,14 @@ class BeltBridgeButton: ToolButton {
     }
   }
   
+  /*
   override var glow: CGFloat {
     didSet {
       bridgeIconOff.alpha = beltIconOff.alpha
       bridgeIconOn.alpha = beltIconOn.alpha
     }
   }
+  */
 }
 
 class PullerButton: ToolButton {
@@ -218,11 +256,13 @@ class PullerButton: ToolButton {
     return editMode
   }
   
+  /*
   override var glow: CGFloat {
     didSet {
       beltIcon.alpha = leftIconOn.alpha * 0.2
     }
   }
+  */
 }
 
 class PusherButton: ToolButton {

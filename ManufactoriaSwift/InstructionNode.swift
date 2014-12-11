@@ -18,7 +18,7 @@ class InstructionNode: SwipeNode {
   weak var delegate: InstructionNodeDelegate?
   
   let optionsPage = SKNode()
-  let menuButton = BetterButton(text: "menu", fixedWidth: Globals.mediumEm * 8)
+  let menuButton = Button(text: "menu", fixedWidth: Globals.mediumEm * 8)
 
   let instructionsPage = SKNode()
   let instructionsLabel = SmartLabel()

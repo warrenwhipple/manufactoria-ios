@@ -29,7 +29,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
   let gridNode: GridNode
   let toolbarNode: ToolbarNode
   let reportNode = ReportNode()
-  let thinkingCancelButton = BetterButton(iconOffNamed: "cancelIconOff", iconOnNamed: "cancelIconOn")
+  let thinkingCancelButton = Button(iconOffNamed: "cancelIconOff", iconOnNamed: "cancelIconOn")
   let speedControlNode = SpeedControlNode()
   let congratulationsMenu = CongratulationsMenu()
   var robotNode: RobotNode?
@@ -301,11 +301,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
       }
     }
     if beltPercentSum >= 1 {beltPercentSum -= 1}
-    gridNode.update(dt, beltPercent: beltPercentSum)
-    
-    // update child nodes
-    //statusNode.update(dt)
-    if toolbarNode.parent != nil {toolbarNode.update(dt)}
+    gridNode.update(dt, beltPercent: beltPercentSum)    
   }
   
   var beltIsFlowing: Bool = true {

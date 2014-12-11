@@ -12,7 +12,7 @@ class TitleScene: ManufactoriaScene {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   let gameProgressData = GameProgressData.sharedInstance
   let titleLabel = SKLabelNode()
-  let button = BetterButton(text: "play", fixedWidth: Globals.mediumEm * 8)
+  let button = Button(text: "play", fixedWidth: Globals.mediumEm * 8)
   
   override init(size: CGSize) {
     super.init(size: size)
@@ -40,5 +40,37 @@ class TitleScene: ManufactoriaScene {
   func fitToSize() {
     titleLabel.position = CGPoint(size.center.x, size.center.y + Globals.mediumEm * 0.75)
     button.position = CGPoint(size.center.x, size.center.y - Globals.mediumEm * 1.75)
+  }
+  
+  var touch: UITouch?
+  var touchBeganPoint = CGPointZero
+  override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
+    touch = touches.anyObject() as? UITouch
+    if let touch = touch {
+      touchBeganPoint = touch.locationInNode(self)
+      println("touch began \(touchBeganPoint)")
+    }
+  }
+  override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
+    if let touch = touch {
+      if touches.containsObject(touch) {
+        let touchPoint = touch.locationInNode(self)
+        let dx = touchPoint.x - touchBeganPoint.x
+        let dy = touchPoint.y - touchBeganPoint.y
+        let d = sqrt(dx * dx + dy * dy)
+        println("touch moved dx \(dx) dy \(dy) dist \(d)")
+      }
+    }
+  }
+  override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
+    if let touch = touch {
+      if touches.containsObject(touch) {
+        let touchPoint = touch.locationInNode(self)
+        let dx = touchPoint.x - touchBeganPoint.x
+        let dy = touchPoint.y - touchBeganPoint.y
+        let d = sqrt(dx * dx + dy * dy)
+        println("touch ended dx \(dx) dy \(dy) dist \(d)")
+      }
+    }
   }
 }
