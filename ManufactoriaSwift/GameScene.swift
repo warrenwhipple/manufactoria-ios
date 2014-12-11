@@ -25,7 +25,6 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
   // view objects
   let instructionNode: InstructionNode
   let tapeNode = TapeNode()
-  //let statusNode: StatusNode
   let gridNode: GridNode
   let toolbarNode: ToolbarNode
   let reportNode = ReportNode()
@@ -53,7 +52,6 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     levelData = LevelData(levelKey: levelKey)
     engine = Engine(levelSetup: levelSetup)
     instructionNode = InstructionNode(instructions: levelSetup.instructions)
-    //statusNode = StatusNode(instructions: levelSetup.instructions)
     gridNode = GridNode(grid: levelData.grid)
     toolbarNode = ToolbarNode(editModes: levelSetup.editModes)
     
@@ -70,13 +68,6 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     instructionNode.delegate = self
     instructionNode.zPosition = 10
     addChild(instructionNode)
-    
-    /*
-    statusNode.swipeSnapDelegate = self
-    statusNode.delegate = self
-    statusNode.zPosition = 10
-    addChild(statusNode)
-    */
     
     toolbarNode.delegate = self
     gridNode.editMode = toolbarNode.buttonInFocus.editMode
@@ -106,42 +97,27 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
       if state == oldValue {return}
       switch state {
       case .Editing:
-        beltIsFlowing = true
+        tapeNode.disappearWithAnimate(true)
         thinkingCancelButton.disappearWithAnimate(true)
         speedControlNode.disappearWithAnimate(true)
         instructionNode.appearWithParent(self, animate: true)
-        //statusNode.state = .Editing
+        toolbarNode.appearWithParent(self, animate: true)
+        beltIsFlowing = true
         gridNode.state = .Editing
-        robotNode?.runAction(SKAction.sequence([
-          SKAction.fadeAlphaTo(0, duration: 1),
-          SKAction.removeFromParent()
-          ]), withKey: "fade")
-        toolbarNode.robotButton.alpha = 1
-        if toolbarNode.parent == nil {addChild(toolbarNode)}
-        toolbarNode.runAction(SKAction.sequence([
-          SKAction.waitForDuration(0.2),
-          SKAction.fadeAlphaTo(1, duration: 0.2)
-          ]), withKey: "fade")
       case .Thinking:
-        beltIsFlowing = false
         instructionNode.disappearWithAnimate(true)
-        //statusNode.state = .Thinking
+        toolbarNode.disappearWithAnimate(true)
+        beltIsFlowing = false
         gridTestDidPass = false
         gridNode.state = .Thinking
-        newRobotNode()
-        toolbarNode.robotButton.alpha = 0
-        toolbarNode.runAction(SKAction.sequence([
-          SKAction.fadeAlphaTo(0, duration: 0.2),
-          SKAction.removeFromParent()
-          ]), withKey: "fade")
         engine.beginGridTest()
       case .Reporting:
-        beltIsFlowing = false
         gridNode.state = .Waiting
         reportNode.appearWithParent(self, animate: true)
       case .Testing:
         thinkingCancelButton.disappearWithAnimate(false)
         speedControlNode.appearWithParent(self, animate: false)
+        newRobotNode()
         reportNode.disappearWithAnimate(true)
         var isPuller = false
         var isPusher = false
@@ -155,20 +131,18 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
         }
         tapeNode.scanner.alpha = isPuller ? 1 : 0
         tapeNode.printer.alpha = isPusher ? 1 : 0
-        /*
-        if isPuller {statusNode.tapeNode.scanner.alpha = 1}
-        else {statusNode.tapeNode.scanner.alpha = 0}
-        if isPusher {statusNode.tapeNode.printer.alpha = 1}
-        else {statusNode.tapeNode.printer.alpha = 0}
-        */
+        if isPuller {tapeNode.scanner.alpha = 1}
+        else {tapeNode.scanner.alpha = 0}
+        if isPusher {tapeNode.printer.alpha = 1}
+        else {tapeNode.printer.alpha = 0}
         loadTape(0)
-        //statusNode.state = .Testing
+        tapeNode.appearWithParent(self, animate: true)
       case .Congratulating:
-        beltIsFlowing = true
-        gridNode.state = .Waiting
-        //statusNode.state = .Congratulating
+        tapeNode.disappearWithAnimate(true)
         speedControlNode.disappearWithAnimate(true)
         congratulationsMenu.appearWithParent(self, animate: true)
+        beltIsFlowing = true
+        gridNode.state = .Waiting
       }
     }
   }
@@ -186,6 +160,8 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     
     instructionNode.position = topGapRect.center
     instructionNode.size = topGapRect.size
+    tapeNode.position = topGapRect.center
+    tapeNode.width = topGapRect.width
     toolbarNode.position = bottomGapRect.center
     toolbarNode.size = topGapRect.size
     reportNode.position = size.center
@@ -331,19 +307,13 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
   }
   
   func cancelThinking() {
+    engine.cancelGridTest()
     state = .Editing
   }
   
   func newRobotNode() {
     robotNode?.runAction(SKAction.sequence([SKAction.fadeAlphaTo(0, duration: 0.5), SKAction.removeFromParent()]))
-    if state == .Thinking {
-      robotNode = RobotNode(
-        //button: toolbarNode.robotButton,
-        initialPosition: gridNode.wrapper.convertPoint(toolbarNode.robotButton.position, fromNode: toolbarNode)
-      )
-    } else {
-      robotNode = RobotNode(initialPosition: gridNode.wrapper.convertPoint(CGPoint(size.width/2, -Globals.touchSpan), fromNode: self))
-    }
+    robotNode = RobotNode(initialPosition: gridNode.wrapper.convertPoint(CGPoint(size.width/2, -Globals.touchSpan), fromNode: self))
     robotNode?.setScale(1/gridNode.wrapper.xScale)
     gridNode.wrapper.addChild(robotNode!)
   }

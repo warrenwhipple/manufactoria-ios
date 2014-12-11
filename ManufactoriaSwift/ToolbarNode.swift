@@ -97,6 +97,7 @@ class ToolbarNode: SKNode, ToolButtonDelegate, SwipeNodeDelegate {
     confirmButton.userInteractionEnabled = false
     addChild(undoCancelSwapper)
     addChild(redoConfirmSwapper)
+    robotButton.shouldStickyOn = true
     addChild(robotButton)
     
     swipeNode.swipeSnapDelegate = self
@@ -193,6 +194,11 @@ class ToolbarNode: SKNode, ToolButtonDelegate, SwipeNodeDelegate {
         return
       }
     }
+  }
+  
+  override func appearWithParent(newParent: SKNode, animate: Bool) {
+    super.appearWithParent(newParent, animate: animate)
+    robotButton.reset()
   }
   
   // Mark: - SwipeNodeDelegate

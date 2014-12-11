@@ -44,6 +44,10 @@ class Engine {
     queue.addOperation(TapeTestOp(grid: delegate.levelData.grid, input: tapes[0], delegate: self))
   }
   
+  func cancelGridTest() {
+    queue.cancelAllOperations()
+  }
+  
   func tapeTestOpDidFinish(tapeTestOp: TapeTestOp) {
     //  check for tape test loop
     if tapeTestOp.didLoop {
