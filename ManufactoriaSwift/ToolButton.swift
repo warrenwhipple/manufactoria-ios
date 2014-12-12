@@ -115,6 +115,8 @@ class ToolButton: Button {
   }
 }
 
+private let nodeOffFadeInAction = SKAction.fadeAlphaTo(1, duration: 0.1)
+
 class BeltBridgeButton: ToolButton {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   let beltIconOff = SKSpriteNode("beltIconOff")
@@ -153,14 +155,17 @@ class BeltBridgeButton: ToolButton {
     }
   }
   
-  /*
-  override var glow: CGFloat {
-    didSet {
-      bridgeIconOff.alpha = beltIconOff.alpha
-      bridgeIconOn.alpha = beltIconOn.alpha
-    }
+  override func turnOn() {
+    super.turnOn()
+    bridgeIconOff.runAction(SKAction.fadeAlphaTo(0, duration: 0.1), withKey: "fade")
+    bridgeIconOn.runAction(SKAction.fadeAlphaTo(1, duration: 0.1), withKey: "fade")
   }
-  */
+  
+  override func turnOff() {
+    super.turnOff()
+    bridgeIconOff.runAction(SKAction.fadeAlphaTo(1, duration: 0.1), withKey: "fade")
+    bridgeIconOn.runAction(SKAction.fadeAlphaTo(0, duration: 0.3), withKey: "fade")
+  }
 }
 
 class PullerButton: ToolButton {
@@ -221,13 +226,15 @@ class PullerButton: ToolButton {
     return editMode
   }
   
-  /*
-  override var glow: CGFloat {
-    didSet {
-      beltIcon.alpha = leftIconOn.alpha * 0.2
-    }
+  override func turnOn() {
+    super.turnOn()
+    beltIcon.runAction(SKAction.fadeAlphaTo(0.2, duration: 0.1), withKey: "fade")
   }
-  */
+  
+  override func turnOff() {
+    super.turnOff()
+    beltIcon.runAction(SKAction.fadeAlphaTo(0, duration: 0.3), withKey: "fade")
+  }  
 }
 
 class PusherButton: ToolButton {

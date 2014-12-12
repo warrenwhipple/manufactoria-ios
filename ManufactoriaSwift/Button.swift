@@ -16,7 +16,9 @@ protocol DragThroughDelegate: class {
   func dragThroughTouchCancelled(touch: UITouch)
 }
 
-private let nodeOnFadeOutAction = SKAction.fadeAlphaTo(0, duration: 0.2)
+private let nodeOnFadeInAction = SKAction.fadeAlphaTo(1, duration: 0.1)
+private let nodeOffFadeOutAction = SKAction.fadeAlphaTo(0, duration: 0.1)
+private let nodeOnFadeOutAction = SKAction.fadeAlphaTo(0, duration: 0.3)
 private let nodeOffFadeInAction = SKAction.fadeAlphaTo(1, duration: 0.1)
 
 class Button: SKSpriteNode {
@@ -93,14 +95,12 @@ class Button: SKSpriteNode {
     }
   }
   
-  private func turnOn() {
-    nodeOn?.removeActionForKey("fade")
-    nodeOn?.alpha = 1
-    nodeOff?.removeActionForKey("fade")
-    nodeOff?.alpha = 0
+  func turnOn() {
+    nodeOff?.runAction(nodeOffFadeOutAction, withKey: "fade")
+    nodeOn?.runAction(nodeOnFadeInAction, withKey: "fade")
   }
   
-  private func turnOff() {
+  func turnOff() {
     nodeOff?.runAction(nodeOffFadeInAction, withKey: "fade")
     nodeOn?.runAction(nodeOnFadeOutAction, withKey: "fade")
   }

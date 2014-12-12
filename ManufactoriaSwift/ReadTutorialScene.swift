@@ -1,16 +1,14 @@
 //
-//  SortTutorialScene.swift
+//  ReadTutorialScene.swift
 //  ManufactoriaSwift
 //
 //  Created by Warren Whipple on 9/21/14.
 //  Copyright (c) 2014 Warren Whipple. All rights reserved.
 //
 
-/*
-
 import SpriteKit
 
-class SortTutorialScene: TutorialScene {
+class ReadTutorialScene: TutorialScene {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   let coord1 = GridCoord(2,1)
   let coord2 = GridCoord(2,2)
@@ -18,14 +16,12 @@ class SortTutorialScene: TutorialScene {
   let secondInstructions = SmartLabel()
   
   init(size: CGSize) {
-    super.init(size: size, levelKey: "sort")
+    super.init(size: size, levelKey: "read")
     
-    statusNode.instructionsLabel.text = "This is a color reader."
+    instructionNode.instructionsLabel.text = "This is a color reader."
     let demoLabel = SmartLabel()
     demoLabel.text = "It redirects #r and #b."
-    statusNode.addPageToRight(demoLabel)
-    statusNode.engineLabel.text = ""
-    statusNode.tapeLabel.verticalAlignmentMode = .Center
+    instructionNode.addPageToRight(demoLabel)
     startSwipePulse()
     
     toolbarNode.userInteractionEnabled = false
@@ -36,7 +32,7 @@ class SortTutorialScene: TutorialScene {
     toolbarNode.toolButtons[1].editModeIsLocked = true
     toolbarNode.toolButtons[2].editModeIsLocked = true
     
-    congratulationsMenu.menuButton.touchUpInsideClosure = {[unowned self] in self.transitionToGameSceneWithLevelKey("sequence")}
+    congratulationsMenu.menuButton.touchUpInsideClosure = {[unowned self] in self.transitionToGameSceneWithLevelKey("readseq")}
     
     gridNode.animateThinking = false
     gridNode.state = .Waiting
@@ -53,13 +49,12 @@ class SortTutorialScene: TutorialScene {
     }
     gridNode.grid[GridCoord(1,1)].kind = .PullerBR
     gridNode.changeCellNodesToMatchCellsWithAnimate(false)
-    
+
     fitToSize()
   }
   
   override func fitToSize() {
     super.fitToSize()
-    statusNode.tapeLabel.position.y = 0
     let centerXs = distributionForChildren(count: 3, childSize: Globals.iconSpan, parentSize: size.width)
     toolbarNode.toolButtons[0].position.x = centerXs[0]
     toolbarNode.toolButtons[1].position.x = centerXs[1]
@@ -73,12 +68,13 @@ class SortTutorialScene: TutorialScene {
         if tutorialState == .Demo || tutorialState == .GuidedTest {
           nextTutorialState()
         } else if tutorialState == .OpenEdit {
-          statusNode.goToIndexWithoutSnap(3)
+          instructionNode.goToIndexWithoutSnap(3)
         }
       case .Thinking: break
+      case .Reporting: break
       case .Testing:
-        statusNode.tapeNode.removeFromParent()
-        if tutorialState != .OpenEdit {speedControlNode.removeFromParent()}
+        tapeNode.disappearWithAnimate(false)
+        if tutorialState != .OpenEdit {speedControlNode.disappearWithAnimate(false)}
       case .Congratulating: break
       }
     }
@@ -104,11 +100,11 @@ class SortTutorialScene: TutorialScene {
       tutorialState = .Demo
       runAction(SKAction.waitForDuration(1), completion:{[unowned self] in self.state = .Testing})
     case .Demo:
-      statusNode.wrapper.removeActionForKey("fade")
-      statusNode.wrapper.alpha = 1
+      instructionNode.wrapper.removeActionForKey("fade")
+      instructionNode.wrapper.alpha = 1
       secondInstructions.text = "Send #r to the exit."
-      statusNode.addPageToRight(secondInstructions)
-      statusNode.snapToIndex(3, initialVelocityX: 0)
+      instructionNode.addPageToRight(secondInstructions)
+      instructionNode.snapToIndex(3, initialVelocityX: 0)
       toolbarNode.alpha = 0
       toolbarNode.toolButtons[1].runAction(SKAction.fadeAlphaTo(1, duration: 1), withKey: "fade")
       toolbarNode.swipeNode.pages[0].addChild(toolbarNode.toolButtons[1])
@@ -131,24 +127,24 @@ class SortTutorialScene: TutorialScene {
       gridNode.state = .EditingLocked
       toolbarNode.robotButton.alpha = 0
       toolbarNode.robotButton.runAction(SKAction.fadeAlphaTo(1, duration: 1), withKey: "fade")
-      toolbarNode.robotButton.startPulseGlowWithInterval(2)
+      //toolbarNode.robotButton.startPulseGlowWithInterval(2)
       toolbarNode.addChild(toolbarNode.robotButton)
       tutorialState = .GuidedRobot
     case .GuidedRobot:
-      statusNode.tapeLabel.text = "Good."
-      toolbarNode.robotButton.stopPulseGlow()
+      //statusNode.tapeLabel.text = "Good."
+      //toolbarNode.robotButton.stopPulseGlow()
       tapeTestResults = [TapeTestResult(input: "r", output: nil, correctOutput: nil, kind: TapeTestResult.Kind.FailLoop)]
       toolbarNode.runAction(SKAction.sequence([
         SKAction.fadeAlphaTo(0, duration: 0.2),
         SKAction.removeFromParent()
         ]), withKey: "fade")
       tutorialState = .GuidedTest
-      statusNode.state = .Thinking
+      //statusNode.state = .Thinking
       state = .Testing
     case .GuidedTest:
       let openEditLabel = SmartLabel()
       secondInstructions.text = "Reject = drop on the floor.\nAccept = send to the exit.\n\nReject #r.\nAccept #b."
-      statusNode.goToIndexWithoutSnap(3)
+      instructionNode.goToIndexWithoutSnap(3)
       gridNode.unlockAllCoords()
       for i in 0 ..< gridNode.grid.cells.count {gridNode.grid.cells[i] = Cell()}
       gridNode.changeCellNodesToMatchCellsWithAnimate(true)
@@ -179,7 +175,7 @@ class SortTutorialScene: TutorialScene {
   override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
     super.touchesBegan(touches, withEvent: event)
     if tutorialState == .Reader {
-      statusNode.snapToIndex(2, initialVelocityX: 0)
+      instructionNode.snapToIndex(2, initialVelocityX: 0)
     } else if state == .Testing {
       fasterButtonPressed()
     }
@@ -202,8 +198,8 @@ class SortTutorialScene: TutorialScene {
   }
   
   override func gridTestFailedWithResult(result: TapeTestResult) {
-    statusNode.tapeLabel.text = "Nope."
-    statusNode.tapeLabel.runAction(SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")
+    //statusNode.tapeLabel.text = "Nope."
+    //statusNode.tapeLabel.runAction(SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")
     tapeTestResults = [
       TapeTestResult(input: "r", output: nil, correctOutput: nil, kind: TapeTestResult.Kind.FailLoop),
       TapeTestResult(input: "b", output: nil, correctOutput: nil, kind: TapeTestResult.Kind.FailLoop)
@@ -213,8 +209,6 @@ class SortTutorialScene: TutorialScene {
   
   override func gridTestPassed() {
     super.gridTestPassed()
-    statusNode.tapeLabel.text = "Good."
+    //statusNode.tapeLabel.text = "Good."
   }
 }
-
-*/

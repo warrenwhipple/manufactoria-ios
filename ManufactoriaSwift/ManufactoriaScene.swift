@@ -34,6 +34,8 @@ class TransitionScene: SKScene {
     case .Game(let levelKey):
       if levelKey == "move" && (GameProgressData.sharedInstance.level("move")?.tutorialIsOn ?? false){
         nextScene = MoveTutorialScene(size: view!.bounds.size)
+      } else if levelKey == "read" && (GameProgressData.sharedInstance.level("read")?.tutorialIsOn ?? false){
+        nextScene = ReadTutorialScene(size: view!.bounds.size)
       } else {
         nextScene = GameScene(size: view!.bounds.size, levelKey: levelKey)
       }

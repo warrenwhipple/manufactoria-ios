@@ -23,7 +23,7 @@
 		2D4A92DE1A01CB1E00BE3C4C /* belt46@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2D4A92D81A01CB1E00BE3C4C /* belt46@2x.png */; };
 		2D4A92DF1A01CB1E00BE3C4C /* belt64@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2D4A92D91A01CB1E00BE3C4C /* belt64@2x.png */; };
 		2D4A92E01A01CB1E00BE3C4C /* gameScene.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 2D4A92DA1A01CB1E00BE3C4C /* gameScene.atlas */; };
-		2D54B24819CF27BB00DF68C5 /* SortTutorialScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D54B24719CF27BB00DF68C5 /* SortTutorialScene.swift */; };
+		2D54B24819CF27BB00DF68C5 /* ReadTutorialScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D54B24719CF27BB00DF68C5 /* ReadTutorialScene.swift */; };
 		2D5C7319199FE80600D53D0D /* SpeedControlNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5C7318199FE80600D53D0D /* SpeedControlNode.swift */; };
 		2D5E583F19A5265500F10DD3 /* ShimmerNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5E583E19A5265500F10DD3 /* ShimmerNode.swift */; };
 		2D60F5C7198041BD0032860B /* TitleScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D60F5C6198041BD0032860B /* TitleScene.swift */; };
@@ -88,7 +88,7 @@
 		2D4A92D81A01CB1E00BE3C4C /* belt46@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "belt46@2x.png"; path = "../../../Manufactoria Assets/gameScene/belt46@2x.png"; sourceTree = "<group>"; };
 		2D4A92D91A01CB1E00BE3C4C /* belt64@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "belt64@2x.png"; path = "../../../Manufactoria Assets/gameScene/belt64@2x.png"; sourceTree = "<group>"; };
 		2D4A92DA1A01CB1E00BE3C4C /* gameScene.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; name = gameScene.atlas; path = "../../../Manufactoria Assets/gameScene/gameScene.atlas"; sourceTree = "<group>"; };
-		2D54B24719CF27BB00DF68C5 /* SortTutorialScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SortTutorialScene.swift; sourceTree = "<group>"; };
+		2D54B24719CF27BB00DF68C5 /* ReadTutorialScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReadTutorialScene.swift; sourceTree = "<group>"; };
 		2D5C7318199FE80600D53D0D /* SpeedControlNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpeedControlNode.swift; sourceTree = "<group>"; };
 		2D5E583E19A5265500F10DD3 /* ShimmerNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShimmerNode.swift; sourceTree = "<group>"; };
 		2D60F5C6198041BD0032860B /* TitleScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = TitleScene.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
@@ -153,7 +153,7 @@
 			children = (
 				2D436D3F19F6B0F2001E9FF6 /* TutorialScene.swift */,
 				2D2D26AA199E610D00EC4A45 /* MoveTutorialScene.swift */,
-				2D54B24719CF27BB00DF68C5 /* SortTutorialScene.swift */,
+				2D54B24719CF27BB00DF68C5 /* ReadTutorialScene.swift */,
 				2DF749FE19D627B800EBE94D /* SequenceTutorialScene.swift */,
 				2D6867F819EF2D8E000F4427 /* EngineTutorialScene.swift */,
 			);
@@ -403,7 +403,7 @@
 				2D6B03431A2680DB002A6CAC /* Button.swift in Sources */,
 				2D8C19A3199696A90064B790 /* SwipeNode.swift in Sources */,
 				2D849F3619A39EB6008F3D69 /* CoreGraphicsExtensions.swift in Sources */,
-				2D54B24819CF27BB00DF68C5 /* SortTutorialScene.swift in Sources */,
+				2D54B24819CF27BB00DF68C5 /* ReadTutorialScene.swift in Sources */,
 				2DD8C8A219B69AD9000D729E /* LevelData.swift in Sources */,
 				2D7F922C195C61FA00F04F63 /* ToolbarNode.swift in Sources */,
 				2DBABC401A006E6400223A69 /* RobotNode.swift in Sources */,
