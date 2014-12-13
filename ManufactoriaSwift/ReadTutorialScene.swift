@@ -22,9 +22,8 @@ class ReadTutorialScene: TutorialScene {
     let demoLabel = SmartLabel()
     demoLabel.text = "It redirects #r and #b."
     instructionNode.addPageToRight(demoLabel)
-    startSwipePulse()
-    
-    toolbarNode.userInteractionEnabled = false
+    startPulseWithParent(instructionNode.rightArrow)
+    //startSwipePulse()
     toolbarNode.robotButton.removeFromParent()
     toolbarNode.undoCancelSwapper.removeFromParent()
     toolbarNode.redoConfirmSwapper.removeFromParent()
@@ -65,40 +64,51 @@ class ReadTutorialScene: TutorialScene {
     didSet {
       switch state {
       case .Editing:
-        if tutorialState == .Demo || tutorialState == .GuidedTest {
+        if tutorialState == .Demo {
           nextTutorialState()
-        } else if tutorialState == .OpenEdit {
-          instructionNode.goToIndexWithoutSnap(3)
         }
-      case .Thinking: break
+      case .Thinking:
+        if tutorialState == .Demo {
+          toolbarNode.robotButton.disappearWithAnimate(true)
+        }
       case .Reporting: break
       case .Testing:
         tapeNode.disappearWithAnimate(false)
-        if tutorialState != .OpenEdit {speedControlNode.disappearWithAnimate(false)}
+        if tutorialState == .Demo {speedControlNode.disappearWithAnimate(false)}
       case .Congratulating: break
       }
     }
   }
   
-  enum TutorialState {case Reader, Demo, GuidedEdit, GuidedRobot, GuidedTest, OpenEdit}
+  enum TutorialState {case Reader, Demo, Try}
   var tutorialState: TutorialState = .Reader
   
   func nextTutorialState() {
     switch tutorialState {
     case .Reader:
-      stopSwipePulse()
+      //stopSwipePulse()
+      killPulseWithParent(instructionNode.rightArrow)
       gridNode.enterArrow.runAction(SKAction.fadeAlphaTo(1, duration: 1))
       gridNode.exitArrow.runAction(SKAction.fadeAlphaTo(1, duration: 1))
-      let coord = GridCoord(1,0)
-      let cell = Cell(kind: .Belt, direction: .North)
-      gridNode.grid[coord] = cell
-      gridNode[coord].changeCell(cell, animate: true)
-      tapeTestResults = [
-        TapeTestResult(input: "r", output: nil, correctOutput: nil, kind: TapeTestResult.Kind.FailLoop),
-        TapeTestResult(input: "b", output: nil, correctOutput: nil, kind: TapeTestResult.Kind.FailLoop)
-      ]
+      gridNode.grid[GridCoord(0,1)] = Cell(kind: .Belt, direction: .North)
+      gridNode.grid[GridCoord(0,2)] = Cell(kind: .Belt, direction: .East)
+      gridNode.grid[GridCoord(1,0)] = Cell(kind: .Belt, direction: .North)
+      gridNode.grid[GridCoord(1,2)] = Cell(kind: .Belt, direction: .North)
+      gridNode.grid[GridCoord(2,1)] = Cell(kind: .Belt, direction: .North)
+      gridNode.grid[GridCoord(2,2)] = Cell(kind: .Belt, direction: .West)
+      gridNode.changeCellNodesToMatchCellsWithAnimate(true)
+      for cellNode in gridNode.cellNodes {cellNode.isActivateGlowing = false}
+      toolbarNode.robotButton.touchUpInsideClosure = {
+        [unowned self] in
+        self.tapeTestResults = [
+          TapeTestResult(input: "r", output: nil, correctOutput: nil, kind: TapeTestResult.Kind.FailLoop),
+          TapeTestResult(input: "b", output: nil, correctOutput: nil, kind: TapeTestResult.Kind.FailLoop),
+          TapeTestResult(input: "", output: nil, correctOutput: nil, kind: TapeTestResult.Kind.FailLoop)
+        ]
+        self.state = .Testing
+      }
+      toolbarNode.robotButton.appearWithParent(toolbarNode, animate: true)
       tutorialState = .Demo
-      runAction(SKAction.waitForDuration(1), completion:{[unowned self] in self.state = .Testing})
     case .Demo:
       instructionNode.wrapper.removeActionForKey("fade")
       instructionNode.wrapper.alpha = 1
@@ -121,6 +131,7 @@ class ReadTutorialScene: TutorialScene {
         SKAction.waitForDuration(0.2),
         SKAction.runBlock({if cellNode3.cell != Cell(kind: .Belt, direction: .North) {cellNode3.isPulseGlowing = true}})
         ])), withKey: "gridPulse")
+      /*
       tutorialState = .GuidedEdit
     case .GuidedEdit:
       removeActionForKey("gridPulse")
@@ -153,15 +164,21 @@ class ReadTutorialScene: TutorialScene {
       tutorialState = .OpenEdit
     case .OpenEdit:
       break
+    */
+    case .Reader: break
+    case .Try: break
     }
   }
   
   override func loadTape(i: Int) {
     super.loadTape(i)
-    if tape == "r" {
-      //robotNode?.color = Globals.redColor.blend(UIColor.blackColor(), blendFactor: 0.2)
-    } else if tape == "b" {
-      //robotNode?.color = Globals.blueColor.blend(UIColor.blackColor(), blendFactor: 0.2)
+      if tape == "r" {
+        robotNode?.robotOn.color = Globals.redColor.blend(UIColor.blackColor(), blendFactor: 0.2)
+      } else if tape == "b" {
+        robotNode?.robotOn.color = Globals.blueColor.blend(UIColor.blackColor(), blendFactor: 0.2)
+      } else if tape == "" {
+        robotNode?.robotOn.color = Globals.backgroundColor
+        robotNode?.robotOn.addChild(SKSpriteNode("robotOff"))
     }
   }
   
@@ -181,6 +198,7 @@ class ReadTutorialScene: TutorialScene {
     }
   }
   
+  /*
   override func cellWasEdited() {
     super.cellWasEdited()
     let grid = gridNode.grid
@@ -196,6 +214,9 @@ class ReadTutorialScene: TutorialScene {
       super.testButtonPressed()
     }
   }
+  */
+  
+  
   
   override func gridTestFailedWithResult(result: TapeTestResult) {
     //statusNode.tapeLabel.text = "Nope."

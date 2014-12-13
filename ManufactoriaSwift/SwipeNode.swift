@@ -25,10 +25,6 @@ class SwipeNode: SKSpriteNode, DragThroughDelegate {
   let rightArrow = SKSpriteNode("swipeArrow")
   var touch: UITouch?
   var wrapperMinX: CGFloat = 0.0
-  var lastTouchX: CGFloat = 0
-  var lastLastTouchX: CGFloat = 0
-  var lastTouchTime: NSTimeInterval = 0
-  var lastLastTouchTime: NSTimeInterval = 0
   var arrowHint: SKSpriteNode?
   
   init(pages: [SKNode]) {
@@ -47,7 +43,7 @@ class SwipeNode: SKSpriteNode, DragThroughDelegate {
     wrapper.addChild(rightArrowWrapper)
     addChild(wrapper)
   }
-
+  
   func addPageToRight(newPage: SKNode) {
     pages.append(newPage)
     wrapper.addChild(newPage)
@@ -146,65 +142,86 @@ class SwipeNode: SKSpriteNode, DragThroughDelegate {
   }
   
   func snapLeftWithInitialVelocityX(initialVelocityX: CGFloat) {
-    snapToIndex(Int(ceil(-wrapper.position.x / size.width)), initialVelocityX: initialVelocityX)
+    snapToIndex(Int(ceil((10 - wrapper.position.x) / size.width)), initialVelocityX: initialVelocityX)
   }
   
   func snapRightWithInitialVelocityX(initialVelocityX: CGFloat) {
-    snapToIndex(Int(floor(-wrapper.position.x / size.width)), initialVelocityX: initialVelocityX)
+    snapToIndex(Int(floor((-10 - wrapper.position.x) / size.width)), initialVelocityX: initialVelocityX)
   }
   
+  var touchBeganTime: NSTimeInterval?
+  var lastTouchX: CGFloat?
+  var lastLastTouchX: CGFloat?
+  var lastTouchTime: NSTimeInterval?
+  var lastLastTouchTime: NSTimeInterval?
+  
   func touchBegan() {
-    wrapper.removeActionForKey("snap")
-    lastTouchX = touch!.locationInNode(self).x
-    lastLastTouchX = lastTouchX
-    lastTouchTime = touch!.timestamp
-    lastLastTouchTime = lastTouchTime
+    if let touch = touch {
+      wrapper.removeActionForKey("snap")
+      lastTouchX = touch.locationInNode(self).x
+      lastLastTouchX = lastTouchX
+      touchBeganTime = touch.timestamp
+      lastTouchTime = touchBeganTime
+      lastLastTouchTime = touchBeganTime
+    }
   }
   
   func touchMoved() {
-    let touchX = touch!.locationInNode(self).x
-    let dX = (touchX - lastTouchX)
-    let newX = wrapper.position.x + dX
-    if newX > 0 {
-      wrapper.position.x += dX * (1 - (wrapper.position.x + dX) / size.width * 4)
-    } else if newX < wrapperMinX {
-      wrapper.position.x += dX * (1 - (wrapperMinX - wrapper.position.x - dX) / size.width * 4)
-    } else {
-      wrapper.position.x += dX
+    if let touch = touch {
+      if let lastTouchX = lastTouchX {
+        let touchX = touch.locationInNode(self).x
+        let dX = touchX - lastTouchX
+        let newX = wrapper.position.x + dX
+        if dX > 0 && newX > 0 {
+          wrapper.position.x += dX * (1 - (wrapper.position.x + dX) / size.width * 4)
+        } else if dX < wrapperMinX && newX < wrapperMinX {
+          wrapper.position.x += dX * (1 - (wrapperMinX - wrapper.position.x - dX) / size.width * 4)
+        } else {
+          wrapper.position.x += dX
+        }
+        lastLastTouchX = lastTouchX
+        self.lastTouchX = touchX
+        lastLastTouchTime = lastTouchTime
+        lastTouchTime = touch.timestamp
+        updateArrowAlphas()
+      }
     }
-    lastLastTouchX = lastTouchX
-    lastTouchX = touchX
-    lastLastTouchTime = lastTouchTime
-    lastTouchTime = touch!.timestamp
-    updateArrowAlphas()
   }
   
   func touchEnded() {
-    let touchX = touch!.locationInNode(self).x
-    let dX = (touchX - lastTouchX)
-    let newX = wrapper.position.x + dX
-    if newX > 0 {
-      wrapper.position.x += dX * (1 - (wrapper.position.x + dX) / size.width * 4)
-    } else if newX < wrapperMinX {
-      wrapper.position.x += dX * (1 - (wrapperMinX - wrapper.position.x - dX) / size.width * 4)
-    } else {
-      wrapper.position.x += dX
+    if let touch = touch {
+      let touchPoint = touch.locationInNode(self)
+      
+      var touchVelocityX: CGFloat = 0
+      if lastLastTouchTime != nil && lastLastTouchX != nil && touch.timestamp - lastLastTouchTime! < 0.1 {
+        touchVelocityX = (lastLastTouchX! - touchPoint.x) / CGFloat(lastLastTouchTime! - touch.timestamp)
+      } else if lastTouchTime != nil && lastTouchX != nil {
+        touchVelocityX = (lastTouchX! - touchPoint.x) / CGFloat(lastTouchTime! - touch.timestamp)
+      }
+      
+      if touchVelocityX < -200.0 {
+        snapLeftWithInitialVelocityX(touchVelocityX)
+      } else if touchVelocityX > 200.0 {
+        snapRightWithInitialVelocityX(touchVelocityX)
+      } else if touchBeganTime != nil && touch.timestamp - touchBeganTime! < 0.5 {
+        if touchPoint.x > size.width / 6 {
+          snapLeftWithInitialVelocityX(touchVelocityX)
+        } else if touchPoint.x < -size.width / 6 {
+          snapRightWithInitialVelocityX(touchVelocityX)
+        } else {
+          snapToClosestWithInitialVelocityX(touchVelocityX)
+        }
+      } else {
+        snapToClosestWithInitialVelocityX(touchVelocityX)
+      }
+      
+      self.touch = nil
+      lastTouchX = nil
+      lastLastTouchX = nil
+      touchBeganTime = nil
+      lastTouchTime = nil
+      lastLastTouchTime = nil
     }
-    let touchTime = touch!.timestamp
-    var touchVelocityX: CGFloat = 0
-    if touchTime - lastLastTouchTime < 0.1 {
-      touchVelocityX = (touchX - lastLastTouchX) / CGFloat(touchTime - lastLastTouchTime)
-    } else {
-      touchVelocityX = (touchX - lastTouchX) / CGFloat(touchTime - lastTouchTime)
-    }
-    if touchVelocityX < -200.0 {
-      snapLeftWithInitialVelocityX(touchVelocityX)
-    } else if touchVelocityX > 200.0 {
-      snapRightWithInitialVelocityX(touchVelocityX)
-    } else {
-      snapToClosestWithInitialVelocityX(touchVelocityX)
-    }
-    touch = nil
   }
   
   func touchCancelled() {

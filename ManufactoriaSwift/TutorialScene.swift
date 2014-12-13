@@ -10,36 +10,44 @@ import SpriteKit
 
 class TutorialScene: GameScene {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  var swipeHint = SKSpriteNode("swipeArrow")
-  var swipePulseAction: SKAction!
   
   override init(size: CGSize, var levelKey: String) {
     super.init(size: size, levelKey: levelKey)
     instructionNode.leftArrowWrapper.removeFromParent()
-    swipeHint.color = Globals.highlightColor
-    swipeHint.zPosition = -1
-    swipePulseAction = SKAction.repeatActionForever(SKAction.sequence([
+  }
+  
+  let singlePulseAction = SKAction.group([
+    SKAction.sequence([
+      SKAction.scaleTo(0, duration: 0),
+      SKAction.scaleTo(2, duration: 1).easeOut()
+      ]),
+    SKAction.sequence([
+      SKAction.fadeAlphaTo(0.5, duration: 0),
+      SKAction.fadeAlphaTo(0, duration: 1).easeOut()])
+    ])
+  
+  func startPulseWithParent(parent: SKNode) {
+    let pulse = SKSpriteNode("pulse")
+    pulse.color = Globals.highlightColor
+    pulse.alpha = 0
+    pulse.setScale(0)
+    pulse.zPosition = -100
+    pulse.name = "pulse"
+    parent.addChild(pulse)
+    parent.runAction(SKAction.repeatActionForever(SKAction.sequence([
       SKAction.waitForDuration(2),
-      SKAction.group([
-        SKAction.fadeAlphaTo(1, duration: 0),
-        SKAction.moveToX(0, duration: 0),
-        ]),
-      SKAction.group([
-        SKAction.fadeAlphaTo(0, duration: 0.5),
-        SKAction.moveToX(Globals.iconSpan * 0.5, duration: 0.5).easeIn(),
-        ])
-      ]))
-  }
+      SKAction.runAction(singlePulseAction, onChildWithName: "pulse")
+      ])), withKey: "repeatPulse")
+   }
   
-  func startSwipePulse() {
-    swipeHint.alpha = 0
-    swipeHint.position.x = 0
-    swipeHint.runAction(swipePulseAction, withKey: "pulse")
-    if swipeHint.parent == nil {instructionNode.rightArrow.addChild(swipeHint)}
-  }
-  
-  func stopSwipePulse() {
-    swipeHint.runAction(SKAction.sequence([SKAction.fadeAlphaTo(0, duration: 0.2), SKAction.removeFromParent()]))
+  func killPulseWithParent(parent: SKNode) {
+    parent.removeActionForKey("repeatPulse")
+    if let pulse = parent.childNodeWithName("pulse") {
+      pulse.runAction(SKAction.sequence([
+        SKAction.waitForDuration(1),
+        SKAction.removeFromParent()
+        ]))
+    }
   }
   
   override func swipeNodeDidSnapToIndex(index: Int) {
@@ -50,5 +58,4 @@ class TutorialScene: GameScene {
       instructionNode.wrapper.addChild(instructionNode.leftArrowWrapper)
     }
   }
-
 }

@@ -352,6 +352,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
   }
   
   func animateRobotCompleteWithCoord(coord: GridCoord, didPass: Bool) {
+    /*
     let icon = SKSpriteNode(didPass ? "confirmIconOn" : "cancelIconOn")
     //icon.color = didPass ? Globals.blueColor : Globals.redColor
     icon.color = Globals.highlightColor
@@ -368,6 +369,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
       SKAction.removeFromParent()
       ]))
     gridNode.wrapper.addChild(icon)
+    */
     didAnimateRobotComplete = true
   }
   

@@ -12,7 +12,6 @@ class RobotNode: SKNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   
   let fallScaleNode = SKNode()
-  let robotOff: SKSpriteNode?
   let robotOn: SKSpriteNode
   var lastLastPosition, lastPosition, nextPosition: CGPoint
   
@@ -22,6 +21,7 @@ class RobotNode: SKNode {
     lastPosition = initialPosition
     nextPosition = initialPosition
     super.init()
+    zPosition = 2
     position = initialPosition
     fallScaleNode.addChild(robotOn)
     addChild(fallScaleNode)

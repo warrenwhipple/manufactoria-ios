@@ -19,7 +19,8 @@ class MoveTutorialScene: TutorialScene {
     let connectLabel = SmartLabel()
     connectLabel.text = "Connect the entrance and exit."
     instructionNode.addPageToRight(connectLabel)
-    startSwipePulse()
+    startPulseWithParent(instructionNode.rightArrow)
+    startPulseWithParent(toolbarNode.robotButton)
     
     toolbarNode.userInteractionEnabled = false
     toolbarNode.robotButton.removeFromParent()
@@ -92,7 +93,7 @@ class MoveTutorialScene: TutorialScene {
   func nextTutorialState() {
     switch tutorialState {
     case .FloorPlan:
-      stopSwipePulse()
+      killPulseWithParent(instructionNode.rightArrow)
       runAction(gridPulseAction, withKey: "gridPulse")
       gridNode.state = .Editing
       tutorialState = .Connect
@@ -104,13 +105,7 @@ class MoveTutorialScene: TutorialScene {
       gridNode.state = .EditingLocked
       removeActionForKey("gridPulse")
       toolbarNode.robotButton.alpha = 0
-      toolbarNode.robotButton.runAction(SKAction.sequence([
-        SKAction.waitForDuration(1),
-        SKAction.fadeAlphaTo(1, duration: 0.5)
-        ]), withKey: "fade")
-      if toolbarNode.robotButton.parent == nil {
-        toolbarNode.addChild(toolbarNode.robotButton)
-      }
+      toolbarNode.robotButton.appearWithParent(toolbarNode, animate: false)
       tutorialState = .Robot
     case .Robot: break
     }
