@@ -36,6 +36,9 @@ class TransitionScene: SKScene {
         nextScene = MoveTutorialScene(size: view!.bounds.size)
       } else if levelKey == "read" && (GameProgressData.sharedInstance.level("read")?.tutorialIsOn ?? false){
         nextScene = ReadTutorialScene(size: view!.bounds.size)
+      //} else if levelKey == "readseq" && (GameProgressData.sharedInstance.level("readseq")?.tutorialIsOn ?? false){
+        //nextScene = ReadSeqTutorialScene(size: view!.bounds.size)
+        //nextScene = GenericTutorialScene(size: view!.bounds.size, levelKey: "readseq")
       } else {
         nextScene = GameScene(size: view!.bounds.size, levelKey: levelKey)
       }

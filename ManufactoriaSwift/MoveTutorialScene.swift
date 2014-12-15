@@ -20,13 +20,15 @@ class MoveTutorialScene: TutorialScene {
     connectLabel.text = "Connect the entrance and exit."
     instructionNode.addPageToRight(connectLabel)
     startPulseWithParent(instructionNode.rightArrow)
-    startPulseWithParent(toolbarNode.robotButton)
     
-    toolbarNode.userInteractionEnabled = false
     toolbarNode.robotButton.removeFromParent()
+    startPulseWithParent(toolbarNode.robotButton)
     toolbarNode.undoCancelSwapper.removeFromParent()
     toolbarNode.redoConfirmSwapper.removeFromParent()
     for button in toolbarNode.toolButtons {button.removeFromParent()}
+    
+    speedControlNode.slowerButton.removeFromParent()
+    speedControlNode.skipButton.removeFromParent()
     
     congratulationsMenu.menuButton.touchUpInsideClosure = {[unowned self] in self.transitionToGameSceneWithLevelKey("read")}
     
@@ -132,8 +134,8 @@ class MoveTutorialScene: TutorialScene {
     super.touchesBegan(touches, withEvent: event)
     if tutorialState == .FloorPlan {
       instructionNode.snapToIndex(2, initialVelocityX: 0)
-    } else if state == .Testing {
-      fasterButtonPressed()
+    } else if state == .Testing && speedControlNode.parent == nil {
+      speedControlNode.appearWithParent(self, animate: true)
     }
   }
 }

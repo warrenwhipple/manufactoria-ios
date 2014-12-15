@@ -103,30 +103,28 @@ class SmartLabel: SKNode {
     emLabel.fontSize = fontSize
     emLabel.text = "M"
     let em = emLabel.frame.size.height
-    var yShift: CGFloat = (em * lineHeight * CGFloat(rows.count - 1) - em) / 2
-    var lineIndex = 0
-    for row in rows {
+    let yShift: CGFloat = (em * lineHeight * CGFloat(rows.count - 1) - em) / 2
+    
+    for (r, row) in enumerate(rows) {
       var xShift: CGFloat = 0
       var lastWasDot = false
-      for i in 0 ..< row.count {
-        let node = row[i]
-        node.position.y = -CGFloat(lineIndex) * lineHeight * em + yShift
+      var lastWasSpace = false
+      for (n, node) in enumerate(row) {
+        node.position.y = -CGFloat(r) * lineHeight * em + yShift
         if node is SKLabelNode {
-          let label = node as SKLabelNode
-          if !label.text.isEmpty {
-            if label.text[0] == " " {xShift += em * 0.125}
-            label.position.x = xShift
-            xShift += label.frame.width
-            if label.text[-1] == " " {xShift += em * 0.125}
-          }
+          let node = node as SKLabelNode
+          if n != 0 {xShift += em * (!node.text.isEmpty && node.text[0] == " " ? 0.5 : 0.125)}
+          node.position.x = xShift
+          xShift += node.frame.width
           lastWasDot = false
+          lastWasSpace = !node.text.isEmpty && node.text[-1] == " "
         } else if node is SKSpriteNode {
-          let sprite = node as SKSpriteNode
-          sprite.texture = dotTexture
-          xShift += em * (lastWasDot ? 0.25 : 0.125)
-          sprite.position.x = xShift
+          let node = node as SKSpriteNode
+          xShift += em * (lastWasDot ? 0.25 : (lastWasSpace ? 0.5 : 0.125))
+          node.position.x = xShift
           xShift += em
           lastWasDot = true
+          lastWasSpace = false
         }
       }
       xShift *= -0.5
@@ -134,7 +132,6 @@ class SmartLabel: SKNode {
         node.position.x += xShift
         node.position.x = roundPix(node.position.x)
       }
-      lineIndex++
     }
   }
   

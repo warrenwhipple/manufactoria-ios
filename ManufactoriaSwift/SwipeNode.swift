@@ -26,6 +26,7 @@ class SwipeNode: SKSpriteNode, DragThroughDelegate {
   var touch: UITouch?
   var wrapperMinX: CGFloat = 0.0
   var arrowHint: SKSpriteNode?
+  var span: CGFloat = 0.0
   
   init(pages: [SKNode]) {
     self.pages = pages
@@ -54,21 +55,23 @@ class SwipeNode: SKSpriteNode, DragThroughDelegate {
   override var size: CGSize {didSet {if size != oldValue {fitToSize()}}}
   
   func fitToSize() {
-    touch = nil
-    for i in 0 ..< pages.count {pages[i].position.x = CGFloat(i) * size.width}
-    wrapperMinX = -CGFloat(pages.count - 1) * size.width
+    span = xScale == 0 ? 1 : size.width / xScale
+    touchCancelled()
+    for (p, page) in enumerate(pages) {
+      page.position.x = CGFloat(p) * span
+    }
+    wrapperMinX = -CGFloat(pages.count - 1) * span
     goToIndexWithoutSnap(currentIndex)
   }
   
   func updateArrowAlphas() {
-    if size.width == 0 {return}
-    let indexFloat = -wrapper.position.x / size.width
+    if span == 0 {return}
+    let indexFloat = -wrapper.position.x / span
     let closestIndex = round(indexFloat)
-    let closestIndexInt = Int(closestIndex)
-    leftArrowWrapper.position.x = (closestIndex - 0.5) * size.width
-    rightArrowWrapper.position.x = (closestIndex + 0.5) * size.width
+    leftArrowWrapper.position.x = (closestIndex - 0.5) * span
+    rightArrowWrapper.position.x = (closestIndex + 0.5) * span
     
-    if closestIndexInt > 0 {
+    if Int(closestIndex) > 0 {
       if indexFloat < closestIndex {
         leftArrow.alpha = max(0, 1 - 3 * abs(indexFloat - closestIndex))
       } else {
@@ -78,7 +81,7 @@ class SwipeNode: SKSpriteNode, DragThroughDelegate {
       leftArrow.alpha = 0
     }
     
-    if closestIndexInt < pages.count - 1 {
+    if Int(closestIndex) < pages.count - 1 {
       if indexFloat > closestIndex {
         rightArrow.alpha = max(0, 1 - 3 * abs(indexFloat - closestIndex))
       } else {
@@ -105,7 +108,7 @@ class SwipeNode: SKSpriteNode, DragThroughDelegate {
   func goToIndexWithoutSnap(index: Int) {
     currentIndex = index
     wrapper.removeActionForKey("snap")
-    wrapper.position.x = -CGFloat(index) * size.width
+    wrapper.position.x = -CGFloat(index) * span
     updateArrowAlphas()
   }
   
@@ -114,10 +117,10 @@ class SwipeNode: SKSpriteNode, DragThroughDelegate {
     var newX: CGFloat = 0
     if index > pages.count - 1 {
       currentIndex = pages.count - 1
-      newX = -CGFloat(pages.count - 1) * size.width
+      newX = -CGFloat(pages.count - 1) * span
     } else if index > 0 {
       currentIndex = index
-      newX = -CGFloat(index) * size.width
+      newX = -CGFloat(index) * span
     }
     if wrapper.position.x == newX {
       wrapper.removeActionForKey("snap")
@@ -138,15 +141,15 @@ class SwipeNode: SKSpriteNode, DragThroughDelegate {
   }
   
   func snapToClosestWithInitialVelocityX(initialVelocityX: CGFloat) {
-    snapToIndex(Int(round(-wrapper.position.x / size.width)), initialVelocityX: initialVelocityX)
+    snapToIndex(Int(round(-wrapper.position.x / span)), initialVelocityX: initialVelocityX)
   }
   
   func snapLeftWithInitialVelocityX(initialVelocityX: CGFloat) {
-    snapToIndex(Int(ceil((10 - wrapper.position.x) / size.width)), initialVelocityX: initialVelocityX)
+    snapToIndex(Int(ceil((10 - wrapper.position.x) / span)), initialVelocityX: initialVelocityX)
   }
   
   func snapRightWithInitialVelocityX(initialVelocityX: CGFloat) {
-    snapToIndex(Int(floor((-10 - wrapper.position.x) / size.width)), initialVelocityX: initialVelocityX)
+    snapToIndex(Int(floor((-10 - wrapper.position.x) / span)), initialVelocityX: initialVelocityX)
   }
   
   var touchBeganTime: NSTimeInterval?
@@ -173,9 +176,9 @@ class SwipeNode: SKSpriteNode, DragThroughDelegate {
         let dX = touchX - lastTouchX
         let newX = wrapper.position.x + dX
         if dX > 0 && newX > 0 {
-          wrapper.position.x += dX * (1 - (wrapper.position.x + dX) / size.width * 4)
-        } else if dX < wrapperMinX && newX < wrapperMinX {
-          wrapper.position.x += dX * (1 - (wrapperMinX - wrapper.position.x - dX) / size.width * 4)
+          wrapper.position.x += dX * (1 - (wrapper.position.x + dX) / span * 4)
+        } else if dX < 0 && newX < wrapperMinX {
+          wrapper.position.x += dX * (1 - (wrapperMinX - wrapper.position.x - dX) / span * 4)
         } else {
           wrapper.position.x += dX
         }
@@ -204,9 +207,9 @@ class SwipeNode: SKSpriteNode, DragThroughDelegate {
       } else if touchVelocityX > 200.0 {
         snapRightWithInitialVelocityX(touchVelocityX)
       } else if touchBeganTime != nil && touch.timestamp - touchBeganTime! < 0.5 {
-        if touchPoint.x > size.width / 6 {
+        if touchPoint.x > span / 6 {
           snapLeftWithInitialVelocityX(touchVelocityX)
-        } else if touchPoint.x < -size.width / 6 {
+        } else if touchPoint.x < -span / 6 {
           snapRightWithInitialVelocityX(touchVelocityX)
         } else {
           snapToClosestWithInitialVelocityX(touchVelocityX)
@@ -226,18 +229,6 @@ class SwipeNode: SKSpriteNode, DragThroughDelegate {
   
   func touchCancelled() {
     touchEnded()
-  }
-  
-  func swipeHintRight() {
-    
-  }
-  
-  func stopSwipeHint() {
-    
-  }
-  
-  func hideLeftArrowTemporarily() {
-    
   }
   
   // MARK: - SwipeThroughButtonDelegate Methods

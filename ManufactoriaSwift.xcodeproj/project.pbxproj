@@ -30,6 +30,8 @@
 		2D60F5C9198156250032860B /* GameProgressData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D60F5C8198156250032860B /* GameProgressData.swift */; };
 		2D6867F919EF2D8E000F4427 /* EngineTutorialScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6867F819EF2D8E000F4427 /* EngineTutorialScene.swift */; };
 		2D6B03431A2680DB002A6CAC /* Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6B03421A2680DB002A6CAC /* Button.swift */; };
+		2D70F3DE1A3DE7C100B55549 /* ReadSeqTutorialScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D70F3DD1A3DE7C100B55549 /* ReadSeqTutorialScene.swift */; };
+		2D70F3E01A3E027B00B55549 /* GenericTutorialScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D70F3DF1A3E027B00B55549 /* GenericTutorialScene.swift */; };
 		2D7F922C195C61FA00F04F63 /* ToolbarNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7F922B195C61FA00F04F63 /* ToolbarNode.swift */; };
 		2D849F3619A39EB6008F3D69 /* CoreGraphicsExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D849F3519A39EB6008F3D69 /* CoreGraphicsExtensions.swift */; };
 		2D8C19A3199696A90064B790 /* SwipeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8C19A2199696A90064B790 /* SwipeNode.swift */; };
@@ -95,6 +97,8 @@
 		2D60F5C8198156250032860B /* GameProgressData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = GameProgressData.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		2D6867F819EF2D8E000F4427 /* EngineTutorialScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EngineTutorialScene.swift; sourceTree = "<group>"; };
 		2D6B03421A2680DB002A6CAC /* Button.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
+		2D70F3DD1A3DE7C100B55549 /* ReadSeqTutorialScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReadSeqTutorialScene.swift; sourceTree = "<group>"; };
+		2D70F3DF1A3E027B00B55549 /* GenericTutorialScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GenericTutorialScene.swift; sourceTree = "<group>"; };
 		2D7F922B195C61FA00F04F63 /* ToolbarNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToolbarNode.swift; sourceTree = "<group>"; };
 		2D849F3519A39EB6008F3D69 /* CoreGraphicsExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreGraphicsExtensions.swift; sourceTree = "<group>"; };
 		2D8C19A2199696A90064B790 /* SwipeNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwipeNode.swift; sourceTree = "<group>"; };
@@ -151,9 +155,11 @@
 		2D680EDA19D87E46000B6E36 /* Tutorials */ = {
 			isa = PBXGroup;
 			children = (
+				2D70F3DF1A3E027B00B55549 /* GenericTutorialScene.swift */,
 				2D436D3F19F6B0F2001E9FF6 /* TutorialScene.swift */,
 				2D2D26AA199E610D00EC4A45 /* MoveTutorialScene.swift */,
 				2D54B24719CF27BB00DF68C5 /* ReadTutorialScene.swift */,
+				2D70F3DD1A3DE7C100B55549 /* ReadSeqTutorialScene.swift */,
 				2DF749FE19D627B800EBE94D /* SequenceTutorialScene.swift */,
 				2D6867F819EF2D8E000F4427 /* EngineTutorialScene.swift */,
 			);
@@ -398,6 +404,7 @@
 				2DCA18A51985849B00DF3118 /* SpriteKitExtensions.swift in Sources */,
 				2DD4745019D0566B001E658E /* CongratulationsMenu.swift in Sources */,
 				2D336E8919534044008E55A9 /* MathFunctions.swift in Sources */,
+				2D70F3DE1A3DE7C100B55549 /* ReadSeqTutorialScene.swift in Sources */,
 				2D15929A19514B4900A96BCC /* GridNode.swift in Sources */,
 				2DD23D6C196DB17C00838E96 /* TapeNode.swift in Sources */,
 				2D6B03431A2680DB002A6CAC /* Button.swift in Sources */,
@@ -424,6 +431,7 @@
 				2DC0168319CEF41D003D922A /* ManufactoriaScene.swift in Sources */,
 				2D4862D01A1BEC21000421E5 /* MenuLevelButton.swift in Sources */,
 				2DB8E3ED1A379EA000898BD1 /* InstructionNode.swift in Sources */,
+				2D70F3E01A3E027B00B55549 /* GenericTutorialScene.swift in Sources */,
 				2D5E583F19A5265500F10DD3 /* ShimmerNode.swift in Sources */,
 				2DD23D731974730F00838E96 /* Engine.swift in Sources */,
 				2DB8E3E91A3655B100898BD1 /* ReportNode.swift in Sources */,

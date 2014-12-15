@@ -1,23 +1,24 @@
 //
-//  ReadTutorialScene.swift
+//  ReadSeqTutorialScene.swift
 //  ManufactoriaSwift
 //
-//  Created by Warren Whipple on 9/21/14.
+//  Created by Warren Whipple on 12/14/14.
 //  Copyright (c) 2014 Warren Whipple. All rights reserved.
 //
 
 import SpriteKit
 
-class ReadTutorialScene: TutorialScene {
+class ReadSeqTutorialScene: TutorialScene {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
+  let demoTapeNode = TapeNode()
   let demoRobotButton = Button(iconOffNamed: "robotOff", iconOnNamed: "robotOn")
   
   init(size: CGSize) {
-    super.init(size: size, levelKey: "read")
+    super.init(size: size, levelKey: "readseq")
     
-    instructionNode.instructionsLabel.text = "This is a color reader."
+    instructionNode.instructionsLabel.text = "This is a color sequence."
     let demoLabel = SmartLabel()
-    demoLabel.text = "It redirects #r and #b."
+    demoLabel.text = "It is read left to right."
     instructionNode.addPageToRight(demoLabel)
     startPulseWithParent(instructionNode.rightArrow)
     demoRobotButton.touchUpInsideClosure = {
@@ -26,7 +27,7 @@ class ReadTutorialScene: TutorialScene {
       self.testButtonPressed()
     }
     startPulseWithParent(demoRobotButton)
-
+    
     toolbarNode.removeFromParent()
     toolbarNode.undoCancelSwapper.removeFromParent()
     toolbarNode.redoConfirmSwapper.removeFromParent()
@@ -41,7 +42,7 @@ class ReadTutorialScene: TutorialScene {
     speedControlNode.slowerButton.removeFromParent()
     speedControlNode.skipButton.removeFromParent()
     
-    congratulationsMenu.menuButton.touchUpInsideClosure = {[unowned self] in self.transitionToGameSceneWithLevelKey("readseq")}
+    congratulationsMenu.menuButton.touchUpInsideClosure = {[unowned self] in self.transitionToGameSceneWithLevelKey("exclude")}
     
     gridNode.animateThinking = false
     gridNode.state = .Waiting
@@ -51,14 +52,14 @@ class ReadTutorialScene: TutorialScene {
     }
     gridNode.enterArrow.alpha = 0
     gridNode.exitArrow.alpha = 0
-
+    
     editGroupWasCompleted()
     for i in 0 ..< gridNode.grid.cells.count {
       gridNode.grid.cells[i] = Cell()
     }
     gridNode.grid[GridCoord(1,1)].kind = .PullerBR
     gridNode.changeCellNodesToMatchCellsWithAnimate(false)
-
+    
     fitToSize()
   }
   
@@ -92,12 +93,12 @@ class ReadTutorialScene: TutorialScene {
     }
   }
   
-  enum TutorialState {case Reader, Demo, Try}
-  var tutorialState: TutorialState = .Reader
+  enum TutorialState {case Intro, Demo, Try}
+  var tutorialState: TutorialState = .Intro
   
   func nextTutorialState() {
     switch tutorialState {
-    case .Reader:
+    case .Intro:
       killPulseWithParent(instructionNode.rightArrow)
       gridNode.enterArrow.runAction(SKAction.fadeAlphaTo(1, duration: 1))
       gridNode.exitArrow.runAction(SKAction.fadeAlphaTo(1, duration: 1))
@@ -133,45 +134,45 @@ class ReadTutorialScene: TutorialScene {
   /*
   override func loadTape(i: Int) {
     super.loadTape(i)
-      if tape == "r" {
-        robotNode?.robotOn.color = Globals.redColor.blend(UIColor.blackColor(), blendFactor: 0.2)
-      } else if tape == "b" {
-        robotNode?.robotOn.color = Globals.blueColor.blend(UIColor.blackColor(), blendFactor: 0.2)
-      } else if tape == "" {
-        robotNode?.robotOn.color = Globals.backgroundColor
-        robotNode?.robotOn.addChild(SKSpriteNode("robotOff"))
+    if tape == "r" {
+      robotNode?.robotOn.color = Globals.redColor.blend(UIColor.blackColor(), blendFactor: 0.2)
+    } else if tape == "b" {
+      robotNode?.robotOn.color = Globals.blueColor.blend(UIColor.blackColor(), blendFactor: 0.2)
+    } else if tape == "" {
+      robotNode?.robotOn.color = Globals.backgroundColor
+      robotNode?.robotOn.addChild(SKSpriteNode("robotOff"))
     }
   }
   */
   
   override func gridTestFailedWithResult(result: TapeTestResult) {
     switch tutorialState {
-    case .Reader: break
+    case .Intro: break
     case .Demo:
       tapeTestResults = [
         TapeTestResult(input: "r", output: nil, correctOutput: nil, kind: TapeTestResult.Kind.FailShouldAccept),
         TapeTestResult(input: "b", output: nil, correctOutput: nil, kind: TapeTestResult.Kind.FailShouldAccept)
       ]
       let tryLabel = SmartLabel()
-      tryLabel.text = "Accept #B: to the exit.\nReject #R: to the floor!"
+      tryLabel.text = "Accept: #brb\nReject: everything else."
       instructionNode.addPageToRight(tryLabel)
     case .Try:
       tapeTestResults = [result]
     }
     state = .Reporting
   }
-
+  
   
   override func swipeNodeDidSnapToIndex(index: Int) {
     super.swipeNodeDidSnapToIndex(index)
-    if tutorialState == .Reader && index == 2{
+    if tutorialState == .Intro && index == 2{
       nextTutorialState()
     }
   }
   
   override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
     super.touchesBegan(touches, withEvent: event)
-    if tutorialState == .Reader {
+    if tutorialState == .Intro {
       instructionNode.snapToIndex(2, initialVelocityX: 0)
     } else if tutorialState == .Demo && state == .Testing && speedControlNode.parent == nil {
       speedControlNode.appearWithParent(self, animate: true)

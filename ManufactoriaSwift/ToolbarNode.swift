@@ -123,7 +123,7 @@ class ToolbarNode: SKNode, ToolButtonDelegate, SwipeNodeDelegate {
       node.position.y = yCenters[1]
     }
     swipeNode.position.y = yCenters[0]
-    swipeNode.size = CGSize(size.width, yCenters[0] * 2)
+    swipeNode.size = CGSize(size.width, size.height / 2)
     func distributeXs(nodes: [SKNode]) {
       let xCenters = distributionForChildren(count: nodes.count, childSize: Globals.iconSpan, parentSize: size.width)
       for i in 0 ..< nodes.count {

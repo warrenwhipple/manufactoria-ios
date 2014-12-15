@@ -62,6 +62,11 @@ class ShimmerNode: SKSpriteNode {
     }
   }
   
+  func zeroShimmer() {
+    removeActionForKey("shimmer")
+    alpha = 0
+  }
+  
   private func repeatShimmer() {
     let alphaGap = alphaMax - alphaMin
     let alphaAdd = randCGFloat(alphaGap)

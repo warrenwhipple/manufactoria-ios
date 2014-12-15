@@ -50,15 +50,14 @@ class InstructionNode: SwipeNode {
   }
     
   func resetFailPageForTestResult(result: TapeTestResult) {
-    failPage.removeAllChildren()
-    let lineHeight = SKTexture(imageNamed: "dot").size().height * 1.5
+    //let lineHeight = SKTexture(imageNamed: "dot").size().height * 1.5
     switch result.kind {
     case .Pass:
       assertionFailure("StatusNode cannot generate failPage for a test that passes.")
     case .FailLoop:
       if result.input == "" {
         failLabel.text = "The blank sequence\ncaused a loop."
-      } else if result.input.length() < 6 {
+      } else if result.input.length() < 4 {
         failLabel.text = "#" + result.input + " caused a loop."
       } else {
         failLabel.text = "#" + result.input + "\ncaused a loop."
@@ -66,7 +65,7 @@ class InstructionNode: SwipeNode {
     case .FailShouldAccept:
       if result.input == "" {
         failLabel.text = "The blank sequence\nshould be accepted."
-      } else if result.input.length() < 6 {
+      } else if result.input.length() < 4 {
         failLabel.text = "#" + result.input + " should be accepted."
       } else {
         failLabel.text = "#" + result.input + "\nshould be accepted."
@@ -74,7 +73,7 @@ class InstructionNode: SwipeNode {
     case .FailShouldReject:
       if result.input == "" {
         failLabel.text = "The blank sequence\nshould be rejected."
-      } else if result.input.length() < 6 {
+      } else if result.input.length() < 4 {
         failLabel.text = "#" + result.input + " should be rejected."
       } else {
         failLabel.text = "#" + result.input + "\nshould be rejected."
@@ -93,5 +92,9 @@ class InstructionNode: SwipeNode {
         failLabel.text = "#" + result.input + "\nshould not be dropped."
       }
     }
+    if failPage.parent == nil {
+      addPageToRight(failPage)
+    }
+    goToIndexWithoutSnap(2)
   }
 }

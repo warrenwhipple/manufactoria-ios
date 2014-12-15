@@ -117,7 +117,6 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
       case .Testing:
         thinkingCancelButton.disappearWithAnimate(false)
         speedControlNode.appearWithParent(self, animate: false)
-        newRobotNode()
         reportNode.disappearWithAnimate(true)
         var isPuller = false
         var isPusher = false
@@ -136,6 +135,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
         if isPusher {tapeNode.printer.alpha = 1}
         else {tapeNode.printer.alpha = 0}
         loadTape(0)
+        newRobotNodeWithColor(colorForTape())
         tapeNode.appearWithParent(self, animate: true)
       case .Congratulating:
         tapeNode.disappearWithAnimate(true)
@@ -311,9 +311,12 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     state = .Editing
   }
   
-  func newRobotNode() {
+  func newRobotNodeWithColor(color: Color?) {
     robotNode?.runAction(SKAction.sequence([SKAction.fadeAlphaTo(0, duration: 0.5), SKAction.removeFromParent()]))
-    robotNode = RobotNode(initialPosition: gridNode.wrapper.convertPoint(CGPoint(size.width/2, -Globals.touchSpan), fromNode: self))
+    robotNode = RobotNode(
+      position: gridNode.wrapper.convertPoint(CGPoint(size.width/2, -Globals.touchSpan), fromNode: self),
+      color: color
+    )
     robotNode?.setScale(1/gridNode.wrapper.xScale)
     gridNode.wrapper.addChild(robotNode!)
   }
@@ -335,7 +338,9 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     lastTestingState = .Entering
     robotCoord = levelData.grid.startCoord + 1
     lastRobotCoord = levelData.grid.startCoord
-    if i > 0 {newRobotNode()}
+    if i > 0 {
+      newRobotNodeWithColor(colorForTape())
+    }
     robotNode?.loadNextGridCoord(lastRobotCoord)
     didAnimateRobotComplete = false
   }
@@ -371,6 +376,17 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     gridNode.wrapper.addChild(icon)
     */
     didAnimateRobotComplete = true
+  }
+  
+  func colorForTape() -> Color? {
+    if tape.isEmpty {return nil}
+    switch tape[0] {
+    case "B", "b": return .Blue
+    case "R", "r": return .Red
+    case "G", "g": return .Green
+    case "Y", "y": return .Yellow
+    default: return nil
+    }
   }
   
   // MARK: - SwipeNodeDelegate Function

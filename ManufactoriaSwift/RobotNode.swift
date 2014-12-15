@@ -11,53 +11,44 @@ import SpriteKit
 class RobotNode: SKNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   
+  let colorSprite = SKSpriteNode("robotOn")
+  let nextColorSprite = SKSpriteNode("robotOn")
+  let outlineSprite = SKSpriteNode("robotOff")
+  let darkBlueColor = Globals.blueColor.blend(UIColor.blackColor(), blendFactor: 0.2)
+  let darkRedColor = Globals.redColor.blend(UIColor.blackColor(), blendFactor: 0.2)
+  let darkGreenColor = Globals.greenColor.blend(UIColor.blackColor(), blendFactor: 0.2)
+  let darkYellowColor = Globals.yellowColor.blend(UIColor.blackColor(), blendFactor: 0.2)
   let fallScaleNode = SKNode()
-  let robotOn: SKSpriteNode
   var lastLastPosition, lastPosition, nextPosition: CGPoint
   
-  init(initialPosition: CGPoint) {
-    robotOn = SKSpriteNode("robotOn")
-    lastLastPosition = initialPosition
-    lastPosition = initialPosition
-    nextPosition = initialPosition
+  init(position: CGPoint, color: Color?) {
+    lastLastPosition = position
+    lastPosition = position
+    nextPosition = position
     super.init()
+    self.position = position
     zPosition = 2
-    position = initialPosition
-    fallScaleNode.addChild(robotOn)
+    if let color = color {
+      colorSprite.color = darkColor(color)
+    } else {
+      colorSprite.color = Globals.backgroundColor
+      colorSprite.addChild(outlineSprite)
+    }
+    fallScaleNode.addChild(colorSprite)
+    nextColorSprite.zPosition = 1
+    nextColorSprite.alpha = 0
+    fallScaleNode.addChild(nextColorSprite)
     addChild(fallScaleNode)
   }
   
-  /*
-  init(button: Button, initialPosition: CGPoint) {
-    if button.nodeOff != nil && button.glow < 1 && button.nodeOff is SKSpriteNode {
-      let iconOff = button.nodeOff as SKSpriteNode
-      robotOff = SKSpriteNode(texture: iconOff.texture, color: iconOff.color, size: iconOff.size)
-      robotOff?.colorBlendFactor = iconOff.colorBlendFactor
-      robotOff?.alpha = 1 - button.glow
+  func darkColor(color: Color) -> UIColor {
+      switch color {
+      case .Blue: return darkBlueColor
+      case .Red: return darkRedColor
+      case .Green: return darkGreenColor
+      case .Yellow: return darkYellowColor
     }
-    if button.nodeOn is SKSpriteNode {
-      let iconOn = button.nodeOn as SKSpriteNode
-      robotOn = SKSpriteNode(texture: iconOn.texture, color: iconOn.color, size: iconOn.size)
-      robotOn.colorBlendFactor = iconOn.colorBlendFactor
-      robotOn.alpha = button.glow
-    } else {
-      robotOn = SKSpriteNode("robotOn")
-    }
-    lastLastPosition = initialPosition
-    lastPosition = initialPosition
-    nextPosition = initialPosition
-    super.init()
-    position = initialPosition
-    if robotOff != nil {
-      let glowTimeLeft = NSTimeInterval(1 - button.glow) / 4
-      robotOff?.runAction(SKAction.sequence([SKAction.fadeAlphaTo(0, duration: glowTimeLeft), SKAction.removeFromParent()]))
-      fallScaleNode.addChild(robotOff!)
-      robotOn.runAction(SKAction.fadeAlphaTo(1, duration: glowTimeLeft))
-    }
-    fallScaleNode.addChild(robotOn)
-    addChild(fallScaleNode)
   }
-  */
   
   enum State {case Moving, Falling}
   var state: State = .Moving
@@ -107,5 +98,9 @@ class RobotNode: SKNode {
     lastLastPosition = lastPosition
     lastPosition = nextPosition
     nextPosition = CGPoint(CGFloat(nextGridCoord.i) + 0.5, CGFloat(nextGridCoord.j) + 0.5)
+  }
+  
+  func loadNextColor(nextColor: Color?) {
+    
   }
 }
