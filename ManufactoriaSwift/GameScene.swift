@@ -135,7 +135,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
         if isPusher {tapeNode.printer.alpha = 1}
         else {tapeNode.printer.alpha = 0}
         loadTape(0)
-        newRobotNodeWithColor(colorForTape())
+        newRobotNodeWithColor(colorForTape(), animate: false)
         tapeNode.appearWithParent(self, animate: true)
       case .Congratulating:
         tapeNode.disappearWithAnimate(true)
@@ -311,13 +311,18 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     state = .Editing
   }
   
-  func newRobotNodeWithColor(color: Color?) {
-    robotNode?.runAction(SKAction.sequence([SKAction.fadeAlphaTo(0, duration: 0.5), SKAction.removeFromParent()]))
-    robotNode = RobotNode(
-      position: gridNode.wrapper.convertPoint(CGPoint(size.width/2, -Globals.touchSpan), fromNode: self),
-      color: color
-    )
+  func newRobotNodeWithColor(color: Color?, animate: Bool) {
+    if animate {
+      robotNode?.runAction(SKAction.sequence([SKAction.fadeAlphaTo(0, duration: 0.5), SKAction.removeFromParent()]))
+    } else {
+      robotNode?.removeFromParent()
+    }
+    robotNode = RobotNode(position: gridNode.grid.startCoord.centerPoint, color: color)
     robotNode?.setScale(1/gridNode.wrapper.xScale)
+    if animate {
+      robotNode?.alpha = 0
+      robotNode?.runAction(SKAction.fadeAlphaTo(1, duration: 0.5))
+    }
     gridNode.wrapper.addChild(robotNode!)
   }
   
@@ -339,7 +344,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     robotCoord = levelData.grid.startCoord + 1
     lastRobotCoord = levelData.grid.startCoord
     if i > 0 {
-      newRobotNodeWithColor(colorForTape())
+      newRobotNodeWithColor(colorForTape(), animate: true)
     }
     robotNode?.loadNextGridCoord(lastRobotCoord)
     didAnimateRobotComplete = false
