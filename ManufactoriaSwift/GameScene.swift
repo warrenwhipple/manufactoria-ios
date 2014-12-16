@@ -9,20 +9,21 @@
 import SpriteKit
 
 class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, InstructionNodeDelegate, EngineDelegate, ToolbarNodeDelegate, ReportNodeDelegate, SpeedControlNodeDelegate, CongratulationsMenuDelegate {
-  required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  enum State {case Editing, Thinking, Reporting, Testing, Congratulating}
-  //enum TestingState {case Entering, Testing, Exiting, Falling}
   
-  // model objects
-  let levelKey: String
-  let levelSetup: LevelSetup
+  enum State {case Editing, Thinking, Reporting, Testing, Congratulating}
+  enum TestingState {case Entering, Testing, Exiting, Falling}
+  
+  // MARK: Model Objects
   let levelData: LevelData
-  var tapeTestResults: [TapeTestResult] = []
-  var currentTapeTestIndex = 0
-  var tape: String = ""
   let engine: Engine
   
-  // view objects
+  // MARK: Model Structs
+  let levelKey: String
+  let levelSetup: LevelSetup
+  var tapeTestResults: [TapeTestResult] = []
+  var tape: String = ""
+  
+  // MARK: View Objects
   let instructionNode: InstructionNode
   let tapeNode = TapeNode()
   let gridNode: GridNode
@@ -32,10 +33,9 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
   let speedControlNode = SpeedControlNode()
   let congratulationsMenu = CongratulationsMenu()
   var robotNode: RobotNode?
-  //var testingState: TestingState = .Entering
-  //var lastTestingState: TestingState = .Entering
   
-  // variables
+  // MARK: Variables
+  var currentTapeTestIndex = 0
   var gameSpeed: CGFloat = 0
   var robotCoord = GridCoord(0, 0)
   var lastRobotCoord = GridCoord(0, 0)
@@ -45,6 +45,12 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
   var beltFlowVelocity: CGFloat = 0.25
   var gridTestDidPass = false
   var didAnimateRobotComplete = false
+  var testingState: TestingState = .Entering
+  var lastTestingState: TestingState = .Entering
+  
+  // MARK: - Initialization
+  
+  required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   
   init(size: CGSize, levelKey: String) {
     self.levelKey = levelKey
@@ -91,6 +97,35 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     
     fitToSize()
   }
+  
+  override var size: CGSize {didSet{if size != oldValue {fitToSize()}}}
+  
+  func fitToSize() {
+    gridNode.rect = CGRect(origin: CGPointZero, size: size)
+    let gridRect = CGRect(centerX: 0.5 * size.width, centerY: 0.5 * size.height,
+      width: CGFloat(levelData.grid.space.columns) * gridNode.wrapper.xScale, height: CGFloat(levelData.grid.space.rows) * gridNode.wrapper.yScale)
+    let bottomGapRect = roundPix(CGRect(x: 0,y: 0,
+      width: size.width, height: 0.5 * (size.height - gridRect.size.height)))
+    let topGapRect = roundPix(CGRect(x: 0, y: gridRect.maxY,
+      width: size.width, height: bottomGapRect.height))
+    
+    instructionNode.position = topGapRect.center
+    instructionNode.size = topGapRect.size
+    tapeNode.position = topGapRect.center
+    tapeNode.width = topGapRect.width
+    toolbarNode.position = bottomGapRect.center
+    toolbarNode.size = topGapRect.size
+    reportNode.position = size.center
+    reportNode.size = size
+    thinkingCancelButton.position.x = bottomGapRect.center.x
+    thinkingCancelButton.position.y = bottomGapRect.center.y + toolbarNode.swipeNode.position.y
+    speedControlNode.position = thinkingCancelButton.position
+    speedControlNode.size = bottomGapRect.size
+    congratulationsMenu.position = bottomGapRect.center
+    congratulationsMenu.size = bottomGapRect.size
+  }
+  
+  // MARK: - Game State Functions
   
   var state: State = .Editing {
     didSet {
@@ -147,41 +182,11 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     }
   }
   
-  override var size: CGSize {didSet{if size != oldValue {fitToSize()}}}
-  
-  func fitToSize() {
-    gridNode.rect = CGRect(origin: CGPointZero, size: size)
-    let gridRect = CGRect(centerX: 0.5 * size.width, centerY: 0.5 * size.height,
-      width: CGFloat(levelData.grid.space.columns) * gridNode.wrapper.xScale, height: CGFloat(levelData.grid.space.rows) * gridNode.wrapper.yScale)
-    let bottomGapRect = roundPix(CGRect(x: 0,y: 0,
-      width: size.width, height: 0.5 * (size.height - gridRect.size.height)))
-    let topGapRect = roundPix(CGRect(x: 0, y: gridRect.maxY,
-      width: size.width, height: bottomGapRect.height))
-    
-    instructionNode.position = topGapRect.center
-    instructionNode.size = topGapRect.size
-    tapeNode.position = topGapRect.center
-    tapeNode.width = topGapRect.width
-    toolbarNode.position = bottomGapRect.center
-    toolbarNode.size = topGapRect.size
-    reportNode.position = size.center
-    reportNode.size = size
-    thinkingCancelButton.position.x = bottomGapRect.center.x
-    thinkingCancelButton.position.y = bottomGapRect.center.y + toolbarNode.swipeNode.position.y
-    speedControlNode.position = thinkingCancelButton.position
-    speedControlNode.size = bottomGapRect.size
-    congratulationsMenu.position = bottomGapRect.center
-    congratulationsMenu.size = bottomGapRect.size
-  }
-  
   override func updateDt(dt: NSTimeInterval) {
     
     // update test
     if state == .Testing {
-      
       tickPercent += CGFloat(dt) * gameSpeed
-      
-      /*
       switch testingState {
       case .Entering:
         if tickPercent >= 1 {
@@ -192,7 +197,6 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
           fallthrough
         }
       case .Testing:
-      */
         while tickPercent >= 1 {
           tickPercent -= 1
           lastTestingState = testingState
@@ -233,8 +237,6 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
           
 
         }
-      
-      /*
       case .Exiting:
         if testingState == .Falling {fallthrough}
         if !didAnimateRobotComplete && tickPercent >= 0.5 {
@@ -251,8 +253,6 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
           loadNextTape()
         }
       }
-      */
-
       tapeNode.update(tickPercent)
       robotNode?.update(tickPercent)
     }
@@ -408,7 +408,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     }
   }
   
-  // MARK: - SwipeNodeDelegate Function
+  // MARK: - SwipeNodeDelegate Functions
   
   func swipeNodeDidSnapToIndex(index: Int) {}
 
