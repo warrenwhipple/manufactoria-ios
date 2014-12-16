@@ -35,6 +35,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
   var robotNode: RobotNode?
   
   // MARK: Variables
+  var state: State = .Editing {didSet {gameStateDidChange(oldValue)}}
   var currentTapeTestIndex = 0
   var gameSpeed: CGFloat = 0
   var robotCoord = GridCoord(0, 0)
@@ -98,8 +99,6 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     fitToSize()
   }
   
-  override var size: CGSize {didSet{if size != oldValue {fitToSize()}}}
-  
   func fitToSize() {
     gridNode.rect = CGRect(origin: CGPointZero, size: size)
     let gridRect = CGRect(centerX: 0.5 * size.width, centerY: 0.5 * size.height,
@@ -127,58 +126,56 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
   
   // MARK: - Game State Functions
   
-  var state: State = .Editing {
-    didSet {
-      if state == oldValue {return}
-      switch state {
-      case .Editing:
-        tapeNode.disappearWithAnimate(true)
-        thinkingCancelButton.disappearWithAnimate(true)
-        speedControlNode.disappearWithAnimate(true)
-        instructionNode.appearWithParent(self, animate: true)
-        toolbarNode.appearWithParent(self, animate: true)
-        beltIsFlowing = true
-        gridNode.state = .Editing
-      case .Thinking:
-        instructionNode.disappearWithAnimate(true)
-        toolbarNode.disappearWithAnimate(true)
-        beltIsFlowing = false
-        gridTestDidPass = false
-        gridNode.state = .Thinking
-        engine.beginGridTest()
-      case .Reporting:
-        gridNode.state = .Waiting
-        reportNode.appearWithParent(self, animate: true)
-      case .Testing:
-        thinkingCancelButton.disappearWithAnimate(false)
-        speedControlNode.appearWithParent(self, animate: false)
-        reportNode.disappearWithAnimate(true)
-        var isPuller = false
-        var isPusher = false
-        for cell in gridNode.grid.cells {
-          switch cell.kind {
-          case .PullerBR, .PullerRB, .PullerGY, .PullerYG: isPuller = true
-          case .PusherB, .PusherR, .PusherG, .PusherY: isPusher = true
-          default: break
-          }
-          if isPusher && isPuller {break}
+  func gameStateDidChange(oldState: State) {
+    if state == oldState {return}
+    switch state {
+    case .Editing:
+      tapeNode.disappearWithAnimate(true)
+      thinkingCancelButton.disappearWithAnimate(true)
+      speedControlNode.disappearWithAnimate(true)
+      instructionNode.appearWithParent(self, animate: true)
+      toolbarNode.appearWithParent(self, animate: true)
+      startBeltFlow()
+      gridNode.state = .Editing
+    case .Thinking:
+      instructionNode.disappearWithAnimate(true)
+      toolbarNode.disappearWithAnimate(true)
+      stopBeltFlow()
+      gridTestDidPass = false
+      gridNode.state = .Thinking
+      engine.beginGridTest()
+    case .Reporting:
+      gridNode.state = .Waiting
+      reportNode.appearWithParent(self, animate: true)
+    case .Testing:
+      thinkingCancelButton.disappearWithAnimate(false)
+      speedControlNode.appearWithParent(self, animate: false)
+      reportNode.disappearWithAnimate(true)
+      var isPuller = false
+      var isPusher = false
+      for cell in gridNode.grid.cells {
+        switch cell.kind {
+        case .PullerBR, .PullerRB, .PullerGY, .PullerYG: isPuller = true
+        case .PusherB, .PusherR, .PusherG, .PusherY: isPusher = true
+        default: break
         }
-        tapeNode.scanner.alpha = isPuller ? 1 : 0
-        tapeNode.printer.alpha = isPusher ? 1 : 0
-        if isPuller {tapeNode.scanner.alpha = 1}
-        else {tapeNode.scanner.alpha = 0}
-        if isPusher {tapeNode.printer.alpha = 1}
-        else {tapeNode.printer.alpha = 0}
-        loadTape(0)
-        newRobotNodeWithColor(colorForTape(), animate: false)
-        tapeNode.appearWithParent(self, animate: true)
-      case .Congratulating:
-        tapeNode.disappearWithAnimate(true)
-        speedControlNode.disappearWithAnimate(true)
-        congratulationsMenu.appearWithParent(self, animate: true)
-        beltIsFlowing = true
-        gridNode.state = .Waiting
+        if isPusher && isPuller {break}
       }
+      tapeNode.scanner.alpha = isPuller ? 1 : 0
+      tapeNode.printer.alpha = isPusher ? 1 : 0
+      if isPuller {tapeNode.scanner.alpha = 1}
+      else {tapeNode.scanner.alpha = 0}
+      if isPusher {tapeNode.printer.alpha = 1}
+      else {tapeNode.printer.alpha = 0}
+      loadTape(0)
+      newRobotNodeWithColor(colorForTape(), animate: false)
+      tapeNode.appearWithParent(self, animate: true)
+    case .Congratulating:
+      tapeNode.disappearWithAnimate(true)
+      speedControlNode.disappearWithAnimate(true)
+      congratulationsMenu.appearWithParent(self, animate: true)
+      startBeltFlow()
+      gridNode.state = .Waiting
     }
   }
   
@@ -257,12 +254,9 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
       robotNode?.update(tickPercent)
     }
     
-    
     // update belts
-    if beltIsFlowing {
-      beltFlowPercent += CGFloat(dt) * beltFlowVelocity
-      while beltFlowPercent >= 1 {beltFlowPercent -= 1}
-    }
+    beltFlowPercent += CGFloat(dt) * beltFlowVelocity
+    while beltFlowPercent >= 1 {beltFlowPercent -= 1}
     var beltPercentSum = beltFlowPercent
     if state == .Testing {
       switch testingState {
@@ -283,33 +277,30 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     gridNode.update(dt, beltPercent: beltPercentSum)    
   }
   
-  var beltIsFlowing: Bool = true {
-    didSet {
-      if beltIsFlowing == oldValue {return}
-      if beltIsFlowing {
-        runAction(SKAction.customActionWithDuration(1) {
-          [unowned self] node, t in
-          self.beltFlowVelocity = t * 0.25
-          }, withKey: "changeBeltSpeed")
+  func startBeltFlow() {
+    runAction(SKAction.customActionWithDuration(1) {
+      [unowned self] node, t in
+      self.beltFlowVelocity = t * 0.25
+      }, withKey: "changeBeltSpeed")
+  }
+  
+  func stopBeltFlow() {
+    beltFlowVelocity = 0
+    if beltFlowPercent < 0.375 {beltFlowPercent += 0.5}
+    else if beltFlowPercent >= 0.875 {beltFlowPercent -= 0.5}
+    let p0 = beltFlowPercent
+    let t1 = (0.875 - beltFlowPercent) * 4
+    let t2 = t1 + 1
+    runAction(SKAction.customActionWithDuration(NSTimeInterval(t2)) {
+      [unowned self] node, t in
+      if t < t1 {
+        self.beltFlowPercent = p0 + t * 0.25
+      } else if t < t2 {
+        self.beltFlowPercent = 0.875 + easeOut(t - t1) * 0.125
       } else {
-        beltFlowVelocity = 0
-        if beltFlowPercent < 0.375 {beltFlowPercent += 0.5}
-        else if beltFlowPercent >= 0.875 {beltFlowPercent -= 0.5}
-        let p0 = beltFlowPercent
-        let t1 = (0.875 - beltFlowPercent) * 4
-        let t2 = t1 + 1
-        runAction(SKAction.customActionWithDuration(NSTimeInterval(t2)) {
-          [unowned self] node, t in
-          if t < t1 {
-            self.beltFlowPercent = p0 + t * 0.25
-          } else if t < t2 {
-            self.beltFlowPercent = 0.875 + easeOut(t - t1) * 0.125
-          } else {
-            self.beltFlowPercent = 0
-          }
-          }, withKey: "changeBeltSpeed")
+        self.beltFlowPercent = 0
       }
-    }
+      }, withKey: "changeBeltSpeed")
   }
   
   func showThinkingCancelButtonWithAnimate(animate: Bool) {
