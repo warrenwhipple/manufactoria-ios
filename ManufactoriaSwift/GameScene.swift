@@ -11,7 +11,7 @@ import SpriteKit
 class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, InstructionNodeDelegate, EngineDelegate, ToolbarNodeDelegate, ReportNodeDelegate, SpeedControlNodeDelegate, CongratulationsMenuDelegate {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   enum State {case Editing, Thinking, Reporting, Testing, Congratulating}
-  enum TestingState {case Entering, Testing, Exiting, Falling}
+  //enum TestingState {case Entering, Testing, Exiting, Falling}
   
   // model objects
   let levelKey: String
@@ -32,8 +32,8 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
   let speedControlNode = SpeedControlNode()
   let congratulationsMenu = CongratulationsMenu()
   var robotNode: RobotNode?
-  var testingState: TestingState = .Entering
-  var lastTestingState: TestingState = .Entering
+  //var testingState: TestingState = .Entering
+  //var lastTestingState: TestingState = .Entering
   
   // variables
   var gameSpeed: CGFloat = 0
@@ -178,7 +178,10 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     
     // update test
     if state == .Testing {
+      
       tickPercent += CGFloat(dt) * gameSpeed
+      
+      /*
       switch testingState {
       case .Entering:
         if tickPercent >= 1 {
@@ -189,19 +192,24 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
           fallthrough
         }
       case .Testing:
+      */
         while tickPercent >= 1 {
           tickPercent -= 1
           lastTestingState = testingState
           let testResult = levelData.grid.testCoord(robotCoord, lastCoord: lastRobotCoord, tape: &tape)
+          
           let tapeLength = tape.length()
           if tapeLength > lastTapeLength && tapeLength > 0 {
             tapeNode.writeColor(tape[-1].color())
+            robotNode?.loadNextColor(colorForTape())
           } else if tapeLength < lastTapeLength {
             tapeNode.deleteColor()
+            robotNode?.loadNextColor(colorForTape())
           } else {
             tapeNode.state = .Waiting
           }
           lastTapeLength = tapeLength
+          
           lastRobotCoord = robotCoord
           var fallthroughTestingStateSwitch = false
           switch testResult {
@@ -222,7 +230,11 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
           }
           if fallthroughTestingStateSwitch {fallthrough}
           robotNode?.loadNextGridCoord(robotCoord)
+          
+
         }
+      
+      /*
       case .Exiting:
         if testingState == .Falling {fallthrough}
         if !didAnimateRobotComplete && tickPercent >= 0.5 {
@@ -239,6 +251,8 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
           loadNextTape()
         }
       }
+      */
+
       tapeNode.update(tickPercent)
       robotNode?.update(tickPercent)
     }

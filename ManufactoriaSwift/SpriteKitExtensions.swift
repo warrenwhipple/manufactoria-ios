@@ -43,9 +43,9 @@ extension SKNode {
       runAction(SKAction.group([
         SKAction.fadeAlphaTo(1, duration: 0.2),
         SKAction.scaleTo(1, duration: 0.2).easeOut()
-        ]), withKey: "trans")
+        ]), withKey: "appearDisappear")
     } else {
-      removeActionForKey("trans")
+      removeActionForKey("appearDisappear")
       alpha = 1
       setScale(1)
     }
@@ -59,9 +59,9 @@ extension SKNode {
           SKAction.scaleTo(1.5, duration: 0.2).easeIn()
           ]),
         SKAction.removeFromParent()
-        ]), withKey: "trans")
+        ]), withKey: "appearDisappear")
     } else {
-      removeActionForKey("trans")
+      removeActionForKey("appearDisappear")
       removeFromParent()
     }
   }

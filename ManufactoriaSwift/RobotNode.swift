@@ -11,33 +11,36 @@ import SpriteKit
 class RobotNode: SKNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   
-  let colorSprite = SKSpriteNode("robotOn")
-  let nextColorSprite = SKSpriteNode("robotOn")
+  let currentColorSprite = SKSpriteNode("robotOn")
+  let lastColorSprite = SKSpriteNode("robotOn")
   let outlineSprite = SKSpriteNode("robotOff")
   let darkBlueColor = Globals.blueColor.blend(UIColor.blackColor(), blendFactor: 0.2)
   let darkRedColor = Globals.redColor.blend(UIColor.blackColor(), blendFactor: 0.2)
   let darkGreenColor = Globals.greenColor.blend(UIColor.blackColor(), blendFactor: 0.2)
   let darkYellowColor = Globals.yellowColor.blend(UIColor.blackColor(), blendFactor: 0.2)
   let fallScaleNode = SKNode()
+  var currentColor: Color?
+  var isChangingColor = false
   var lastLastPosition, lastPosition, nextPosition: CGPoint
   
   init(position: CGPoint, color: Color?) {
     lastLastPosition = position
     lastPosition = position
     nextPosition = position
+    currentColor = color
     super.init()
     self.position = position
     zPosition = 2
+    lastColorSprite.alpha = 0
+    fallScaleNode.addChild(lastColorSprite)
     if let color = color {
-      colorSprite.color = darkColor(color)
+      currentColorSprite.color = darkColor(color)
     } else {
-      colorSprite.color = Globals.backgroundColor
-      colorSprite.addChild(outlineSprite)
+      currentColorSprite.color = Globals.backgroundColor
+      currentColorSprite.addChild(outlineSprite)
     }
-    fallScaleNode.addChild(colorSprite)
-    nextColorSprite.zPosition = 1
-    nextColorSprite.alpha = 0
-    fallScaleNode.addChild(nextColorSprite)
+    currentColorSprite.zPosition = 1
+    fallScaleNode.addChild(currentColorSprite)
     addChild(fallScaleNode)
   }
   
@@ -54,6 +57,15 @@ class RobotNode: SKNode {
   var state: State = .Moving
   
   func update(tickPercent: CGFloat) {
+    if isChangingColor {
+      if tickPercent < 0.5 {
+        currentColorSprite.alpha = 0
+      } else if tickPercent < 0.75 {
+        currentColorSprite.alpha = (tickPercent - 0.5) * 4
+      } else {
+        currentColorSprite.alpha = 1
+      }
+    }
     switch state {
     case .Moving:
       if tickPercent < 0.5 {
@@ -92,15 +104,43 @@ class RobotNode: SKNode {
     lastLastPosition = lastPosition
     lastPosition = nextPosition
     nextPosition = newNextPosition
+    finishColorChange()
   }
   
   func loadNextGridCoord(nextGridCoord: GridCoord) {
     lastLastPosition = lastPosition
     lastPosition = nextPosition
     nextPosition = CGPoint(CGFloat(nextGridCoord.i) + 0.5, CGFloat(nextGridCoord.j) + 0.5)
+    finishColorChange()
+  }
+  
+  func finishColorChange() {
+    lastColorSprite.alpha = 0
+    currentColorSprite.alpha = 1
+    isChangingColor = false
   }
   
   func loadNextColor(nextColor: Color?) {
+    if nextColor == currentColor {return}
+    outlineSprite.removeFromParent()
     
+    if let currentColor = currentColor {
+      lastColorSprite.color = darkColor(currentColor)
+    } else {
+      lastColorSprite.color = Globals.backgroundColor
+      lastColorSprite.addChild(outlineSprite)
+    }
+    lastColorSprite.alpha = 1
+    
+    if let nextColor = nextColor {
+      currentColorSprite.color = darkColor(nextColor)
+    } else {
+      currentColorSprite.color = Globals.backgroundColor
+      currentColorSprite.addChild(outlineSprite)
+    }
+    currentColorSprite.alpha = 0
+    
+    currentColor = nextColor
+    isChangingColor = true
   }
 }
