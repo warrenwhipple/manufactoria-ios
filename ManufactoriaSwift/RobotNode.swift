@@ -39,7 +39,7 @@ class RobotNode: SKNode {
       currentColorSprite.color = Globals.backgroundColor
       currentColorSprite.addChild(outlineSprite)
     }
-    currentColorSprite.zPosition = 1
+    currentColorSprite.zPosition = 0.5
     fallScaleNode.addChild(currentColorSprite)
     addChild(fallScaleNode)
   }
@@ -58,12 +58,10 @@ class RobotNode: SKNode {
   
   func update(tickPercent: CGFloat) {
     if isChangingColor {
-      if tickPercent < 0.5 {
+      if tickPercent < 0.75 {
         currentColorSprite.alpha = 0
-      } else if tickPercent < 0.75 {
-        currentColorSprite.alpha = (tickPercent - 0.5) * 4
       } else {
-        currentColorSprite.alpha = 1
+        currentColorSprite.alpha = (tickPercent - 0.75) * 4
       }
     }
     switch state {
@@ -104,14 +102,12 @@ class RobotNode: SKNode {
     lastLastPosition = lastPosition
     lastPosition = nextPosition
     nextPosition = newNextPosition
-    finishColorChange()
   }
   
   func loadNextGridCoord(nextGridCoord: GridCoord) {
     lastLastPosition = lastPosition
     lastPosition = nextPosition
     nextPosition = CGPoint(CGFloat(nextGridCoord.i) + 0.5, CGFloat(nextGridCoord.j) + 0.5)
-    finishColorChange()
   }
   
   func finishColorChange() {

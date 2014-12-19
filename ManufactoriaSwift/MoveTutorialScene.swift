@@ -17,7 +17,7 @@ class MoveTutorialScene: TutorialScene {
     
     instructionNode.instructionsLabel.text = "This is a manufactory floor plan."
     let connectLabel = SmartLabel()
-    connectLabel.text = "Connect the entrance and exit."
+    connectLabel.text = "Please connect the\nentrance and exit."
     instructionNode.addPageToRight(connectLabel)
     startPulseWithParent(instructionNode.rightArrow)
     

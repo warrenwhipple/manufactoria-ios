@@ -97,12 +97,21 @@ class SmartLabel: SKNode {
     super.init()
   }
   
+  func emHeight() -> CGFloat {
+    let label = SKLabelNode(fontNamed: fontName)
+    label.fontSize = fontSize
+    label.text = "M"
+    return label.frame.size.height
+  }
+  
+  func paragraphHeight() -> CGFloat {
+    if rows.isEmpty {return 0}
+    return emHeight() * (lineHeight * CGFloat(rows.count - 1) + 1)
+  }
+  
   func alignNodes() {
     if rows.isEmpty {return}
-    let emLabel = SKLabelNode(fontNamed: fontName)
-    emLabel.fontSize = fontSize
-    emLabel.text = "M"
-    let em = emLabel.frame.size.height
+    let em = emHeight()
     let yShift: CGFloat = (em * lineHeight * CGFloat(rows.count - 1) - em) / 2
     
     for (r, row) in enumerate(rows) {

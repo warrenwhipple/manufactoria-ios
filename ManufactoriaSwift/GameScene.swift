@@ -35,19 +35,20 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
   var robotNode: RobotNode?
   
   // MARK: Variables
-  var state: State = .Editing {didSet {gameStateDidChange(oldValue)}}
+  var state: State = .Editing {didSet {stateDidChange(oldValue)}}
   var currentTapeTestIndex = 0
-  var gameSpeed: CGFloat = 0
-  var robotCoord = GridCoord(0, 0)
-  var lastRobotCoord = GridCoord(0, 0)
-  var lastTapeLength: Int = 0
   var tickPercent: CGFloat = 0
   var beltFlowPercent: CGFloat = 0
   var beltFlowVelocity: CGFloat = 0.25
   var gridTestDidPass = false
-  var didAnimateRobotComplete = false
+  
   var testingState: TestingState = .Entering
   var lastTestingState: TestingState = .Entering
+  var testSpeed: CGFloat = 0
+  var robotCoord = GridCoord(0, 0)
+  var lastRobotCoord = GridCoord(0, 0)
+  var lastTapeLength: Int = 0
+  var didAnimateRobotComplete = false
   
   // MARK: - Initialization
   
@@ -126,7 +127,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
   
   // MARK: - Game State Functions
   
-  func gameStateDidChange(oldState: State) {
+  func stateDidChange(oldState: State) {
     if state == oldState {return}
     switch state {
     case .Editing:
@@ -183,22 +184,40 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     
     // update test
     if state == .Testing {
-      tickPercent += CGFloat(dt) * gameSpeed
-      switch testingState {
-      case .Entering:
-        if tickPercent >= 1 {
-          tickPercent -= 1
-          tapeNode.state = .Waiting
-          testingState = .Testing
-          robotNode?.loadNextGridCoord(robotCoord)
-          fallthrough
-        }
-      case .Testing:
+      tickPercent += CGFloat(dt) * testSpeed
+      
+      if testingState == .Entering && tickPercent >= 1 {
+        tickPercent -= 1
+        tapeNode.state = .Waiting
+        testingState = .Testing
+        robotNode?.loadNextGridCoord(robotCoord)
+      }
+      
+      if testingState == .Testing {
         while tickPercent >= 1 {
           tickPercent -= 1
           lastTestingState = testingState
           let testResult = levelData.grid.testCoord(robotCoord, lastCoord: lastRobotCoord, tape: &tape)
-          
+          lastRobotCoord = robotCoord
+          switch testResult {
+          case .Accept:
+            tapeNode.state = .Exiting
+            robotNode?.state = .Falling
+            testingState = .Exiting
+          case .Reject:
+            tapeNode.state = .Exiting
+            robotNode?.state = .Falling
+            testingState = .Falling
+          case .North: robotCoord.j++
+          case .East: robotCoord.i++
+          case .South: robotCoord.j--
+          case .West: robotCoord.i--
+          }
+          switch testResult {
+          case .Accept, .Reject: break
+          default: robotNode?.loadNextGridCoord(robotCoord)
+          }
+          robotNode?.finishColorChange()
           let tapeLength = tape.length()
           if tapeLength > lastTapeLength && tapeLength > 0 {
             tapeNode.writeColor(tape[-1].color())
@@ -210,39 +229,17 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
             tapeNode.state = .Waiting
           }
           lastTapeLength = tapeLength
-          
-          lastRobotCoord = robotCoord
-          var fallthroughTestingStateSwitch = false
-          switch testResult {
-          case .Accept:
-            tapeNode.state = .Exiting
-            robotNode?.state = .Falling
-            testingState = .Exiting
-            fallthroughTestingStateSwitch = true
-          case .Reject:
-            tapeNode.state = .Exiting
-            robotNode?.state = .Falling
-            testingState = .Falling
-            fallthroughTestingStateSwitch = true
-          case .North: robotCoord.j++
-          case .East: robotCoord.i++
-          case .South: robotCoord.j--
-          case .West: robotCoord.i--
-          }
-          if fallthroughTestingStateSwitch {fallthrough}
-          robotNode?.loadNextGridCoord(robotCoord)
-          
-
         }
-      case .Exiting:
-        if testingState == .Falling {fallthrough}
+      }
+      
+      if testingState == .Exiting {
         if !didAnimateRobotComplete && tickPercent >= 0.5 {
           animateRobotCompleteWithCoord(robotCoord, didPass: gridTestDidPass)
         }
         if tickPercent >= 1 {
           loadNextTape()
         }
-      case .Falling:
+      } else if testingState == .Falling {
         if !didAnimateRobotComplete && tickPercent >= 0.5 {
           animateRobotCompleteWithCoord(robotCoord, didPass: gridTestDidPass)
         }
@@ -250,6 +247,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
           loadNextTape()
         }
       }
+      
       tapeNode.update(tickPercent)
       robotNode?.update(tickPercent)
     }
@@ -334,7 +332,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
   func loadTape(i: Int) {
     removeActionForKey("skip")
     currentTapeTestIndex = i
-    gameSpeed = 1
+    testSpeed = 1
     tickPercent = 0
     if tapeTestResults.isEmpty {
       tape = ""
@@ -511,15 +509,15 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
   }
   
   func slowerButtonPressed() {
-    gameSpeed *= 0.5
+    testSpeed *= 0.5
   }
   
   func fasterButtonPressed() {
-    gameSpeed *= 2
+    testSpeed *= 2
   }
   
   func skipButtonPressed() {
-    gameSpeed = 32
+    testSpeed = 32
     //if tapeTestResults[currentTapeTestIndex].kind == TapeTestResult.Kind.FailLoop {
       robotNode?.runAction(SKAction.sequence([
         SKAction.waitForDuration(0.5),

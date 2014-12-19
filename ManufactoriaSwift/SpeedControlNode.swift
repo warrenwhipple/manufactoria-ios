@@ -42,8 +42,8 @@ class SpeedControlNode: SKNode {
     }
   }
   
-  override func appearWithParent(newParent: SKNode, animate: Bool) {
-    super.appearWithParent(newParent, animate: animate)
+  override func appearWithParent(newParent: SKNode, animate: Bool, delay: NSTimeInterval) {
+    super.appearWithParent(newParent, animate: animate, delay: delay)
     resetButtons()
   }
   

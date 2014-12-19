@@ -196,8 +196,8 @@ class ToolbarNode: SKNode, ToolButtonDelegate, SwipeNodeDelegate {
     }
   }
   
-  override func appearWithParent(newParent: SKNode, animate: Bool) {
-    super.appearWithParent(newParent, animate: animate)
+  override func appearWithParent(newParent: SKNode, animate: Bool, delay: NSTimeInterval) {
+    super.appearWithParent(newParent, animate: animate, delay: delay)
     robotButton.reset()
   }
   

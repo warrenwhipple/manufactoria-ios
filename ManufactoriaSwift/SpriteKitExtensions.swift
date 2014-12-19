@@ -26,43 +26,73 @@ extension UIColor {
 }
 
 extension SKNode {
+  
   func addChildren(nodes: [SKNode]) {
     for node in nodes {
       addChild(node)
     }
   }
-  
+
   func appearWithParent(newParent: SKNode, animate: Bool) {
+    appearWithParent(newParent, animate: animate, delay: 0)
+  }
+  
+  func appearWithParent(newParent: SKNode, animate: Bool, delayMultiplier: Double) {
+    appearWithParent(newParent, animate: animate, delay: delayMultiplier * 0.2)
+  }
+  
+  func appearWithParent(newParent: SKNode, animate: Bool, delay: NSTimeInterval) {
     if parent != newParent {
       removeFromParent()
       newParent.addChild(self)
     }
+    let wait: SKAction? = delay > 0 ? SKAction.waitForDuration(delay) : nil
     if animate {
       alpha = 0
-      setScale(1.5)
-      runAction(SKAction.group([
-        SKAction.fadeAlphaTo(1, duration: 0.2),
-        SKAction.scaleTo(1, duration: 0.2).easeOut()
-        ]), withKey: "appearDisappear")
+      let fadeIn = SKAction.fadeAlphaTo(1, duration: 0.2)
+      if let wait = wait {
+        hidden = true
+        runAction(SKAction.sequence([wait, SKAction.unhide(), fadeIn]), withKey: "appearDisappear")
+      } else {
+        hidden = false
+        runAction(SKAction.sequence([fadeIn]), withKey: "appearDisappear")
+      }
     } else {
-      removeActionForKey("appearDisappear")
       alpha = 1
-      setScale(1)
+      if let wait = wait {
+        hidden = true
+        runAction(SKAction.sequence([wait, SKAction.unhide()]), withKey: "appearDisappear")
+      } else {
+        hidden = false
+        removeActionForKey("appearDisappear")
+      }
     }
   }
   
   func disappearWithAnimate(animate: Bool) {
+    disappearWithAnimate(animate, delay: 0)
+  }
+
+  func disappearWithAnimate(animate: Bool, delayMultiplier: Double) {
+    disappearWithAnimate(animate, delay: delayMultiplier * 0.2)
+  }
+  
+  func disappearWithAnimate(animate: Bool, delay: NSTimeInterval) {
+    let wait: SKAction? = delay > 0 ? SKAction.waitForDuration(delay) : nil
     if animate {
-      runAction(SKAction.sequence([
-        SKAction.group([
-          SKAction.fadeAlphaTo(0, duration: 0.2),
-          SKAction.scaleTo(1.5, duration: 0.2).easeIn()
-          ]),
-        SKAction.removeFromParent()
-        ]), withKey: "appearDisappear")
+      let fadeOut = SKAction.fadeAlphaTo(0, duration: 0.2)
+      if let wait = wait {
+        runAction(SKAction.sequence([wait, fadeOut, SKAction.removeFromParent()]), withKey: "appearDisappear")
+      } else {
+        runAction(SKAction.sequence([fadeOut, SKAction.removeFromParent()]), withKey: "appearDisappear")
+      }
     } else {
-      removeActionForKey("appearDisappear")
-      removeFromParent()
+      if let wait = wait {
+        runAction(SKAction.sequence([wait, SKAction.removeFromParent()]), withKey: "appearDisappear")
+      } else {
+        removeActionForKey("appearDisappear")
+        removeFromParent()
+      }
     }
   }
 
