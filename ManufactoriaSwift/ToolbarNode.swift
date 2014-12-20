@@ -161,9 +161,7 @@ class ToolbarNode: SKNode, ToolButtonDelegate, SwipeNodeDelegate {
         robotButton.userInteractionEnabled = true
         undoCancelSwapper.index = 1
         redoConfirmSwapper.index = 1
-        for button in toolButtons {
-          button.userInteractionEnabled = true
-        }
+        for button in toolButtons {button.userInteractionEnabled = true}
         (selectBoxMoveButton as ToolButton).editMode = .Move // ambiguity bug workaround
         if delegate.editMode == .SelectBox {delegate.editMode = .Move}
       case .Disabled:

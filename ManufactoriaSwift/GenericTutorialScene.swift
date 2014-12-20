@@ -8,50 +8,113 @@
 
 import SpriteKit
 
-struct TutorialStage {
-  let setupClosure, editingClosure, thinkingClosure, reportingClosure, testingClosure, congratulatingClosure: (()->())?
-  init(
-    setupClosure: (()->())? = nil,
-    editingClosure: (()->())? = nil,
-    thinkingClosure: (()->())? = nil,
-    reportingClosure: (()->())? = nil,
-    testingClosure: (()->())? = nil,
-    congratulatingClosure: (()->())? = nil
-    ) {
-      self.setupClosure = setupClosure
-      self.editingClosure = editingClosure
-      self.thinkingClosure = thinkingClosure
-      self.reportingClosure = reportingClosure
-      self.testingClosure = testingClosure
-      self.congratulatingClosure = congratulatingClosure
-  }
-}
-
 class GenericTutorialScene: GameScene {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  var stages: [TutorialStage] = []
-  var currentStageIndex = 0
+  var stageSetups: [(()->())?] = []
+  var currentStageIndex = -1
+  var hookContinueButton, hookDemoRobotButton, hookDidSetState, hookDidSetEditMode, hookCellWasEdited: (()->())?
   
   let demoRobotButton = Button(iconOffNamed: "robotOff", iconOnNamed: "robotOn")
+  let continueButton = Button(text: "continue", fixedWidth: nil)
   
   override init(size: CGSize, var levelKey: String) {
     super.init(size: size, levelKey: levelKey)
-    let stage1 = TutorialStage()
+    gridNode.clearGridWithAnimate(false)
+    continueButton.touchUpInsideClosure = {[unowned self] in self.continueButtonWasPressed()}
+    demoRobotButton.touchUpInsideClosure = {[unowned self] in self.demoRobotButtonWasPressed()}
   }
   
   func nextTutorialStage() {
-    if currentStageIndex < stages.count - 1 {
-      stages[++currentStageIndex].setupClosure?()
+    hookContinueButton = nil
+    hookDemoRobotButton = nil
+    hookDidSetEditMode = nil
+    hookCellWasEdited = nil
+    if currentStageIndex < stageSetups.count - 1 {
+      stageSetups[++currentStageIndex]?()
+    }
+  }
+  
+  // MARK: - Game Change Listeners
+  
+  func continueButtonWasPressed() {
+    hookContinueButton?()
+  }
+  
+  func demoRobotButtonWasPressed() {
+    hookDemoRobotButton?()
+  }
+  
+  override func didSetState(oldState: State) {
+    super.didSetState(oldState)
+    hookDidSetState?()
+  }
+  
+  override var editMode: EditMode {
+    get {return gridNode.editMode}
+    set {
+      gridNode.editMode = newValue
+      hookDidSetEditMode?()
+    }
+  }
+  
+  override func cellWasEdited() {
+    super.cellWasEdited()
+    hookCellWasEdited?()
+  }
+  
+  override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
+    super.touchesBegan(touches, withEvent: event)
+    if state == .Testing && speedControlNode.parent == nil {
+      speedControlNode.appearWithParent(self, animate: true)
     }
   }
   
   // MARK: - Tutorial Functions
+  
+  func startDemoTest() {
+    stopBeltFlow()
+    tapeTestResults = [TapeTestResult(input: "", output: nil, correctOutput: nil, kind: .Demo)]
+    state = .Testing
+    if let buttonParent = demoRobotButton.parent {
+      let positionOnGridNode = buttonParent.convertPoint(demoRobotButton.position, toNode: gridNode.wrapper)
+      if let robotNode = robotNode {
+        robotNode.lastPosition = positionOnGridNode
+        robotNode.lastLastPosition = positionOnGridNode
+        demoRobotButton.position = CGPointZero
+        demoRobotButton.appearWithParent(robotNode, animate: false)
+        demoRobotButton.disappearWithAnimate(true)
+      }
+    }
+  }
+  
+  func labelIconButton(button: Button, text: String, animate: Bool, delayMultiplier: NSTimeInterval) -> SKLabelNode {
+    let label = SKLabelNode()
+    label.fontSmall()
+    label.fontColor = Globals.strokeColor
+    label.position.y = -Globals.iconSpan / 2 - Globals.smallEm * 3
+    label.text = text
+    label.appearWithParent(button, animate: animate, delayMultiplier: delayMultiplier)
+    return label
+  }
+  
+  func labelGridCoord(coord: GridCoord, text: String, animate: Bool, delayMultiplier: NSTimeInterval) -> SKLabelNode {
+    let label = SKLabelNode()
+    label.fontSmall()
+    label.fontColor = Globals.strokeColor
+    label.verticalAlignmentMode = .Center
+    label.setScale(1 / gridNode.wrapper.xScale)
+    label.position = coord.centerPoint
+    label.text = text
+    label.appearWithParent(gridNode.wrapper, animate: animate, delayMultiplier: delayMultiplier)
+    return label
+  }
   
   func changeInstructions(text: String, animate: Bool) {
     if animate {
       instructionNode.instructionsLabel.runAction(SKAction.sequence([
         SKAction.fadeAlphaTo(0, duration: 0.2),
         SKAction.runBlock({[unowned self] in self.instructionNode.instructionsLabel.text = text}),
+        SKAction.waitForDuration(0.2),
         SKAction.fadeAlphaTo(1, duration: 0.2)
         ]), withKey: "changeText")
     } else {
@@ -72,7 +135,7 @@ class GenericTutorialScene: GameScene {
     toolbarNode.swipeNode.removeFromParent()
   }
   
-  func displayFullScreenMessage(message: String, animate: Bool) -> SKSpriteNode {
+  func displayFullScreenMessage(message: String, animate: Bool, nextStageOnContinue: Bool) -> SKSpriteNode {
     let screenNode = SKSpriteNode(color: Globals.backgroundColor, size: size)
     screenNode.position = frame.center
     screenNode.zPosition = 100
@@ -81,11 +144,11 @@ class GenericTutorialScene: GameScene {
     let button = Button(text: "continue", fixedWidth: nil)
     button.shouldStickyOn = true
     button.touchUpInsideClosure = {
-      [unowned self] in
+      [unowned self, unowned button] in
       label.disappearWithAnimate(true)
       button.disappearWithAnimate(true)
       screenNode.disappearWithAnimate(true, delayMultiplier: 3)
-      self.nextTutorialStage()
+      if nextStageOnContinue {self.nextTutorialStage()}
     }
     label.position.y = 2 * Globals.mediumEm
     button.position.y = -(label.paragraphHeight() / 2) - Globals.mediumEm
@@ -155,17 +218,6 @@ class GenericTutorialScene: GameScene {
         SKAction.waitForDuration(1),
         SKAction.removeFromParent()
         ]))
-    }
-  }
-  
-  // MARK: - GameScene Overrides
-    
-  func didSetEditMode(newEditMode: EditMode, oldEditMode: EditMode) {}
-  
-  override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
-    super.touchesBegan(touches, withEvent: event)
-    if state == .Testing && speedControlNode.parent == nil {
-      speedControlNode.appearWithParent(self, animate: true)
     }
   }
 }

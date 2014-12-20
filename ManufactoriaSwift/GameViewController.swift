@@ -33,6 +33,9 @@ struct Globals {
   static var smallEm: CGFloat =  0
   static var mediumEm: CGFloat = 0
   static var largeEm: CGFloat =  0
+  static var disappearTime: NSTimeInterval = 0.4
+  static var appearDelay: NSTimeInterval = 0.2
+  static var appearTime: NSTimeInterval = 0.2
 }
 
 class GameViewController: UIViewController {

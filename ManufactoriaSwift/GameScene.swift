@@ -35,7 +35,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
   var robotNode: RobotNode?
   
   // MARK: Variables
-  var state: State = .Editing {didSet {stateDidChange(oldValue)}}
+  var state: State = .Editing {didSet {didSetState(oldValue)}}
   var currentTapeTestIndex = 0
   var tickPercent: CGFloat = 0
   var beltFlowPercent: CGFloat = 0
@@ -127,7 +127,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
   
   // MARK: - Game State Functions
   
-  func stateDidChange(oldState: State) {
+  func didSetState(oldState: State) {
     if state == oldState {return}
     switch state {
     case .Editing:

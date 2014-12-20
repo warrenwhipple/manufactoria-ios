@@ -8,6 +8,24 @@
 
 import SpriteKit
 
+/*
+[CIFilter filterWithName: @"CIFlashTransition"
+  keysAndValues: @"inputExtent", extent,
+  @"inputCenter",[CIVector vectorWithX:0.3*screenRect.size.width Y:0.7*screenRect.size.height],
+  @"inputColor", [CIColor colorWithRed:1.0 green:0.8 blue:0.6 alpha:1],
+  @"inputMaxStriationRadius", @2.5,
+  @"inputStriationStrength", @0.5,
+  @"inputStriationContrast", @1.37,
+  @"inputFadeThreshold", @0.85, nil];
+
+private let filter = CIFilter(name: "CIFlashTransition", withInputParameters: [])
+
+private let customTransition = SKTransition(CIFilter: filter, duration: 2)
+*/
+
+private let defaultFirstTransition = SKTransition.crossFadeWithDuration(0.4).outPlay()
+private let defaultSecondTransition = SKTransition.fadeWithColor(Globals.backgroundColor, duration: 0.4).inPlay()
+
 class TransitionScene: SKScene {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   enum Kind {case Title, Menu, Game(String), Unlock, Reset}
@@ -78,31 +96,36 @@ class ManufactoriaScene: SKScene {
   
   func transitionToTitleScene() {
     view?.presentScene(TransitionScene(size: size, kind: .Title,
-      secondTransition: SKTransition.pushWithDirection(.Right, duration: transitionTime).inPlay()),
-      transition: SKTransition.pushWithDirection(.Right, duration: transitionTime).outPlay())
+      secondTransition: defaultSecondTransition),transition: defaultFirstTransition)
+      //secondTransition: SKTransition.pushWithDirection(.Right, duration: transitionTime).inPlay()),
+     //transition: SKTransition.pushWithDirection(.Right, duration: transitionTime).outPlay())
   }
   
   func transitionToMenuScene() {
     view?.presentScene(TransitionScene(size: size, kind: .Menu,
-      secondTransition: SKTransition.pushWithDirection(.Right, duration: transitionTime).inPlay()),
-      transition: SKTransition.pushWithDirection(.Right, duration: transitionTime).outPlay())
+      secondTransition: defaultSecondTransition),transition: defaultFirstTransition)
+      //secondTransition: SKTransition.pushWithDirection(.Right, duration: transitionTime).inPlay()),
+      //transition: SKTransition.pushWithDirection(.Right, duration: transitionTime).outPlay())
   }
   
   func transitionToUnlockScene() {
     view?.presentScene(TransitionScene(size: size, kind: .Unlock,
-      secondTransition: SKTransition.pushWithDirection(.Left, duration: transitionTime).inPlay()),
-      transition: SKTransition.pushWithDirection(.Left, duration: transitionTime).outPlay())
+      secondTransition: defaultSecondTransition),transition: defaultFirstTransition)
+      //secondTransition: SKTransition.pushWithDirection(.Left, duration: transitionTime).inPlay()),
+      //transition: SKTransition.pushWithDirection(.Left, duration: transitionTime).outPlay())
   }
   
   func transitionToResetScene() {
     view?.presentScene(TransitionScene(size: size, kind: .Reset,
-      secondTransition: SKTransition.pushWithDirection(.Left, duration: transitionTime).inPlay()),
-      transition: SKTransition.pushWithDirection(.Left, duration: transitionTime).outPlay())
+      secondTransition: defaultSecondTransition),transition: defaultFirstTransition)
+      //secondTransition: SKTransition.pushWithDirection(.Left, duration: transitionTime).inPlay()),
+      //transition: SKTransition.pushWithDirection(.Left, duration: transitionTime).outPlay())
   }
   
   func transitionToGameSceneWithLevelKey(levelKey: String) {
     view?.presentScene(TransitionScene(size: size, kind: .Game(levelKey),
-      secondTransition: SKTransition.pushWithDirection(.Left, duration: transitionTime).inPlay()),
-      transition: SKTransition.pushWithDirection(.Left, duration: transitionTime).outPlay())
+      secondTransition: defaultSecondTransition),transition: defaultFirstTransition)
+      //secondTransition: SKTransition.pushWithDirection(.Left, duration: transitionTime).inPlay()),
+      //transition: SKTransition.pushWithDirection(.Left, duration: transitionTime).outPlay())
   }
 }

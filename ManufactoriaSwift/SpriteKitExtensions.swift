@@ -25,6 +25,8 @@ extension UIColor {
   }
 }
 
+private let unhideAction = SKAction.customActionWithDuration(0, actionBlock: {n,f in n.hidden = false})
+
 extension SKNode {
   
   func addChildren(nodes: [SKNode]) {
@@ -37,7 +39,7 @@ extension SKNode {
     appearWithParent(newParent, animate: animate, delay: 0)
   }
   
-  func appearWithParent(newParent: SKNode, animate: Bool, delayMultiplier: Double) {
+  func appearWithParent(newParent: SKNode, animate: Bool, delayMultiplier: NSTimeInterval) {
     appearWithParent(newParent, animate: animate, delay: delayMultiplier * 0.2)
   }
   
@@ -52,7 +54,7 @@ extension SKNode {
       let fadeIn = SKAction.fadeAlphaTo(1, duration: 0.2)
       if let wait = wait {
         hidden = true
-        runAction(SKAction.sequence([wait, SKAction.unhide(), fadeIn]), withKey: "appearDisappear")
+        runAction(SKAction.sequence([wait, unhideAction, fadeIn]), withKey: "appearDisappear")
       } else {
         hidden = false
         runAction(SKAction.sequence([fadeIn]), withKey: "appearDisappear")
@@ -61,7 +63,7 @@ extension SKNode {
       alpha = 1
       if let wait = wait {
         hidden = true
-        runAction(SKAction.sequence([wait, SKAction.unhide()]), withKey: "appearDisappear")
+        runAction(SKAction.sequence([wait, unhideAction]), withKey: "appearDisappear")
       } else {
         hidden = false
         removeActionForKey("appearDisappear")

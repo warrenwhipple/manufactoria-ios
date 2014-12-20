@@ -52,6 +52,7 @@ class InstructionNode: SwipeNode {
   func resetFailPageForTestResult(result: TapeTestResult) {
     //let lineHeight = SKTexture(imageNamed: "dot").size().height * 1.5
     switch result.kind {
+    case .Demo: break
     case .Pass:
       assertionFailure("StatusNode cannot generate failPage for a test that passes.")
     case .FailLoop:

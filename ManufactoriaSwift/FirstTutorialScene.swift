@@ -10,69 +10,63 @@ import SpriteKit
 
 class FirstTutorialScene: GenericTutorialScene {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  
-  let entranceLabel = SKLabelNode(), exitLabel = SKLabelNode(), deleteLabel = SKLabelNode(), beltLabel = SKLabelNode()
+  var entranceLabel, exitLabel, beltLabel, deleteLabel: SKLabelNode!
   var deleteButton, beltButton: ToolButton!
   
   init(size: CGSize) {
     super.init(size: size, levelKey: "move")
     
-    displayFullScreenMessage("You have been assigned to\nROBOTICS TESTING\n\nThank you for your cooperation", animate: false)
+    displayFullScreenMessage("You have been assigned to\n\nROBOTICS TESTING\n\nThank you for your cooperation", animate: false, nextStageOnContinue: true)
     
-    changeInstructions("Acceptable robots must\nbe transported to the exit\n\nPlease connect the\nentrance to exit", animate: false)
+    changeInstructions("Acceptable robots must\nbe transported to the exit", animate: false)
     
     deleteButton = toolbarNode.toolButtons[0]
     beltButton = toolbarNode.toolButtons[1]
     toolbarNode.toolButtonActivated(deleteButton)
     beltButton.editModeIsLocked = true
     removeAndDisconnectAllToolbarButtons()
-    beltButton.position = CGPointZero
-    beltButton.appearWithParent(toolbarNode, animate: false)
-
-    let welcomeStage = TutorialStage() // Stage 0
+    continueButton.appearWithParent(toolbarNode, animate: false)
     
-    let tapBeltStage = TutorialStage( // Stage 1
-      setupClosure: {[unowned self] in
-        self.repeatPulseWithParent(self.beltButton, position: CGPointZero, delay: 5)
-      }
-    )
-
-    let connectStage = TutorialStage( // Stage 2
-      setupClosure: {[unowned self] in
+    entranceLabel = labelGridCoord(gridNode.grid.startCoord, text: "entrance", animate: true, delayMultiplier: 3)
+    exitLabel = labelGridCoord(gridNode.grid.endCoord, text: "exit", animate: true, delayMultiplier: 3)
+    beltLabel = labelIconButton(beltButton, text: "conveyor belt", animate: true, delayMultiplier: 3)
+    deleteLabel = labelIconButton(deleteButton, text: "delete", animate: true, delayMultiplier: 3)
+    
+    stageSetups = [
+      
+      // entrance exit labels
+      {[unowned self] in
+        self.hookContinueButton = {self.nextTutorialStage()}
+      },
+      
+      // tap robot
+      {[unowned self] in
+        self.changeInstructions("Please use the conveyor belt\nto connect the entrance and exit", animate: true)
+        self.continueButton.disappearWithAnimate(true)
+        self.beltButton.position = CGPointZero
+        self.beltButton.appearWithParent(self.toolbarNode, animate: true, delayMultiplier: 3)
+        self.repeatPulseWithParent(self.beltButton.nodeOff!, position: CGPointZero, delay: 5)
+        self.hookDidSetEditMode = {if self.editMode == .Belt {self.nextTutorialStage()}}
+      },
+      
+      // draw belt
+      {[unowned self] in
         self.repeatGridPulses()
-      }
-    )
-    
-    let tapRobotStage = TutorialStage( // Stage 3
-      setupClosure: {[unowned self] in
-        self.gridNode.state = .EditingLocked
+        self.hookCellWasEdited = {if self.checkGridPass() {self.nextTutorialStage()}}
+      },
+      
+      // tap robot
+      {[unowned self] in
         self.changeInstructions("Please accept the next robot", animate: true)
+        self.entranceLabel.disappearWithAnimate(true)
+        self.exitLabel.disappearWithAnimate(true)
+        self.gridNode.state = .Waiting
         self.beltButton.disappearWithAnimate(true)
         self.demoRobotButton.appearWithParent(self.toolbarNode, animate: true, delayMultiplier: 3)
-        self.repeatPulseWithParent(self.toolbarNode.robotButton, position: CGPointZero, delay: 5)
+        self.repeatPulseWithParent(self.demoRobotButton, position: CGPointZero, delay: 5)
+        self.hookDemoRobotButton = {self.startDemoTest()}
       }
-    )
-
-    stages = [welcomeStage, tapBeltStage, connectStage]
-    stages[0].setupClosure?()
-  }
-  
-  // MARK: - Game Change Listeners
-  
-  override func didSetEditMode(newEditMode: EditMode, oldEditMode: EditMode) {
-    super.didSetEditMode(editMode, oldEditMode: oldEditMode)
-    switch currentStageIndex {
-    case 1: if newEditMode == .Belt {nextTutorialStage()} // completed tapBeltStage
-    default: break
-    }
-  }
-  
-  override func cellWasEdited() {
-    super.cellWasEdited()
-    switch currentStageIndex {
-    case 2: if checkGridPass() {nextTutorialStage()} // completed connectStage
-    default: break
-    }
+    ]
   }
   
   // MARK: - Other Functions

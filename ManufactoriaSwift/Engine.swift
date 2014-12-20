@@ -10,7 +10,7 @@ import Foundation
 
 struct TapeTestResult {
   enum Kind {
-    case Pass, FailLoop, FailShouldAccept, FailShouldReject, FailWrongTransform, FailDroppedTransform
+    case Demo, Pass, FailLoop, FailShouldAccept, FailShouldReject, FailWrongTransform, FailDroppedTransform
   }
   let input: String
   let output: String?

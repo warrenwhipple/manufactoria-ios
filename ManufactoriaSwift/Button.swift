@@ -30,6 +30,7 @@ class Button: SKSpriteNode {
   var touchIsDraggingThrough: Bool = false
   var touchBeganPoint: CGPoint = CGPointZero
   var shouldStickyOn = false
+  var stickyOnHasBeenActivated = false
   var nodeOn, nodeOff: SKNode?
   
   init(nodeOff: SKNode, nodeOn: SKNode, touchSize: CGSize) {
@@ -111,6 +112,7 @@ class Button: SKSpriteNode {
       self.touch = nil
     }
     isOn = false
+    stickyOnHasBeenActivated = false
     nodeOn?.removeActionForKey("fade")
     nodeOff?.removeActionForKey("fade")
     nodeOn?.alpha = 0
@@ -159,8 +161,9 @@ class Button: SKSpriteNode {
         if touchIsDraggingThrough {
           dragThroughDelegate?.dragThroughTouchEnded(touch)
           touchIsDraggingThrough = false
-        } else {
+        } else if !stickyOnHasBeenActivated {
           isOn = shouldStickyOn
+          stickyOnHasBeenActivated = shouldStickyOn
           touchUpInsideClosure?()
         }
         self.touch = nil
@@ -174,7 +177,7 @@ class Button: SKSpriteNode {
         if touchIsDraggingThrough {
           dragThroughDelegate?.dragThroughTouchCancelled(touch)
           touchIsDraggingThrough = false
-        } else {
+        } else if !stickyOnHasBeenActivated {
           isOn = false
           touchCancelledClosure?()
         }

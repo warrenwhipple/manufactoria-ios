@@ -324,6 +324,13 @@ class GridNode: SKNode {
     delegate.gridWasUnselected()
   }
   
+  func clearGridWithAnimate(animate: Bool) {
+    for i in 0 ..< cellNodes.count {
+      grid.cells[i] = Cell()
+    }
+    changeCellNodesToMatchCellsWithAnimate(animate)
+  }
+  
   func changeCellNodesToMatchCellsWithAnimate(animate: Bool) {
     var someCellWasEdited = false
     for i in 0 ..< cellNodes.count {
