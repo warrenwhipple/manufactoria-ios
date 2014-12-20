@@ -13,6 +13,8 @@ class GenericTutorialScene: GameScene {
   var stageSetups: [(()->())?] = []
   var currentStageIndex = -1
   var hookContinueButton, hookDemoRobotButton, hookDidSetState, hookDidSetEditMode, hookCellWasEdited: (()->())?
+  var speedControlsShouldSimplify: Bool = true
+  var speedControlsShouldHideUntilTouch: Bool = true
   
   let demoRobotButton = Button(iconOffNamed: "robotOff", iconOnNamed: "robotOn")
   let continueButton = Button(text: "continue", fixedWidth: nil)
@@ -20,6 +22,8 @@ class GenericTutorialScene: GameScene {
   override init(size: CGSize, var levelKey: String) {
     super.init(size: size, levelKey: levelKey)
     gridNode.clearGridWithAnimate(false)
+    continueButton.isSticky = true
+    demoRobotButton.isSticky = true
     continueButton.touchUpInsideClosure = {[unowned self] in self.continueButtonWasPressed()}
     demoRobotButton.touchUpInsideClosure = {[unowned self] in self.demoRobotButtonWasPressed()}
   }
@@ -29,6 +33,7 @@ class GenericTutorialScene: GameScene {
     hookDemoRobotButton = nil
     hookDidSetEditMode = nil
     hookCellWasEdited = nil
+    stopRepeatPulse()
     if currentStageIndex < stageSetups.count - 1 {
       stageSetups[++currentStageIndex]?()
     }
@@ -46,6 +51,7 @@ class GenericTutorialScene: GameScene {
   
   override func didSetState(oldState: State) {
     super.didSetState(oldState)
+    if state == .Testing && speedControlsShouldHideUntilTouch {speedControlNode.removeFromParent()}
     hookDidSetState?()
   }
   
@@ -62,6 +68,27 @@ class GenericTutorialScene: GameScene {
     hookCellWasEdited?()
   }
   
+  override func loadTape(i: Int) {
+    super.loadTape(i)
+    if speedControlsShouldSimplify {
+      speedControlNode.slowerButton.removeFromParent()
+      if tapeTestResults[i].kind == TapeTestResult.Kind.FailLoop {
+        speedControlNode.fasterButton.removeFromParent()
+        speedControlNode.skipButton.position.x = 0
+        speedControlNode.skipButton.appearWithParent(speedControlNode, animate: false)
+      } else {
+        speedControlNode.skipButton.removeFromParent()
+        speedControlNode.fasterButton.position.x = 0
+        speedControlNode.fasterButton.appearWithParent(speedControlNode, animate: false)
+      }
+    } else {
+      speedControlNode.fitToSize()
+      speedControlNode.slowerButton.appearWithParent(speedControlNode, animate: false)
+      speedControlNode.skipButton.appearWithParent(speedControlNode, animate: false)
+      speedControlNode.fasterButton.appearWithParent(speedControlNode, animate: false)
+    }
+  }
+  
   override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
     super.touchesBegan(touches, withEvent: event)
     if state == .Testing && speedControlNode.parent == nil {
@@ -73,6 +100,8 @@ class GenericTutorialScene: GameScene {
   
   func startDemoTest() {
     stopBeltFlow()
+    instructionNode.disappearWithAnimate(true)
+    gridNode.state = .Waiting
     tapeTestResults = [TapeTestResult(input: "", output: nil, correctOutput: nil, kind: .Demo)]
     state = .Testing
     if let buttonParent = demoRobotButton.parent {
@@ -81,23 +110,24 @@ class GenericTutorialScene: GameScene {
         robotNode.lastPosition = positionOnGridNode
         robotNode.lastLastPosition = positionOnGridNode
         demoRobotButton.position = CGPointZero
-        demoRobotButton.appearWithParent(robotNode, animate: false)
+        demoRobotButton.removeFromParent()
+        robotNode.addChild(demoRobotButton)
         demoRobotButton.disappearWithAnimate(true)
       }
     }
   }
   
-  func labelIconButton(button: Button, text: String, animate: Bool, delayMultiplier: NSTimeInterval) -> SKLabelNode {
+  func labelIconButton(button: Button, text: String, animate: Bool, delay: NSTimeInterval) -> SKLabelNode {
     let label = SKLabelNode()
     label.fontSmall()
     label.fontColor = Globals.strokeColor
     label.position.y = -Globals.iconSpan / 2 - Globals.smallEm * 3
     label.text = text
-    label.appearWithParent(button, animate: animate, delayMultiplier: delayMultiplier)
+    label.appearWithParent(button, animate: animate, delay: delay)
     return label
   }
   
-  func labelGridCoord(coord: GridCoord, text: String, animate: Bool, delayMultiplier: NSTimeInterval) -> SKLabelNode {
+  func labelGridCoord(coord: GridCoord, text: String, animate: Bool, delay: NSTimeInterval) -> SKLabelNode {
     let label = SKLabelNode()
     label.fontSmall()
     label.fontColor = Globals.strokeColor
@@ -105,22 +135,25 @@ class GenericTutorialScene: GameScene {
     label.setScale(1 / gridNode.wrapper.xScale)
     label.position = coord.centerPoint
     label.text = text
-    label.appearWithParent(gridNode.wrapper, animate: animate, delayMultiplier: delayMultiplier)
+    label.appearWithParent(gridNode.wrapper, animate: animate, delay: delay)
     return label
   }
   
   func changeInstructions(text: String, animate: Bool) {
     if animate {
+      if instructionNode.currentIndex != 1 {instructionNode.instructionsLabel.alpha = 0}
       instructionNode.instructionsLabel.runAction(SKAction.sequence([
-        SKAction.fadeAlphaTo(0, duration: 0.2),
+        SKAction.fadeAlphaTo(0, duration: Globals.disappearTime),
         SKAction.runBlock({[unowned self] in self.instructionNode.instructionsLabel.text = text}),
-        SKAction.waitForDuration(0.2),
-        SKAction.fadeAlphaTo(1, duration: 0.2)
+        SKAction.waitForDuration(Globals.disappearAppearGapTime),
+        SKAction.fadeAlphaTo(1, duration: Globals.appearTime)
         ]), withKey: "changeText")
+      instructionNode.snapToIndex(1, initialVelocityX: 0)
     } else {
       instructionNode.instructionsLabel.removeActionForKey("changeText")
       instructionNode.instructionsLabel.text = text
       instructionNode.instructionsLabel.alpha = 1
+      instructionNode.goToIndexWithoutSnap(1)
     }
   }
   
@@ -142,12 +175,12 @@ class GenericTutorialScene: GameScene {
     let label = SmartLabel()
     label.text = message
     let button = Button(text: "continue", fixedWidth: nil)
-    button.shouldStickyOn = true
+    button.isSticky = true
     button.touchUpInsideClosure = {
       [unowned self, unowned button] in
       label.disappearWithAnimate(true)
       button.disappearWithAnimate(true)
-      screenNode.disappearWithAnimate(true, delayMultiplier: 3)
+      screenNode.disappearWithAnimate(true, delay: Globals.appearDelay)
       if nextStageOnContinue {self.nextTutorialStage()}
     }
     label.position.y = 2 * Globals.mediumEm

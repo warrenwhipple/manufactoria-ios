@@ -20,6 +20,8 @@ private let nodeOnFadeInAction = SKAction.fadeAlphaTo(1, duration: 0.1)
 private let nodeOffFadeOutAction = SKAction.fadeAlphaTo(0, duration: 0.1)
 private let nodeOnFadeOutAction = SKAction.fadeAlphaTo(0, duration: 0.3)
 private let nodeOffFadeInAction = SKAction.fadeAlphaTo(1, duration: 0.1)
+private let disableFadeAction = SKAction.fadeAlphaTo(0.2, duration: 0.3)
+private let enableFadeAction = SKAction.fadeAlphaTo(1, duration: 0.3)
 
 class Button: SKSpriteNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
@@ -29,9 +31,10 @@ class Button: SKSpriteNode {
   var touch: UITouch?
   var touchIsDraggingThrough: Bool = false
   var touchBeganPoint: CGPoint = CGPointZero
-  var shouldStickyOn = false
+  var isSticky = false
   var stickyOnHasBeenActivated = false
   var nodeOn, nodeOff: SKNode?
+  let disableWrapper = SKNode()
   
   init(nodeOff: SKNode, nodeOn: SKNode, touchSize: CGSize) {
     self.nodeOff = nodeOff
@@ -40,8 +43,9 @@ class Button: SKSpriteNode {
     userInteractionEnabled = true
     nodeOn.zPosition = 1
     nodeOn.alpha = 0
-    addChild(nodeOff)
-    addChild(nodeOn)
+    disableWrapper.addChild(nodeOff)
+    disableWrapper.addChild(nodeOn)
+    addChild(disableWrapper)
   }
   
   convenience init(text: String, fixedWidth: CGFloat?) {
@@ -86,6 +90,7 @@ class Button: SKSpriteNode {
     iconOn.color = Globals.highlightColor
   }
   
+  // MARK: - On Off
   var isOn: Bool = false {
     didSet {
       if isOn && !oldValue {
@@ -119,7 +124,40 @@ class Button: SKSpriteNode {
     nodeOff?.alpha = 1
   }
   
-  // MARK: Touch Delegate Methods
+  override func appearWithParent(newParent: SKNode, animate: Bool, delay: NSTimeInterval) {
+    if isSticky && stickyOnHasBeenActivated {reset()}
+    super.appearWithParent(newParent, animate: animate, delay: delay)
+  }
+  
+  // MARK: - Enable Disable
+  
+  private(set) var isEnabled: Bool = true
+  
+  func enableWithAnimate(animate: Bool) {
+    userInteractionEnabled = true
+    disableWrapper.runAction(enableFadeAction, withKey: "fade")
+  }
+
+  func disableWithAnimate(animate: Bool) {
+    cancelTouch()
+    userInteractionEnabled = false
+    disableWrapper.runAction(disableFadeAction, withKey: "fade")
+  }
+  
+  // MARK: - Touch Methods
+  
+  func cancelTouch() {
+    if let touch = touch {
+      if touchIsDraggingThrough {
+        dragThroughDelegate?.dragThroughTouchCancelled(touch)
+        touchIsDraggingThrough = false
+      } else if !stickyOnHasBeenActivated {
+        isOn = false
+        touchCancelledClosure?()
+      }
+      self.touch = nil
+    }
+  }
   
   override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
     if let touch = touch {
@@ -162,8 +200,8 @@ class Button: SKSpriteNode {
           dragThroughDelegate?.dragThroughTouchEnded(touch)
           touchIsDraggingThrough = false
         } else if !stickyOnHasBeenActivated {
-          isOn = shouldStickyOn
-          stickyOnHasBeenActivated = shouldStickyOn
+          isOn = isSticky
+          stickyOnHasBeenActivated = isSticky
           touchUpInsideClosure?()
         }
         self.touch = nil

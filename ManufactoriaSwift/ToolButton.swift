@@ -49,7 +49,7 @@ class ToolButton: Button {
     return editMode
   }
   
-  func cancelTouch() {
+  override func cancelTouch() {
     if let touch = touch {
       if touchIsDraggingThrough {
         dragThroughDelegate?.dragThroughTouchCancelled(touch)

@@ -39,10 +39,6 @@ extension SKNode {
     appearWithParent(newParent, animate: animate, delay: 0)
   }
   
-  func appearWithParent(newParent: SKNode, animate: Bool, delayMultiplier: NSTimeInterval) {
-    appearWithParent(newParent, animate: animate, delay: delayMultiplier * 0.2)
-  }
-  
   func appearWithParent(newParent: SKNode, animate: Bool, delay: NSTimeInterval) {
     if parent != newParent {
       removeFromParent()
@@ -75,11 +71,8 @@ extension SKNode {
     disappearWithAnimate(animate, delay: 0)
   }
 
-  func disappearWithAnimate(animate: Bool, delayMultiplier: Double) {
-    disappearWithAnimate(animate, delay: delayMultiplier * 0.2)
-  }
-  
   func disappearWithAnimate(animate: Bool, delay: NSTimeInterval) {
+    if parent == nil {return}
     let wait: SKAction? = delay > 0 ? SKAction.waitForDuration(delay) : nil
     if animate {
       let fadeOut = SKAction.fadeAlphaTo(0, duration: 0.2)

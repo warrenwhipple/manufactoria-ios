@@ -97,7 +97,7 @@ class ToolbarNode: SKNode, ToolButtonDelegate, SwipeNodeDelegate {
     confirmButton.userInteractionEnabled = false
     addChild(undoCancelSwapper)
     addChild(redoConfirmSwapper)
-    robotButton.shouldStickyOn = true
+    robotButton.isSticky = true
     addChild(robotButton)
     
     swipeNode.swipeSnapDelegate = self

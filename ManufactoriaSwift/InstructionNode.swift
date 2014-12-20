@@ -32,7 +32,7 @@ class InstructionNode: SwipeNode {
     
     optionsPage.addChild(menuButton)
     menuButton.dragThroughDelegate = self
-    menuButton.shouldStickyOn = true
+    menuButton.isSticky = true
     menuButton.touchUpInsideClosure = {[unowned self] in if let delegate = self.delegate {delegate.menuButtonPressed()}}
     
     instructionsLabel.text = instructions
