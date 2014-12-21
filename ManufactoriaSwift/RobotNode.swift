@@ -14,6 +14,7 @@ class RobotNode: SKNode {
   let currentColorSprite = SKSpriteNode("robotOn")
   let lastColorSprite = SKSpriteNode("robotOn")
   let outlineSprite = SKSpriteNode("robotOff")
+  let eyesSprite = SKSpriteNode("robotEyes")
   let darkBlueColor = Globals.blueColor.blend(UIColor.blackColor(), blendFactor: 0.2)
   let darkRedColor = Globals.redColor.blend(UIColor.blackColor(), blendFactor: 0.2)
   let darkGreenColor = Globals.greenColor.blend(UIColor.blackColor(), blendFactor: 0.2)
@@ -41,6 +42,9 @@ class RobotNode: SKNode {
     }
     currentColorSprite.zPosition = 0.5
     fallScaleNode.addChild(currentColorSprite)
+    eyesSprite.color = Globals.backgroundColor
+    eyesSprite.zPosition = -0.5
+    fallScaleNode.addChild(eyesSprite)
     addChild(fallScaleNode)
   }
   

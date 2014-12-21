@@ -45,7 +45,7 @@ enum TickTestResult {
   case North, East, South, West, Accept, Reject
 }
 
-class Grid {
+struct Grid {
   let space: GridSpace
   var cells: [Cell]
   var startCoord: GridCoord {return GridCoord(space.columns / 2, -1)}
@@ -68,38 +68,37 @@ class Grid {
     self.cells = [Cell](count: space.columns * space.rows, repeatedValue: Cell())
   }
   
-  func loadString(string: String) {
-    assert(space.columns * space.rows * 2 == string.length(), "Loading string does not match grid space.")
-    var i = 0
-    var even = true
-    for character in string {
-      if even {
+  init(space: GridSpace, string: String) {
+    assert(space.columns * space.rows * 2 == string.length(), "Grid string does not fit grid space.")
+    self.space = space
+    var cells = [Cell]()
+    var cell = Cell()
+    for (i, character) in enumerate(string) {
+      if i % 2 == 0 {
         switch character {
-        case "n": cells[i].direction = .North
-        case "e": cells[i].direction = .East
-        case "s": cells[i].direction = .South
-        case "w": cells[i].direction = .West
-        default:  break
+        case "e": cell.direction = .East
+        case "s": cell.direction = .South
+        case "w": cell.direction = .West
+        default:  cell.direction = .North
         }
       } else {
         switch character {
-        case "o": cells[i].kind = .Blank
-        case "i": cells[i].kind = .Belt
-        case "x": cells[i].kind = .Bridge
-        case "b": cells[i].kind = .PusherB
-        case "r": cells[i].kind = .PusherR
-        case "g": cells[i].kind = .PusherG
-        case "y": cells[i].kind = .PusherY
-        case "B": cells[i].kind = .PullerBR
-        case "R": cells[i].kind = .PullerRB
-        case "G": cells[i].kind = .PullerGY
-        case "Y": cells[i].kind = .PullerYG
-        default: break
+        case "i": cell.kind = .Belt
+        case "x": cell.kind = .Bridge
+        case "b": cell.kind = .PusherB
+        case "r": cell.kind = .PusherR
+        case "g": cell.kind = .PusherG
+        case "y": cell.kind = .PusherY
+        case "B": cell.kind = .PullerBR
+        case "R": cell.kind = .PullerRB
+        case "G": cell.kind = .PullerGY
+        case "Y": cell.kind = .PullerYG
+        default: cell.kind = .Blank
         }
-        i++
+        cells.append(cell)
       }
-      even = !even
     }
+    self.cells = cells
   }
   
   func toString() -> String {
@@ -107,18 +106,18 @@ class Grid {
     for cell in cells {
       switch cell.direction {
       case .North: string += "n"
-      case .East: string += "e"
+      case .East:  string += "e"
       case .South: string += "s"
-      case .West: string += "w"
+      case .West:  string += "w"
       }
       switch cell.kind {
-      case .Blank: string += "o"
-      case .Belt: string += "i"
-      case .Bridge: string += "x"
-      case .PusherB: string += "b"
-      case .PusherR: string += "r"
-      case .PusherG: string += "g"
-      case .PusherY: string += "y"
+      case .Blank:    string += "o"
+      case .Belt:     string += "i"
+      case .Bridge:   string += "x"
+      case .PusherB:  string += "b"
+      case .PusherR:  string += "r"
+      case .PusherG:  string += "g"
+      case .PusherY:  string += "y"
       case .PullerBR: string += "B"
       case .PullerRB: string += "R"
       case .PullerGY: string += "G"

@@ -44,7 +44,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
   
   var testingState: TestingState = .Entering
   var lastTestingState: TestingState = .Entering
-  var testSpeed: CGFloat = 0
+  var testSpeed: NSTimeInterval = 0
   var robotCoord = GridCoord(0, 0)
   var lastRobotCoord = GridCoord(0, 0)
   var lastTapeLength: Int = 0
@@ -60,7 +60,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     levelData = LevelData(levelKey: levelKey)
     engine = Engine(levelSetup: levelSetup)
     instructionNode = InstructionNode(instructions: levelSetup.instructions)
-    gridNode = GridNode(grid: levelData.grid)
+    gridNode = GridNode(grid: levelData.currentGrid())
     toolbarNode = ToolbarNode(editModes: levelSetup.editModes)
     
     super.init(size: size)
@@ -95,7 +95,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     congratulationsMenu.alpha = 0
     congratulationsMenu.zPosition = 10
     
-    refreshUndoRedoButtonStatus()
+    toolbarNode.undoRedoQueueDidChange()
     
     fitToSize()
   }
@@ -103,7 +103,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
   func fitToSize() {
     gridNode.rect = CGRect(origin: CGPointZero, size: size)
     let gridRect = CGRect(centerX: 0.5 * size.width, centerY: 0.5 * size.height,
-      width: CGFloat(levelData.grid.space.columns) * gridNode.wrapper.xScale, height: CGFloat(levelData.grid.space.rows) * gridNode.wrapper.yScale)
+      width: CGFloat(gridNode.grid.space.columns) * gridNode.wrapper.xScale, height: CGFloat(gridNode.grid.space.rows) * gridNode.wrapper.yScale)
     let bottomGapRect = roundPix(CGRect(x: 0,y: 0,
       width: size.width, height: 0.5 * (size.height - gridRect.size.height)))
     let topGapRect = roundPix(CGRect(x: 0, y: gridRect.maxY,
@@ -144,7 +144,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
       stopBeltFlow()
       gridTestDidPass = false
       gridNode.state = .Thinking
-      engine.beginGridTest()
+      engine.beginGridTest(gridNode.grid)
     case .Reporting:
       gridNode.state = .Waiting
       reportNode.appearWithParent(self, animate: true)
@@ -184,7 +184,9 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     
     // update test
     if state == .Testing {
-      tickPercent += CGFloat(dt) * testSpeed
+      tickPercent += CGFloat(dt * testSpeed)
+      
+      if skipAnimationComplete {loadNextTape()}
       
       if testingState == .Entering && tickPercent >= 1 {
         tickPercent -= 1
@@ -197,7 +199,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
         while tickPercent >= 1 {
           tickPercent -= 1
           lastTestingState = testingState
-          let testResult = levelData.grid.testCoord(robotCoord, lastCoord: lastRobotCoord, tape: &tape)
+          let testResult = gridNode.grid.testCoord(robotCoord, lastCoord: lastRobotCoord, tape: &tape)
           lastRobotCoord = robotCoord
           switch testResult {
           case .Accept:
@@ -331,6 +333,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
   
   func loadTape(i: Int) {
     removeActionForKey("skip")
+    skipAnimationComplete = false
     currentTapeTestIndex = i
     testSpeed = 1
     tickPercent = 0
@@ -344,8 +347,8 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     lastTapeLength = tape.length()
     testingState = .Entering
     lastTestingState = .Entering
-    robotCoord = levelData.grid.startCoord + 1
-    lastRobotCoord = levelData.grid.startCoord
+    robotCoord = gridNode.grid.startCoord + 1
+    lastRobotCoord = gridNode.grid.startCoord
     if i > 0 {
       newRobotNodeWithColor(colorForTape(), animate: true)
     }
@@ -357,8 +360,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     robotNode?.runAction(SKAction.sequence([SKAction.fadeAlphaTo(0, duration: 0.5), SKAction.removeFromParent()]))
     robotNode = nil
     if currentTapeTestIndex >= tapeTestResults.count - 1 {
-      if gridTestDidPass {state = .Congratulating}
-      else {state = .Editing}
+      state = gridTestDidPass ? .Congratulating : .Editing
     } else {
       loadTape(currentTapeTestIndex + 1)
     }
@@ -438,8 +440,8 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
   func cellWasEdited() {}
   
   func editGroupWasCompleted() {
-    if levelData.editCompleted() {
-      refreshUndoRedoButtonStatus()
+    if levelData.saveGridEdit(gridNode.grid, levelKey: levelKey) {
+      toolbarNode.undoRedoQueueDidChange()
     }
   }
   
@@ -469,17 +471,19 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
   
   func undoEdit() {
     gridNode.editTouch = nil
-    if levelData.undo() {
+    if let grid = levelData.undo() {
+      gridNode.grid = grid
       gridNode.changeCellNodesToMatchCellsWithAnimate(true)
-      refreshUndoRedoButtonStatus()
+      toolbarNode.undoRedoQueueDidChange()
     }
   }
   
   func redoEdit() {
     gridNode.editTouch = nil
-    if levelData.redo() {
+    if let grid = levelData.redo() {
+      gridNode.grid = grid
       gridNode.changeCellNodesToMatchCellsWithAnimate(true)
-      refreshUndoRedoButtonStatus()
+      toolbarNode.undoRedoQueueDidChange()
     }
   }
   
@@ -491,9 +495,12 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     gridNode.confirmSelection()
   }
   
-  func refreshUndoRedoButtonStatus() {
-    toolbarNode.undoQueueIsEmpty = levelData.undoStrings.isEmpty
-    toolbarNode.redoQueueIsEmpty = levelData.redoStrings.isEmpty
+  func undoQueueIsEmpty() -> Bool {
+    return levelData.undoStrings.isEmpty
+  }
+  
+  func redoQueueIsEmpty() -> Bool {
+    return levelData.redoStrings.isEmpty
   }
   
   // MARK: - ReportNodeDelegate Functions
@@ -516,21 +523,24 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     testSpeed *= 2
   }
   
-  func skipButtonPressed() {
-    testSpeed = 32
-    //if tapeTestResults[currentTapeTestIndex].kind == TapeTestResult.Kind.FailLoop {
-      robotNode?.runAction(SKAction.sequence([
-        SKAction.waitForDuration(0.5),
-        SKAction.fadeAlphaTo(0, duration: 0.5),
-        SKAction.removeFromParent()
-        ]))
-      runAction(SKAction.sequence([
-        SKAction.waitForDuration(1),
-        SKAction.runBlock({[unowned self] in self.loadNextTape()})
-        ]), withKey: "skip")
-    //}
-  }
+  private var skipAnimationComplete = false
   
+  func skipButtonPressed() {
+    let initialTestSpeed: NSTimeInterval = testSpeed
+    let increaseSpeed: NSTimeInterval = 60 - initialTestSpeed
+    let timeSpan: NSTimeInterval = 2
+    runAction(SKAction.sequence([
+      SKAction.customActionWithDuration(NSTimeInterval(timeSpan), actionBlock: {[unowned self] node, t in
+        self.testSpeed = initialTestSpeed + increaseSpeed * NSTimeInterval(t) / timeSpan}).easeOut(),
+      //SKAction.waitForDuration(0.5),
+      SKAction.runBlock({[unowned self] in self.skipAnimationComplete = true})
+      ]), withKey: "skip")
+    robotNode?.runAction(SKAction.sequence([
+      SKAction.waitForDuration(1.5),
+      SKAction.fadeAlphaTo(0, duration: 0.5)
+      ]))
+  }
+
   // MARK: - Touch Delegate Functions
   
   override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {

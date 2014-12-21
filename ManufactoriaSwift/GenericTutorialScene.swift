@@ -15,6 +15,7 @@ class GenericTutorialScene: GameScene {
   var hookContinueButton, hookDemoRobotButton, hookDidSetState, hookDidSetEditMode, hookCellWasEdited: (()->())?
   var speedControlsShouldSimplify: Bool = true
   var speedControlsShouldHideUntilTouch: Bool = true
+  var speedControlShouldAllowCancel = false
   
   let demoRobotButton = Button(iconOffNamed: "robotOff", iconOnNamed: "robotOn")
   let continueButton = Button(text: "continue", fixedWidth: nil)
@@ -51,7 +52,14 @@ class GenericTutorialScene: GameScene {
   
   override func didSetState(oldState: State) {
     super.didSetState(oldState)
-    if state == .Testing && speedControlsShouldHideUntilTouch {speedControlNode.removeFromParent()}
+    if state == .Testing {
+      toolbarNode.disappearWithAnimate(true)
+      if speedControlsShouldHideUntilTouch && !speedControlShouldAllowCancel {
+        speedControlNode.removeFromParent()
+      } else {
+        speedControlNode.appearWithParent(self, animate: true, delay: Globals.appearDelay)
+      }
+    }
     hookDidSetState?()
   }
   
@@ -72,7 +80,7 @@ class GenericTutorialScene: GameScene {
     super.loadTape(i)
     if speedControlsShouldSimplify {
       speedControlNode.slowerButton.removeFromParent()
-      if tapeTestResults[i].kind == TapeTestResult.Kind.FailLoop {
+      if tapeTestResults[i].kind == TapeTestResult.Kind.FailLoop || speedControlShouldAllowCancel {
         speedControlNode.fasterButton.removeFromParent()
         speedControlNode.skipButton.position.x = 0
         speedControlNode.skipButton.appearWithParent(speedControlNode, animate: false)

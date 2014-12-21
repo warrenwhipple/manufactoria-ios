@@ -14,8 +14,9 @@ protocol ToolbarNodeDelegate: class {
   func redoEdit()
   func cancelSelection()
   func confirmSelection()
-  func refreshUndoRedoButtonStatus()
   func testButtonPressed()
+  func undoQueueIsEmpty() -> Bool
+  func redoQueueIsEmpty() -> Bool
 }
 
 class ToolbarNode: SKNode, ToolButtonDelegate, SwipeNodeDelegate {
@@ -141,8 +142,8 @@ class ToolbarNode: SKNode, ToolButtonDelegate, SwipeNodeDelegate {
       if state == oldValue {return}
       switch state {
       case .Drawing:
-        undoButton.userInteractionEnabled = !undoQueueIsEmpty
-        redoButton.userInteractionEnabled = !redoQueueIsEmpty
+        if delegate.undoQueueIsEmpty() {undoButton.disableWithAnimate(false)} else {undoButton.enableWithAnimate(false)}
+        if delegate.redoQueueIsEmpty() {redoButton.disableWithAnimate(false)} else {redoButton.enableWithAnimate(false)}
         cancelButton.userInteractionEnabled = false
         confirmButton.userInteractionEnabled = false
         robotButton.userInteractionEnabled = true
@@ -171,20 +172,6 @@ class ToolbarNode: SKNode, ToolButtonDelegate, SwipeNodeDelegate {
     }
   }
   
-  var undoQueueIsEmpty: Bool = false {
-    didSet {
-      if undoQueueIsEmpty == oldValue {return}
-      if state == .Drawing {undoButton.userInteractionEnabled = !undoQueueIsEmpty}
-    }
-  }
-  
-  var redoQueueIsEmpty: Bool = false {
-    didSet {
-      if redoQueueIsEmpty == oldValue {return}
-      if state == .Drawing {redoButton.userInteractionEnabled = !redoQueueIsEmpty}
-    }
-  }
-  
   func saveToolButtonToMemory(toolButton: ToolButton) {
     for i in 0 ..< toolButtonGroups.count {
       if containsIdentical(toolButtonGroups[i], toolButton) {
@@ -192,6 +179,11 @@ class ToolbarNode: SKNode, ToolButtonDelegate, SwipeNodeDelegate {
         return
       }
     }
+  }
+  
+  func undoRedoQueueDidChange() {
+    if delegate.undoQueueIsEmpty() {undoButton.disableWithAnimate(true)} else {undoButton.enableWithAnimate(true)}
+    if delegate.redoQueueIsEmpty() {redoButton.disableWithAnimate(true)} else {redoButton.enableWithAnimate(true)}
   }
   
   override func appearWithParent(newParent: SKNode, animate: Bool, delay: NSTimeInterval) {

@@ -18,18 +18,19 @@ class FirstTutorialScene: GenericTutorialScene {
     
     displayFullScreenMessage("You have been assigned to\n\nROBOTICS TESTING\n\nThank you for your cooperation", animate: false, nextStageOnContinue: true)
     
-    changeInstructions("Acceptable robots must\nbe transported to the exit", animate: false)
+    changeInstructions("Accepted robots must\nbe transported to the exit", animate: false)
     
     deleteButton = toolbarNode.toolButtons[0]
     beltButton = toolbarNode.toolButtons[1]
     toolbarNode.toolButtonActivated(deleteButton)
     beltButton.editModeIsLocked = true
     removeAndDisconnectAllToolbarButtons()
-    continueButton.appearWithParent(toolbarNode, animate: false)
+    continueButton.position = toolbarNode.position
+    continueButton.appearWithParent(self, animate: false)
     
     entranceLabel = labelGridCoord(gridNode.grid.startCoord, text: "entrance", animate: true, delay: 0)
     exitLabel = labelGridCoord(gridNode.grid.endCoord, text: "exit", animate: true, delay: 0)
-    beltLabel = labelIconButton(beltButton, text: "conveyor belt", animate: true, delay: 0)
+    beltLabel = labelIconButton(beltButton, text: "conveyor", animate: true, delay: 0)
     deleteLabel = labelIconButton(deleteButton, text: "delete", animate: true, delay: 0)
     
     stageSetups = [
@@ -41,7 +42,7 @@ class FirstTutorialScene: GenericTutorialScene {
       
       // tap robot setup
       {[unowned self] in
-        self.changeInstructions("Please use the conveyor belt\nto connect the entrance and exit", animate: true)
+        self.changeInstructions("Use the conveyor to connect\nthe entrance and exit", animate: true)
         self.continueButton.disappearWithAnimate(true)
         self.entranceLabel.disappearWithAnimate(true)
         self.exitLabel.disappearWithAnimate(true)
@@ -54,10 +55,10 @@ class FirstTutorialScene: GenericTutorialScene {
       // draw belt setup
       {[unowned self] in
         self.beltLabel.disappearWithAnimate(true)
-        self.entranceLabel.appearWithParent(self.gridNode.wrapper, animate: true, delay: Globals.appearDelay)
-        self.exitLabel.appearWithParent(self.gridNode.wrapper, animate: true, delay: Globals.appearDelay)
+        self.entranceLabel.appearWithParent(self.gridNode.wrapper, animate: true)
+        self.exitLabel.appearWithParent(self.gridNode.wrapper, animate: true)
         self.repeatGridPulses()
-        self.hookCellWasEdited = {if self.checkGridPass() {self.nextTutorialStage()}}
+        self.hookCellWasEdited = {if self.checkGridPassLoop().0 {self.nextTutorialStage()}}
       } as (()->())?,
       
       // tap robot setup
@@ -69,21 +70,24 @@ class FirstTutorialScene: GenericTutorialScene {
         self.beltButton.disappearWithAnimate(true)
         self.demoRobotButton.appearWithParent(self.toolbarNode, animate: true, delay: Globals.appearDelay)
         self.repeatPulseWithParent(self.demoRobotButton, position: CGPointZero, delay: 5)
-        self.hookDemoRobotButton = {self.startDemoTest()}
+        self.hookDemoRobotButton = {
+          self.stopRepeatPulse()
+          self.startDemoTest()
+        }
         self.hookDidSetState = {if self.state == .Editing {self.nextTutorialStage()}}
       } as (()->())?,
       
       // congrats 1 setup
       {[unowned self] in
-        self.changeInstructions("Thank you\n\nYour cognitive capacity category\nhas been upgraded to\n\nBARELY ADEQUATE", animate: false)
+        self.changeInstructions("Thank you\n\nYour intellectual capacity score\nhas been upgraded to\n\nBARELY ADEQUATE", animate: false)
         self.gridNode.state = .Waiting
-        self.continueButton.appearWithParent(self.toolbarNode, animate: false)
+        self.continueButton.appearWithParent(self, animate: true, delay: Globals.appearDelay)
         self.hookContinueButton = {self.nextTutorialStage()}
       } as (()->())?,
 
       // reject robot setup
       {[unowned self] in
-        self.changeInstructions("Unacceptable robots must be\ndiscarded on the floor\n\nPlease reject the next robot", animate: true)
+        self.changeInstructions("Rejected robots may be\ndiscarded anywhere on the floor\n\nPlease reject the next robot", animate: true)
         self.gridNode.state = .Editing
         self.continueButton.disappearWithAnimate(true)
         let x: CGFloat = self.size.width / 6
@@ -94,9 +98,84 @@ class FirstTutorialScene: GenericTutorialScene {
         self.demoRobotButton.appearWithParent(self.toolbarNode, animate: true, delay: Globals.appearDelay)
         self.deleteButton.appearWithParent(self.toolbarNode, animate: true, delay: Globals.appearDelay)
         self.beltButton.appearWithParent(self.toolbarNode, animate: true, delay: Globals.appearDelay)
-        self.disableDemoRobotButtonWithAnimate(false)
+        self.hookDidSetEditMode = {if self.editMode == .Blank {self.deleteLabel.disappearWithAnimate(false)}}
+        self.hookDemoRobotButton = {
+          switch self.checkGridPassLoop() {
+          case (true, false):
+            self.speedControlShouldAllowCancel = false
+            self.hookDidSetState = {if self.state == .Editing {
+              self.demoRobotButton.position = CGPoint(x: 0, y: y)
+              self.demoRobotButton.appearWithParent(self.toolbarNode, animate: true, delay: Globals.appearDelay)
+              self.changeInstructions("To reject the robot\n drop it on the floor", animate: false)
+              }}
+          case (false, true):
+            self.speedControlShouldAllowCancel = true
+            self.hookDidSetState = {if self.state == .Editing {
+              self.demoRobotButton.position = CGPoint(x: 0, y: y)
+              self.demoRobotButton.appearWithParent(self.toolbarNode, animate: true, delay: Globals.appearDelay)
+              self.changeInstructions("Infinite loops are prohibited\n\nTo reject the robot\n drop it on the floor", animate: false)
+              }}
+          default:
+            self.speedControlShouldAllowCancel = false
+            self.hookDidSetState = {if self.state == .Editing {self.nextTutorialStage()}}
+          }
+          self.startDemoTest()
+        }
         } as (()->())?,
       
+      // congrats 2 setup
+      {[unowned self] in
+        self.changeInstructions("Your compliance is appreciated\n\nYour intellectual capacity score\nhas been upgraded to\n\nUNEXCEPTIONAL", animate: false)
+        self.gridNode.state = .Waiting
+        self.continueButton.appearWithParent(self, animate: true, delay: Globals.appearDelay)
+        self.toolbarNode.removeFromParent()
+        self.hookContinueButton = {self.nextTutorialStage()}
+        } as (()->())?,
+      
+      // accept robot setup
+      {[unowned self] in
+        self.changeInstructions("Please accept the next robot", animate: true)
+        self.gridNode.state = .Editing
+        self.continueButton.disappearWithAnimate(true)
+        let y: CGFloat = self.toolbarNode.undoCancelSwapper.position.y
+        self.demoRobotButton.position = CGPoint(x: 0, y: y)
+        self.demoRobotButton.appearWithParent(self.toolbarNode, animate: false)
+        let demoRobotButtonPosition = self.demoRobotButton.position
+        self.toolbarNode.appearWithParent(self, animate: true, delay: Globals.appearDelay)
+        self.hookDidSetEditMode = {if self.editMode == .Blank {self.deleteLabel.disappearWithAnimate(false)}}
+        self.hookDemoRobotButton = {
+          switch self.checkGridPassLoop() {
+          case (false, false):
+            self.speedControlShouldAllowCancel = false
+            self.hookDidSetState = {if self.state == .Editing {
+              self.demoRobotButton.position = CGPoint(x: 0, y: y)
+              self.demoRobotButton.appearWithParent(self.toolbarNode, animate: true, delay: Globals.appearDelay)
+              self.changeInstructions("To accept the robot\nsend it to the exit", animate: false)
+              }}
+          case (false, true):
+            self.speedControlShouldAllowCancel = true
+            self.hookDidSetState = {if self.state == .Editing {
+              self.demoRobotButton.position = CGPoint(x: 0, y: y)
+              self.demoRobotButton.appearWithParent(self.toolbarNode, animate: true, delay: Globals.appearDelay)
+              self.changeInstructions("Infinite loops are prohibited\n\nTo accept the robot\nsend it to the exit", animate: false)
+              }}
+          default:
+            self.speedControlShouldAllowCancel = false
+            self.hookDidSetState = {if self.state == .Editing {self.nextTutorialStage()}}
+          }
+          self.startDemoTest()
+        }
+        } as (()->())?,
+      
+      // congrats 3 setup
+      {[unowned self] in
+        GameProgressData.sharedInstance.completedLevelWithKey(self.levelKey)
+        self.changeInstructions("Thank you for your obedience\n\nYour intellectual capacity score\nhas been upgraded to\n\nTOLERABLE", animate: false)
+        self.gridNode.state = .Waiting
+        self.continueButton.appearWithParent(self, animate: true, delay: Globals.appearDelay)
+        self.toolbarNode.removeFromParent()
+        self.hookContinueButton = {self.transitionToGameSceneWithLevelKey("read")}
+        } as (()->())?,
     ]
   }
   
@@ -121,7 +200,7 @@ class FirstTutorialScene: GenericTutorialScene {
       ]), withKey: "repeatPulse")
   }
   
-  func checkGridPass() -> Bool {
+  func checkGridPassLoop() -> (Bool, Bool) {
     let grid = gridNode.grid
     var tape = ""
     var lastCoord = grid.startCoord
@@ -129,35 +208,15 @@ class FirstTutorialScene: GenericTutorialScene {
     var steps = 0
     while (steps++ < 10) {
       switch gridNode.grid.testCoord(coord, lastCoord: lastCoord, tape: &tape) {
-      case .Accept: return true
-      case .Reject: return false
+      case .Accept: return (true, false)
+      case .Reject: return (false, false)
       case .North: coord.j++
       case .East: coord.i++
       case .South: coord.j--
       case .West: coord.i--
       }
     }
-    return false
-  }
-  
-  func disableDemoRobotButtonWithAnimate(animate: Bool) {
-    demoRobotButton.userInteractionEnabled = false
-    if animate {
-      demoRobotButton.runAction(SKAction.fadeAlphaTo(0.2, duration: Globals.disappearTime), withKey: "fade")
-    } else {
-      demoRobotButton.removeActionForKey("fade")
-      demoRobotButton.alpha = 0.2
-    }
-  }
-  
-  func enableDemoRobotButtonWithAnimate(animate: Bool) {
-    demoRobotButton.userInteractionEnabled = true
-    if animate {
-      demoRobotButton.runAction(SKAction.fadeAlphaTo(1, duration: Globals.appearTime), withKey: "fade")
-    } else {
-      demoRobotButton.removeActionForKey("fade")
-      demoRobotButton.alpha = 1
-    }
+    return (false, true)
   }
   
 }

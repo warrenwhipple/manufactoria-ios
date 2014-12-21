@@ -54,7 +54,7 @@ class GridNode: SKNode {
   enum State {case Editing, EditingLocked, Thinking, Waiting}
   
   weak var delegate: GridNodeDelegate!
-  let grid: Grid
+  var grid: Grid
   var locks: [Bool]?
   let wrapper = SKNode()
   let cellNodes: [CellNode]
@@ -367,7 +367,7 @@ class GridNode: SKNode {
     
     if editMode == .Move {
       if liftedGridNode == nil {
-        let liftedGrid = Grid(space: grid.space)
+        var liftedGrid = Grid(space: grid.space)
         var i = 0
         var somethingIsSelected = false
         for cellNode in cellNodes {

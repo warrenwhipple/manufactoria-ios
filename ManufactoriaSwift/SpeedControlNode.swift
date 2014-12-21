@@ -27,6 +27,7 @@ class SpeedControlNode: SKNode {
     buttons = [slowerButton, skipButton, fasterButton]
     super.init()
     for child in slowerButton.children {(child as SKNode).xScale = -1}
+    skipButton.isSticky = true
     slowerButton.touchDownClosure = {[unowned self] in self.delegate.slowerButtonPressed()}
     skipButton.touchDownClosure = {[unowned self] in self.delegate.skipButtonPressed()}
     fasterButton.touchDownClosure = {[unowned self] in self.delegate.fasterButtonPressed()}
@@ -44,9 +45,10 @@ class SpeedControlNode: SKNode {
   
   override func appearWithParent(newParent: SKNode, animate: Bool, delay: NSTimeInterval) {
     super.appearWithParent(newParent, animate: animate, delay: delay)
-    resetButtons()
+    skipButton.reset()
   }
   
+  /*
   func disableButtons() {
     for button in buttons {
       button.userInteractionEnabled = false
@@ -59,4 +61,5 @@ class SpeedControlNode: SKNode {
       button.reset()
     }
   }
+  */
 }
