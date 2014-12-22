@@ -33,7 +33,7 @@ class SequenceTutorialScene: TutorialScene {
     toolbarNode.toolButtons[1].editModeIsLocked = true
     toolbarNode.toolButtons[2].editModeIsLocked = true
     
-    congratulationsMenu.menuButton.touchUpInsideClosure = {[unowned self] in self.transitionToGameSceneWithLevelKey("sequence")}
+    congratulationNode.menuButton.touchUpInsideClosure = {[unowned self] in self.transitionToGameSceneWithLevelKey("sequence")}
     
     gridNode.animateThinking = false
     gridNode.state = .Waiting

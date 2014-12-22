@@ -18,7 +18,7 @@ class FirstTutorialScene: GenericTutorialScene {
     
     displayFullScreenMessage("You have been assigned to\n\nROBOTICS TESTING\n\nThank you for your cooperation", animate: false, nextStageOnContinue: true)
     
-    changeInstructions("Accepted robots must\nbe transported to the exit", animate: false)
+    changeInstructions("Accepted robots must be\ntransported to the exit", animate: false)
     
     deleteButton = toolbarNode.toolButtons[0]
     beltButton = toolbarNode.toolButtons[1]
@@ -87,7 +87,7 @@ class FirstTutorialScene: GenericTutorialScene {
 
       // reject robot setup
       {[unowned self] in
-        self.changeInstructions("Rejected robots may be\ndiscarded anywhere on the floor\n\nPlease reject the next robot", animate: true)
+        self.changeInstructions("Rejected robots may be discarded\nanywhere on the floor\n\nPlease reject the next robot", animate: true)
         self.gridNode.state = .Editing
         self.continueButton.disappearWithAnimate(true)
         let x: CGFloat = self.size.width / 6
@@ -134,6 +134,17 @@ class FirstTutorialScene: GenericTutorialScene {
       
       // accept robot setup
       {[unowned self] in
+        let coord = GridCoord(1,1)
+        self.gridNode.lockCoords([coord])
+        self.gridNode.changeCellAndCellNode(coord, cell: Cell(), animate: true)
+        let cellNode = self.gridNode[coord]
+        cellNode.shimmerNode.removeFromParent()
+        let lockNode = SKSpriteNode(color: Globals.strokeColor, size: cellNode.shimmerNode.size)
+        lockNode.zPosition = cellNode.shimmerNode.zPosition
+        lockNode.alpha = 0
+        lockNode.runAction(SKAction.fadeAlphaTo(0.5, duration: 1))
+        cellNode.addChild(lockNode)
+        
         self.changeInstructions("Please accept the next robot", animate: true)
         self.gridNode.state = .Editing
         self.continueButton.disappearWithAnimate(true)

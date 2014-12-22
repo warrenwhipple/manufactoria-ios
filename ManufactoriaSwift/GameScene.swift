@@ -8,7 +8,7 @@
 
 import SpriteKit
 
-class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, InstructionNodeDelegate, EngineDelegate, ToolbarNodeDelegate, ReportNodeDelegate, SpeedControlNodeDelegate, CongratulationsMenuDelegate {
+class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, InstructionNodeDelegate, EngineDelegate, ToolbarNodeDelegate, ReportNodeDelegate, SpeedControlNodeDelegate, CongratulationNodeDelegate {
   
   enum State {case Editing, Thinking, Reporting, Testing, Congratulating}
   enum TestingState {case Entering, Testing, Exiting, Falling}
@@ -31,7 +31,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
   let reportNode = ReportNode()
   let thinkingCancelButton = Button(iconOffNamed: "cancelIconOff", iconOnNamed: "cancelIconOn")
   let speedControlNode = SpeedControlNode()
-  let congratulationsMenu = CongratulationsMenu()
+  let congratulationNode = CongratulationNode()
   var robotNode: RobotNode?
   
   // MARK: Variables
@@ -91,9 +91,9 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     speedControlNode.alpha = 0
     speedControlNode.zPosition = 10
     
-    congratulationsMenu.delegate = self
-    congratulationsMenu.alpha = 0
-    congratulationsMenu.zPosition = 10
+    congratulationNode.delegate = self
+    congratulationNode.alpha = 0
+    congratulationNode.zPosition = 10
     
     toolbarNode.undoRedoQueueDidChange()
     
@@ -121,8 +121,8 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     thinkingCancelButton.position.y = bottomGapRect.center.y + toolbarNode.swipeNode.position.y
     speedControlNode.position = thinkingCancelButton.position
     speedControlNode.size = bottomGapRect.size
-    congratulationsMenu.position = bottomGapRect.center
-    congratulationsMenu.size = bottomGapRect.size
+    congratulationNode.position = bottomGapRect.center
+    congratulationNode.size = bottomGapRect.size
   }
   
   // MARK: - Game State Functions
@@ -169,12 +169,12 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
       if isPusher {tapeNode.printer.alpha = 1}
       else {tapeNode.printer.alpha = 0}
       loadTape(0)
-      newRobotNodeWithColor(colorForTape(), animate: false)
+      newRobotNodeWithColor(colorForTape(), broken: true, animate: false)
       tapeNode.appearWithParent(self, animate: true)
     case .Congratulating:
       tapeNode.disappearWithAnimate(true)
       speedControlNode.disappearWithAnimate(true)
-      congratulationsMenu.appearWithParent(self, animate: true)
+      congratulationNode.appearWithParent(self, animate: true)
       startBeltFlow()
       gridNode.state = .Waiting
     }
@@ -316,13 +316,13 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     state = .Editing
   }
   
-  func newRobotNodeWithColor(color: Color?, animate: Bool) {
+  func newRobotNodeWithColor(color: Color?, broken: Bool, animate: Bool) {
     if animate {
       robotNode?.runAction(SKAction.sequence([SKAction.fadeAlphaTo(0, duration: 0.5), SKAction.removeFromParent()]))
     } else {
       robotNode?.removeFromParent()
     }
-    robotNode = RobotNode(position: gridNode.grid.startCoord.centerPoint, color: color)
+    robotNode = RobotNode(position: gridNode.grid.startCoord.centerPoint, color: color, broken: broken)
     robotNode?.setScale(1/gridNode.wrapper.xScale)
     if animate {
       robotNode?.alpha = 0
@@ -350,7 +350,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     robotCoord = gridNode.grid.startCoord + 1
     lastRobotCoord = gridNode.grid.startCoord
     if i > 0 {
-      newRobotNodeWithColor(colorForTape(), animate: true)
+      newRobotNodeWithColor(colorForTape(), broken: true, animate: true)
     }
     robotNode?.loadNextGridCoord(lastRobotCoord)
     didAnimateRobotComplete = false

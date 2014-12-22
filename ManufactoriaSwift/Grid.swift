@@ -46,11 +46,22 @@ enum TickTestResult {
 }
 
 struct Grid {
-  let space: GridSpace
-  var cells: [Cell]
+  private(set) var space: GridSpace
+  private(set) var cells: [Cell]
   var startCoord: GridCoord {return GridCoord(space.columns / 2, -1)}
   var endCoord: GridCoord {return GridCoord(space.columns / 2, space.rows)}
-  var consumeColorWhenReading = true
+  //var consumeColorWhenReading = true
+  
+  subscript(index: Int) -> Cell {
+    get {
+      assert(index < cells.count, "Index out of range.")
+      return cells[index]
+    }
+    set {
+      assert(index < cells.count, "Index out of range.")
+      cells[index] = newValue
+    }
+  }
   
   subscript(coord: GridCoord) -> Cell {
     get {
@@ -169,10 +180,12 @@ struct Grid {
       if !tape.isEmpty {
         let color = tape[0].color()
         if color == Color.Blue {
-          if consumeColorWhenReading {tape = tape.from(1)}
+          //if consumeColorWhenReading {tape = tape.from(1)}
+          tape = tape.from(1)
           return cell.direction.ccw().tickTestResult()
         } else if color == Color.Red {
-          if consumeColorWhenReading {tape = tape.from(1)}
+          //if consumeColorWhenReading {tape = tape.from(1)}
+          tape = tape.from(1)
           return cell.direction.cw().tickTestResult()
         }
       }
@@ -181,10 +194,12 @@ struct Grid {
       if !tape.isEmpty {
         let color = tape[0].color()
         if color == Color.Red {
-          if consumeColorWhenReading {tape = tape.from(1)}
+          //if consumeColorWhenReading {tape = tape.from(1)}
+          tape = tape.from(1)
           return cell.direction.ccw().tickTestResult()
         } else if color == Color.Blue {
-          if consumeColorWhenReading {tape = tape.from(1)}
+          //if consumeColorWhenReading {tape = tape.from(1)}
+          tape = tape.from(1)
           return cell.direction.cw().tickTestResult()
         }
       }
@@ -193,10 +208,12 @@ struct Grid {
       if !tape.isEmpty {
         let color = tape[0].color()
         if color == Color.Green {
-          if consumeColorWhenReading {tape = tape.from(1)}
+          //if consumeColorWhenReading {tape = tape.from(1)}
+          tape = tape.from(1)
           return cell.direction.ccw().tickTestResult()
         } else if color == Color.Yellow {
-          if consumeColorWhenReading {tape = tape.from(1)}
+          //if consumeColorWhenReading {tape = tape.from(1)}
+          tape = tape.from(1)
           return cell.direction.cw().tickTestResult()
         }
       }
@@ -205,10 +222,12 @@ struct Grid {
       if !tape.isEmpty {
         let color = tape[0].color()
         if color == Color.Yellow {
-          if consumeColorWhenReading {tape = tape.from(1)}
+          //if consumeColorWhenReading {tape = tape.from(1)}
+          tape = tape.from(1)
           return cell.direction.ccw().tickTestResult()
         } else if color == Color.Green {
-          if consumeColorWhenReading {tape = tape.from(1)}
+          //if consumeColorWhenReading {tape = tape.from(1)}
+          tape = tape.from(1)
           return cell.direction.cw().tickTestResult()
         }
       }

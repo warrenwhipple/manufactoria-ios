@@ -11,9 +11,7 @@ import SpriteKit
 class RobotNode: SKNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   
-  let currentColorSprite = SKSpriteNode("robotOn")
-  let lastColorSprite = SKSpriteNode("robotOn")
-  let outlineSprite = SKSpriteNode("robotOff")
+  let currentColorSprite, lastColorSprite, outlineSprite: SKSpriteNode
   let eyesSprite = SKSpriteNode("robotEyes")
   let darkBlueColor = Globals.blueColor.blend(UIColor.blackColor(), blendFactor: 0.2)
   let darkRedColor = Globals.redColor.blend(UIColor.blackColor(), blendFactor: 0.2)
@@ -24,11 +22,14 @@ class RobotNode: SKNode {
   var isChangingColor = false
   var lastLastPosition, lastPosition, nextPosition: CGPoint
   
-  init(position: CGPoint, color: Color?) {
+  init(position: CGPoint, color: Color?, broken: Bool) {
     lastLastPosition = position
     lastPosition = position
     nextPosition = position
     currentColor = color
+    currentColorSprite = SKSpriteNode(broken ? "robotBrokenOn" : "robotOn")
+    lastColorSprite =    SKSpriteNode(broken ? "robotBrokenOn" : "robotOn")
+    outlineSprite =      SKSpriteNode(broken ? "robotBrokenOff" : "robotOff")
     super.init()
     self.position = position
     zPosition = 2

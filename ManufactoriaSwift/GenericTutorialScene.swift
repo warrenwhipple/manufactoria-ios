@@ -18,6 +18,7 @@ class GenericTutorialScene: GameScene {
   var speedControlShouldAllowCancel = false
   
   let demoRobotButton = Button(iconOffNamed: "robotOff", iconOnNamed: "robotOn")
+  let demoBrokenRobotButton = Button(iconOffNamed: "brokenRobotOff", iconOnNamed: "brokenRobotOn")
   let continueButton = Button(text: "continue", fixedWidth: nil)
   
   override init(size: CGSize, var levelKey: String) {

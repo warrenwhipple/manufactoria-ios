@@ -50,11 +50,10 @@ class TransitionScene: SKScene {
     case .Unlock: nextScene = UnlockScene(size: size)
     case .Reset: nextScene = ResetScene(size: size)
     case .Game(let levelKey):
-      if levelKey == "move" && (GameProgressData.sharedInstance.level("move")?.tutorialIsOn ?? false){
+      if levelKey == "move" && (GameProgressData.sharedInstance.level("move")?.tutorialIsOn ?? false) {
         nextScene = FirstTutorialScene(size: view!.bounds.size)
-        //nextScene = MoveTutorialScene(size: view!.bounds.size)
-      //} else if levelKey == "read" && (GameProgressData.sharedInstance.level("read")?.tutorialIsOn ?? false){
-        //nextScene = ReadTutorialScene(size: view!.bounds.size)
+      } else if levelKey == "read" && (GameProgressData.sharedInstance.level("read")?.tutorialIsOn ?? false) {
+        nextScene = SecondTutorialScene(size: view!.bounds.size)
       //} else if levelKey == "readseq" && (GameProgressData.sharedInstance.level("readseq")?.tutorialIsOn ?? false){
         //nextScene = ReadSeqTutorialScene(size: view!.bounds.size)
         //nextScene = GenericTutorialScene(size: view!.bounds.size, levelKey: "readseq")

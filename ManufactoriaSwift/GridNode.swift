@@ -325,10 +325,13 @@ class GridNode: SKNode {
   }
   
   func clearGridWithAnimate(animate: Bool) {
-    for i in 0 ..< cellNodes.count {
-      grid.cells[i] = Cell()
-    }
+    grid = Grid(space: grid.space)
     changeCellNodesToMatchCellsWithAnimate(animate)
+  }
+  
+  func changeCellAndCellNode(coord: GridCoord, cell: Cell, animate: Bool) {
+    grid[coord] = cell
+    self[coord].changeCell(cell, animate: animate)
   }
   
   func changeCellNodesToMatchCellsWithAnimate(animate: Bool) {
@@ -373,8 +376,8 @@ class GridNode: SKNode {
         for cellNode in cellNodes {
           if cellNode.isSelected {
             somethingIsSelected = true
-            liftedGrid.cells[i] = grid.cells[i]
-            grid.cells[i] = Cell()
+            liftedGrid[i] = grid[i]
+            grid[i] = Cell()
             cellNode.changeCell(Cell(), animate: true)
             cellNode.isSelected = false
             cellNode.glow = 0

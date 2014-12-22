@@ -1,5 +1,5 @@
 //
-//  CongratulationsMenu.swift
+//  CongratulationNode.swift
 //  ManufactoriaSwift
 //
 //  Created by Warren Whipple on 9/22/14.
@@ -8,14 +8,14 @@
 
 import SpriteKit
 
-protocol CongratulationsMenuDelegate: class {
+protocol CongratulationNodeDelegate: class {
   func menuButtonPressed()
 }
 
-class CongratulationsMenu: SKNode {
+class CongratulationNode: SKNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   
-  weak var delegate: CongratulationsMenuDelegate!
+  weak var delegate: CongratulationNodeDelegate!
   let menuButton = Button(text: "continue", fixedWidth: Globals.mediumEm * 8)
 
   override init() {

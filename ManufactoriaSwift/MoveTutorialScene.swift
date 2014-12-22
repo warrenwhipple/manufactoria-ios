@@ -30,7 +30,7 @@ class MoveTutorialScene: TutorialScene {
     speedControlNode.slowerButton.removeFromParent()
     speedControlNode.skipButton.removeFromParent()
     
-    congratulationsMenu.menuButton.touchUpInsideClosure = {[unowned self] in self.transitionToGameSceneWithLevelKey("read")}
+    congratulationNode.menuButton.touchUpInsideClosure = {[unowned self] in self.transitionToGameSceneWithLevelKey("read")}
     
     gridNode.animateThinking = false
     gridNode.state = .EditingLocked

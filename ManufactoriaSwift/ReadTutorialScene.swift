@@ -41,7 +41,7 @@ class ReadTutorialScene: TutorialScene {
     speedControlNode.slowerButton.removeFromParent()
     speedControlNode.skipButton.removeFromParent()
     
-    congratulationsMenu.menuButton.touchUpInsideClosure = {[unowned self] in self.transitionToGameSceneWithLevelKey("readseq")}
+    congratulationNode.menuButton.touchUpInsideClosure = {[unowned self] in self.transitionToGameSceneWithLevelKey("readseq")}
     
     gridNode.animateThinking = false
     gridNode.state = .Waiting
@@ -64,7 +64,7 @@ class ReadTutorialScene: TutorialScene {
   
   override func fitToSize() {
     super.fitToSize()
-    demoRobotButton.position = congratulationsMenu.position
+    demoRobotButton.position = congratulationNode.position
     let centerXs = distributionForChildren(count: 3, childSize: Globals.iconSpan, parentSize: size.width)
     toolbarNode.toolButtons[0].position.x = centerXs[0]
     toolbarNode.toolButtons[1].position.x = centerXs[1]
