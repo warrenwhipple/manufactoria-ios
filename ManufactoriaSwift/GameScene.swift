@@ -28,9 +28,10 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
   let tapeNode = TapeNode()
   let gridNode: GridNode
   let toolbarNode: ToolbarNode
-  let reportNode = ReportNode()
+  let testButton = Button(iconOffNamed: "testButtonOff", iconOnNamed: "testButtonOn")
   let thinkingCancelButton = Button(iconOffNamed: "cancelIconOff", iconOnNamed: "cancelIconOn")
   let speedControlNode = SpeedControlNode()
+  let reportNode = ReportNode()
   let congratulationNode = CongratulationNode()
   var robotNode: RobotNode?
   
@@ -82,6 +83,11 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     toolbarNode.zPosition = 10
     addChild(toolbarNode)
     
+    testButton.isSticky = true
+    testButton.touchUpInsideClosure = {[unowned self] in self.testButtonPressed()}
+    testButton.zPosition = 11
+    addChild(testButton)
+    
     reportNode.delegate = self
     reportNode.zPosition = 100
     
@@ -115,6 +121,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     tapeNode.width = topGapRect.width
     toolbarNode.position = bottomGapRect.center
     toolbarNode.size = topGapRect.size
+    testButton.position = toolbarNode.position + toolbarNode.robotButton.position
     reportNode.position = size.center
     reportNode.size = size
     thinkingCancelButton.position.x = bottomGapRect.center.x

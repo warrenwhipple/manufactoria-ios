@@ -171,7 +171,7 @@
 			name = "Data Load / Save";
 			sourceTree = "<group>";
 		};
-		2D32FE5F1A476833004381C9 /* SpriteKit Components */ = {
+		2D32FE5F1A476833004381C9 /* Component Nodes */ = {
 			isa = PBXGroup;
 			children = (
 				2D36614D19E6D46D0050F34E /* SmartLabel.swift */,
@@ -180,7 +180,7 @@
 				2D5E583E19A5265500F10DD3 /* ShimmerNode.swift */,
 				2D8C19A2199696A90064B790 /* SwipeNode.swift */,
 			);
-			name = "SpriteKit Components";
+			name = "Component Nodes";
 			sourceTree = "<group>";
 		};
 		2D32FE601A47684D004381C9 /* Scenes */ = {
@@ -303,7 +303,7 @@
 				2DC49136194F45B800053237 /* GameViewController.swift */,
 				2D32FE611A476895004381C9 /* Extensions / Functions */,
 				2D32FE5E1A476777004381C9 /* Data Load / Save */,
-				2D32FE5F1A476833004381C9 /* SpriteKit Components */,
+				2D32FE5F1A476833004381C9 /* Component Nodes */,
 				2D32FE601A47684D004381C9 /* Scenes */,
 				2D9A097A195643680007F6A4 /* Images */,
 				2DC4913B194F45B800053237 /* Images.xcassets */,

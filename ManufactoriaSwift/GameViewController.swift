@@ -11,57 +11,64 @@ import SpriteKit
 
 let IPAD: Bool = UIDevice.currentDevice().userInterfaceIdiom == .Pad
 
+/*
+font sizes conversions for all HelveticaNeue
+size 13 : 12em 9ex
+size 19 : 16em 12ex
+size 30 : 24em 18ex
+size 52 : 40em 29ex
+*/
+
 struct Globals {
-  static var iconSpan: CGFloat = 36
-  static var touchSpan: CGFloat = 72
-  static var yellowColor =     UIColor(hue: 0.15, saturation: 1.0, brightness: 0.9, alpha: 1)
-  static var greenColor =      UIColor(hue: 0.40, saturation: 1.0, brightness: 0.85, alpha: 1)
-  static var blueColor =       UIColor(hue: 0.60, saturation: 1.0, brightness: 1.0, alpha: 1)
-  static var redColor =        UIColor(hue: 0.95, saturation: 1.0, brightness: 1.0, alpha: 1)
-  static var strokeColor =     UIColor(hue: 0.90, saturation: 1.0, brightness: 0.4, alpha: 1)
-  static var highlightColor =  UIColor(hue: 0.90, saturation: 1.0, brightness: 1.0, alpha: 1)
-  static var backgroundColor = UIColor.whiteColor()
-  static var testCount =       1000
-  static var loopTickCount =   10000
-  static var loopTapeLength =  500
-  static var smallFontSize: CGFloat =  13 // em = 12px
-  static var mediumFontSize: CGFloat = 19 // em = 16px
-  static var largeFontSize: CGFloat =  30 // em = 24px
-  static var smallFont =  "HelveticaNeue"
-  static var mediumFont = "HelveticaNeue-Light"
-  static var largeFont =  "HelveticaNeue-Thin"
-  static var smallEm: CGFloat =  0
-  static var mediumEm: CGFloat = 0
-  static var largeEm: CGFloat =  0
-  static var disappearTime: NSTimeInterval = 0.4
-  static var appearDelay: NSTimeInterval = 0.6
-  static var appearTime: NSTimeInterval = 0.2
-  static var disappearAppearGapTime: NSTimeInterval = 0.2
+  static let iconSpan: CGFloat =       IPAD ? 64 : 36
+  static let touchSpan: CGFloat =      IPAD ? 92 : 72
+  static let smallFontSize: CGFloat =  IPAD ? 19 : 13
+  static let mediumFontSize: CGFloat = IPAD ? 30 : 19
+  static let largeFontSize: CGFloat =  IPAD ? 52 : 30
+  static let smallFont =  IPAD ? "HelveticaNeue-Light"      : "HelveticaNeue"
+  static let mediumFont = IPAD ? "HelveticaNeue-Thin"       : "HelveticaNeue-Light"
+  static let largeFont =  IPAD ? "HelveticaNeue-UltraLight" : "HelveticaNeue-Thin"
+  private(set) static var smallEm: CGFloat =  0
+  private(set) static var mediumEm: CGFloat = 0
+  private(set) static var largeEm: CGFloat =  0
+  private(set) static var smallEx: CGFloat =  0
+  private(set) static var mediumEx: CGFloat = 0
+  private(set) static var largeEx: CGFloat =  0
+  private(set) static var yellowColor =     UIColor(hue: 0.15, saturation: 1.0, brightness: 0.9, alpha: 1)
+  private(set) static var greenColor =      UIColor(hue: 0.40, saturation: 1.0, brightness: 0.85, alpha: 1)
+  private(set) static var blueColor =       UIColor(hue: 0.60, saturation: 1.0, brightness: 1.0, alpha: 1)
+  private(set) static var redColor =        UIColor(hue: 0.95, saturation: 1.0, brightness: 1.0, alpha: 1)
+  private(set) static var strokeColor =     UIColor(hue: 0.90, saturation: 1.0, brightness: 0.4, alpha: 1)
+  private(set) static var highlightColor =  UIColor(hue: 0.90, saturation: 1.0, brightness: 1.0, alpha: 1)
+  private(set) static var backgroundColor = UIColor.whiteColor()
+  static let testCount =       1000
+  static let loopTickCount =   10000
+  static let loopTapeLength =  500
+  static let disappearTime: NSTimeInterval = 0.4
+  static let appearDelay: NSTimeInterval = 0.6
+  static let appearTime: NSTimeInterval = 0.2
+  static let disappearAppearGapTime: NSTimeInterval = 0.2
 }
 
 class GameViewController: UIViewController {
   
   override func viewDidLoad() {
     
-    if IPAD {
-      Globals.iconSpan = 64
-      Globals.touchSpan = 92
-      Globals.smallFontSize = 19 // em = 16px
-      Globals.mediumFontSize = 30 // em = 24px
-      Globals.largeFontSize = 52 // em = 40px
-      Globals.smallFont = "HelveticaNeue-Light"
-      Globals.mediumFont = "HelveticaNeue-Thin"
-      Globals.largeFont = "HelveticaNeue-UltraLight"
-    }
-    
-    let emLabel = SKLabelNode()
-    emLabel.text = "M"
-    emLabel.fontSmall()
-    Globals.smallEm = emLabel.frame.size.height
-    emLabel.fontMedium()
-    Globals.mediumEm = emLabel.frame.size.height
-    emLabel.fontLarge()
-    Globals.largeEm = emLabel.frame.size.height
+    let testLabel = SKLabelNode()
+    testLabel.text = "M"
+    testLabel.fontSmall()
+    Globals.smallEm = testLabel.frame.height
+    testLabel.fontMedium()
+    Globals.mediumEm = testLabel.frame.height
+    testLabel.fontLarge()
+    Globals.largeEm = testLabel.frame.height
+    testLabel.text = "x"
+    testLabel.fontSmall()
+    Globals.smallEx = testLabel.frame.height
+    testLabel.fontMedium()
+    Globals.mediumEx = testLabel.frame.height
+    testLabel.fontLarge()
+    Globals.largeEx = testLabel.frame.height
     
     super.viewDidLoad()
     let skView = view as SKView

@@ -113,6 +113,7 @@ class ToolbarNode: SKNode, ToolButtonDelegate, SwipeNodeDelegate {
       swipeNode.userInteractionEnabled = false
     }
     addChild(swipeNode)
+    robotButton.removeFromParent()
   }
   
   var size: CGSize = CGSizeZero {didSet{if size != oldValue {fitToSize()}}}
