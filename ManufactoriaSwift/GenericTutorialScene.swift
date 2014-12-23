@@ -169,7 +169,6 @@ class GenericTutorialScene: GameScene {
   func removeAndDisconnectAllToolbarButtons() {
     toolbarNode.undoCancelSwapper.removeFromParent()
     toolbarNode.redoConfirmSwapper.removeFromParent()
-    toolbarNode.robotButton.removeFromParent()
     for button in toolbarNode.toolButtons {
       button.removeFromParent()
       button.dragThroughDelegate = nil

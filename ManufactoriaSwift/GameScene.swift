@@ -121,7 +121,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     tapeNode.width = topGapRect.width
     toolbarNode.position = bottomGapRect.center
     toolbarNode.size = topGapRect.size
-    testButton.position = toolbarNode.position + toolbarNode.robotButton.position
+    testButton.position = CGPoint(x: toolbarNode.position.x, y: toolbarNode.position.y + toolbarNode.undoCancelSwapper.position.y)
     reportNode.position = size.center
     reportNode.size = size
     thinkingCancelButton.position.x = bottomGapRect.center.x
@@ -143,11 +143,14 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
       speedControlNode.disappearWithAnimate(true)
       instructionNode.appearWithParent(self, animate: true)
       toolbarNode.appearWithParent(self, animate: true)
+      testButton.reset()
+      testButton.appearWithParent(self, animate: true)
       startBeltFlow()
       gridNode.state = .Editing
     case .Thinking:
       instructionNode.disappearWithAnimate(true)
       toolbarNode.disappearWithAnimate(true)
+      testButton.disappearWithAnimate(true)
       stopBeltFlow()
       gridTestDidPass = false
       gridNode.state = .Thinking

@@ -30,7 +30,6 @@ class ToolbarNode: SKNode, ToolButtonDelegate, SwipeNodeDelegate {
   let redoButton = Button(iconOffNamed: "undoIconOff", iconOnNamed: "undoIconOn")
   let cancelButton = Button(iconOffNamed: "cancelIconOff", iconOnNamed: "cancelIconOn")
   let confirmButton = Button(iconOffNamed: "confirmIconOff", iconOnNamed: "confirmIconOn")
-  let robotButton = Button(iconOffNamed: "robotOff", iconOnNamed: "robotOn")
   var undoCancelSwapper, redoConfirmSwapper: ButtonSwapper
   
   let swipeNode: SwipeNode
@@ -44,7 +43,7 @@ class ToolbarNode: SKNode, ToolButtonDelegate, SwipeNodeDelegate {
   var buttonInFocus: ToolButton
   
   init(editModes: [EditMode]) {
-    staticButtons = [undoButton, redoButton, cancelButton, confirmButton, robotButton]
+    staticButtons = [undoButton, redoButton, cancelButton, confirmButton]
     undoCancelSwapper = ButtonSwapper(buttons: [undoButton, cancelButton],
       rotateRadians: CGFloat(2*M_PI), liftZPosition: 2)
     redoConfirmSwapper = ButtonSwapper(buttons: [redoButton, confirmButton],
@@ -93,13 +92,10 @@ class ToolbarNode: SKNode, ToolButtonDelegate, SwipeNodeDelegate {
     redoButton.touchUpInsideClosure = {[unowned self] in self.delegate.redoEdit()}
     cancelButton.touchUpInsideClosure = {[unowned self] in self.delegate.cancelSelection()}
     confirmButton.touchUpInsideClosure = {[unowned self] in self.delegate.confirmSelection()}
-    robotButton.touchUpInsideClosure = {[unowned self] in self.delegate.testButtonPressed()}
     cancelButton.userInteractionEnabled = false
     confirmButton.userInteractionEnabled = false
     addChild(undoCancelSwapper)
     addChild(redoConfirmSwapper)
-    robotButton.isSticky = true
-    addChild(robotButton)
     
     swipeNode.swipeSnapDelegate = self
     for button in toolButtons {
@@ -113,29 +109,20 @@ class ToolbarNode: SKNode, ToolButtonDelegate, SwipeNodeDelegate {
       swipeNode.userInteractionEnabled = false
     }
     addChild(swipeNode)
-    robotButton.removeFromParent()
   }
   
   var size: CGSize = CGSizeZero {didSet{if size != oldValue {fitToSize()}}}
   
   func fitToSize() {
-    let staticNodes = [undoCancelSwapper, robotButton, redoConfirmSwapper]
-    let yCenters = distributionForChildren(count: 2, childSize: Globals.iconSpan, parentSize: size.height)
-    for node in staticNodes {
-      node.position.y = yCenters[1]
-    }
-    swipeNode.position.y = yCenters[0]
-    swipeNode.size = CGSize(size.width, size.height / 2)
-    func distributeXs(nodes: [SKNode]) {
-      let xCenters = distributionForChildren(count: nodes.count, childSize: Globals.iconSpan, parentSize: size.width)
-      for i in 0 ..< nodes.count {
-        nodes[i].position.x = xCenters[i]
-      }
-    }
-    distributeXs(staticNodes)
+    distributeNodesY([undoCancelSwapper, swipeNode],
+      childHeight: Globals.iconSpan, parentHeight: size.height, roundPix: true)
+    redoConfirmSwapper.position.y = undoCancelSwapper.position.y
+    distributeNodesX([undoCancelSwapper, nil as SKNode?, redoConfirmSwapper],
+      childWidth: Globals.iconSpan, parentWidth: size.width, roundPix: true)
     for group in toolButtonGroups {
-      distributeXs(group)
+      distributeNodesX(group.map({return $0 as SKNode?}), childWidth: Globals.iconSpan, parentWidth: size.width, roundPix: true)
     }
+    swipeNode.size = CGSize(width: size.width, height: size.height / 2)
   }
     
   var state: State = .Drawing {
@@ -147,7 +134,6 @@ class ToolbarNode: SKNode, ToolButtonDelegate, SwipeNodeDelegate {
         if delegate.redoQueueIsEmpty() {redoButton.disableWithAnimate(false)} else {redoButton.enableWithAnimate(false)}
         cancelButton.userInteractionEnabled = false
         confirmButton.userInteractionEnabled = false
-        robotButton.userInteractionEnabled = true
         undoCancelSwapper.index = 0
         redoConfirmSwapper.index = 0
         for button in toolButtons {
@@ -160,7 +146,6 @@ class ToolbarNode: SKNode, ToolButtonDelegate, SwipeNodeDelegate {
         redoButton.userInteractionEnabled = false
         cancelButton.userInteractionEnabled = true
         confirmButton.userInteractionEnabled = true
-        robotButton.userInteractionEnabled = true
         undoCancelSwapper.index = 1
         redoConfirmSwapper.index = 1
         for button in toolButtons {button.userInteractionEnabled = true}
@@ -185,11 +170,6 @@ class ToolbarNode: SKNode, ToolButtonDelegate, SwipeNodeDelegate {
   func undoRedoQueueDidChange() {
     if delegate.undoQueueIsEmpty() {undoButton.disableWithAnimate(true)} else {undoButton.enableWithAnimate(true)}
     if delegate.redoQueueIsEmpty() {redoButton.disableWithAnimate(true)} else {redoButton.enableWithAnimate(true)}
-  }
-  
-  override func appearWithParent(newParent: SKNode, animate: Bool, delay: NSTimeInterval) {
-    super.appearWithParent(newParent, animate: animate, delay: delay)
-    robotButton.reset()
   }
   
   // Mark: - SwipeNodeDelegate
