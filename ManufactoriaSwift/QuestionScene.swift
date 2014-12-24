@@ -37,9 +37,9 @@ class ResetScene: ManufactoriaScene {
   func fitToSize() {
     let midX = size.width * 0.5
     let midY = size.height * 0.5
-    question.position = CGPoint(midX, midY + question.lineHeight * question.fontSize)
-    yesButton.position = CGPoint(midX - 70, midY - 40)
-    noButton.position = CGPoint(midX + 70, midY - 40)
+    question.position = CGPoint(x: midX, y: midY + question.lineHeight * question.fontSize)
+    yesButton.position = CGPoint(x: midX - 70, y: midY - 40)
+    noButton.position = CGPoint(x: midX + 70, y: midY - 40)
   }
 }
 
@@ -71,8 +71,8 @@ class UnlockScene: ManufactoriaScene {
   func fitToSize() {
     let midX = size.width * 0.5
     let midY = size.height * 0.5
-    question.position = CGPoint(midX, midY + question.lineHeight * question.fontSize)
-    yesButton.position = CGPoint(midX - 70, midY - 40)
-    noButton.position = CGPoint(midX + 70, midY - 40)
+    question.position = CGPoint(x: midX, y: midY + question.lineHeight * question.fontSize)
+    yesButton.position = CGPoint(x: midX - 70, y: midY - 40)
+    noButton.position = CGPoint(x: midX + 70, y: midY - 40)
   }
 }

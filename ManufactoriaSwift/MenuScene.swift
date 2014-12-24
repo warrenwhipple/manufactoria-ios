@@ -129,7 +129,7 @@ class MenuScene: ManufactoriaScene, MenuLevelButtonDelegate {
   
   override var size: CGSize {didSet{fitToSize()}}
   func fitToSize() {
-    scrollNode.position = CGPoint(0, size.height)
+    scrollNode.position = CGPoint(x: 0, y: size.height)
     let spacing = size.width / CGFloat(levelButtonLayout[0].count)
     scrollNode.overScroll = spacing
     scrollNode.wrapperMaxY = CGFloat(levelButtonLayout.count) * spacing - size.height
@@ -137,19 +137,19 @@ class MenuScene: ManufactoriaScene, MenuLevelButtonDelegate {
     for (j, row) in enumerate(levelButtonLayout) {
       for (i, slot) in enumerate(row) {
         if let button = slot {
-          button.size = CGSize(spacing)
-          button.position = CGPoint(offset + CGFloat(i) * spacing, -offset - CGFloat(j) * spacing)
+          button.size = CGSize(square: spacing)
+          button.position = CGPoint(x: offset + CGFloat(i) * spacing, y: -offset - CGFloat(j) * spacing)
         }
       }
     }
     //topSettingsButton.size = CGSize(spacing)
     //bottomSettingsButton.size = CGSize(spacing)
-    resetButton.size = CGSize(spacing)
-    unlockButton.size = CGSize(spacing)
+    resetButton.size = CGSize(square: spacing)
+    unlockButton.size = CGSize(square: spacing)
     //topSettingsButton.position = CGPoint(offset, -offset)
     //bottomSettingsButton.position = CGPoint(offset + CGFloat(levelButtonLayout[0].count - 1) * spacing, -offset - CGFloat(levelButtonLayout.count - 1) * spacing)
-    resetButton.position = CGPoint(offset, -offset)
-    unlockButton.position = CGPoint(offset + spacing, -offset)
+    resetButton.position = CGPoint(x: offset, y: -offset)
+    unlockButton.position = CGPoint(x: offset + spacing, y: -offset)
   }  
   
   // MARK: - Touch Delegate Methods

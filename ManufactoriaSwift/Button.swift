@@ -80,13 +80,13 @@ class Button: SKSpriteNode {
     wrapperOff.addChild(labelOff)
     wrapperOn.addChild(labelOn)
     
-    self.init(nodeOff: wrapperOff, nodeOn: wrapperOn, touchSize: CGSize(width + Globals.mediumEm, Globals.mediumEm * 3))
+    self.init(nodeOff: wrapperOff, nodeOn: wrapperOn, touchSize: CGSize(width: width + Globals.mediumEm, height: Globals.mediumEm * 3))
   }
   
   convenience init(iconNamed: String) {
     let iconOff = SKSpriteNode(iconNamed + "Off")
     let iconOn = SKSpriteNode(iconNamed + "On")
-    self.init(nodeOff: iconOff, nodeOn: iconOn, touchSize: CGSize(Globals.touchSpan))
+    self.init(nodeOff: iconOff, nodeOn: iconOn, touchSize: CGSize(square: Globals.touchSpan))
     iconOn.color = Globals.highlightColor
   }
   

@@ -38,8 +38,8 @@ class TitleScene: ManufactoriaScene {
   override var size: CGSize {didSet{if size != oldValue {fitToSize()}}}
   
   func fitToSize() {
-    titleLabel.position = CGPoint(size.center.x, size.center.y + Globals.mediumEm * 0.75)
-    button.position = CGPoint(size.center.x, size.center.y - Globals.mediumEm * 1.75)
+    titleLabel.position = CGPoint(x: size.center.x, y: size.center.y + Globals.mediumEm * 0.75)
+    button.position = CGPoint(x: size.center.x, y: size.center.y - Globals.mediumEm * 1.75)
   }
   
   var touchBeganTime: NSTimeInterval = 0

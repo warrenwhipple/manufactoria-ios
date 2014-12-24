@@ -95,13 +95,13 @@ class GridNode: SKNode {
     enterArrow.colorBlendFactor = 1
     enterArrow.color = Globals.strokeColor
     enterArrow.zPosition = 20
-    enterArrow.position = CGPoint(CGFloat(grid.startCoord.i) + 0.5, CGFloat(grid.startCoord.j) + 1)
+    enterArrow.position = CGPoint(x: CGFloat(grid.startCoord.i) + 0.5, y: CGFloat(grid.startCoord.j) + 1)
     wrapper.addChild(enterArrow)
     exitArrow = SKSpriteNode()
     exitArrow.colorBlendFactor = 1
     exitArrow.color = Globals.strokeColor
     exitArrow.zPosition = 20
-    exitArrow.position = CGPoint(CGFloat(grid.endCoord.i) + 0.5, CGFloat(grid.endCoord.j))
+    exitArrow.position = CGPoint(x: CGFloat(grid.endCoord.i) + 0.5, y: CGFloat(grid.endCoord.j))
     wrapper.addChild(exitArrow)
     
     beltTexture = SKTexture(imageNamed: "belt")
@@ -111,7 +111,7 @@ class GridNode: SKNode {
     
     for i in 0..<grid.space.columns {
       for j in 0..<grid.space.rows {
-        self[GridCoord(i,j)].position = CGPoint(CGFloat(i) + 0.5, CGFloat(j) + 0.5)
+        self[GridCoord(i,j)].position = CGPoint(x: CGFloat(i) + 0.5, y: CGFloat(j) + 0.5)
         self[GridCoord(i,j)].changeCell(grid[GridCoord(i,j)], animate: false)
       }
     }
@@ -139,8 +139,8 @@ class GridNode: SKNode {
     var cellSize = min(maxCellWidth, maxCellHeight, maxCellSize)
     if cellSize > maxCellSize - 0.5 {cellSize = maxCellSize} // if close, let overlap
     cellSize = round(cellSize)
-    let gridSize = CGSize(cellSize * CGFloat(grid.space.columns), cellSize * CGFloat(grid.space.rows))
-    wrapper.position = CGPoint((size.width - gridSize.width) * 0.5, (size.height - gridSize.height) * 0.5)
+    let gridSize = CGSize(width: cellSize * CGFloat(grid.space.columns), height: cellSize * CGFloat(grid.space.rows))
+    wrapper.position = CGPoint(x: (size.width - gridSize.width) * 0.5, y: (size.height - gridSize.height) * 0.5)
     wrapper.setScale(cellSize)
     beltTexture = CellNode.loadSharedTexturesForPointSize(cellSize)
     for cellNode in cellNodes {cellNode.assignSharedTextures()}

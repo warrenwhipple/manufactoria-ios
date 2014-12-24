@@ -20,7 +20,7 @@ class LiftedGridNode: SKNode {
   
   init(grid: Grid) {
     self.grid = grid
-    let cellSize = CGSize(CellNode.sharedPointSize())
+    let cellSize = CGSize(square: CellNode.sharedPointSize())
     let beltSize = CellNode.sharedBeltHalfTexture().size()
     var tempNodes: [SKNode] = []
     var tempBeltSprites: [SKSpriteNode] = []
@@ -30,7 +30,7 @@ class LiftedGridNode: SKNode {
         if cell.kind != .Blank {
           let node = SKNode()
           node.setScale(1 / cellSize.width)
-          node.position = CGPoint(CGFloat(i) + 0.5, CGFloat(j) + 0.5)
+          node.position = CGPoint(x: CGFloat(i) + 0.5, y: CGFloat(j) + 0.5)
           tempNodes.append(node)
           let back = SKSpriteNode(texture: nil, color: Globals.backgroundColor, size: cellSize)
           back.alpha = 0
@@ -107,15 +107,15 @@ class LiftedGridNode: SKNode {
   
   func snapToNearestCoord() {
     runAction(SKAction.moveTo(CGPoint(
-      round(position.x + wrapper.position.x) - wrapper.position.x,
-      round(position.y + wrapper.position.y) - wrapper.position.y
+      x: round(position.x + wrapper.position.x) - wrapper.position.x,
+      y: round(position.y + wrapper.position.y) - wrapper.position.y
       ), duration: 0.2).easeOut(), withKey: "move")
   }
   
   func rotateCWAroundTouch(touch: UITouch) {
     let wrapperPositionInParent = convertPoint(wrapper.position, toNode: parent!)
     let touchLocationInWrapper = touch.locationInNode(wrapper)
-    let centeredTouchLocationInWrapper = CGPoint(round(touchLocationInWrapper.x+0.5)-0.5, round(touchLocationInWrapper.y+0.5)-0.5)
+    let centeredTouchLocationInWrapper = CGPoint(x: round(touchLocationInWrapper.x+0.5)-0.5, y: round(touchLocationInWrapper.y+0.5)-0.5)
     position = parent!.convertPoint(centeredTouchLocationInWrapper, fromNode: wrapper)
     wrapper.position = convertPoint(wrapperPositionInParent, fromNode: parent!)
     var newAngle: CGFloat = 0

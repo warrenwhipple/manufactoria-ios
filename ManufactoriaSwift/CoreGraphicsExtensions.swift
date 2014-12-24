@@ -36,13 +36,9 @@ func distributionForChildren(#count: Int, #childSize: CGFloat, #parentSize: CGFl
 }
 
 extension CGSize {
-  init(_ square: CGFloat) {
+  init(square: CGFloat) {
     width = square
     height = square
-  }
-  init(_ width: CGFloat, _ height: CGFloat) {
-    self.width = width
-    self.height = height
   }
   var center: CGPoint {
     get {return CGPoint(x: 0.5 * width, y: 0.5 * height)}
@@ -50,11 +46,9 @@ extension CGSize {
 }
 
 extension CGPoint {
-  init(_ x: CGFloat, _ y: CGFloat) {
-    self.x = x
-    self.y = y
-  }
   var mirror: CGPoint {return CGPoint(x: -x, y: -y)}
+  var mirrorX: CGPoint {return CGPoint(x: -x, y: y)}
+  var mirrorY: CGPoint {return CGPoint(x: x, y: -y)}
 }
 
 extension CGRect {

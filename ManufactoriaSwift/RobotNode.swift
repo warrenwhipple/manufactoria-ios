@@ -75,15 +75,15 @@ class RobotNode: SKNode {
         let ease = easeInOut(tickPercent + 0.5)
         let easeLeft = 1 - ease
         position = CGPoint(
-          lastLastPosition.x * easeLeft + lastPosition.x * ease,
-          lastLastPosition.y * easeLeft + lastPosition.y * ease
+          x: lastLastPosition.x * easeLeft + lastPosition.x * ease,
+          y: lastLastPosition.y * easeLeft + lastPosition.y * ease
         )
       } else {
         let ease = easeInOut(tickPercent - 0.5)
         let easeLeft = 1 - ease
         position = CGPoint(
-          lastPosition.x * easeLeft + nextPosition.x * ease,
-          lastPosition.y * easeLeft + nextPosition.y * ease
+          x: lastPosition.x * easeLeft + nextPosition.x * ease,
+          y: lastPosition.y * easeLeft + nextPosition.y * ease
         )
       }
     case .Falling:
@@ -91,8 +91,8 @@ class RobotNode: SKNode {
         let ease = easeInOut(tickPercent + 0.5)
         let easeLeft = 1 - ease
         position = CGPoint(
-          lastPosition.x * easeLeft + nextPosition.x * ease,
-          lastPosition.y * easeLeft + nextPosition.y * ease
+          x: lastPosition.x * easeLeft + nextPosition.x * ease,
+          y: lastPosition.y * easeLeft + nextPosition.y * ease
         )
         let fallEase = easeIn(tickPercent * 2)
         fallScaleNode.setScale(1 - fallEase + 0.75 * fallEase)
@@ -112,7 +112,7 @@ class RobotNode: SKNode {
   func loadNextGridCoord(nextGridCoord: GridCoord) {
     lastLastPosition = lastPosition
     lastPosition = nextPosition
-    nextPosition = CGPoint(CGFloat(nextGridCoord.i) + 0.5, CGFloat(nextGridCoord.j) + 0.5)
+    nextPosition = CGPoint(x: CGFloat(nextGridCoord.i) + 0.5, y: CGFloat(nextGridCoord.j) + 0.5)
   }
   
   func finishColorChange() {

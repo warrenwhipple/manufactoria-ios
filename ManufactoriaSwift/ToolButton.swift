@@ -23,7 +23,7 @@ class ToolButton: Button {
   
   init(nodeOff: SKNode, nodeOn: SKNode, editMode: EditMode) {
     self.editMode = editMode
-    super.init(nodeOff: nodeOff, nodeOn: nodeOn, touchSize: CGSize(Globals.touchSpan))
+    super.init(nodeOff: nodeOff, nodeOn: nodeOn, touchSize: CGSize(square: Globals.touchSpan))
     touchDownClosure = {[unowned self] in self.toolButtonDelegate.toolButtonTouchBegan(self)}
     touchUpInsideClosure = {[unowned self] in self.toolButtonDelegate.toolButtonActivated(self)}
   }

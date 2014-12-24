@@ -213,8 +213,8 @@ class CellNode: SKNode {
     pullerLeft = SKSpriteNode()
     pullerRight = SKSpriteNode()
     puller?.zPosition = 3
-    pullerLeft?.anchorPoint = CGPoint(1, 0.5)
-    pullerRight?.anchorPoint = CGPoint(1, 0.5)
+    pullerLeft?.anchorPoint = CGPoint(x: 1, y: 0.5)
+    pullerRight?.anchorPoint = CGPoint(x: 1, y: 0.5)
     pullerRight?.zRotation = PI
     pullerLeft?.colorBlendFactor = 1
     pullerRight?.colorBlendFactor = 1
@@ -439,9 +439,9 @@ class CellNode: SKNode {
     pullerRight?.size = pullerHalfTexture?.size() ?? CGSizeZero
     enterExitArrow?.texture = enterExitArrowTexture
     enterExitArrow?.size = enterExitArrowTexture?.size() ?? CGSizeZero
-    glowNode.size = CGSize(pointSize)
-    shimmerNode.size = CGSize(pointSize)
-    thinkNode.size = CGSize(pointSize)
+    glowNode.size = CGSize(square: pointSize)
+    shimmerNode.size = CGSize(square: pointSize)
+    thinkNode.size = CGSize(square: pointSize)
     self.setScale(1 / pointSize)
   }
   
