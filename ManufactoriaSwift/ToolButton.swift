@@ -28,9 +28,9 @@ class ToolButton: Button {
     touchUpInsideClosure = {[unowned self] in self.toolButtonDelegate.toolButtonActivated(self)}
   }
   
-  convenience init(iconOffNamed: String, iconOnNamed: String, editMode: EditMode) {
-    let iconOff = SKSpriteNode(iconOffNamed)
-    let iconOn = SKSpriteNode(iconOnNamed)
+  convenience init(iconNamed: String, editMode: EditMode) {
+    let iconOff = SKSpriteNode(iconNamed + "Off")
+    let iconOn = SKSpriteNode(iconNamed + "On")
     self.init(nodeOff: iconOff, nodeOn: iconOn, editMode: editMode)
     iconOn.color = Globals.highlightColor
   }

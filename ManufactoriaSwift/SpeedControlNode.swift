@@ -18,9 +18,9 @@ class SpeedControlNode: SKNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   
   weak var delegate: SpeedControlNodeDelegate!
-  let slowerButton = Button(iconOffNamed: "speedIconOff", iconOnNamed: "speedIconOn")
-  let skipButton = Button(iconOffNamed: "cancelIconOff", iconOnNamed: "cancelIconOn")
-  let fasterButton = Button(iconOffNamed: "speedIconOff", iconOnNamed: "speedIconOn")
+  let slowerButton = Button(iconNamed: "speedIcon")
+  let skipButton = Button(iconNamed: "cancelIcon")
+  let fasterButton = Button(iconNamed: "speedIcon")
   let buttons: [Button]
   
   override init() {

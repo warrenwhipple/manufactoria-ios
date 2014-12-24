@@ -26,20 +26,20 @@ class ToolbarNode: SKNode, ToolButtonDelegate, SwipeNodeDelegate {
   weak var delegate: ToolbarNodeDelegate!
   
   let staticButtons: [Button]
-  let undoButton = Button(iconOffNamed: "undoIconOff", iconOnNamed: "undoIconOn")
-  let redoButton = Button(iconOffNamed: "undoIconOff", iconOnNamed: "undoIconOn")
-  let cancelButton = Button(iconOffNamed: "cancelIconOff", iconOnNamed: "cancelIconOn")
-  let confirmButton = Button(iconOffNamed: "confirmIconOff", iconOnNamed: "confirmIconOn")
+  let undoButton = Button(iconNamed: "undoIcon")
+  let redoButton = Button(iconNamed: "undoIcon")
+  let cancelButton = Button(iconNamed: "cancelIcon")
+  let confirmButton = Button(iconNamed: "confirmIcon")
   var undoCancelSwapper, redoConfirmSwapper: ButtonSwapper
   
   let swipeNode: SwipeNode
   let toolButtons: [ToolButton]
   let toolButtonGroups: [[ToolButton]]
   var toolButtonMemories: [ToolButton]
-  let blankButton = ToolButton(iconOffNamed: "blankIconOff", iconOnNamed: "blankIconOn", editMode: .Blank)
+  let blankButton = ToolButton(iconNamed: "blankIcon", editMode: .Blank)
   let beltBridgeButton = BeltBridgeButton()
   let selectBoxMoveButton = SelectBoxMoveButton()
-  let selectCellButton = ToolButton(iconOffNamed: "selectCellIconOff", iconOnNamed: "selectCellIconOn", editMode: .SelectCell)
+  let selectCellButton = ToolButton(iconNamed: "selectCellIcon", editMode: .SelectCell)
   var buttonInFocus: ToolButton
   
   init(editModes: [EditMode]) {

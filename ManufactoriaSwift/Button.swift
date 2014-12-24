@@ -48,26 +48,6 @@ class Button: SKSpriteNode {
     addChild(disableWrapper)
   }
   
-  class func roundWithText(text: String) -> Button {
-    let spriteOff = SKSpriteNode("circleButtonOff")
-    let spriteOn = SKSpriteNode("circleButtonOn")
-    spriteOn.color = Globals.highlightColor
-    let labelOff = SKLabelNode()
-    labelOff.fontSmall()
-    labelOff.fontColor = Globals.strokeColor
-    labelOff.verticalAlignmentMode = .Center
-    labelOff.text = text
-    let labelOn = SKLabelNode()
-    labelOn.fontSmall()
-    labelOn.fontColor = Globals.backgroundColor
-    labelOn.text = text
-    labelOn.verticalAlignmentMode = .Center
-    labelOn.text = text
-    spriteOff.addChild(labelOff)
-    spriteOn.addChild(labelOn)
-    return Button(nodeOff: spriteOff, nodeOn: spriteOn, touchSize: CGSize(Globals.touchSpan))
-  }
-  
   convenience init(text: String, fixedWidth: CGFloat?) {
     let wrapperOff = SKNode()
     let wrapperOn = SKNode()
@@ -103,9 +83,9 @@ class Button: SKSpriteNode {
     self.init(nodeOff: wrapperOff, nodeOn: wrapperOn, touchSize: CGSize(width + Globals.mediumEm, Globals.mediumEm * 3))
   }
   
-  convenience init(iconOffNamed: String, iconOnNamed: String) {
-    let iconOff = SKSpriteNode(iconOffNamed)
-    let iconOn = SKSpriteNode(iconOnNamed)
+  convenience init(iconNamed: String) {
+    let iconOff = SKSpriteNode(iconNamed + "Off")
+    let iconOn = SKSpriteNode(iconNamed + "On")
     self.init(nodeOff: iconOff, nodeOn: iconOn, touchSize: CGSize(Globals.touchSpan))
     iconOn.color = Globals.highlightColor
   }

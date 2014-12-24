@@ -27,6 +27,8 @@ class SecondTutorialScene: GenericTutorialScene {
     beltButton.editModeIsLocked = true
     branchButton.editModeIsLocked = true
 
+    testButton.removeFromParent()
+
     continueButton.position = toolbarNode.position
     
     stageSetups = [

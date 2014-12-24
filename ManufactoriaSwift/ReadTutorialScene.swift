@@ -10,7 +10,7 @@ import SpriteKit
 
 class ReadTutorialScene: TutorialScene {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  let demoRobotButton = Button(iconOffNamed: "robotOff", iconOnNamed: "robotOn")
+  let demoTestButton = Button(iconNamed: "robot")
   
   init(size: CGSize) {
     super.init(size: size, levelKey: "read")
@@ -20,12 +20,12 @@ class ReadTutorialScene: TutorialScene {
     demoLabel.text = "It redirects #r and #b."
     instructionNode.addPageToRight(demoLabel)
     startPulseWithParent(instructionNode.rightArrow)
-    demoRobotButton.touchUpInsideClosure = {
+    demoTestButton.touchUpInsideClosure = {
       [unowned self] in
-      self.demoRobotButton.disappearWithAnimate(true)
+      self.demoTestButton.disappearWithAnimate(true)
       self.testButtonPressed()
     }
-    startPulseWithParent(demoRobotButton)
+    startPulseWithParent(demoTestButton)
 
     toolbarNode.removeFromParent()
     toolbarNode.undoCancelSwapper.removeFromParent()
@@ -64,7 +64,7 @@ class ReadTutorialScene: TutorialScene {
   
   override func fitToSize() {
     super.fitToSize()
-    demoRobotButton.position = congratulationNode.position
+    demoTestButton.position = congratulationNode.position
     let centerXs = distributionForChildren(count: 3, childSize: Globals.iconSpan, parentSize: size.width)
     toolbarNode.toolButtons[0].position.x = centerXs[0]
     toolbarNode.toolButtons[1].position.x = centerXs[1]
@@ -109,7 +109,7 @@ class ReadTutorialScene: TutorialScene {
       gridNode.grid[GridCoord(2,2)] = Cell(kind: .Belt, direction: .East)
       gridNode.changeCellNodesToMatchCellsWithAnimate(true)
       for cellNode in gridNode.cellNodes {cellNode.isActivateGlowing = false}
-      demoRobotButton.appearWithParent(self, animate: true)
+      demoTestButton.appearWithParent(self, animate: true)
       tutorialState = .Demo
     case .Demo:
       instructionNode.goToIndexWithoutSnap(2)

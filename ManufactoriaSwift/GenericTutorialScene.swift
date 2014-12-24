@@ -12,27 +12,26 @@ class GenericTutorialScene: GameScene {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   var stageSetups: [(()->())?] = []
   var currentStageIndex = -1
-  var hookContinueButton, hookDemoRobotButton, hookDidSetState, hookDidSetEditMode, hookCellWasEdited: (()->())?
+  var hookContinueButton, hookDemoTestButton, hookDidSetState, hookDidSetEditMode, hookCellWasEdited: (()->())?
   var speedControlsShouldSimplify: Bool = true
   var speedControlsShouldHideUntilTouch: Bool = true
   var speedControlShouldAllowCancel = false
   
-  let demoRobotButton = Button(iconOffNamed: "robotOff", iconOnNamed: "robotOn")
-  let demoBrokenRobotButton = Button(iconOffNamed: "robotBrokenOff", iconOnNamed: "robotBrokenOn")
+  let demoTestButton = Button(iconNamed: "testButton")
   let continueButton = Button(text: "continue", fixedWidth: nil)
   
   override init(size: CGSize, var levelKey: String) {
     super.init(size: size, levelKey: levelKey)
     gridNode.clearGridWithAnimate(false)
     continueButton.isSticky = true
-    demoRobotButton.isSticky = true
+    demoTestButton.isSticky = true
     continueButton.touchUpInsideClosure = {[unowned self] in self.continueButtonWasPressed()}
-    demoRobotButton.touchUpInsideClosure = {[unowned self] in self.demoRobotButtonWasPressed()}
+    demoTestButton.touchUpInsideClosure = {[unowned self] in self.demoTestButtonWasPressed()}
   }
   
   func nextTutorialStage() {
     hookContinueButton = nil
-    hookDemoRobotButton = nil
+    hookDemoTestButton = nil
     hookDidSetEditMode = nil
     hookCellWasEdited = nil
     stopRepeatPulse()
@@ -47,14 +46,13 @@ class GenericTutorialScene: GameScene {
     hookContinueButton?()
   }
   
-  func demoRobotButtonWasPressed() {
-    hookDemoRobotButton?()
+  func demoTestButtonWasPressed() {
+    hookDemoTestButton?()
   }
   
   override func didSetState(oldState: State) {
     super.didSetState(oldState)
     if state == .Testing {
-      toolbarNode.disappearWithAnimate(true)
       if speedControlsShouldHideUntilTouch && !speedControlShouldAllowCancel {
         speedControlNode.removeFromParent()
       } else {
@@ -113,15 +111,15 @@ class GenericTutorialScene: GameScene {
     gridNode.state = .Waiting
     tapeTestResults = [TapeTestResult(input: "", output: nil, correctOutput: nil, kind: .Demo)]
     state = .Testing
-    if let buttonParent = demoRobotButton.parent {
-      let positionOnGridNode = buttonParent.convertPoint(demoRobotButton.position, toNode: gridNode.wrapper)
+    if let buttonParent = demoTestButton.parent {
+      let positionOnGridNode = buttonParent.convertPoint(demoTestButton.position, toNode: gridNode.wrapper)
       if let robotNode = robotNode {
         robotNode.lastPosition = positionOnGridNode
         robotNode.lastLastPosition = positionOnGridNode
-        demoRobotButton.position = CGPointZero
-        demoRobotButton.removeFromParent()
-        robotNode.addChild(demoRobotButton)
-        demoRobotButton.disappearWithAnimate(true)
+        demoTestButton.position = CGPointZero
+        demoTestButton.removeFromParent()
+        robotNode.addChild(demoTestButton)
+        demoTestButton.disappearWithAnimate(true)
       }
     }
   }

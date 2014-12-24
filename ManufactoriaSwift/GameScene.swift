@@ -28,8 +28,8 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
   let tapeNode = TapeNode()
   let gridNode: GridNode
   let toolbarNode: ToolbarNode
-  let testButton = Button(iconOffNamed: "testButtonOff", iconOnNamed: "testButtonOn")
-  let thinkingCancelButton = Button(iconOffNamed: "cancelIconOff", iconOnNamed: "cancelIconOn")
+  let testButton = Button(iconNamed: "testButton")
+  let thinkingCancelButton = Button(iconNamed: "cancelIcon")
   let speedControlNode = SpeedControlNode()
   let reportNode = ReportNode()
   let congratulationNode = CongratulationNode()
