@@ -237,8 +237,7 @@ class GenericTutorialScene: GameScene {
   }
   
   func startPulseWithParent(parent: SKNode) {
-    let pulse = SKSpriteNode("pulse")
-    pulse.color = Globals.highlightColor
+    let pulse = SKSpriteNode(imageNamed: "pulse", color: Globals.highlightColor)
     pulse.alpha = 0
     pulse.setScale(0)
     pulse.zPosition = -100

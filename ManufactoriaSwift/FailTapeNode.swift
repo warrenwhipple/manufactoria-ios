@@ -31,7 +31,7 @@ class FailTapeNode: SKNode {
     if tape.isEmpty {
       dots = []
       super.init()
-      addChild(SKSpriteNode("printer"))
+      addChild(SKSpriteNode(imageNamed: "printer", color: Globals.strokeColor))
     } else {
       var tooLong = false
       if tape.length() > 32 {

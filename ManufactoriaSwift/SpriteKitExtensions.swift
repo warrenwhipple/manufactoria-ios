@@ -41,8 +41,6 @@ extension UIColor {
   }
 }
 
-private let unhideAction = SKAction.customActionWithDuration(0, actionBlock: {n,f in n.hidden = false})
-
 extension SKNode {
   
   func addChildren(nodes: [SKNode]) {
@@ -66,7 +64,11 @@ extension SKNode {
       let fadeIn = SKAction.fadeAlphaTo(1, duration: 0.2)
       if let wait = wait {
         hidden = true
-        runAction(SKAction.sequence([wait, unhideAction, fadeIn]), withKey: "appearDisappear")
+        runAction(SKAction.sequence([
+          wait,
+          SKAction.customActionWithDuration(0, actionBlock: {n,f in n.hidden = false}),
+          fadeIn
+          ]), withKey: "appearDisappear")
       } else {
         hidden = false
         runAction(SKAction.sequence([fadeIn]), withKey: "appearDisappear")
@@ -75,7 +77,10 @@ extension SKNode {
       alpha = 1
       if let wait = wait {
         hidden = true
-        runAction(SKAction.sequence([wait, unhideAction]), withKey: "appearDisappear")
+        runAction(SKAction.sequence([
+          wait,
+          SKAction.customActionWithDuration(0, actionBlock: {n,f in n.hidden = false})
+          ]), withKey: "appearDisappear")
       } else {
         hidden = false
         removeActionForKey("appearDisappear")
@@ -110,10 +115,14 @@ extension SKNode {
 }
  
 extension SKSpriteNode {
-  convenience init(_ string: String) {
-    self.init(texture: SKTexture(imageNamed: string))
-    color = Globals.strokeColor
+  convenience init(imageNamed: String, color: UIColor) {
+    self.init(texture: SKTexture(imageNamed: imageNamed))
+    self.color = color
     colorBlendFactor = 1
+  }
+  convenience init(imageNamed: String, colorBlendFactor: CGFloat) {
+    self.init(texture: SKTexture(imageNamed: imageNamed))
+    self.colorBlendFactor = colorBlendFactor
   }
 }
 

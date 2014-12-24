@@ -12,7 +12,7 @@ class RobotNode: SKNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   
   let currentColorSprite, lastColorSprite, outlineSprite: SKSpriteNode
-  let eyesSprite = SKSpriteNode("robotEyes")
+  let eyesSprite = SKSpriteNode(imageNamed: "robotEyes", color: Globals.backgroundColor)
   let darkBlueColor = Globals.blueColor.blend(UIColor.blackColor(), blendFactor: 0.2)
   let darkRedColor = Globals.redColor.blend(UIColor.blackColor(), blendFactor: 0.2)
   let darkGreenColor = Globals.greenColor.blend(UIColor.blackColor(), blendFactor: 0.2)
@@ -27,9 +27,9 @@ class RobotNode: SKNode {
     lastPosition = position
     nextPosition = position
     currentColor = color
-    currentColorSprite = SKSpriteNode(broken ? "robotBrokenOn" : "robotOn")
-    lastColorSprite =    SKSpriteNode(broken ? "robotBrokenOn" : "robotOn")
-    outlineSprite =      SKSpriteNode(broken ? "robotBrokenOff" : "robotOff")
+    currentColorSprite = SKSpriteNode(imageNamed: (broken ? "robotBrokenOn" : "robotOn"), colorBlendFactor: 1)
+    lastColorSprite = SKSpriteNode(imageNamed: (broken ? "robotBrokenOn" : "robotOn"), colorBlendFactor: 1)
+    outlineSprite = SKSpriteNode(imageNamed: (broken ? "robotBrokenOff" : "robotOff"), color: Globals.strokeColor)
     super.init()
     self.position = position
     zPosition = 2
@@ -43,7 +43,6 @@ class RobotNode: SKNode {
     }
     currentColorSprite.zPosition = 0.5
     fallScaleNode.addChild(currentColorSprite)
-    eyesSprite.color = Globals.backgroundColor
     eyesSprite.zPosition = -0.5
     fallScaleNode.addChild(eyesSprite)
     addChild(fallScaleNode)

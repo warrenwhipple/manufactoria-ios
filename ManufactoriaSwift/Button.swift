@@ -52,10 +52,9 @@ class Button: SKSpriteNode {
     let wrapperOff = SKNode()
     let wrapperOn = SKNode()
     
-    let buttonOff = SKSpriteNode("buttonOff")
+    let buttonOff = SKSpriteNode(imageNamed: "buttonOff", color: Globals.strokeColor)
     buttonOff.centerRect = CGRect(centerX: 0.5, centerY: 0.5, width: 1 / buttonOff.size.width , height: 1)
-    let buttonOn = SKSpriteNode("buttonOn")
-    buttonOn.color = Globals.highlightColor
+    let buttonOn = SKSpriteNode(imageNamed: "buttonOn", color: Globals.highlightColor)
     buttonOn.centerRect = buttonOff.centerRect
     
     let labelOff = SKLabelNode()
@@ -84,10 +83,9 @@ class Button: SKSpriteNode {
   }
   
   convenience init(iconNamed: String) {
-    let iconOff = SKSpriteNode(iconNamed + "Off")
-    let iconOn = SKSpriteNode(iconNamed + "On")
+    let iconOff = SKSpriteNode(imageNamed: iconNamed + "Off", color: Globals.strokeColor)
+    let iconOn = SKSpriteNode(imageNamed: iconNamed + "On", color: Globals.highlightColor)
     self.init(nodeOff: iconOff, nodeOn: iconOn, touchSize: CGSize(square: Globals.touchSpan))
-    iconOn.color = Globals.highlightColor
   }
   
   // MARK: - On Off
