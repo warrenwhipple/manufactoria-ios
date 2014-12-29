@@ -16,6 +16,12 @@ struct TapeTestResult {
   let output: String?
   let correctOutput: String?
   let kind: Kind
+  static func blankDemo() -> TapeTestResult {
+    return TapeTestResult(input: "", output: nil, correctOutput: nil, kind: .Demo)
+  }
+  static func blankLoop() -> TapeTestResult {
+    return TapeTestResult(input: "", output: nil, correctOutput: nil, kind: .FailLoop)
+  }
 }
 
 protocol EngineDelegate: class {

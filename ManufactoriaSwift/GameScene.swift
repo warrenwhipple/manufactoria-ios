@@ -179,7 +179,6 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
       if isPusher {tapeNode.printer.alpha = 1}
       else {tapeNode.printer.alpha = 0}
       loadTape(0)
-      newRobotNodeWithColor(colorForTape(), broken: true, animate: false)
       tapeNode.appearWithParent(self, animate: true)
     case .Congratulating:
       tapeNode.disappearWithAnimate(true)
@@ -204,7 +203,6 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
         testingState = .Testing
         robotNode?.loadNextGridCoord(robotCoord)
       }
-      
       if testingState == .Testing {
         while tickPercent >= 1 {
           tickPercent -= 1
@@ -347,11 +345,8 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     currentTapeTestIndex = i
     testSpeed = 1
     tickPercent = 0
-    if tapeTestResults.isEmpty {
-      tape = ""
-    } else {
-      tape = (tapeTestResults[i].input)
-    }
+    let tapeTestResult = tapeTestResults[i]
+    tape = tapeTestResult.input
     tapeNode.loadTape(tape)
     tapeNode.state = .Entering
     lastTapeLength = tape.length()
@@ -359,9 +354,8 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     lastTestingState = .Entering
     robotCoord = gridNode.grid.startCoord + 1
     lastRobotCoord = gridNode.grid.startCoord
-    if i > 0 {
-      newRobotNodeWithColor(colorForTape(), broken: true, animate: true)
-    }
+    println("result:\(i)  broken: \(tapeTestResult.correctOutput == nil)")
+    newRobotNodeWithColor(colorForTape(), broken: (tapeTestResult.correctOutput == nil), animate: true)
     robotNode?.loadNextGridCoord(lastRobotCoord)
     didAnimateRobotComplete = false
   }

@@ -11,7 +11,7 @@ import SpriteKit
 class RobotNode: SKNode {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   
-  let currentColorSprite, lastColorSprite, outlineSprite: SKSpriteNode
+  let currentColorSprite, lastColorSprite: SKSpriteNode
   let eyesSprite = SKSpriteNode(imageNamed: "robotEyes", color: Globals.backgroundColor)
   let darkBlueColor = Globals.blueColor.blend(UIColor.blackColor(), blendFactor: 0.2)
   let darkRedColor = Globals.redColor.blend(UIColor.blackColor(), blendFactor: 0.2)
@@ -27,9 +27,8 @@ class RobotNode: SKNode {
     lastPosition = position
     nextPosition = position
     currentColor = color
-    currentColorSprite = SKSpriteNode(imageNamed: (broken ? "robotBrokenOn" : "robotOn"), colorBlendFactor: 1)
-    lastColorSprite = SKSpriteNode(imageNamed: (broken ? "robotBrokenOn" : "robotOn"), colorBlendFactor: 1)
-    outlineSprite = SKSpriteNode(imageNamed: (broken ? "robotBrokenOff" : "robotOff"), color: Globals.strokeColor)
+    currentColorSprite = SKSpriteNode(imageNamed: (broken ? "robotBroken" : "robot"), colorBlendFactor: 1)
+    lastColorSprite = SKSpriteNode(imageNamed: (broken ? "robotBroken" : "robot"), colorBlendFactor: 1)
     super.init()
     self.position = position
     zPosition = 2
@@ -38,12 +37,12 @@ class RobotNode: SKNode {
     if let color = color {
       currentColorSprite.color = darkColor(color)
     } else {
-      currentColorSprite.color = Globals.backgroundColor
-      currentColorSprite.addChild(outlineSprite)
+      currentColorSprite.color = Globals.strokeColor
     }
-    currentColorSprite.zPosition = 0.5
+    currentColorSprite.zPosition = 0.25
     fallScaleNode.addChild(currentColorSprite)
-    eyesSprite.zPosition = -0.5
+    eyesSprite.anchorPoint.y = 0
+    eyesSprite.zPosition = 0.5
     fallScaleNode.addChild(eyesSprite)
     addChild(fallScaleNode)
   }
@@ -122,21 +121,18 @@ class RobotNode: SKNode {
   
   func loadNextColor(nextColor: Color?) {
     if nextColor == currentColor {return}
-    outlineSprite.removeFromParent()
     
     if let currentColor = currentColor {
       lastColorSprite.color = darkColor(currentColor)
     } else {
-      lastColorSprite.color = Globals.backgroundColor
-      lastColorSprite.addChild(outlineSprite)
+      lastColorSprite.color = Globals.strokeColor
     }
     lastColorSprite.alpha = 1
     
     if let nextColor = nextColor {
       currentColorSprite.color = darkColor(nextColor)
     } else {
-      currentColorSprite.color = Globals.backgroundColor
-      currentColorSprite.addChild(outlineSprite)
+      currentColorSprite.color = Globals.strokeColor
     }
     currentColorSprite.alpha = 0
     
