@@ -50,48 +50,29 @@ class InstructionNode: SwipeNode {
   }
     
   func resetFailPageForTestResult(result: TapeTestResult) {
-    //let lineHeight = SKTexture(imageNamed: "dot").size().height * 1.5
+    func inputDescription() -> String {
+      if result.input == "" {
+        return "The blank sequence\n"
+      } else if result.input.length() < 4 {
+        return "#" + result.input + " "
+      }
+      return "#" + result.input + "\n"
+    }
     switch result.kind {
-    case .Demo: break
-    case .Pass:
-      assertionFailure("StatusNode cannot generate failPage for a test that passes.")
-    case .FailLoop:
-      if result.input == "" {
-        failLabel.text = "The blank sequence\ncaused a loop."
-      } else if result.input.length() < 4 {
-        failLabel.text = "#" + result.input + " caused a loop."
-      } else {
-        failLabel.text = "#" + result.input + "\ncaused a loop."
+    case .Loop: failLabel.text =  inputDescription() + "caused a loop"
+    case .Fail:
+      if result.correctOutput == nil {
+        failLabel.text = inputDescription() + "should be rejected"
+      } else if result.correctOutput == "*" {
+        failLabel.text = inputDescription() + "should be accepted"
+      } else if result.output == nil {
+        failLabel.text = inputDescription() + "should not be dropped"
       }
-    case .FailShouldAccept:
-      if result.input == "" {
-        failLabel.text = "The blank sequence\nshould be accepted."
-      } else if result.input.length() < 4 {
-        failLabel.text = "#" + result.input + " should be accepted."
-      } else {
-        failLabel.text = "#" + result.input + "\nshould be accepted."
-      }
-    case .FailShouldReject:
-      if result.input == "" {
-        failLabel.text = "The blank sequence\nshould be rejected."
-      } else if result.input.length() < 4 {
-        failLabel.text = "#" + result.input + " should be rejected."
-      } else {
-        failLabel.text = "#" + result.input + "\nshould be rejected."
-      }
-    case .FailWrongTransform:
       let tapeIn = result.input == "" ? "blank" : "#" + result.input
       let shouldOut = result.correctOutput == "" ? "blank" : "#" + (result.correctOutput ?? "reject")
       let notOut = result.output == "" ? "blank" : "#" + (result.output ?? "reject")
       failLabel.text = "Input: " + tapeIn + "\nShould: " + shouldOut + "\nNot: " + notOut
-    case .FailDroppedTransform:
-      if result.input == "" {
-        failLabel.text = "The blank sequence\nshould not be dropped."
-      } else if result.input.length() < 6 {
-        failLabel.text = "#" + result.input + " should not be dropped."
-      } else {
-        failLabel.text = "#" + result.input + "\nshould not be dropped."
-      }
+    default: return
     }
     if failPage.parent == nil {
       addPageToRight(failPage)

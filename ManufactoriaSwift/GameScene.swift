@@ -354,7 +354,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     lastTestingState = .Entering
     robotCoord = gridNode.grid.startCoord + 1
     lastRobotCoord = gridNode.grid.startCoord
-    println("result:\(i)  broken: \(tapeTestResult.correctOutput == nil)")
+    println("result:\(i)  broken: \(tapeTestResult.correctOutput == nil)  correctOutput: \(tapeTestResult.correctOutput)")
     newRobotNodeWithColor(colorForTape(), broken: (tapeTestResult.correctOutput == nil), animate: true)
     robotNode?.loadNextGridCoord(lastRobotCoord)
     didAnimateRobotComplete = false
@@ -420,7 +420,12 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     reportNode.preparePassMessage()
     tapeTestResults = []
     for exemplar in levelSetup.exemplars {
-      tapeTestResults.append(TapeTestResult(input: exemplar, output: nil, correctOutput: nil, kind: .Pass))
+      let output = engine.correctOutputForInput(exemplar)
+      tapeTestResults.append(TapeTestResult(
+        input: exemplar,
+        output: output,
+        correctOutput: output,
+        kind: .Pass))
     }
     let gameProgressData = GameProgressData.sharedInstance
     GameProgressData.sharedInstance.completedLevelWithKey(levelKey)
@@ -429,7 +434,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
   }
   
   func gridTestFailedWithResult(result: TapeTestResult) {
-    if result.kind == TapeTestResult.Kind.FailLoop {
+    if result.kind == TapeTestResult.Kind.Loop {
       reportNode.prepareLoopMessage()
     } else {
       reportNode.prepareFailMessage()

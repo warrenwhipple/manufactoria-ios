@@ -10,7 +10,7 @@ import Foundation
 
 struct TapeTestResult {
   enum Kind {
-    case Demo, Pass, FailLoop, FailShouldAccept, FailShouldReject, FailWrongTransform, FailDroppedTransform
+    case Pass, Fail, Loop, Demo
   }
   let input: String
   let output: String?
@@ -20,7 +20,7 @@ struct TapeTestResult {
     return TapeTestResult(input: "", output: nil, correctOutput: nil, kind: .Demo)
   }
   static func blankLoop() -> TapeTestResult {
-    return TapeTestResult(input: "", output: nil, correctOutput: nil, kind: .FailLoop)
+    return TapeTestResult(input: "", output: nil, correctOutput: nil, kind: .Loop)
   }
 }
 
@@ -53,34 +53,48 @@ class Engine {
     queue.cancelAllOperations()
   }
   
+  func correctOutputForInput(input: String) -> String? {
+    if let acceptFunction = levelSetup.acceptFunction {
+      return acceptFunction(input) ? "*" : nil
+    } else if let transformFunction = levelSetup.transformFunction {
+      return transformFunction(input)
+    }
+    return nil
+  }
+  
   func tapeTestOpDidFinish(tapeTestOp: TapeTestOp) {
     //  check for tape test loop
     if tapeTestOp.didLoop {
-      gridTestFailedWithResult(TapeTestResult(input: tapeTestOp.input, output: nil, correctOutput: nil, kind: .FailLoop))
+      gridTestFailedWithResult(TapeTestResult(
+        input: tapeTestOp.input,
+        output: nil,
+        correctOutput: correctOutputForInput(tapeTestOp.input),
+        kind: .Loop))
       return
     }
     
     // check for accept/reject tape test failure
     if let acceptFunction = levelSetup.acceptFunction {
+      let didAccept = tapeTestOp.output != nil
       let shouldAccept = acceptFunction(tapeTestOp.input)
-      if shouldAccept && tapeTestOp.output == nil {
-        gridTestFailedWithResult(TapeTestResult(input: tapeTestOp.input, output: tapeTestOp.output, correctOutput: nil,  kind: .FailShouldAccept))
-        return
-      }
-      if !shouldAccept && tapeTestOp.output != nil {
-        gridTestFailedWithResult(TapeTestResult(input: tapeTestOp.input, output: tapeTestOp.output, correctOutput: nil,  kind: .FailShouldReject))
+      if didAccept != shouldAccept {
+        gridTestFailedWithResult(TapeTestResult(
+          input: tapeTestOp.input,
+          output: tapeTestOp.output,
+          correctOutput: shouldAccept ? "*" : nil,
+          kind: .Fail))
         return
       }
       
     // check for transform tape test failure
     } else if let transformFunction = levelSetup.transformFunction {
       let correctOutput = transformFunction(tapeTestOp.input)
-      if tapeTestOp.output == nil {
-        gridTestFailedWithResult(TapeTestResult(input: tapeTestOp.input, output: tapeTestOp.output, correctOutput: correctOutput, kind: .FailDroppedTransform))
-        return
-      }
-      if correctOutput != tapeTestOp.output! {
-        gridTestFailedWithResult(TapeTestResult(input: tapeTestOp.input, output: tapeTestOp.output, correctOutput: correctOutput, kind: .FailWrongTransform))
+      if tapeTestOp.output != correctOutput {
+        gridTestFailedWithResult(TapeTestResult(
+          input: tapeTestOp.input,
+          output: tapeTestOp.output,
+          correctOutput: correctOutput,
+          kind: .Fail))
         return
       }
     }

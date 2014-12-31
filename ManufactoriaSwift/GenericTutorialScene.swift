@@ -79,7 +79,7 @@ class GenericTutorialScene: GameScene {
     super.loadTape(i)
     if speedControlsShouldSimplify {
       speedControlNode.slowerButton.removeFromParent()
-      if tapeTestResults[i].kind == TapeTestResult.Kind.FailLoop || speedControlShouldAllowCancel {
+      if tapeTestResults[i].kind == TapeTestResult.Kind.Loop || speedControlShouldAllowCancel {
         speedControlNode.fasterButton.removeFromParent()
         speedControlNode.skipButton.position.x = 0
         speedControlNode.skipButton.appearWithParent(speedControlNode, animate: false)
