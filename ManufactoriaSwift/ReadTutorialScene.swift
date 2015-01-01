@@ -38,8 +38,8 @@ class ReadTutorialScene: TutorialScene {
       }
     }
     
-    speedControlNode.slowerButton.removeFromParent()
-    speedControlNode.skipButton.removeFromParent()
+    speedControlArea.slowerButton.removeFromParent()
+    speedControlArea.skipButton.removeFromParent()
     
     congratulationNode.menuButton.touchUpInsideClosure = {[unowned self] in self.transitionToGameSceneWithLevelKey("readseq")}
     
@@ -69,7 +69,7 @@ class ReadTutorialScene: TutorialScene {
     toolbarArea.toolButtons[0].position.x = centerXs[0]
     toolbarArea.toolButtons[1].position.x = centerXs[1]
     toolbarArea.toolButtons[2].position.x = centerXs[2]
-    if tutorialState != .Try {speedControlNode.fasterButton.position.x = 0}
+    if tutorialState != .Try {speedControlArea.fasterButton.position.x = 0}
   }
   
   override var state: State {
@@ -85,8 +85,8 @@ class ReadTutorialScene: TutorialScene {
         instructionNode.disappearWithAnimate(true)
         tapeNode.disappearWithAnimate(false)
         toolbarArea.disappearWithAnimate(true)
-        speedControlNode.appearWithParent(self, animate: true)
-        if tutorialState == .Demo {speedControlNode.disappearWithAnimate(false)}
+        speedControlArea.appearWithParent(self, animate: true)
+        if tutorialState == .Demo {speedControlArea.disappearWithAnimate(false)}
       case .Congratulating: break
       }
     }
@@ -122,9 +122,9 @@ class ReadTutorialScene: TutorialScene {
       gridNode.grid[GridCoord(2,2)] = Cell()
       gridNode.changeCellNodesToMatchCellsWithAnimate(true)
       for cellNode in gridNode.cellNodes {cellNode.isActivateGlowing = false}
-      speedControlNode.addChild(speedControlNode.slowerButton)
-      speedControlNode.addChild(speedControlNode.skipButton)
-      speedControlNode.fitToSize()
+      speedControlArea.addChild(speedControlArea.slowerButton)
+      speedControlArea.addChild(speedControlArea.skipButton)
+      speedControlArea.fitToSize()
       tutorialState = .Try
     case .Try: break
     }
@@ -173,8 +173,8 @@ class ReadTutorialScene: TutorialScene {
     super.touchesBegan(touches, withEvent: event)
     if tutorialState == .Reader {
       instructionNode.snapToIndex(2, initialVelocityX: 0)
-    } else if tutorialState == .Demo && state == .Testing && speedControlNode.parent == nil {
-      speedControlNode.appearWithParent(self, animate: true)
+    } else if tutorialState == .Demo && state == .Testing && speedControlArea.parent == nil {
+      speedControlArea.appearWithParent(self, animate: true)
     }
   }
 }

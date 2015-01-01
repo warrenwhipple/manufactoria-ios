@@ -22,7 +22,7 @@
 		2D4A92DE1A01CB1E00BE3C4C /* belt46@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2D4A92D81A01CB1E00BE3C4C /* belt46@2x.png */; };
 		2D4A92DF1A01CB1E00BE3C4C /* belt64@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2D4A92D91A01CB1E00BE3C4C /* belt64@2x.png */; };
 		2D4A92E01A01CB1E00BE3C4C /* gameScene.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 2D4A92DA1A01CB1E00BE3C4C /* gameScene.atlas */; };
-		2D5C7319199FE80600D53D0D /* SpeedControlNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5C7318199FE80600D53D0D /* SpeedControlNode.swift */; };
+		2D5C7319199FE80600D53D0D /* SpeedControlArea.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5C7318199FE80600D53D0D /* SpeedControlArea.swift */; };
 		2D5E583F19A5265500F10DD3 /* ShimmerNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5E583E19A5265500F10DD3 /* ShimmerNode.swift */; };
 		2D60F5C7198041BD0032860B /* TitleScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D60F5C6198041BD0032860B /* TitleScene.swift */; };
 		2D60F5C9198156250032860B /* GameProgressData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D60F5C8198156250032860B /* GameProgressData.swift */; };
@@ -88,7 +88,7 @@
 		2D4A92D91A01CB1E00BE3C4C /* belt64@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "belt64@2x.png"; path = "../../../Manufactoria Assets/gameScene/belt64@2x.png"; sourceTree = "<group>"; };
 		2D4A92DA1A01CB1E00BE3C4C /* gameScene.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; name = gameScene.atlas; path = "../../../Manufactoria Assets/gameScene/gameScene.atlas"; sourceTree = "<group>"; };
 		2D54B24719CF27BB00DF68C5 /* ReadTutorialScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReadTutorialScene.swift; sourceTree = "<group>"; };
-		2D5C7318199FE80600D53D0D /* SpeedControlNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpeedControlNode.swift; sourceTree = "<group>"; };
+		2D5C7318199FE80600D53D0D /* SpeedControlArea.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpeedControlArea.swift; sourceTree = "<group>"; };
 		2D5E583E19A5265500F10DD3 /* ShimmerNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShimmerNode.swift; sourceTree = "<group>"; };
 		2D60F5C6198041BD0032860B /* TitleScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = TitleScene.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		2D60F5C8198156250032860B /* GameProgressData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = GameProgressData.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
@@ -230,7 +230,7 @@
 				2DC1CD6819AFB75900589B86 /* FailTapeNode.swift */,
 				2D7F922B195C61FA00F04F63 /* ToolbarArea.swift */,
 				2D4729CE19BC92650072E52D /* ToolButton.swift */,
-				2D5C7318199FE80600D53D0D /* SpeedControlNode.swift */,
+				2D5C7318199FE80600D53D0D /* SpeedControlArea.swift */,
 				2DD4744F19D0566B001E658E /* CongratulationsMenu.swift */,
 			);
 			name = Areas;
@@ -482,7 +482,7 @@
 				2D36614E19E6D46D0050F34E /* SmartLabel.swift in Sources */,
 				2DB8E3F31A38D72D00898BD1 /* ButtonSwapper.swift in Sources */,
 				2DD23D6E196F0BF900838E96 /* LevelLibrary.swift in Sources */,
-				2D5C7319199FE80600D53D0D /* SpeedControlNode.swift in Sources */,
+				2D5C7319199FE80600D53D0D /* SpeedControlArea.swift in Sources */,
 				2D60F5C7198041BD0032860B /* TitleScene.swift in Sources */,
 				2DC4915F194F671F00053237 /* Cell.swift in Sources */,
 				2D98E8C31A420126005C7F3D /* FirstTutorialScene.swift in Sources */,

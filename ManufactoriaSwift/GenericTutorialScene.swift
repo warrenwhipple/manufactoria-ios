@@ -54,9 +54,9 @@ class GenericTutorialScene: GameScene {
     super.didSetState(oldState)
     if state == .Testing {
       if speedControlsShouldHideUntilTouch && !speedControlShouldAllowCancel {
-        speedControlNode.removeFromParent()
+        speedControlArea.removeFromParent()
       } else {
-        speedControlNode.appearWithParent(self, animate: true, delay: Globals.appearDelay)
+        speedControlArea.appearWithParent(self, animate: true, delay: Globals.appearDelay)
       }
     }
     hookDidSetState?()
@@ -78,28 +78,28 @@ class GenericTutorialScene: GameScene {
   override func loadTape(i: Int) {
     super.loadTape(i)
     if speedControlsShouldSimplify {
-      speedControlNode.slowerButton.removeFromParent()
+      speedControlArea.slowerButton.removeFromParent()
       if tapeTestResults[i].kind == TapeTestResult.Kind.Loop || speedControlShouldAllowCancel {
-        speedControlNode.fasterButton.removeFromParent()
-        speedControlNode.skipButton.position.x = 0
-        speedControlNode.skipButton.appearWithParent(speedControlNode, animate: false)
+        speedControlArea.fasterButton.removeFromParent()
+        speedControlArea.skipButton.position.x = 0
+        speedControlArea.skipButton.appearWithParent(speedControlArea, animate: false)
       } else {
-        speedControlNode.skipButton.removeFromParent()
-        speedControlNode.fasterButton.position.x = 0
-        speedControlNode.fasterButton.appearWithParent(speedControlNode, animate: false)
+        speedControlArea.skipButton.removeFromParent()
+        speedControlArea.fasterButton.position.x = 0
+        speedControlArea.fasterButton.appearWithParent(speedControlArea, animate: false)
       }
     } else {
-      speedControlNode.fitToSize()
-      speedControlNode.slowerButton.appearWithParent(speedControlNode, animate: false)
-      speedControlNode.skipButton.appearWithParent(speedControlNode, animate: false)
-      speedControlNode.fasterButton.appearWithParent(speedControlNode, animate: false)
+      speedControlArea.fitToSize()
+      speedControlArea.slowerButton.appearWithParent(speedControlArea, animate: false)
+      speedControlArea.skipButton.appearWithParent(speedControlArea, animate: false)
+      speedControlArea.fasterButton.appearWithParent(speedControlArea, animate: false)
     }
   }
   
   override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
     super.touchesBegan(touches, withEvent: event)
-    if state == .Testing && speedControlNode.parent == nil {
-      speedControlNode.appearWithParent(self, animate: true)
+    if state == .Testing && speedControlArea.parent == nil {
+      speedControlArea.appearWithParent(self, animate: true)
     }
   }
   

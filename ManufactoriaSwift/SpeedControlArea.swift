@@ -1,5 +1,5 @@
 //
-//  SpeedControlNode.swift
+//  SpeedControlArea.swift
 //  ManufactoriaSwift
 //
 //  Created by Warren Whipple on 8/16/14.
@@ -8,16 +8,14 @@
 
 import SpriteKit
 
-protocol SpeedControlNodeDelegate: class {
+protocol SpeedControlAreaDelegate: class {
   func slowerButtonPressed()
   func fasterButtonPressed()
   func skipButtonPressed()
 }
 
-class SpeedControlNode: SKNode {
-  required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  
-  weak var delegate: SpeedControlNodeDelegate!
+class SpeedControlArea: Area {
+  weak var delegate: SpeedControlAreaDelegate!
   let slowerButton = Button(iconNamed: "speedIcon")
   let skipButton = Button(iconNamed: "cancelIcon")
   let fasterButton = Button(iconNamed: "speedIcon")
@@ -34,9 +32,7 @@ class SpeedControlNode: SKNode {
     addChildren(buttons)
   }
   
-  var size: CGSize = CGSizeZero {didSet{if size != oldValue {fitToSize()}}}
-
-  func fitToSize() {
+  override func fitToSize() {
     let positions = distributionForChildren(count: buttons.count, childSize: Globals.iconSpan, parentSize: size.width)
     for (i, button) in enumerate(buttons) {
       button.position.x = positions[i]
@@ -47,19 +43,4 @@ class SpeedControlNode: SKNode {
     super.appearWithParent(newParent, animate: animate, delay: delay)
     skipButton.reset()
   }
-  
-  /*
-  func disableButtons() {
-    for button in buttons {
-      button.userInteractionEnabled = false
-    }
-  }
-  
-  func resetButtons() {
-    for button in buttons {
-      button.userInteractionEnabled = true
-      button.reset()
-    }
-  }
-  */
 }

@@ -74,7 +74,7 @@ class SequenceTutorialScene: TutorialScene {
       case .Thinking: break
       case .Testing:
         statusNode.tapeNode.removeFromParent()
-        if tutorialState != .OpenEdit {speedControlNode.removeFromParent()}
+        if tutorialState != .OpenEdit {speedControlArea.removeFromParent()}
       case .Congratulating: break
       }
     }

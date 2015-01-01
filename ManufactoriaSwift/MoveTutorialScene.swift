@@ -27,8 +27,8 @@ class MoveTutorialScene: TutorialScene {
     toolbarArea.redoConfirmSwapper.removeFromParent()
     for button in toolbarArea.toolButtons {button.removeFromParent()}
     
-    speedControlNode.slowerButton.removeFromParent()
-    speedControlNode.skipButton.removeFromParent()
+    speedControlArea.slowerButton.removeFromParent()
+    speedControlArea.skipButton.removeFromParent()
     
     congratulationNode.menuButton.touchUpInsideClosure = {[unowned self] in self.transitionToGameSceneWithLevelKey("read")}
     
@@ -70,7 +70,7 @@ class MoveTutorialScene: TutorialScene {
   override func fitToSize() {
     super.fitToSize()
     toolbarArea.robotButton.position.y = 0
-    speedControlNode.fasterButton.position.x = 0
+    speedControlArea.fasterButton.position.x = 0
   }
   
   override var state: State {
@@ -83,7 +83,7 @@ class MoveTutorialScene: TutorialScene {
         reportNode.disappearWithAnimate(false)
         state = .Testing
       case .Testing:
-        speedControlNode.removeFromParent()
+        speedControlArea.removeFromParent()
       case .Congratulating: break
       }
     }
@@ -134,8 +134,8 @@ class MoveTutorialScene: TutorialScene {
     super.touchesBegan(touches, withEvent: event)
     if tutorialState == .FloorPlan {
       instructionNode.snapToIndex(2, initialVelocityX: 0)
-    } else if state == .Testing && speedControlNode.parent == nil {
-      speedControlNode.appearWithParent(self, animate: true)
+    } else if state == .Testing && speedControlArea.parent == nil {
+      speedControlArea.appearWithParent(self, animate: true)
     }
   }
 }

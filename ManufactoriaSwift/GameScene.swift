@@ -8,7 +8,7 @@
 
 import SpriteKit
 
-class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, InstructionNodeDelegate, EngineDelegate, ToolbarAreaDelegate, ReportNodeDelegate, SpeedControlNodeDelegate, CongratulationNodeDelegate {
+class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, InstructionNodeDelegate, EngineDelegate, ToolbarAreaDelegate, ReportNodeDelegate, SpeedControlAreaDelegate, CongratulationNodeDelegate {
   
   enum State {case Editing, Thinking, Reporting, Testing, Congratulating}
   enum TestingState {case Entering, Testing, Exiting, Falling}
@@ -30,7 +30,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
   let toolbarArea: ToolbarArea
   let testButton = Button(iconNamed: "testButton")
   let thinkingCancelButton = Button(iconNamed: "cancelIcon")
-  let speedControlNode = SpeedControlNode()
+  let speedControlArea = SpeedControlArea()
   let reportNode = ReportNode()
   let congratulationNode = CongratulationNode()
   var robotNode: RobotNode?
@@ -93,9 +93,11 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     
     thinkingCancelButton.touchUpInsideClosure = {[unowned self] in self.cancelThinking()}
     
-    speedControlNode.delegate = self
-    speedControlNode.alpha = 0
-    speedControlNode.zPosition = 10
+    speedControlArea.delegate = self
+    speedControlArea.alpha = 0
+    speedControlArea.zPosition = 10
+    addChild(speedControlArea)
+    speedControlArea.hide(animate: false)
     
     congratulationNode.delegate = self
     congratulationNode.alpha = 0
@@ -126,8 +128,8 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     reportNode.size = size
     thinkingCancelButton.position.x = bottomGapRect.center.x
     thinkingCancelButton.position.y = bottomGapRect.center.y + toolbarArea.swipeNode.position.y
-    speedControlNode.position = thinkingCancelButton.position
-    speedControlNode.size = bottomGapRect.size
+    speedControlArea.position = thinkingCancelButton.position
+    speedControlArea.size = bottomGapRect.size
     congratulationNode.position = bottomGapRect.center
     congratulationNode.size = bottomGapRect.size
   }
@@ -140,7 +142,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     case .Editing:
       tapeNode.disappearWithAnimate(true)
       thinkingCancelButton.disappearWithAnimate(true)
-      speedControlNode.disappearWithAnimate(true)
+      speedControlArea.hide(animate: true)
       instructionNode.appearWithParent(self, animate: true)
       toolbarArea.unhide(animate: true, delay: true)
       testButton.reset()
@@ -160,7 +162,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
       reportNode.appearWithParent(self, animate: true)
     case .Testing:
       thinkingCancelButton.disappearWithAnimate(false)
-      speedControlNode.appearWithParent(self, animate: false)
+      speedControlArea.unhide(animate: false, delay: false)
       reportNode.disappearWithAnimate(true)
       var isPuller = false
       var isPusher = false
@@ -182,7 +184,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
       tapeNode.appearWithParent(self, animate: true)
     case .Congratulating:
       tapeNode.disappearWithAnimate(true)
-      speedControlNode.disappearWithAnimate(true)
+      speedControlArea.hide(animate: true)
       congratulationNode.appearWithParent(self, animate: true)
       startBeltFlow()
       gridNode.state = .Waiting
@@ -517,7 +519,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     state = .Testing
   }
 
-  // MARK: - SpeedControlNodeDelegate Functions
+  // MARK: - SpeedControlAreaDelegate Functions
   
   func backButtonPressed() {
     loadTape(currentTapeTestIndex)
