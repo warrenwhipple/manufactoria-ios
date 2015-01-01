@@ -9,15 +9,9 @@
 import SpriteKit
 
 private let unhideAction = SKAction.customActionWithDuration(0, actionBlock: {node, time in node.hidden = false})
+private let hideAction = SKAction.customActionWithDuration(0, actionBlock: {node, time in node.hidden = true})
 
 class Area: SKNode {
-  required init?(coder aDecoder: NSCoder) {fatalError("init(coder:) has not been implemented")}
-  unowned let persistentParent: SKNode
-  
-  init(persistentParent: SKNode) {
-    self.persistentParent = persistentParent
-    super.init()
-  }
   
   var rect: CGRect {
     get {
@@ -39,9 +33,53 @@ class Area: SKNode {
   
   func fitToSize() {}
   
+  func unhide(#animate: Bool, delay: Bool) {
+    if animate {
+      alpha = 0
+      let fadeInAction = SKAction.fadeAlphaTo(1, duration: Globals.appearTime)
+      if delay {
+        hidden = true
+        runAction(SKAction.sequence([
+          SKAction.waitForDuration(Globals.appearDelay),
+          unhideAction,
+          fadeInAction
+          ]), withKey: "hideUnhide")
+      } else {
+        hidden = false
+        runAction(fadeInAction, withKey: "hideUnhide")
+      }
+    } else {
+      alpha = 1
+      if delay {
+        hidden = true
+        runAction(SKAction.sequence([
+          SKAction.waitForDuration(Globals.appearDelay),
+          unhideAction
+          ]), withKey: "hideUnhide")
+      } else {
+        hidden = false
+        removeActionForKey("hideUnhide")
+      }
+    }
+  }
+  
+  func hide(#animate: Bool) {
+    if parent == nil {return}
+    if animate {
+      runAction(SKAction.sequence([
+        SKAction.fadeAlphaTo(0, duration: Globals.disappearTime),
+        hideAction
+        ]), withKey: "hideUnhide")
+    } else {
+      hidden = true
+      removeActionForKey("hideUnhide")
+    }
+  }
+
+  /*
   func appear(#animate: Bool, delay: Bool) {
     if parent == nil {
-      persistentParent.addChild(self)
+      parentMemory?.addChild(self)
     }
     if animate {
       alpha = 0
@@ -84,5 +122,5 @@ class Area: SKNode {
       removeActionForKey("appearDisappear")
     }
   }
-  
+  */
 }
