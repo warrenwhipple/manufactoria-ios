@@ -12,13 +12,29 @@ private let unhideAction = SKAction.customActionWithDuration(0, actionBlock: {no
 
 class Area: SKNode {
   required init?(coder aDecoder: NSCoder) {fatalError("init(coder:) has not been implemented")}
-  
   unowned let persistentParent: SKNode
-  var rect: CGRect = CGRectZero {didSet {if rect != oldValue {fitToSize()}}}
   
   init(persistentParent: SKNode) {
     self.persistentParent = persistentParent
     super.init()
+  }
+  
+  var rect: CGRect {
+    get {
+      return CGRect(center: position, size: size)
+    }
+    set {
+      position = newValue.center
+      size = newValue.size
+    }
+  }
+
+  var size: CGSize = CGSizeZero {
+    didSet {
+      if size != oldValue {
+        fitToSize()
+      }
+    }
   }
   
   func fitToSize() {}
