@@ -165,13 +165,13 @@ class GenericTutorialScene: GameScene {
   }
   
   func removeAndDisconnectAllToolbarButtons() {
-    toolbarNode.undoCancelSwapper.removeFromParent()
-    toolbarNode.redoConfirmSwapper.removeFromParent()
-    for button in toolbarNode.toolButtons {
+    toolbarArea.undoCancelSwapper.removeFromParent()
+    toolbarArea.redoConfirmSwapper.removeFromParent()
+    for button in toolbarArea.toolButtons {
       button.removeFromParent()
       button.dragThroughDelegate = nil
     }
-    toolbarNode.swipeNode.removeFromParent()
+    toolbarArea.swipeNode.removeFromParent()
   }
   
   func displayFullScreenMessage(message: String, animate: Bool, nextStageOnContinue: Bool) -> SKSpriteNode {

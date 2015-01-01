@@ -1,5 +1,5 @@
 //
-//  ToolbarNode.swift
+//  ToolbarArea.swift
 //  ManufactoriaSwift
 //
 //  Created by Warren Whipple on 6/26/14.
@@ -8,7 +8,7 @@
 
 import SpriteKit
 
-protocol ToolbarNodeDelegate: class {
+protocol ToolbarAreaDelegate: class {
   var editMode: EditMode {get set}
   func undoEdit()
   func redoEdit()
@@ -19,11 +19,10 @@ protocol ToolbarNodeDelegate: class {
   func redoQueueIsEmpty() -> Bool
 }
 
-class ToolbarNode: SKNode, ToolButtonDelegate, SwipeNodeDelegate {
-  required init(coder: NSCoder) {fatalError("NSCoding not supported")}
+class ToolbarArea: Area, ToolButtonDelegate, SwipeNodeDelegate {
   enum State {case Drawing, Selecting, Disabled}
   
-  weak var delegate: ToolbarNodeDelegate!
+  weak var delegate: ToolbarAreaDelegate!
   
   let staticButtons: [Button]
   let undoButton = Button(iconNamed: "undoIcon")
@@ -111,9 +110,7 @@ class ToolbarNode: SKNode, ToolButtonDelegate, SwipeNodeDelegate {
     addChild(swipeNode)
   }
   
-  var size: CGSize = CGSizeZero {didSet{if size != oldValue {fitToSize()}}}
-  
-  func fitToSize() {
+  override func fitToSize() {
     distributeNodesY([undoCancelSwapper, swipeNode],
       childHeight: Globals.iconSpan, parentHeight: size.height, roundPix: true)
     redoConfirmSwapper.position.y = undoCancelSwapper.position.y

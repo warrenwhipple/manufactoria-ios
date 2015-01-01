@@ -25,13 +25,13 @@ class SequenceTutorialScene: TutorialScene {
     statusNode.tapeLabel.verticalAlignmentMode = .Center
     startSwipePulse()
     
-    toolbarNode.userInteractionEnabled = false
-    toolbarNode.robotButton.removeFromParent()
-    toolbarNode.undoCancelSwapper.removeFromParent()
-    toolbarNode.redoConfirmSwapper.removeFromParent()
-    for button in toolbarNode.toolButtons {button.removeFromParent()}
-    toolbarNode.toolButtons[1].editModeIsLocked = true
-    toolbarNode.toolButtons[2].editModeIsLocked = true
+    toolbarArea.userInteractionEnabled = false
+    toolbarArea.robotButton.removeFromParent()
+    toolbarArea.undoCancelSwapper.removeFromParent()
+    toolbarArea.redoConfirmSwapper.removeFromParent()
+    for button in toolbarArea.toolButtons {button.removeFromParent()}
+    toolbarArea.toolButtons[1].editModeIsLocked = true
+    toolbarArea.toolButtons[2].editModeIsLocked = true
     
     congratulationNode.menuButton.touchUpInsideClosure = {[unowned self] in self.transitionToGameSceneWithLevelKey("sequence")}
     
@@ -57,9 +57,9 @@ class SequenceTutorialScene: TutorialScene {
     super.fitToSize()
     statusNode.tapeLabel.position.y = 0
     let centerXs = distributionForChildren(count: 3, childSize: Globals.iconSpan, parentSize: size.width)
-    toolbarNode.toolButtons[0].position.x = centerXs[0]
-    toolbarNode.toolButtons[1].position.x = centerXs[1]
-    toolbarNode.toolButtons[2].position.x = centerXs[2]
+    toolbarArea.toolButtons[0].position.x = centerXs[0]
+    toolbarArea.toolButtons[1].position.x = centerXs[1]
+    toolbarArea.toolButtons[2].position.x = centerXs[2]
   }
   
   override var state: State {
@@ -105,9 +105,9 @@ class SequenceTutorialScene: TutorialScene {
       //secondInstructions.text = "Send #r to the exit."
       //statusNode.addPageToRight(secondInstructions)
       statusNode.snapToIndex(3, initialVelocityX: 0)
-      toolbarNode.alpha = 0
-      toolbarNode.toolButtons[1].runAction(SKAction.fadeAlphaTo(1, duration: 1), withKey: "fade")
-      toolbarNode.swipeNode.pages[0].addChild(toolbarNode.toolButtons[1])
+      toolbarArea.alpha = 0
+      toolbarArea.toolButtons[1].runAction(SKAction.fadeAlphaTo(1, duration: 1), withKey: "fade")
+      toolbarArea.swipeNode.pages[0].addChild(toolbarArea.toolButtons[1])
       gridNode.lockAllCoords()
       gridNode.unlockCoords([coord1,coord2,coord3])
       let cellNode1 = gridNode[coord1]
@@ -125,16 +125,16 @@ class SequenceTutorialScene: TutorialScene {
     case .GuidedEdit:
       removeActionForKey("gridPulse")
       gridNode.state = .EditingLocked
-      toolbarNode.robotButton.alpha = 0
-      toolbarNode.robotButton.runAction(SKAction.fadeAlphaTo(1, duration: 1), withKey: "fade")
-      toolbarNode.robotButton.startPulseGlowWithInterval(2)
-      toolbarNode.addChild(toolbarNode.robotButton)
+      toolbarArea.robotButton.alpha = 0
+      toolbarArea.robotButton.runAction(SKAction.fadeAlphaTo(1, duration: 1), withKey: "fade")
+      toolbarArea.robotButton.startPulseGlowWithInterval(2)
+      toolbarArea.addChild(toolbarArea.robotButton)
       tutorialState = .GuidedRobot
     case .GuidedRobot:
       statusNode.tapeLabel.text = "Good."
-      toolbarNode.robotButton.stopPulseGlow()
+      toolbarArea.robotButton.stopPulseGlow()
       tapeTestResults = [TapeTestResult(input: "r", output: nil, correctOutput: nil, kind: TapeTestResult.Kind.FailLoop)]
-      toolbarNode.runAction(SKAction.sequence([
+      toolbarArea.runAction(SKAction.sequence([
         SKAction.fadeAlphaTo(0, duration: 0.2),
         SKAction.removeFromParent()
         ]), withKey: "fade")
@@ -148,8 +148,8 @@ class SequenceTutorialScene: TutorialScene {
       gridNode.unlockAllCoords()
       for i in 0 ..< gridNode.grid.cells.count {gridNode.grid.cells[i] = Cell()}
       gridNode.changeCellNodesToMatchCellsWithAnimate(true)
-      toolbarNode.swipeNode.pages[0].addChild(toolbarNode.toolButtons[0])
-      toolbarNode.swipeNode.pages[0].addChild(toolbarNode.toolButtons[2])
+      toolbarArea.swipeNode.pages[0].addChild(toolbarArea.toolButtons[0])
+      toolbarArea.swipeNode.pages[0].addChild(toolbarArea.toolButtons[2])
       tutorialState = .OpenEdit
     case .OpenEdit:
       break
@@ -250,12 +250,12 @@ class SequenceTutorialSceneOld: GameScene {
     statusNode.instructionsLabel.text = "Accept the sequence #b#r#b."
     statusNode.leftArrowWrapper.removeFromParent()
     statusNode.rightArrowWrapper.removeFromParent()
-    toolbarNode.userInteractionEnabled = false
-    toolbarNode.undoCancelSwapper.removeFromParent()
-    toolbarNode.redoConfirmSwapper.removeFromParent()
-    toolbarNode.swipeNode.leftArrowWrapper.removeFromParent()
-    toolbarNode.swipeNode.rightArrowWrapper.removeFromParent()
-    for button in toolbarNode.toolButtons {button.removeFromParent()}
+    toolbarArea.userInteractionEnabled = false
+    toolbarArea.undoCancelSwapper.removeFromParent()
+    toolbarArea.redoConfirmSwapper.removeFromParent()
+    toolbarArea.swipeNode.leftArrowWrapper.removeFromParent()
+    toolbarArea.swipeNode.rightArrowWrapper.removeFromParent()
+    for button in toolbarArea.toolButtons {button.removeFromParent()}
     gridNode.animateThinking = false
     
     for i in 0 ..< gridNode.grid.cells.count {gridNode.grid.cells[i] = Cell()}
@@ -271,7 +271,7 @@ class SequenceTutorialSceneOld: GameScene {
     gridNode.unlockCoords([GridCoord(2,1)])
     startPulse()
     
-    flipButton = toolbarNode.toolButtons[2]
+    flipButton = toolbarArea.toolButtons[2]
     //flipButton.touchUpInsideClosure!()
     /*flipGlow.colorBlendFactor = 1
     flipGlow.color = Globals.highlightColor
@@ -292,8 +292,8 @@ class SequenceTutorialSceneOld: GameScene {
   
   override func fitToSize() {
     super.fitToSize()
-    toolbarNode.robotButton.position.y = 0
-    toolbarNode.toolButtons[2].position.y = 0
+    toolbarArea.robotButton.position.y = 0
+    toolbarArea.toolButtons[2].position.y = 0
     //flipGlow.size = CGSize(Globals.iconSpan + Globals.mediumEm)
     flipLabel.position.y = -Globals.iconSpan / 2 - Globals.mediumEm * 2
   }
@@ -359,7 +359,7 @@ class SequenceTutorialSceneOld: GameScene {
         let buttonX = flipButton.position.x
         flipButton.position.x += size.width/2
         flipButton.runAction(SKAction.moveToX(buttonX, duration: 0.5).easeOut())
-        toolbarNode.swipeNode.pages[0].addChild(flipButton)
+        toolbarArea.swipeNode.pages[0].addChild(flipButton)
         tutorialState = .Flip
       }
     case .Flip:

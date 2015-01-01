@@ -21,11 +21,11 @@ class MoveTutorialScene: TutorialScene {
     instructionNode.addPageToRight(connectLabel)
     startPulseWithParent(instructionNode.rightArrow)
     
-    toolbarNode.robotButton.removeFromParent()
-    startPulseWithParent(toolbarNode.robotButton)
-    toolbarNode.undoCancelSwapper.removeFromParent()
-    toolbarNode.redoConfirmSwapper.removeFromParent()
-    for button in toolbarNode.toolButtons {button.removeFromParent()}
+    toolbarArea.robotButton.removeFromParent()
+    startPulseWithParent(toolbarArea.robotButton)
+    toolbarArea.undoCancelSwapper.removeFromParent()
+    toolbarArea.redoConfirmSwapper.removeFromParent()
+    for button in toolbarArea.toolButtons {button.removeFromParent()}
     
     speedControlNode.slowerButton.removeFromParent()
     speedControlNode.skipButton.removeFromParent()
@@ -69,7 +69,7 @@ class MoveTutorialScene: TutorialScene {
   
   override func fitToSize() {
     super.fitToSize()
-    toolbarNode.robotButton.position.y = 0
+    toolbarArea.robotButton.position.y = 0
     speedControlNode.fasterButton.position.x = 0
   }
   
@@ -106,8 +106,8 @@ class MoveTutorialScene: TutorialScene {
       instructionNode.snapToIndex(3, initialVelocityX: 0)
       gridNode.state = .EditingLocked
       removeActionForKey("gridPulse")
-      toolbarNode.robotButton.alpha = 0
-      toolbarNode.robotButton.appearWithParent(toolbarNode, animate: false)
+      toolbarArea.robotButton.alpha = 0
+      toolbarArea.robotButton.appearWithParent(toolbarArea, animate: false)
       tutorialState = .Robot
     case .Robot: break
     }

@@ -18,14 +18,14 @@ class EngineTutorialScene: GameScene {
     statusNode.instructionsLabel.text = "The malevolence engine will\nfind a way to thwart you.\n\nReject if #r anywhere."
     statusNode.leftArrowWrapper.removeFromParent()
     statusNode.rightArrowWrapper.removeFromParent()
-    toolbarNode.swipeNode.leftArrowWrapper.removeFromParent()
-    toolbarNode.swipeNode.rightArrowWrapper.removeFromParent()
-    toolbarNode.userInteractionEnabled = false
-    toolbarNode.undoCancelSwapper.removeFromParent()
-    toolbarNode.redoConfirmSwapper.removeFromParent()
-    toolbarNode.swipeNode.leftArrowWrapper.removeFromParent()
-    toolbarNode.swipeNode.rightArrowWrapper.removeFromParent()
-    for button in toolbarNode.toolButtons {button.removeFromParent()}
+    toolbarArea.swipeNode.leftArrowWrapper.removeFromParent()
+    toolbarArea.swipeNode.rightArrowWrapper.removeFromParent()
+    toolbarArea.userInteractionEnabled = false
+    toolbarArea.undoCancelSwapper.removeFromParent()
+    toolbarArea.redoConfirmSwapper.removeFromParent()
+    toolbarArea.swipeNode.leftArrowWrapper.removeFromParent()
+    toolbarArea.swipeNode.rightArrowWrapper.removeFromParent()
+    for button in toolbarArea.toolButtons {button.removeFromParent()}
     
     for i in 0 ..< gridNode.grid.cells.count {gridNode.grid.cells[i] = Cell()}
     gridNode.grid[GridCoord(0,0)] = Cell(kind: .Belt, direction: .North)
@@ -40,8 +40,8 @@ class EngineTutorialScene: GameScene {
   
   override func fitToSize() {
     super.fitToSize()
-    if firstRobotButtonY == nil {firstRobotButtonY = toolbarNode.robotButton.position.y}
-    if tutorialState != .Try {toolbarNode.robotButton.position.y = 0}
+    if firstRobotButtonY == nil {firstRobotButtonY = toolbarArea.robotButton.position.y}
+    if tutorialState != .Try {toolbarArea.robotButton.position.y = 0}
   }
   
   override var state: State {
@@ -60,8 +60,8 @@ class EngineTutorialScene: GameScene {
         case .Fail2:
           for i in 0 ..< gridNode.grid.cells.count {gridNode.grid.cells[i] = Cell()}
           gridNode.changeCellNodesToMatchCellsWithAnimate(true)
-          for button in toolbarNode.toolButtonGroups[0] {toolbarNode.swipeNode.pages[0].addChild(button)}
-          toolbarNode.robotButton.position.y = firstRobotButtonY ?? 0
+          for button in toolbarArea.toolButtonGroups[0] {toolbarArea.swipeNode.pages[0].addChild(button)}
+          toolbarArea.robotButton.position.y = firstRobotButtonY ?? 0
         case .Try:
           break
         }

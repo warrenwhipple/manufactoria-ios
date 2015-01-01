@@ -28,10 +28,10 @@ class ReadSeqTutorialScene: TutorialScene {
     }
     startPulseWithParent(demoTestButton)
     
-    toolbarNode.removeFromParent()
-    toolbarNode.undoCancelSwapper.removeFromParent()
-    toolbarNode.redoConfirmSwapper.removeFromParent()
-    for (i, toolButton) in enumerate(toolbarNode.toolButtons) {
+    toolbarArea.removeFromParent()
+    toolbarArea.undoCancelSwapper.removeFromParent()
+    toolbarArea.redoConfirmSwapper.removeFromParent()
+    for (i, toolButton) in enumerate(toolbarArea.toolButtons) {
       if i < 3 {
         toolButton.editModeIsLocked = true
       } else {
@@ -67,9 +67,9 @@ class ReadSeqTutorialScene: TutorialScene {
     super.fitToSize()
     demoTestButton.position = congratulationNode.position
     let centerXs = distributionForChildren(count: 3, childSize: Globals.iconSpan, parentSize: size.width)
-    toolbarNode.toolButtons[0].position.x = centerXs[0]
-    toolbarNode.toolButtons[1].position.x = centerXs[1]
-    toolbarNode.toolButtons[2].position.x = centerXs[2]
+    toolbarArea.toolButtons[0].position.x = centerXs[0]
+    toolbarArea.toolButtons[1].position.x = centerXs[1]
+    toolbarArea.toolButtons[2].position.x = centerXs[2]
     if tutorialState != .Try {speedControlNode.fasterButton.position.x = 0}
   }
   
@@ -85,7 +85,7 @@ class ReadSeqTutorialScene: TutorialScene {
       case .Testing:
         instructionNode.disappearWithAnimate(true)
         tapeNode.disappearWithAnimate(false)
-        toolbarNode.disappearWithAnimate(true)
+        toolbarArea.disappearWithAnimate(true)
         speedControlNode.appearWithParent(self, animate: true)
         if tutorialState == .Demo {speedControlNode.disappearWithAnimate(false)}
       case .Congratulating: break

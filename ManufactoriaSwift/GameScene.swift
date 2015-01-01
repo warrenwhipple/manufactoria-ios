@@ -8,7 +8,7 @@
 
 import SpriteKit
 
-class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, InstructionNodeDelegate, EngineDelegate, ToolbarNodeDelegate, ReportNodeDelegate, SpeedControlNodeDelegate, CongratulationNodeDelegate {
+class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, InstructionNodeDelegate, EngineDelegate, ToolbarAreaDelegate, ReportNodeDelegate, SpeedControlNodeDelegate, CongratulationNodeDelegate {
   
   enum State {case Editing, Thinking, Reporting, Testing, Congratulating}
   enum TestingState {case Entering, Testing, Exiting, Falling}
@@ -27,7 +27,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
   let instructionNode: InstructionNode
   let tapeNode = TapeNode()
   let gridNode: GridNode
-  let toolbarNode: ToolbarNode
+  let toolbarArea: ToolbarArea
   let testButton = Button(iconNamed: "testButton")
   let thinkingCancelButton = Button(iconNamed: "cancelIcon")
   let speedControlNode = SpeedControlNode()
@@ -62,7 +62,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     engine = Engine(levelSetup: levelSetup)
     instructionNode = InstructionNode(instructions: levelSetup.instructions)
     gridNode = GridNode(grid: levelData.currentGrid())
-    toolbarNode = ToolbarNode(editModes: levelSetup.editModes)
+    toolbarArea = ToolbarArea(editModes: levelSetup.editModes)
     
     super.init(size: size)
     backgroundColor = Globals.backgroundColor
@@ -78,10 +78,10 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     instructionNode.zPosition = 10
     addChild(instructionNode)
     
-    toolbarNode.delegate = self
-    gridNode.editMode = toolbarNode.buttonInFocus.editMode
-    toolbarNode.zPosition = 10
-    addChild(toolbarNode)
+    toolbarArea.delegate = self
+    gridNode.editMode = toolbarArea.buttonInFocus.editMode
+    toolbarArea.zPosition = 10
+    addChild(toolbarArea)
     
     testButton.isSticky = true
     testButton.touchUpInsideClosure = {[unowned self] in self.testButtonPressed()}
@@ -101,7 +101,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     congratulationNode.alpha = 0
     congratulationNode.zPosition = 10
     
-    toolbarNode.undoRedoQueueDidChange()
+    toolbarArea.undoRedoQueueDidChange()
     
     fitToSize()
   }
@@ -119,13 +119,13 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     instructionNode.size = topGapRect.size
     tapeNode.position = topGapRect.center
     tapeNode.width = topGapRect.width
-    toolbarNode.position = bottomGapRect.center
-    toolbarNode.size = topGapRect.size
-    testButton.position = CGPoint(x: toolbarNode.position.x, y: toolbarNode.position.y + toolbarNode.undoCancelSwapper.position.y)
+    toolbarArea.position = bottomGapRect.center
+    toolbarArea.size = topGapRect.size
+    testButton.position = CGPoint(x: toolbarArea.position.x, y: toolbarArea.position.y + toolbarArea.undoCancelSwapper.position.y)
     reportNode.position = size.center
     reportNode.size = size
     thinkingCancelButton.position.x = bottomGapRect.center.x
-    thinkingCancelButton.position.y = bottomGapRect.center.y + toolbarNode.swipeNode.position.y
+    thinkingCancelButton.position.y = bottomGapRect.center.y + toolbarArea.swipeNode.position.y
     speedControlNode.position = thinkingCancelButton.position
     speedControlNode.size = bottomGapRect.size
     congratulationNode.position = bottomGapRect.center
@@ -142,14 +142,14 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
       thinkingCancelButton.disappearWithAnimate(true)
       speedControlNode.disappearWithAnimate(true)
       instructionNode.appearWithParent(self, animate: true)
-      toolbarNode.appearWithParent(self, animate: true)
+      toolbarArea.unhide(animate: true, delay: true)
       testButton.reset()
       testButton.appearWithParent(self, animate: true)
       startBeltFlow()
       gridNode.state = .Editing
     case .Thinking:
       instructionNode.disappearWithAnimate(true)
-      toolbarNode.disappearWithAnimate(true)
+      toolbarArea.hide(animate: true)
       testButton.disappearWithAnimate(true)
       stopBeltFlow()
       gridTestDidPass = false
@@ -449,23 +449,23 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
   
   func editGroupWasCompleted() {
     if levelData.saveGridEdit(gridNode.grid, levelKey: levelKey) {
-      toolbarNode.undoRedoQueueDidChange()
+      toolbarArea.undoRedoQueueDidChange()
     }
   }
   
   func gridWasSelected() {
-    toolbarNode.state = .Selecting
+    toolbarArea.state = .Selecting
   }
   
   func gridWasUnselected() {
-    toolbarNode.state = .Drawing
+    toolbarArea.state = .Drawing
   }
   
   func liftedGridWasRemovedWithCancel() {
     undoEdit()
   }
   
-  // MARK: - ToolbarNodeDelegate Functions
+  // MARK: - ToolbarAreaDelegate Functions
   
   func testButtonPressed() {
     levelData.saveWithLevelKey(levelKey)
@@ -482,7 +482,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     if let grid = levelData.undo() {
       gridNode.grid = grid
       gridNode.changeCellNodesToMatchCellsWithAnimate(true)
-      toolbarNode.undoRedoQueueDidChange()
+      toolbarArea.undoRedoQueueDidChange()
     }
   }
   
@@ -491,7 +491,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     if let grid = levelData.redo() {
       gridNode.grid = grid
       gridNode.changeCellNodesToMatchCellsWithAnimate(true)
-      toolbarNode.undoRedoQueueDidChange()
+      toolbarArea.undoRedoQueueDidChange()
     }
   }
   

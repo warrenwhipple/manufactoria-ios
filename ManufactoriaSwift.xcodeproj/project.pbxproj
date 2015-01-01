@@ -28,7 +28,7 @@
 		2D60F5C9198156250032860B /* GameProgressData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D60F5C8198156250032860B /* GameProgressData.swift */; };
 		2D6B03431A2680DB002A6CAC /* Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6B03421A2680DB002A6CAC /* Button.swift */; };
 		2D70F3E01A3E027B00B55549 /* GenericTutorialScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D70F3DF1A3E027B00B55549 /* GenericTutorialScene.swift */; };
-		2D7F922C195C61FA00F04F63 /* ToolbarNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7F922B195C61FA00F04F63 /* ToolbarNode.swift */; };
+		2D7F922C195C61FA00F04F63 /* ToolbarArea.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7F922B195C61FA00F04F63 /* ToolbarArea.swift */; };
 		2D849F3619A39EB6008F3D69 /* CoreGraphicsExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D849F3519A39EB6008F3D69 /* CoreGraphicsExtensions.swift */; };
 		2D8C19A3199696A90064B790 /* SwipeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8C19A2199696A90064B790 /* SwipeNode.swift */; };
 		2D98E8C31A420126005C7F3D /* FirstTutorialScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D98E8C21A420126005C7F3D /* FirstTutorialScene.swift */; };
@@ -96,7 +96,7 @@
 		2D6B03421A2680DB002A6CAC /* Button.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
 		2D70F3DD1A3DE7C100B55549 /* ReadSeqTutorialScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReadSeqTutorialScene.swift; sourceTree = "<group>"; };
 		2D70F3DF1A3E027B00B55549 /* GenericTutorialScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GenericTutorialScene.swift; sourceTree = "<group>"; };
-		2D7F922B195C61FA00F04F63 /* ToolbarNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToolbarNode.swift; sourceTree = "<group>"; };
+		2D7F922B195C61FA00F04F63 /* ToolbarArea.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToolbarArea.swift; sourceTree = "<group>"; };
 		2D849F3519A39EB6008F3D69 /* CoreGraphicsExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreGraphicsExtensions.swift; sourceTree = "<group>"; };
 		2D8C19A2199696A90064B790 /* SwipeNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwipeNode.swift; sourceTree = "<group>"; };
 		2D98E8C21A420126005C7F3D /* FirstTutorialScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FirstTutorialScene.swift; sourceTree = "<group>"; };
@@ -228,7 +228,7 @@
 				2DBABC3F1A006E6400223A69 /* RobotNode.swift */,
 				2DD23D6B196DB17C00838E96 /* TapeNode.swift */,
 				2DC1CD6819AFB75900589B86 /* FailTapeNode.swift */,
-				2D7F922B195C61FA00F04F63 /* ToolbarNode.swift */,
+				2D7F922B195C61FA00F04F63 /* ToolbarArea.swift */,
 				2D4729CE19BC92650072E52D /* ToolButton.swift */,
 				2D5C7318199FE80600D53D0D /* SpeedControlNode.swift */,
 				2DD4744F19D0566B001E658E /* CongratulationsMenu.swift */,
@@ -474,7 +474,7 @@
 				2D32FE661A478D6E004381C9 /* SecondTutorialScene.swift in Sources */,
 				2D849F3619A39EB6008F3D69 /* CoreGraphicsExtensions.swift in Sources */,
 				2DD8C8A219B69AD9000D729E /* LevelData.swift in Sources */,
-				2D7F922C195C61FA00F04F63 /* ToolbarNode.swift in Sources */,
+				2D7F922C195C61FA00F04F63 /* ToolbarArea.swift in Sources */,
 				2DBABC401A006E6400223A69 /* RobotNode.swift in Sources */,
 				2DAB2B331A2116D4005D50C7 /* ScrollNode.swift in Sources */,
 				2DC49137194F45B800053237 /* GameViewController.swift in Sources */,

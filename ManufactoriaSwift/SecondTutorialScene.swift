@@ -19,17 +19,17 @@ class SecondTutorialScene: GenericTutorialScene {
     
     changeInstructions("The color branch can\nsort automatically", animate: false)
     
-    toolbarNode.removeFromParent()
+    toolbarArea.removeFromParent()
     removeAndDisconnectAllToolbarButtons()
-    deleteButton = toolbarNode.toolButtons[0]
-    beltButton = toolbarNode.toolButtons[1]
-    branchButton = toolbarNode.toolButtons[2]
+    deleteButton = toolbarArea.toolButtons[0]
+    beltButton = toolbarArea.toolButtons[1]
+    branchButton = toolbarArea.toolButtons[2]
     beltButton.editModeIsLocked = true
     branchButton.editModeIsLocked = true
 
     testButton.removeFromParent()
 
-    continueButton.position = toolbarNode.position
+    continueButton.position = toolbarArea.position
     
     stageSetups = [
       
