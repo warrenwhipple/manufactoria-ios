@@ -33,6 +33,7 @@
 		2D8C19A3199696A90064B790 /* SwipeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8C19A2199696A90064B790 /* SwipeNode.swift */; };
 		2D98E8C31A420126005C7F3D /* FirstTutorialScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D98E8C21A420126005C7F3D /* FirstTutorialScene.swift */; };
 		2DAB2B331A2116D4005D50C7 /* ScrollNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DAB2B321A2116D4005D50C7 /* ScrollNode.swift */; };
+		2DACF0651A54848500AB41E7 /* Area.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DACF0641A54848500AB41E7 /* Area.swift */; };
 		2DB8E3E91A3655B100898BD1 /* ReportNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB8E3E81A3655B100898BD1 /* ReportNode.swift */; };
 		2DB8E3ED1A379EA000898BD1 /* InstructionNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB8E3EC1A379EA000898BD1 /* InstructionNode.swift */; };
 		2DB8E3F31A38D72D00898BD1 /* ButtonSwapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB8E3F21A38D72D00898BD1 /* ButtonSwapper.swift */; };
@@ -100,6 +101,7 @@
 		2D8C19A2199696A90064B790 /* SwipeNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwipeNode.swift; sourceTree = "<group>"; };
 		2D98E8C21A420126005C7F3D /* FirstTutorialScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FirstTutorialScene.swift; sourceTree = "<group>"; };
 		2DAB2B321A2116D4005D50C7 /* ScrollNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrollNode.swift; sourceTree = "<group>"; };
+		2DACF0641A54848500AB41E7 /* Area.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Area.swift; sourceTree = "<group>"; };
 		2DB8E3E81A3655B100898BD1 /* ReportNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReportNode.swift; sourceTree = "<group>"; };
 		2DB8E3EC1A379EA000898BD1 /* InstructionNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InstructionNode.swift; sourceTree = "<group>"; };
 		2DB8E3F21A38D72D00898BD1 /* ButtonSwapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ButtonSwapper.swift; sourceTree = "<group>"; };
@@ -216,9 +218,10 @@
 			name = Model;
 			sourceTree = "<group>";
 		};
-		2D32FE631A4769EE004381C9 /* Nodes */ = {
+		2D32FE631A4769EE004381C9 /* Areas */ = {
 			isa = PBXGroup;
 			children = (
+				2DACF0641A54848500AB41E7 /* Area.swift */,
 				2DB8E3EC1A379EA000898BD1 /* InstructionNode.swift */,
 				2D32FE641A476A87004381C9 /* GridNode */,
 				2DB8E3E81A3655B100898BD1 /* ReportNode.swift */,
@@ -230,7 +233,7 @@
 				2D5C7318199FE80600D53D0D /* SpeedControlNode.swift */,
 				2DD4744F19D0566B001E658E /* CongratulationsMenu.swift */,
 			);
-			name = Nodes;
+			name = Areas;
 			sourceTree = "<group>";
 		};
 		2D32FE641A476A87004381C9 /* GridNode */ = {
@@ -343,7 +346,7 @@
 			children = (
 				2DC49134194F45B800053237 /* GameScene.swift */,
 				2D32FE621A47694B004381C9 /* Model */,
-				2D32FE631A4769EE004381C9 /* Nodes */,
+				2D32FE631A4769EE004381C9 /* Areas */,
 				2D680EDA19D87E46000B6E36 /* Tutorial Scenes */,
 			);
 			name = GameScene;
@@ -486,6 +489,7 @@
 				2DD23D71196F223E00838E96 /* MenuScene.swift in Sources */,
 				2D03B93A197EB89700715176 /* SwiftExtensions.swift in Sources */,
 				2DC0168319CEF41D003D922A /* ManufactoriaScene.swift in Sources */,
+				2DACF0651A54848500AB41E7 /* Area.swift in Sources */,
 				2D4862D01A1BEC21000421E5 /* MenuLevelButton.swift in Sources */,
 				2DB8E3ED1A379EA000898BD1 /* InstructionNode.swift in Sources */,
 				2D70F3E01A3E027B00B55549 /* GenericTutorialScene.swift in Sources */,
