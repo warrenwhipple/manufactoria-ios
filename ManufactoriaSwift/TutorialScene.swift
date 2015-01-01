@@ -13,7 +13,7 @@ class TutorialScene: GameScene {
   
   override init(size: CGSize, var levelKey: String) {
     super.init(size: size, levelKey: levelKey)
-    instructionNode.leftArrowWrapper.removeFromParent()
+    instructionArea.leftArrowWrapper.removeFromParent()
   }
   
   let singlePulseAction = SKAction.group([
@@ -52,10 +52,10 @@ class TutorialScene: GameScene {
   
   override func swipeNodeDidSnapToIndex(index: Int) {
     // show left swipe arrow on first swipe
-    if index != 1 && instructionNode.leftArrowWrapper.parent == nil {
-      instructionNode.leftArrowWrapper.alpha = 0
-      instructionNode.leftArrowWrapper.runAction(SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")
-      instructionNode.wrapper.addChild(instructionNode.leftArrowWrapper)
+    if index != 1 && instructionArea.leftArrowWrapper.parent == nil {
+      instructionArea.leftArrowWrapper.alpha = 0
+      instructionArea.leftArrowWrapper.runAction(SKAction.fadeAlphaTo(1, duration: 0.2), withKey: "fade")
+      instructionArea.wrapper.addChild(instructionArea.leftArrowWrapper)
     }
   }
 }

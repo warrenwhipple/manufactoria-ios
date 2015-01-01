@@ -15,11 +15,11 @@ class MoveTutorialScene: TutorialScene {
   init(size: CGSize) {
     super.init(size: size, levelKey: "move")
     
-    instructionNode.instructionsLabel.text = "This is a manufactory floor plan."
+    instructionArea.instructionsLabel.text = "This is a manufactory floor plan."
     let connectLabel = SmartLabel()
     connectLabel.text = "Please connect the\nentrance and exit."
-    instructionNode.addPageToRight(connectLabel)
-    startPulseWithParent(instructionNode.rightArrow)
+    instructionArea.addPageToRight(connectLabel)
+    startPulseWithParent(instructionArea.rightArrow)
     
     toolbarArea.robotButton.removeFromParent()
     startPulseWithParent(toolbarArea.robotButton)
@@ -95,15 +95,15 @@ class MoveTutorialScene: TutorialScene {
   func nextTutorialState() {
     switch tutorialState {
     case .FloorPlan:
-      killPulseWithParent(instructionNode.rightArrow)
+      killPulseWithParent(instructionArea.rightArrow)
       runAction(gridPulseAction, withKey: "gridPulse")
       gridNode.state = .Editing
       tutorialState = .Connect
     case .Connect:
       let robotLabel = SmartLabel()
       robotLabel.text = "Tap the robot\nto begin the test."
-      instructionNode.addPageToRight(robotLabel)
-      instructionNode.snapToIndex(3, initialVelocityX: 0)
+      instructionArea.addPageToRight(robotLabel)
+      instructionArea.snapToIndex(3, initialVelocityX: 0)
       gridNode.state = .EditingLocked
       removeActionForKey("gridPulse")
       toolbarArea.robotButton.alpha = 0
@@ -133,7 +133,7 @@ class MoveTutorialScene: TutorialScene {
   override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
     super.touchesBegan(touches, withEvent: event)
     if tutorialState == .FloorPlan {
-      instructionNode.snapToIndex(2, initialVelocityX: 0)
+      instructionArea.snapToIndex(2, initialVelocityX: 0)
     } else if state == .Testing && speedControlArea.parent == nil {
       speedControlArea.appearWithParent(self, animate: true)
     }

@@ -39,8 +39,8 @@ class SpeedControlArea: Area {
     }
   }
   
-  override func appearWithParent(newParent: SKNode, animate: Bool, delay: NSTimeInterval) {
-    super.appearWithParent(newParent, animate: animate, delay: delay)
+  override func unhide(#animate: Bool, delay: Bool) {
+    super.unhide(animate: animate, delay: delay)
     skipButton.reset()
   }
 }

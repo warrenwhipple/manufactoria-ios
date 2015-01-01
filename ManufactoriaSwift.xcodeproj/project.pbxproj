@@ -223,12 +223,12 @@
 			children = (
 				2DACF0641A54848500AB41E7 /* Area.swift */,
 				2DB8E3EC1A379EA000898BD1 /* InstructionNode.swift */,
+				2D7F922B195C61FA00F04F63 /* ToolbarArea.swift */,
 				2D32FE641A476A87004381C9 /* GridNode */,
 				2DB8E3E81A3655B100898BD1 /* ReportNode.swift */,
 				2DBABC3F1A006E6400223A69 /* RobotNode.swift */,
 				2DD23D6B196DB17C00838E96 /* TapeNode.swift */,
 				2DC1CD6819AFB75900589B86 /* FailTapeNode.swift */,
-				2D7F922B195C61FA00F04F63 /* ToolbarArea.swift */,
 				2D4729CE19BC92650072E52D /* ToolButton.swift */,
 				2D5C7318199FE80600D53D0D /* SpeedControlArea.swift */,
 				2DD4744F19D0566B001E658E /* CongratulationsMenu.swift */,

@@ -16,11 +16,11 @@ class ReadSeqTutorialScene: TutorialScene {
   init(size: CGSize) {
     super.init(size: size, levelKey: "readseq")
     
-    instructionNode.instructionsLabel.text = "This is a color sequence."
+    instructionArea.instructionsLabel.text = "This is a color sequence."
     let demoLabel = SmartLabel()
     demoLabel.text = "It is read left to right."
-    instructionNode.addPageToRight(demoLabel)
-    startPulseWithParent(instructionNode.rightArrow)
+    instructionArea.addPageToRight(demoLabel)
+    startPulseWithParent(instructionArea.rightArrow)
     demoTestButton.touchUpInsideClosure = {
       [unowned self] in
       self.demoTestButton.disappearWithAnimate(true)
@@ -83,7 +83,7 @@ class ReadSeqTutorialScene: TutorialScene {
         reportNode.disappearWithAnimate(false)
         state = .Testing
       case .Testing:
-        instructionNode.disappearWithAnimate(true)
+        instructionArea.disappearWithAnimate(true)
         tapeNode.disappearWithAnimate(false)
         toolbarArea.disappearWithAnimate(true)
         speedControlArea.appearWithParent(self, animate: true)
@@ -99,7 +99,7 @@ class ReadSeqTutorialScene: TutorialScene {
   func nextTutorialState() {
     switch tutorialState {
     case .Intro:
-      killPulseWithParent(instructionNode.rightArrow)
+      killPulseWithParent(instructionArea.rightArrow)
       gridNode.enterArrow.runAction(SKAction.fadeAlphaTo(1, duration: 1))
       gridNode.exitArrow.runAction(SKAction.fadeAlphaTo(1, duration: 1))
       gridNode.grid[GridCoord(0,0)] = Cell(kind: .Belt, direction: .West)
@@ -113,7 +113,7 @@ class ReadSeqTutorialScene: TutorialScene {
       demoTestButton.appearWithParent(self, animate: true)
       tutorialState = .Demo
     case .Demo:
-      instructionNode.goToIndexWithoutSnap(2)
+      instructionArea.goToIndexWithoutSnap(2)
       gridNode.grid[GridCoord(0,0)] = Cell()
       gridNode.grid[GridCoord(0,1)] = Cell()
       gridNode.grid[GridCoord(1,0)] = Cell()
@@ -155,7 +155,7 @@ class ReadSeqTutorialScene: TutorialScene {
       ]
       let tryLabel = SmartLabel()
       tryLabel.text = "Accept: #brb\nReject: everything else."
-      instructionNode.addPageToRight(tryLabel)
+      instructionArea.addPageToRight(tryLabel)
     case .Try:
       tapeTestResults = [result]
     }
@@ -173,7 +173,7 @@ class ReadSeqTutorialScene: TutorialScene {
   override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
     super.touchesBegan(touches, withEvent: event)
     if tutorialState == .Intro {
-      instructionNode.snapToIndex(2, initialVelocityX: 0)
+      instructionArea.snapToIndex(2, initialVelocityX: 0)
     } else if tutorialState == .Demo && state == .Testing && speedControlArea.parent == nil {
       speedControlArea.appearWithParent(self, animate: true)
     }

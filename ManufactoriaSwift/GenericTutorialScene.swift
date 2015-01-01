@@ -107,7 +107,7 @@ class GenericTutorialScene: GameScene {
   
   func startDemoTest() {
     stopBeltFlow()
-    instructionNode.disappearWithAnimate(true)
+    instructionArea.disappearWithAnimate(true)
     gridNode.state = .Waiting
     tapeTestResults = [TapeTestResult(input: "", output: nil, correctOutput: nil, kind: .Demo)]
     state = .Testing
@@ -148,19 +148,19 @@ class GenericTutorialScene: GameScene {
   
   func changeInstructions(text: String, animate: Bool) {
     if animate {
-      if instructionNode.currentIndex != 1 {instructionNode.instructionsLabel.alpha = 0}
-      instructionNode.instructionsLabel.runAction(SKAction.sequence([
+      if instructionArea.swipeNode.currentIndex != 1 {instructionArea.instructionsLabel.alpha = 0}
+      instructionArea.instructionsLabel.runAction(SKAction.sequence([
         SKAction.fadeAlphaTo(0, duration: Globals.disappearTime),
-        SKAction.runBlock({[unowned self] in self.instructionNode.instructionsLabel.text = text}),
+        SKAction.runBlock({[unowned self] in self.instructionArea.instructionsLabel.text = text}),
         SKAction.waitForDuration(Globals.disappearAppearGapTime),
         SKAction.fadeAlphaTo(1, duration: Globals.appearTime)
         ]), withKey: "changeText")
-      instructionNode.snapToIndex(1, initialVelocityX: 0)
+      instructionArea.swipeNode.snapToIndex(1, initialVelocityX: 0)
     } else {
-      instructionNode.instructionsLabel.removeActionForKey("changeText")
-      instructionNode.instructionsLabel.text = text
-      instructionNode.instructionsLabel.alpha = 1
-      instructionNode.goToIndexWithoutSnap(1)
+      instructionArea.instructionsLabel.removeActionForKey("changeText")
+      instructionArea.instructionsLabel.text = text
+      instructionArea.instructionsLabel.alpha = 1
+      instructionArea.swipeNode.goToIndexWithoutSnap(1)
     }
   }
   

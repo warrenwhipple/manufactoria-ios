@@ -1,5 +1,5 @@
 //
-//  InstructionNode.swift
+//  InstructionArea.swift
 //  ManufactoriaSwift
 //
 //  Created by Warren Whipple on 12/9/14.
@@ -8,14 +8,15 @@
 
 import SpriteKit
 
-protocol InstructionNodeDelegate: class {
+protocol InstructionAreaDelegate: class {
   func menuButtonPressed()
+  func instructionAreaDidSnapToIndex(index: Int)
 }
 
-class InstructionNode: SwipeNode {
-  required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-
-  weak var delegate: InstructionNodeDelegate?
+class InstructionArea: Area, SwipeNodeDelegate {
+  weak var delegate: InstructionAreaDelegate?
+  
+  let swipeNode: SwipeNode
   
   let optionsPage = SKNode()
   let menuButton = Button(text: "menu", fixedWidth: Globals.mediumEm * 8)
@@ -28,10 +29,12 @@ class InstructionNode: SwipeNode {
   
   
   init(instructions: String) {
-    super.init(pages: [optionsPage, instructionsPage])
+    swipeNode = SwipeNode(pages: [optionsPage, instructionsPage])
+    super.init()
+    self.addChild(swipeNode)
     
     optionsPage.addChild(menuButton)
-    menuButton.dragThroughDelegate = self
+    menuButton.dragThroughDelegate = swipeNode
     menuButton.isSticky = true
     menuButton.touchUpInsideClosure = {[unowned self] in if let delegate = self.delegate {delegate.menuButtonPressed()}}
     
@@ -40,11 +43,11 @@ class InstructionNode: SwipeNode {
     
     failPage.addChild(failLabel)
     
-    goToIndexWithoutSnap(1)
+    swipeNode.goToIndexWithoutSnap(1)
   }
   
   override func fitToSize() {
-    super.fitToSize()
+    swipeNode.size = size
     let labelOffset = SKTexture(imageNamed: "dot").size().height * 0.75
     let yOffset = roundPix(size.height / 6)
   }
@@ -75,8 +78,14 @@ class InstructionNode: SwipeNode {
     default: return
     }
     if failPage.parent == nil {
-      addPageToRight(failPage)
+      swipeNode.addPageToRight(failPage)
     }
-    goToIndexWithoutSnap(2)
+    swipeNode.goToIndexWithoutSnap(2)
+  }
+  
+  // MARK: - SwipeNodeDelegate functions
+  
+  func swipeNodeDidSnapToIndex(index: Int) {
+    delegate?.instructionAreaDidSnapToIndex(index)
   }
 }

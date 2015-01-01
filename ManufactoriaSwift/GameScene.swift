@@ -8,7 +8,7 @@
 
 import SpriteKit
 
-class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, InstructionNodeDelegate, EngineDelegate, ToolbarAreaDelegate, ReportNodeDelegate, SpeedControlAreaDelegate, CongratulationNodeDelegate {
+class GameScene: ManufactoriaScene, GridNodeDelegate, InstructionAreaDelegate, EngineDelegate, ToolbarAreaDelegate, ReportNodeDelegate, SpeedControlAreaDelegate, CongratulationNodeDelegate {
   
   enum State {case Editing, Thinking, Reporting, Testing, Congratulating}
   enum TestingState {case Entering, Testing, Exiting, Falling}
@@ -24,7 +24,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
   var tape: String = ""
   
   // MARK: View Objects
-  let instructionNode: InstructionNode
+  let instructionArea: InstructionArea
   let tapeNode = TapeNode()
   let gridNode: GridNode
   let toolbarArea: ToolbarArea
@@ -60,7 +60,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     levelSetup = LevelLibrary[self.levelKey]!
     levelData = LevelData(levelKey: levelKey)
     engine = Engine(levelSetup: levelSetup)
-    instructionNode = InstructionNode(instructions: levelSetup.instructions)
+    instructionArea = InstructionArea(instructions: levelSetup.instructions)
     gridNode = GridNode(grid: levelData.currentGrid())
     toolbarArea = ToolbarArea(editModes: levelSetup.editModes)
     
@@ -73,10 +73,9 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     
     addChild(gridNode)
     
-    instructionNode.swipeSnapDelegate = self
-    instructionNode.delegate = self
-    instructionNode.zPosition = 10
-    addChild(instructionNode)
+    instructionArea.delegate = self
+    instructionArea.zPosition = 10
+    addChild(instructionArea)
     
     toolbarArea.delegate = self
     gridNode.editMode = toolbarArea.buttonInFocus.editMode
@@ -117,8 +116,8 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     let topGapRect = roundPix(CGRect(x: 0, y: gridRect.maxY,
       width: size.width, height: bottomGapRect.height))
     
-    instructionNode.position = topGapRect.center
-    instructionNode.size = topGapRect.size
+    instructionArea.position = topGapRect.center
+    instructionArea.size = topGapRect.size
     tapeNode.position = topGapRect.center
     tapeNode.width = topGapRect.width
     toolbarArea.position = bottomGapRect.center
@@ -143,14 +142,14 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
       tapeNode.disappearWithAnimate(true)
       thinkingCancelButton.disappearWithAnimate(true)
       speedControlArea.hide(animate: true)
-      instructionNode.appearWithParent(self, animate: true)
+      instructionArea.unhide(animate: true, delay: true)
       toolbarArea.unhide(animate: true, delay: true)
       testButton.reset()
       testButton.appearWithParent(self, animate: true)
       startBeltFlow()
       gridNode.state = .Editing
     case .Thinking:
-      instructionNode.disappearWithAnimate(true)
+      instructionArea.hide(animate: true)
       toolbarArea.hide(animate: true)
       testButton.disappearWithAnimate(true)
       stopBeltFlow()
@@ -404,12 +403,10 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     }
   }
   
-  // MARK: - SwipeNodeDelegate Functions
+  // MARK: - InstructionAreaDelegate Functions
   
-  func swipeNodeDidSnapToIndex(index: Int) {}
+  func instructionAreaDidSnapToIndex(index: Int) {}
 
-  // MARK: - StatusNodeDelegate Functions
-  
   func menuButtonPressed() {
     levelData.saveWithLevelKey(levelKey)
     transitionToMenuScene()
@@ -440,7 +437,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, SwipeNodeDelegate, Instruc
     } else {
       reportNode.prepareFailMessage()
     }
-    instructionNode.resetFailPageForTestResult(result)
+    instructionArea.resetFailPageForTestResult(result)
     tapeTestResults = [result]
     state = .Reporting
   }
