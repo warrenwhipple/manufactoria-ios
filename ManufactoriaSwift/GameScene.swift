@@ -73,10 +73,12 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, InstructionAreaDelegate, E
     
     addChild(gridNode)
     
+    instructionArea.parentMemory = self
     instructionArea.delegate = self
     instructionArea.zPosition = 10
     addChild(instructionArea)
     
+    toolbarArea.parentMemory = self
     toolbarArea.delegate = self
     gridNode.editMode = toolbarArea.buttonInFocus.editMode
     toolbarArea.zPosition = 10
@@ -92,11 +94,10 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, InstructionAreaDelegate, E
     
     thinkingCancelButton.touchUpInsideClosure = {[unowned self] in self.cancelThinking()}
     
+    speedControlArea.parentMemory = self
     speedControlArea.delegate = self
     speedControlArea.alpha = 0
     speedControlArea.zPosition = 10
-    addChild(speedControlArea)
-    speedControlArea.hide(animate: false)
     
     congratulationNode.delegate = self
     congratulationNode.alpha = 0
@@ -141,16 +142,16 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, InstructionAreaDelegate, E
     case .Editing:
       tapeNode.disappearWithAnimate(true)
       thinkingCancelButton.disappearWithAnimate(true)
-      speedControlArea.hide(animate: true)
-      instructionArea.unhide(animate: true, delay: true)
-      toolbarArea.unhide(animate: true, delay: true)
+      speedControlArea.disappear(animate: true)
+      instructionArea.appear(animate: true, delay: true)
+      toolbarArea.appear(animate: true, delay: true)
       testButton.reset()
       testButton.appearWithParent(self, animate: true)
       startBeltFlow()
       gridNode.state = .Editing
     case .Thinking:
-      instructionArea.hide(animate: true)
-      toolbarArea.hide(animate: true)
+      instructionArea.disappear(animate: true)
+      toolbarArea.disappear(animate: true)
       testButton.disappearWithAnimate(true)
       stopBeltFlow()
       gridTestDidPass = false
@@ -161,7 +162,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, InstructionAreaDelegate, E
       reportNode.appearWithParent(self, animate: true)
     case .Testing:
       thinkingCancelButton.disappearWithAnimate(false)
-      speedControlArea.unhide(animate: false, delay: false)
+      speedControlArea.appear(animate: false, delay: false)
       reportNode.disappearWithAnimate(true)
       var isPuller = false
       var isPusher = false
@@ -183,7 +184,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, InstructionAreaDelegate, E
       tapeNode.appearWithParent(self, animate: true)
     case .Congratulating:
       tapeNode.disappearWithAnimate(true)
-      speedControlArea.hide(animate: true)
+      speedControlArea.disappear(animate: true)
       congratulationNode.appearWithParent(self, animate: true)
       startBeltFlow()
       gridNode.state = .Waiting

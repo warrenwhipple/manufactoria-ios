@@ -39,8 +39,8 @@ class SpeedControlArea: Area {
     }
   }
   
-  override func unhide(#animate: Bool, delay: Bool) {
-    super.unhide(animate: animate, delay: delay)
+  override func appear(#animate: Bool, delay: Bool) {
+    super.appear(animate: animate, delay: delay)
     skipButton.reset()
   }
 }
