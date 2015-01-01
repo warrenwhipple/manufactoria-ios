@@ -1,5 +1,5 @@
 //
-//  ReportNode.swift
+//  ReportArea.swift
 //  ManufactoriaSwift
 //
 //  Created by Warren Whipple on 12/8/14.
@@ -17,39 +17,44 @@ let FailComments = ["sees all flaws!", "is not happy!", "finds this disturbing!"
 let LoopComments = ["is out of patience!", "does not like waiting!", "is DIV BY ZERO OVERFLOW", "is getting bored!", "has fallen asleep!"]
 */
 
-protocol ReportNodeDelegate: class {
-  func reportNodeWasTapped()
+protocol ReportAreaDelegate: class {
+  func reportAreaWasTapped()
 }
 
-class ReportNode: SKSpriteNode {
-  required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  weak var delegate: ReportNodeDelegate?
+class ReportArea: Area {
+  weak var delegate: ReportAreaDelegate?
+  let backgroundSprite = SKSpriteNode(color: Globals.highlightColor, size: CGSizeZero)
   let label = SmartLabel()
 
   override init() {
-    super.init(texture: nil, color: Globals.highlightColor, size: CGSizeZero)
+    super.init()
     userInteractionEnabled = true
     label.fontMedium()
     label.fontColor = Globals.backgroundColor
-    addChild(label)
+    backgroundSprite.addChild(label)
+    addChild(backgroundSprite)
+  }
+  
+  override func fitToSize() {
+    backgroundSprite.size = size
   }
   
   func preparePassMessage() {
-    label.text = "The Malevolence Engine\napproves."
+    label.text = "The Malevolence Engine\n\nAPPROVES"
   }
   
   func prepareFailMessage() {
-    label.text = "The Malevolence Engine\nsees all flaws."
+    label.text = "The Malevolence Engine\n\nSEES ALL FLAWS"
   }
   
   func prepareLoopMessage() {
-    label.text = "The Malevolence Engine\nis out of patience."
+    label.text = "The Malevolence Engine\n\nIS OUT OF PATIENCE"
   }
   
   // MARK: - Touch Functions
   
   override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
-    delegate?.reportNodeWasTapped()
+    delegate?.reportAreaWasTapped()
   }
 }
 

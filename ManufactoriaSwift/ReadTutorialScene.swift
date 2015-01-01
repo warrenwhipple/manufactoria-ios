@@ -79,7 +79,7 @@ class ReadTutorialScene: TutorialScene {
         if tutorialState == .Demo {nextTutorialState()}
       case .Thinking: break
       case .Reporting:
-        reportNode.disappearWithAnimate(false)
+        reportArea.disappearWithAnimate(false)
         state = .Testing
       case .Testing:
         instructionArea.disappearWithAnimate(true)

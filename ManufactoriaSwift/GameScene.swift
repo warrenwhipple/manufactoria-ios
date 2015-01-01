@@ -8,7 +8,7 @@
 
 import SpriteKit
 
-class GameScene: ManufactoriaScene, GridNodeDelegate, InstructionAreaDelegate, EngineDelegate, ToolbarAreaDelegate, ReportNodeDelegate, SpeedControlAreaDelegate, CongratulationNodeDelegate {
+class GameScene: ManufactoriaScene, GridNodeDelegate, InstructionAreaDelegate, EngineDelegate, ToolbarAreaDelegate, ReportAreaDelegate, SpeedControlAreaDelegate, CongratulationNodeDelegate {
   
   enum State {case Editing, Thinking, Reporting, Testing, Congratulating}
   enum TestingState {case Entering, Testing, Exiting, Falling}
@@ -31,7 +31,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, InstructionAreaDelegate, E
   let testButton = Button(iconNamed: "testButton")
   let thinkingCancelButton = Button(iconNamed: "cancelIcon")
   let speedControlArea = SpeedControlArea()
-  let reportNode = ReportNode()
+  let reportArea = ReportArea()
   let congratulationNode = CongratulationNode()
   var robotNode: RobotNode?
   
@@ -89,8 +89,9 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, InstructionAreaDelegate, E
     testButton.zPosition = 11
     addChild(testButton)
     
-    reportNode.delegate = self
-    reportNode.zPosition = 100
+    reportArea.parentMemory = self
+    reportArea.delegate = self
+    reportArea.zPosition = 100
     
     thinkingCancelButton.touchUpInsideClosure = {[unowned self] in self.cancelThinking()}
     
@@ -124,8 +125,8 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, InstructionAreaDelegate, E
     toolbarArea.position = bottomGapRect.center
     toolbarArea.size = topGapRect.size
     testButton.position = CGPoint(x: toolbarArea.position.x, y: toolbarArea.position.y + toolbarArea.undoCancelSwapper.position.y)
-    reportNode.position = size.center
-    reportNode.size = size
+    reportArea.position = size.center
+    reportArea.size = size
     thinkingCancelButton.position.x = bottomGapRect.center.x
     thinkingCancelButton.position.y = bottomGapRect.center.y + toolbarArea.swipeNode.position.y
     speedControlArea.position = thinkingCancelButton.position
@@ -159,11 +160,11 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, InstructionAreaDelegate, E
       engine.beginGridTest(gridNode.grid)
     case .Reporting:
       gridNode.state = .Waiting
-      reportNode.appearWithParent(self, animate: true)
+      reportArea.appear(animate: true, delay: false)
     case .Testing:
       thinkingCancelButton.disappearWithAnimate(false)
       speedControlArea.appear(animate: false, delay: false)
-      reportNode.disappearWithAnimate(true)
+      reportArea.disappear(animate: true)
       var isPuller = false
       var isPusher = false
       for cell in gridNode.grid.cells {
@@ -416,7 +417,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, InstructionAreaDelegate, E
   // MARK: - EngineDelegate Functions
   
   func gridTestPassed() {
-    reportNode.preparePassMessage()
+    reportArea.preparePassMessage()
     tapeTestResults = []
     for exemplar in levelSetup.exemplars {
       let output = engine.correctOutputForInput(exemplar)
@@ -434,9 +435,9 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, InstructionAreaDelegate, E
   
   func gridTestFailedWithResult(result: TapeTestResult) {
     if result.kind == TapeTestResult.Kind.Loop {
-      reportNode.prepareLoopMessage()
+      reportArea.prepareLoopMessage()
     } else {
-      reportNode.prepareFailMessage()
+      reportArea.prepareFailMessage()
     }
     instructionArea.resetFailPageForTestResult(result)
     tapeTestResults = [result]
@@ -511,9 +512,9 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, InstructionAreaDelegate, E
     return levelData.redoStrings.isEmpty
   }
   
-  // MARK: - ReportNodeDelegate Functions
+  // MARK: - ReportAreaDelegate Functions
   
-  func reportNodeWasTapped() {
+  func reportAreaWasTapped() {
     state = .Testing
   }
 
