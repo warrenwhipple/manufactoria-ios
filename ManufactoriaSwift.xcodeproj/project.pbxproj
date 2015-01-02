@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		2D03B93A197EB89700715176 /* SwiftExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D03B939197EB89700715176 /* SwiftExtensions.swift */; };
-		2D15929A19514B4900A96BCC /* GridNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D15929919514B4900A96BCC /* GridNode.swift */; };
+		2D15929A19514B4900A96BCC /* GridArea.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D15929919514B4900A96BCC /* GridArea.swift */; };
 		2D15929C19514B5400A96BCC /* CellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D15929B19514B5400A96BCC /* CellNode.swift */; };
 		2D32FE661A478D6E004381C9 /* SecondTutorialScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D32FE651A478D6E004381C9 /* SecondTutorialScene.swift */; };
 		2D336E8919534044008E55A9 /* MathFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D336E8819534044008E55A9 /* MathFunctions.swift */; };
@@ -54,7 +54,7 @@
 		2DD23D6E196F0BF900838E96 /* LevelLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD23D6D196F0BF900838E96 /* LevelLibrary.swift */; };
 		2DD23D71196F223E00838E96 /* MenuScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD23D70196F223E00838E96 /* MenuScene.swift */; };
 		2DD23D731974730F00838E96 /* Engine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD23D721974730F00838E96 /* Engine.swift */; };
-		2DD4745019D0566B001E658E /* CongratulationsMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD4744F19D0566B001E658E /* CongratulationsMenu.swift */; };
+		2DD4745019D0566B001E658E /* CongratulationArea.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD4744F19D0566B001E658E /* CongratulationArea.swift */; };
 		2DD8C8A219B69AD9000D729E /* LevelData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD8C8A119B69AD9000D729E /* LevelData.swift */; };
 /* End PBXBuildFile section */
 
@@ -70,7 +70,7 @@
 
 /* Begin PBXFileReference section */
 		2D03B939197EB89700715176 /* SwiftExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftExtensions.swift; sourceTree = "<group>"; };
-		2D15929919514B4900A96BCC /* GridNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridNode.swift; sourceTree = "<group>"; };
+		2D15929919514B4900A96BCC /* GridArea.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridArea.swift; sourceTree = "<group>"; };
 		2D15929B19514B5400A96BCC /* CellNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CellNode.swift; sourceTree = "<group>"; };
 		2D2D26AA199E610D00EC4A45 /* MoveTutorialScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoveTutorialScene.swift; sourceTree = "<group>"; };
 		2D32FE651A478D6E004381C9 /* SecondTutorialScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SecondTutorialScene.swift; sourceTree = "<group>"; };
@@ -126,7 +126,7 @@
 		2DD23D6D196F0BF900838E96 /* LevelLibrary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LevelLibrary.swift; sourceTree = "<group>"; };
 		2DD23D70196F223E00838E96 /* MenuScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuScene.swift; sourceTree = "<group>"; };
 		2DD23D721974730F00838E96 /* Engine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Engine.swift; sourceTree = "<group>"; };
-		2DD4744F19D0566B001E658E /* CongratulationsMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CongratulationsMenu.swift; sourceTree = "<group>"; };
+		2DD4744F19D0566B001E658E /* CongratulationArea.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CongratulationArea.swift; sourceTree = "<group>"; };
 		2DD8C8A119B69AD9000D729E /* LevelData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LevelData.swift; sourceTree = "<group>"; };
 		2DF749FE19D627B800EBE94D /* SequenceTutorialScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SequenceTutorialScene.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 /* End PBXFileReference section */
@@ -228,21 +228,20 @@
 				2D4729CE19BC92650072E52D /* ToolButton.swift */,
 				2D5C7318199FE80600D53D0D /* SpeedControlArea.swift */,
 				2DB8E3E81A3655B100898BD1 /* ReportArea.swift */,
-				2D32FE641A476A87004381C9 /* GridNode */,
-				2DBABC3F1A006E6400223A69 /* RobotNode.swift */,
-				2DD4744F19D0566B001E658E /* CongratulationsMenu.swift */,
+				2DD4744F19D0566B001E658E /* CongratulationArea.swift */,
+				2D32FE641A476A87004381C9 /* GridArea */,
 			);
 			name = Areas;
 			sourceTree = "<group>";
 		};
-		2D32FE641A476A87004381C9 /* GridNode */ = {
+		2D32FE641A476A87004381C9 /* GridArea */ = {
 			isa = PBXGroup;
 			children = (
-				2D15929919514B4900A96BCC /* GridNode.swift */,
+				2D15929919514B4900A96BCC /* GridArea.swift */,
 				2D4729CC19BB91110072E52D /* LiftedGridNode.swift */,
 				2D15929B19514B5400A96BCC /* CellNode.swift */,
 			);
-			name = GridNode;
+			name = GridArea;
 			sourceTree = "<group>";
 		};
 		2D680EDA19D87E46000B6E36 /* Tutorial Scenes */ = {
@@ -344,6 +343,7 @@
 			isa = PBXGroup;
 			children = (
 				2DC49134194F45B800053237 /* GameScene.swift */,
+				2DBABC3F1A006E6400223A69 /* RobotNode.swift */,
 				2D32FE621A47694B004381C9 /* Model */,
 				2D32FE631A4769EE004381C9 /* Areas */,
 				2D680EDA19D87E46000B6E36 /* Tutorial Scenes */,
@@ -463,9 +463,9 @@
 				2D4729CF19BC92650072E52D /* ToolButton.swift in Sources */,
 				2D60F5C9198156250032860B /* GameProgressData.swift in Sources */,
 				2DCA18A51985849B00DF3118 /* SpriteKitExtensions.swift in Sources */,
-				2DD4745019D0566B001E658E /* CongratulationsMenu.swift in Sources */,
+				2DD4745019D0566B001E658E /* CongratulationArea.swift in Sources */,
 				2D336E8919534044008E55A9 /* MathFunctions.swift in Sources */,
-				2D15929A19514B4900A96BCC /* GridNode.swift in Sources */,
+				2D15929A19514B4900A96BCC /* GridArea.swift in Sources */,
 				2DD23D6C196DB17C00838E96 /* TapeArea.swift in Sources */,
 				2D6B03431A2680DB002A6CAC /* Button.swift in Sources */,
 				2D8C19A3199696A90064B790 /* SwipeNode.swift in Sources */,

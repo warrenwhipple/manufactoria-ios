@@ -84,7 +84,9 @@ class MenuScene: ManufactoriaScene, MenuLevelButtonDelegate {
     resetButton.dragThroughDelegate = scrollNode
     unlockButton.dragThroughDelegate = scrollNode
     backgroundColor = Globals.backgroundColor
-    scrollNode.wrapper.addChildren(levelButtons)
+    for button in levelButtons {
+      scrollNode.wrapper.addChild(button)
+    }
     //scrollNode.wrapper.addChild(topSettingsButton)
     //scrollNode.wrapper.addChild(bottomSettingsButton)
     scrollNode.wrapper.addChild(resetButton)

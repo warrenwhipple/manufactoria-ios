@@ -44,9 +44,9 @@ class SecondTutorialScene: GenericTutorialScene {
   // MARK: - Other Functions
   
   func repeatGridPulses() {
-    let cellNode1 = gridNode[GridCoord(1,0)]
-    let cellNode2 = gridNode[GridCoord(1,1)]
-    let cellNode3 = gridNode[GridCoord(1,2)]
+    let cellNode1 = gridArea[GridCoord(1,0)]
+    let cellNode2 = gridArea[GridCoord(1,1)]
+    let cellNode3 = gridArea[GridCoord(1,2)]
     let cell = Cell(kind: .Belt, direction: .North)
     let gridPulseAction = SKAction.repeatActionForever(SKAction.sequence([
       SKAction.runBlock({if cellNode1.cell != cell {cellNode1.isPulseGlowing = true}}),
@@ -63,13 +63,13 @@ class SecondTutorialScene: GenericTutorialScene {
   }
   
   func checkGridPassLoop() -> (Bool, Bool) {
-    let grid = gridNode.grid
+    let grid = gridArea.grid
     var tape = ""
     var lastCoord = grid.startCoord
     var coord = lastCoord + 1
     var steps = 0
     while (steps++ < 10) {
-      switch gridNode.grid.testCoord(coord, lastCoord: lastCoord, tape: &tape) {
+      switch gridArea.grid.testCoord(coord, lastCoord: lastCoord, tape: &tape) {
       case .Accept: return (true, false)
       case .Reject: return (false, false)
       case .North: coord.j++

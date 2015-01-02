@@ -30,19 +30,19 @@ class MoveTutorialScene: TutorialScene {
     speedControlArea.slowerButton.removeFromParent()
     speedControlArea.skipButton.removeFromParent()
     
-    congratulationNode.menuButton.touchUpInsideClosure = {[unowned self] in self.transitionToGameSceneWithLevelKey("read")}
+    congratulationArea.menuButton.touchUpInsideClosure = {[unowned self] in self.transitionToGameSceneWithLevelKey("read")}
     
-    gridNode.animateThinking = false
-    gridNode.state = .EditingLocked
+    gridArea.animateThinking = false
+    gridArea.state = .EditingLocked
     
     editGroupWasCompleted()
-    for i in 0 ..< gridNode.grid.cells.count {
-      gridNode.grid.cells[i] = Cell()
+    for i in 0 ..< gridArea.grid.cells.count {
+      gridArea.grid.cells[i] = Cell()
     }
-    gridNode.changeCellNodesToMatchCellsWithAnimate(false)
+    gridArea.changeCellNodesToMatchCellsWithAnimate(false)
     editGroupWasCompleted()
     
-    gridNode.lockCoords([
+    gridArea.lockCoords([
       GridCoord(0,0),
       GridCoord(0,1),
       GridCoord(0,2),
@@ -51,9 +51,9 @@ class MoveTutorialScene: TutorialScene {
       GridCoord(2,2)
       ])
     
-    let cellNode1 = gridNode[GridCoord(1,0)]
-    let cellNode2 = gridNode[GridCoord(1,1)]
-    let cellNode3 = gridNode[GridCoord(1,2)]
+    let cellNode1 = gridArea[GridCoord(1,0)]
+    let cellNode2 = gridArea[GridCoord(1,1)]
+    let cellNode3 = gridArea[GridCoord(1,2)]
     let cell = Cell(kind: .Belt, direction: .North)
     gridPulseAction = SKAction.repeatActionForever(SKAction.sequence([
       SKAction.waitForDuration(2),
@@ -97,14 +97,14 @@ class MoveTutorialScene: TutorialScene {
     case .FloorPlan:
       killPulseWithParent(instructionArea.rightArrow)
       runAction(gridPulseAction, withKey: "gridPulse")
-      gridNode.state = .Editing
+      gridArea.state = .Editing
       tutorialState = .Connect
     case .Connect:
       let robotLabel = SmartLabel()
       robotLabel.text = "Tap the robot\nto begin the test."
       instructionArea.addPageToRight(robotLabel)
       instructionArea.snapToIndex(3, initialVelocityX: 0)
-      gridNode.state = .EditingLocked
+      gridArea.state = .EditingLocked
       removeActionForKey("gridPulse")
       toolbarArea.robotButton.alpha = 0
       toolbarArea.robotButton.appearWithParent(toolbarArea, animate: false)
@@ -124,7 +124,7 @@ class MoveTutorialScene: TutorialScene {
     super.cellWasEdited()
     if tutorialState == .Connect {
       let cell = Cell(kind: .Belt, direction: .North)
-      if gridNode.grid[GridCoord(1,0)] == cell && gridNode.grid[GridCoord(1,1)] == cell && gridNode.grid[GridCoord(1,2)] == cell {
+      if gridArea.grid[GridCoord(1,0)] == cell && gridArea.grid[GridCoord(1,1)] == cell && gridArea.grid[GridCoord(1,2)] == cell {
         nextTutorialState()
       }
     }

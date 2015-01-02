@@ -33,22 +33,22 @@ class SequenceTutorialScene: TutorialScene {
     toolbarArea.toolButtons[1].editModeIsLocked = true
     toolbarArea.toolButtons[2].editModeIsLocked = true
     
-    congratulationNode.menuButton.touchUpInsideClosure = {[unowned self] in self.transitionToGameSceneWithLevelKey("sequence")}
+    congratulationArea.menuButton.touchUpInsideClosure = {[unowned self] in self.transitionToGameSceneWithLevelKey("sequence")}
     
-    gridNode.animateThinking = false
-    gridNode.state = .Waiting
-    for cellNode in gridNode.cellNodes {
+    gridArea.animateThinking = false
+    gridArea.state = .Waiting
+    for cellNode in gridArea.cellNodes {
       cellNode.shimmerNode.alpha = 0
     }
-    gridNode.enterArrow.alpha = 0
-    gridNode.exitArrow.alpha = 0
+    gridArea.enterArrow.alpha = 0
+    gridArea.exitArrow.alpha = 0
     
     editGroupWasCompleted()
-    for i in 0 ..< gridNode.grid.cells.count {
-      gridNode.grid.cells[i] = Cell()
+    for i in 0 ..< gridArea.grid.cells.count {
+      gridArea.grid.cells[i] = Cell()
     }
-    gridNode.grid[GridCoord(1,1)].kind = .PullerBR
-    gridNode.changeCellNodesToMatchCellsWithAnimate(false)
+    gridArea.grid[GridCoord(1,1)].kind = .PullerBR
+    gridArea.changeCellNodesToMatchCellsWithAnimate(false)
     
     fitToSize()
   }
@@ -87,12 +87,12 @@ class SequenceTutorialScene: TutorialScene {
     switch tutorialState {
     case .Reader:
       stopSwipePulse()
-      gridNode.enterArrow.runAction(SKAction.fadeAlphaTo(1, duration: 1))
-      gridNode.exitArrow.runAction(SKAction.fadeAlphaTo(1, duration: 1))
+      gridArea.enterArrow.runAction(SKAction.fadeAlphaTo(1, duration: 1))
+      gridArea.exitArrow.runAction(SKAction.fadeAlphaTo(1, duration: 1))
       let coord = GridCoord(1,0)
       let cell = Cell(kind: .Belt, direction: .North)
-      gridNode.grid[coord] = cell
-      gridNode[coord].changeCell(cell, animate: true)
+      gridArea.grid[coord] = cell
+      gridArea[coord].changeCell(cell, animate: true)
       tapeTestResults = [
         TapeTestResult(input: "r", output: nil, correctOutput: nil, kind: TapeTestResult.Kind.FailLoop),
         TapeTestResult(input: "b", output: nil, correctOutput: nil, kind: TapeTestResult.Kind.FailLoop)
@@ -108,11 +108,11 @@ class SequenceTutorialScene: TutorialScene {
       toolbarArea.alpha = 0
       toolbarArea.toolButtons[1].runAction(SKAction.fadeAlphaTo(1, duration: 1), withKey: "fade")
       toolbarArea.swipeNode.pages[0].addChild(toolbarArea.toolButtons[1])
-      gridNode.lockAllCoords()
-      gridNode.unlockCoords([coord1,coord2,coord3])
-      let cellNode1 = gridNode[coord1]
-      let cellNode2 = gridNode[coord2]
-      let cellNode3 = gridNode[coord3]
+      gridArea.lockAllCoords()
+      gridArea.unlockCoords([coord1,coord2,coord3])
+      let cellNode1 = gridArea[coord1]
+      let cellNode2 = gridArea[coord2]
+      let cellNode3 = gridArea[coord3]
       runAction(SKAction.repeatActionForever(SKAction.sequence([
         SKAction.waitForDuration(2),
         SKAction.runBlock({if cellNode1.cell != Cell(kind: .Belt, direction: .North) {cellNode1.isPulseGlowing = true}}),
@@ -124,7 +124,7 @@ class SequenceTutorialScene: TutorialScene {
       tutorialState = .GuidedEdit
     case .GuidedEdit:
       removeActionForKey("gridPulse")
-      gridNode.state = .EditingLocked
+      gridArea.state = .EditingLocked
       toolbarArea.robotButton.alpha = 0
       toolbarArea.robotButton.runAction(SKAction.fadeAlphaTo(1, duration: 1), withKey: "fade")
       toolbarArea.robotButton.startPulseGlowWithInterval(2)
@@ -145,9 +145,9 @@ class SequenceTutorialScene: TutorialScene {
       let openEditLabel = SmartLabel()
       //secondInstructions.text = "Reject = drop on the floor.\nAccept = send to the exit.\n\nReject #r.\nAccept #b."
       statusNode.goToIndexWithoutSnap(3)
-      gridNode.unlockAllCoords()
-      for i in 0 ..< gridNode.grid.cells.count {gridNode.grid.cells[i] = Cell()}
-      gridNode.changeCellNodesToMatchCellsWithAnimate(true)
+      gridArea.unlockAllCoords()
+      for i in 0 ..< gridArea.grid.cells.count {gridArea.grid.cells[i] = Cell()}
+      gridArea.changeCellNodesToMatchCellsWithAnimate(true)
       toolbarArea.swipeNode.pages[0].addChild(toolbarArea.toolButtons[0])
       toolbarArea.swipeNode.pages[0].addChild(toolbarArea.toolButtons[2])
       tutorialState = .OpenEdit
@@ -203,7 +203,7 @@ class SequenceTutorialScene: TutorialScene {
   
   override func cellWasEdited() {
     super.cellWasEdited()
-    let grid = gridNode.grid
+    let grid = gridArea.grid
     if tutorialState == .GuidedEdit && grid[coord1] == Cell(kind: .Belt, direction: .North) && grid[coord2] == Cell(kind: .Belt, direction: .West) && grid[coord3] == Cell(kind: .Belt, direction: .North) {
       nextTutorialState()
     }
@@ -256,19 +256,19 @@ class SequenceTutorialSceneOld: GameScene {
     toolbarArea.swipeNode.leftArrowWrapper.removeFromParent()
     toolbarArea.swipeNode.rightArrowWrapper.removeFromParent()
     for button in toolbarArea.toolButtons {button.removeFromParent()}
-    gridNode.animateThinking = false
+    gridArea.animateThinking = false
     
-    for i in 0 ..< gridNode.grid.cells.count {gridNode.grid.cells[i] = Cell()}
-    gridNode.grid[GridCoord(2,0)] = Cell(kind: .Belt, direction: .North)
-    gridNode.grid[GridCoord(1,1)] = Cell(kind: .Belt, direction: .West)
-    gridNode.grid[GridCoord(0,2)] = Cell(kind: .Belt, direction: .North)
-    gridNode.grid[GridCoord(1,3)] = Cell(kind: .Belt, direction: .East)
-    gridNode.grid[GridCoord(2,3)] = Cell(kind: .Belt, direction: .North)
-    gridNode.grid[GridCoord(2,4)] = Cell(kind: .Belt, direction: .North)
-    for i in 0 ..< gridNode.grid.cells.count {gridNode.cellNodes[i].changeCell(gridNode.grid.cells[i], animate: false)}
+    for i in 0 ..< gridArea.grid.cells.count {gridArea.grid.cells[i] = Cell()}
+    gridArea.grid[GridCoord(2,0)] = Cell(kind: .Belt, direction: .North)
+    gridArea.grid[GridCoord(1,1)] = Cell(kind: .Belt, direction: .West)
+    gridArea.grid[GridCoord(0,2)] = Cell(kind: .Belt, direction: .North)
+    gridArea.grid[GridCoord(1,3)] = Cell(kind: .Belt, direction: .East)
+    gridArea.grid[GridCoord(2,3)] = Cell(kind: .Belt, direction: .North)
+    gridArea.grid[GridCoord(2,4)] = Cell(kind: .Belt, direction: .North)
+    for i in 0 ..< gridArea.grid.cells.count {gridArea.cellNodes[i].changeCell(gridArea.grid.cells[i], animate: false)}
     
-    gridNode.lockAllCoords()
-    gridNode.unlockCoords([GridCoord(2,1)])
+    gridArea.lockAllCoords()
+    gridArea.unlockCoords([GridCoord(2,1)])
     startPulse()
     
     flipButton = toolbarArea.toolButtons[2]
@@ -318,7 +318,7 @@ class SequenceTutorialSceneOld: GameScene {
   
   func startPulse() {
     func pulse(coord: GridCoord) {
-      let cellNode = gridNode[coord]
+      let cellNode = gridArea[coord]
       runAction(SKAction.repeatActionForever(SKAction.sequence([
         SKAction.waitForDuration(0.75),
         SKAction.runBlock({cellNode.isPulseGlowing = true}),
@@ -346,15 +346,15 @@ class SequenceTutorialSceneOld: GameScene {
   func checkTutorialGrid() {
     switch tutorialState {
     case .Cell1:
-      if gridNode.grid[coord1] == Cell(kind: .PullerBR, direction: .North) {
-        gridNode.lockCoords([coord1])
-        gridNode.unlockCoords([coord2])
+      if gridArea.grid[coord1] == Cell(kind: .PullerBR, direction: .North) {
+        gridArea.lockCoords([coord1])
+        gridArea.unlockCoords([coord2])
         removeActionForKey("pulse")
         tutorialState = .Cell2
       }
     case .Cell2:
-      if gridNode.grid[coord2] == Cell(kind: .PullerBR, direction: .West) {
-        gridNode.lockCoords([coord2])
+      if gridArea.grid[coord2] == Cell(kind: .PullerBR, direction: .West) {
+        gridArea.lockCoords([coord2])
         removeActionForKey("pulse")
         let buttonX = flipButton.position.x
         flipButton.position.x += size.width/2
@@ -364,20 +364,20 @@ class SequenceTutorialSceneOld: GameScene {
       }
     case .Flip:
       if editMode == EditMode.PullerRB {
-        gridNode.unlockCoords([coord3])
+        gridArea.unlockCoords([coord3])
         //flipLabelGlow.runAction(SKAction.fadeAlphaTo(0, duration: 0.4), withKey: "fade")
         flipLabel.runAction(SKAction.fadeAlphaTo(0, duration: 0.4), withKey: "fade")
         tutorialState = .Cell3
       }
     case .Cell3:
       if editMode != EditMode.PullerRB {
-        gridNode.lockCoords([coord3])
+        gridArea.lockCoords([coord3])
         removeActionForKey("pulse")
         flipLabel.runAction(SKAction.fadeAlphaTo(1, duration: 0.4))
         tutorialState = .Flip
       }
-      else if gridNode.grid[coord3] == Cell(kind: .PullerRB, direction: .North) {
-        gridNode.lockCoords([coord3])
+      else if gridArea.grid[coord3] == Cell(kind: .PullerRB, direction: .North) {
+        gridArea.lockCoords([coord3])
         removeActionForKey("pulse")
         tutorialState = .Done
       }

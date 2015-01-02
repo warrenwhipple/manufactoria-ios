@@ -73,7 +73,9 @@ class ToolbarArea: Area, ToolButtonDelegate, SwipeNodeDelegate {
     
     let pages: [SKNode] = toolButtonGroups.map {
       let page = SKNode()
-      page.addChildren($0)
+      for button in $0 {
+        page.addChild(button)
+      }
       return page
     }
     swipeNode = SwipeNode(pages: pages)

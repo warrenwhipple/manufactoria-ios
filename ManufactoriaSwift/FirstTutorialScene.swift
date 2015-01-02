@@ -31,8 +31,8 @@ class FirstTutorialScene: GenericTutorialScene {
     continueButton.position = toolbarArea.position
     continueButton.appearWithParent(self, animate: false)
     
-    entranceLabel = labelGridCoord(gridNode.grid.startCoord, text: "entrance", animate: true, delay: 0)
-    exitLabel = labelGridCoord(gridNode.grid.endCoord, text: "exit", animate: true, delay: 0)
+    entranceLabel = labelGridCoord(gridArea.grid.startCoord, text: "entrance", animate: true, delay: 0)
+    exitLabel = labelGridCoord(gridArea.grid.endCoord, text: "exit", animate: true, delay: 0)
     beltLabel = labelIconButton(beltButton, text: "conveyor", animate: true, delay: 0)
     deleteLabel = labelIconButton(deleteButton, text: "delete", animate: true, delay: 0)
     
@@ -58,8 +58,8 @@ class FirstTutorialScene: GenericTutorialScene {
       // draw belt setup
       {[unowned self] in
         self.beltLabel.disappearWithAnimate(true)
-        self.entranceLabel.appearWithParent(self.gridNode.wrapper, animate: true)
-        self.exitLabel.appearWithParent(self.gridNode.wrapper, animate: true)
+        self.entranceLabel.appearWithParent(self.gridArea.wrapper, animate: true)
+        self.exitLabel.appearWithParent(self.gridArea.wrapper, animate: true)
         self.repeatGridPulses()
         self.hookCellWasEdited = {if self.checkGridPassLoop().0 {self.nextTutorialStage()}}
       } as (()->())?,
@@ -69,7 +69,7 @@ class FirstTutorialScene: GenericTutorialScene {
         self.changeInstructions("Please accept the next robot", animate: true)
         self.entranceLabel.disappearWithAnimate(true)
         self.exitLabel.disappearWithAnimate(true)
-        self.gridNode.state = .Waiting
+        self.gridArea.state = .Waiting
         self.beltButton.disappearWithAnimate(true)
         self.demoTestButton.appearWithParent(self.toolbarArea, animate: true, delay: Globals.appearDelay)
         self.repeatPulseWithParent(self.demoTestButton, position: CGPointZero, delay: 5)
@@ -83,7 +83,7 @@ class FirstTutorialScene: GenericTutorialScene {
       // congrats 1 setup
       {[unowned self] in
         self.changeInstructions("Thank you\n\nYour intellectual capacity score\nhas been upgraded to\n\nBARELY ADEQUATE", animate: false)
-        self.gridNode.state = .Waiting
+        self.gridArea.state = .Waiting
         self.continueButton.appearWithParent(self, animate: true, delay: Globals.appearDelay)
         self.hookContinueButton = {self.nextTutorialStage()}
       } as (()->())?,
@@ -91,7 +91,7 @@ class FirstTutorialScene: GenericTutorialScene {
       // reject robot setup
       {[unowned self] in
         self.changeInstructions("Rejected robots may be discarded\nanywhere on the floor\n\nPlease reject the next robot", animate: true)
-        self.gridNode.state = .Editing
+        self.gridArea.state = .Editing
         self.continueButton.disappearWithAnimate(true)
         let x: CGFloat = self.size.width / 6
         let y: CGFloat = self.toolbarArea.undoCancelSwapper.position.y
@@ -129,7 +129,7 @@ class FirstTutorialScene: GenericTutorialScene {
       // congrats 2 setup
       {[unowned self] in
         self.changeInstructions("Your compliance is appreciated\n\nYour intellectual capacity score\nhas been upgraded to\n\nUNEXCEPTIONAL", animate: false)
-        self.gridNode.state = .Waiting
+        self.gridArea.state = .Waiting
         self.continueButton.appearWithParent(self, animate: true, delay: Globals.appearDelay)
         self.toolbarArea.removeFromParent()
         self.testButton.removeFromParent()
@@ -139,9 +139,9 @@ class FirstTutorialScene: GenericTutorialScene {
       // accept robot setup
       {[unowned self] in
         let coord = GridCoord(1,1)
-        self.gridNode.lockCoords([coord])
-        self.gridNode.changeCellAndCellNode(coord, cell: Cell(), animate: true)
-        let cellNode = self.gridNode[coord]
+        self.gridArea.lockCoords([coord])
+        self.gridArea.changeCellAndCellNode(coord, cell: Cell(), animate: true)
+        let cellNode = self.gridArea[coord]
         cellNode.shimmerNode.removeFromParent()
         let lockNode = SKSpriteNode(color: Globals.strokeColor, size: cellNode.shimmerNode.size)
         lockNode.zPosition = cellNode.shimmerNode.zPosition
@@ -150,7 +150,7 @@ class FirstTutorialScene: GenericTutorialScene {
         cellNode.addChild(lockNode)
         
         self.changeInstructions("Please accept the next robot", animate: true)
-        self.gridNode.state = .Editing
+        self.gridArea.state = .Editing
         self.continueButton.disappearWithAnimate(true)
         let y: CGFloat = self.toolbarArea.undoCancelSwapper.position.y
         self.demoTestButton.position = CGPoint(x: 0, y: y)
@@ -186,7 +186,7 @@ class FirstTutorialScene: GenericTutorialScene {
       {[unowned self] in
         GameProgressData.sharedInstance.completedLevelWithKey(self.levelKey)
         self.changeInstructions("Thank you for your obedience\n\nYour intellectual capacity score\nhas been upgraded to\n\nTOLERABLE", animate: false)
-        self.gridNode.state = .Waiting
+        self.gridArea.state = .Waiting
         self.continueButton.appearWithParent(self, animate: true, delay: Globals.appearDelay)
         self.toolbarArea.removeFromParent()
         self.testButton.removeFromParent()
@@ -198,9 +198,9 @@ class FirstTutorialScene: GenericTutorialScene {
   // MARK: - Other Functions
   
   func repeatGridPulses() {
-    let cellNode1 = gridNode[GridCoord(1,0)]
-    let cellNode2 = gridNode[GridCoord(1,1)]
-    let cellNode3 = gridNode[GridCoord(1,2)]
+    let cellNode1 = gridArea[GridCoord(1,0)]
+    let cellNode2 = gridArea[GridCoord(1,1)]
+    let cellNode3 = gridArea[GridCoord(1,2)]
     let cell = Cell(kind: .Belt, direction: .North)
     let gridPulseAction = SKAction.repeatActionForever(SKAction.sequence([
       SKAction.runBlock({if cellNode1.cell != cell {cellNode1.isPulseGlowing = true}}),
@@ -217,13 +217,13 @@ class FirstTutorialScene: GenericTutorialScene {
   }
   
   func checkGridPassLoop() -> (Bool, Bool) {
-    let grid = gridNode.grid
+    let grid = gridArea.grid
     var tape = ""
     var lastCoord = grid.startCoord
     var coord = lastCoord + 1
     var steps = 0
     while (steps++ < 10) {
-      switch gridNode.grid.testCoord(coord, lastCoord: lastCoord, tape: &tape) {
+      switch gridArea.grid.testCoord(coord, lastCoord: lastCoord, tape: &tape) {
       case .Accept: return (true, false)
       case .Reject: return (false, false)
       case .North: coord.j++

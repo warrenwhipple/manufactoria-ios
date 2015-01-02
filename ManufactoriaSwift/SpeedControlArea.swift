@@ -29,7 +29,9 @@ class SpeedControlArea: Area {
     slowerButton.touchDownClosure = {[unowned self] in self.delegate.slowerButtonPressed()}
     skipButton.touchDownClosure = {[unowned self] in self.delegate.skipButtonPressed()}
     fasterButton.touchDownClosure = {[unowned self] in self.delegate.fasterButtonPressed()}
-    addChildren(buttons)
+    for button in buttons {
+      addChild(button)
+    }
   }
   
   override func fitToSize() {

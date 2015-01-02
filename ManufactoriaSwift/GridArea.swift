@@ -1,5 +1,5 @@
 //
-//  GridNode.swift
+//  GridArea.swift
 //  ManufactoriaSwift
 //
 //  Created by Warren Whipple on 6/18/14.
@@ -40,7 +40,7 @@ enum EditMode {
   }
 }
 
-protocol GridNodeDelegate: class {
+protocol GridAreaDelegate: class {
   func editGroupWasCompleted()
   func cellWasEdited()
   func gridWasSelected()
@@ -49,11 +49,9 @@ protocol GridNodeDelegate: class {
   func showThinkingCancelButtonWithAnimate(animate: Bool)
 }
 
-class GridNode: SKNode {
-  required init(coder: NSCoder) {fatalError("NSCoding not supported")}
+class GridArea: Area {
   enum State {case Editing, EditingLocked, Thinking, Waiting}
-  
-  weak var delegate: GridNodeDelegate!
+  weak var delegate: GridAreaDelegate!
   var grid: Grid
   var locks: [Bool]?
   let wrapper = SKNode()
@@ -119,28 +117,15 @@ class GridNode: SKNode {
     addChild(wrapper)
   }
   
-  var rect: CGRect {
-    get {
-      return CGRect(origin: position, size: size)
-    }
-    set {
-      position = newValue.origin
-      size = newValue.size
-    }
-  }
-  
-  var size: CGSize = CGSizeZero {didSet {if size != oldValue {fitToSize()}}}
-  
-  func fitToSize() {
+  override func fitToSize() {
     let maxCellWidth = size.width / CGFloat(grid.space.columns)
     let maxCellHeight = size.height / CGFloat(grid.space.rows)
-    var maxCellSize: CGFloat = 46
-    if IPAD && grid.space.rows <= 9 {maxCellSize = 64}
+    let maxCellSize: CGFloat = (IPAD && grid.space.rows <= 9) ? 64 : 46
     var cellSize = min(maxCellWidth, maxCellHeight, maxCellSize)
     if cellSize > maxCellSize - 0.5 {cellSize = maxCellSize} // if close, let overlap
     cellSize = round(cellSize)
     let gridSize = CGSize(width: cellSize * CGFloat(grid.space.columns), height: cellSize * CGFloat(grid.space.rows))
-    wrapper.position = CGPoint(x: (size.width - gridSize.width) * 0.5, y: (size.height - gridSize.height) * 0.5)
+    wrapper.position = CGPoint(x: -gridSize.width * 0.5, y: -gridSize.height * 0.5)
     wrapper.setScale(cellSize)
     beltTexture = CellNode.loadSharedTexturesForPointSize(cellSize)
     for cellNode in cellNodes {cellNode.assignSharedTextures()}

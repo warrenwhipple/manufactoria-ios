@@ -42,30 +42,30 @@ class ReadSeqTutorialScene: TutorialScene {
     speedControlArea.slowerButton.removeFromParent()
     speedControlArea.skipButton.removeFromParent()
     
-    congratulationNode.menuButton.touchUpInsideClosure = {[unowned self] in self.transitionToGameSceneWithLevelKey("exclude")}
+    congratulationArea.menuButton.touchUpInsideClosure = {[unowned self] in self.transitionToGameSceneWithLevelKey("exclude")}
     
-    gridNode.animateThinking = false
-    gridNode.state = .Waiting
-    gridNode.grid.consumeColorWhenReading = false
-    for cellNode in gridNode.cellNodes {
+    gridArea.animateThinking = false
+    gridArea.state = .Waiting
+    gridArea.grid.consumeColorWhenReading = false
+    for cellNode in gridArea.cellNodes {
       cellNode.shimmerNode.alpha = 0
     }
-    gridNode.enterArrow.alpha = 0
-    gridNode.exitArrow.alpha = 0
+    gridArea.enterArrow.alpha = 0
+    gridArea.exitArrow.alpha = 0
     
     editGroupWasCompleted()
-    for i in 0 ..< gridNode.grid.cells.count {
-      gridNode.grid.cells[i] = Cell()
+    for i in 0 ..< gridArea.grid.cells.count {
+      gridArea.grid.cells[i] = Cell()
     }
-    gridNode.grid[GridCoord(1,1)].kind = .PullerBR
-    gridNode.changeCellNodesToMatchCellsWithAnimate(false)
+    gridArea.grid[GridCoord(1,1)].kind = .PullerBR
+    gridArea.changeCellNodesToMatchCellsWithAnimate(false)
     
     fitToSize()
   }
   
   override func fitToSize() {
     super.fitToSize()
-    demoTestButton.position = congratulationNode.position
+    demoTestButton.position = congratulationArea.position
     let centerXs = distributionForChildren(count: 3, childSize: Globals.iconSpan, parentSize: size.width)
     toolbarArea.toolButtons[0].position.x = centerXs[0]
     toolbarArea.toolButtons[1].position.x = centerXs[1]
@@ -100,29 +100,29 @@ class ReadSeqTutorialScene: TutorialScene {
     switch tutorialState {
     case .Intro:
       killPulseWithParent(instructionArea.rightArrow)
-      gridNode.enterArrow.runAction(SKAction.fadeAlphaTo(1, duration: 1))
-      gridNode.exitArrow.runAction(SKAction.fadeAlphaTo(1, duration: 1))
-      gridNode.grid[GridCoord(0,0)] = Cell(kind: .Belt, direction: .West)
-      gridNode.grid[GridCoord(0,1)] = Cell(kind: .Belt, direction: .South)
-      gridNode.grid[GridCoord(1,0)] = Cell(kind: .Belt, direction: .North)
-      gridNode.grid[GridCoord(1,2)] = Cell(kind: .Belt, direction: .North)
-      gridNode.grid[GridCoord(2,1)] = Cell(kind: .Belt, direction: .North)
-      gridNode.grid[GridCoord(2,2)] = Cell(kind: .Belt, direction: .East)
-      gridNode.changeCellNodesToMatchCellsWithAnimate(true)
-      for cellNode in gridNode.cellNodes {cellNode.isActivateGlowing = false}
+      gridArea.enterArrow.runAction(SKAction.fadeAlphaTo(1, duration: 1))
+      gridArea.exitArrow.runAction(SKAction.fadeAlphaTo(1, duration: 1))
+      gridArea.grid[GridCoord(0,0)] = Cell(kind: .Belt, direction: .West)
+      gridArea.grid[GridCoord(0,1)] = Cell(kind: .Belt, direction: .South)
+      gridArea.grid[GridCoord(1,0)] = Cell(kind: .Belt, direction: .North)
+      gridArea.grid[GridCoord(1,2)] = Cell(kind: .Belt, direction: .North)
+      gridArea.grid[GridCoord(2,1)] = Cell(kind: .Belt, direction: .North)
+      gridArea.grid[GridCoord(2,2)] = Cell(kind: .Belt, direction: .East)
+      gridArea.changeCellNodesToMatchCellsWithAnimate(true)
+      for cellNode in gridArea.cellNodes {cellNode.isActivateGlowing = false}
       demoTestButton.appearWithParent(self, animate: true)
       tutorialState = .Demo
     case .Demo:
       instructionArea.goToIndexWithoutSnap(2)
-      gridNode.grid[GridCoord(0,0)] = Cell()
-      gridNode.grid[GridCoord(0,1)] = Cell()
-      gridNode.grid[GridCoord(1,0)] = Cell()
-      gridNode.grid[GridCoord(1,1)] = Cell()
-      gridNode.grid[GridCoord(1,2)] = Cell()
-      gridNode.grid[GridCoord(2,1)] = Cell()
-      gridNode.grid[GridCoord(2,2)] = Cell()
-      gridNode.changeCellNodesToMatchCellsWithAnimate(true)
-      for cellNode in gridNode.cellNodes {cellNode.isActivateGlowing = false}
+      gridArea.grid[GridCoord(0,0)] = Cell()
+      gridArea.grid[GridCoord(0,1)] = Cell()
+      gridArea.grid[GridCoord(1,0)] = Cell()
+      gridArea.grid[GridCoord(1,1)] = Cell()
+      gridArea.grid[GridCoord(1,2)] = Cell()
+      gridArea.grid[GridCoord(2,1)] = Cell()
+      gridArea.grid[GridCoord(2,2)] = Cell()
+      gridArea.changeCellNodesToMatchCellsWithAnimate(true)
+      for cellNode in gridArea.cellNodes {cellNode.isActivateGlowing = false}
       speedControlArea.addChild(speedControlArea.slowerButton)
       speedControlArea.addChild(speedControlArea.skipButton)
       speedControlArea.fitToSize()

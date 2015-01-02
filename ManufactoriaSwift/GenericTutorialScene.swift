@@ -22,7 +22,7 @@ class GenericTutorialScene: GameScene {
   
   override init(size: CGSize, var levelKey: String) {
     super.init(size: size, levelKey: levelKey)
-    gridNode.clearGridWithAnimate(false)
+    gridArea.clearGridWithAnimate(false)
     continueButton.isSticky = true
     demoTestButton.isSticky = true
     continueButton.touchUpInsideClosure = {[unowned self] in self.continueButtonWasPressed()}
@@ -63,9 +63,9 @@ class GenericTutorialScene: GameScene {
   }
   
   override var editMode: EditMode {
-    get {return gridNode.editMode}
+    get {return gridArea.editMode}
     set {
-      gridNode.editMode = newValue
+      gridArea.editMode = newValue
       hookDidSetEditMode?()
     }
   }
@@ -108,14 +108,14 @@ class GenericTutorialScene: GameScene {
   func startDemoTest() {
     stopBeltFlow()
     instructionArea.disappearWithAnimate(true)
-    gridNode.state = .Waiting
+    gridArea.state = .Waiting
     tapeTestResults = [TapeTestResult(input: "", output: nil, correctOutput: nil, kind: .Demo)]
     state = .Testing
     if let buttonParent = demoTestButton.parent {
-      let positionOnGridNode = buttonParent.convertPoint(demoTestButton.position, toNode: gridNode.wrapper)
+      let positionOnGridArea = buttonParent.convertPoint(demoTestButton.position, toNode: gridArea.wrapper)
       if let robotNode = robotNode {
-        robotNode.lastPosition = positionOnGridNode
-        robotNode.lastLastPosition = positionOnGridNode
+        robotNode.lastPosition = positionOnGridArea
+        robotNode.lastLastPosition = positionOnGridArea
         demoTestButton.position = CGPointZero
         demoTestButton.removeFromParent()
         robotNode.addChild(demoTestButton)
@@ -139,10 +139,10 @@ class GenericTutorialScene: GameScene {
     label.fontSmall()
     label.fontColor = Globals.strokeColor
     label.verticalAlignmentMode = .Center
-    label.setScale(1 / gridNode.wrapper.xScale)
+    label.setScale(1 / gridArea.wrapper.xScale)
     label.position = coord.centerPoint
     label.text = text
-    label.appearWithParent(gridNode.wrapper, animate: animate, delay: delay)
+    label.appearWithParent(gridArea.wrapper, animate: animate, delay: delay)
     return label
   }
   

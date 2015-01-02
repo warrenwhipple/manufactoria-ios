@@ -8,7 +8,7 @@
 
 import SpriteKit
 
-class GameScene: ManufactoriaScene, GridNodeDelegate, InstructionAreaDelegate, EngineDelegate, ToolbarAreaDelegate, ReportAreaDelegate, SpeedControlAreaDelegate, CongratulationNodeDelegate {
+class GameScene: ManufactoriaScene, GridAreaDelegate, InstructionAreaDelegate, EngineDelegate, ToolbarAreaDelegate, ReportAreaDelegate, SpeedControlAreaDelegate, CongratulationAreaDelegate {
   
   enum State {case Editing, Thinking, Reporting, Testing, Congratulating}
   enum TestingState {case Entering, Testing, Exiting, Falling}
@@ -26,13 +26,13 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, InstructionAreaDelegate, E
   // MARK: View Objects
   let instructionArea: InstructionArea
   let tapeArea = TapeArea()
-  let gridNode: GridNode
+  let gridArea: GridArea
   let toolbarArea: ToolbarArea
   let testButton = Button(iconNamed: "testButton")
   let thinkingCancelButton = Button(iconNamed: "cancelIcon")
   let speedControlArea = SpeedControlArea()
   let reportArea = ReportArea()
-  let congratulationNode = CongratulationNode()
+  let congratulationArea = CongratulationArea()
   var robotNode: RobotNode?
   
   // MARK: Variables
@@ -61,17 +61,18 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, InstructionAreaDelegate, E
     levelData = LevelData(levelKey: levelKey)
     engine = Engine(levelSetup: levelSetup)
     instructionArea = InstructionArea(instructions: levelSetup.instructions)
-    gridNode = GridNode(grid: levelData.currentGrid())
+    gridArea = GridArea(grid: levelData.currentGrid())
     toolbarArea = ToolbarArea(editModes: levelSetup.editModes)
     
     super.init(size: size)
     backgroundColor = Globals.backgroundColor
     
-    gridNode.delegate = self
+    gridArea.parentMemory = self
+    gridArea.delegate = self
     
     engine.delegate = self
     
-    addChild(gridNode)
+    addChild(gridArea)
     
     instructionArea.parentMemory = self
     instructionArea.delegate = self
@@ -80,7 +81,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, InstructionAreaDelegate, E
     
     toolbarArea.parentMemory = self
     toolbarArea.delegate = self
-    gridNode.editMode = toolbarArea.buttonInFocus.editMode
+    gridArea.editMode = toolbarArea.buttonInFocus.editMode
     toolbarArea.zPosition = 10
     addChild(toolbarArea)
     
@@ -100,9 +101,10 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, InstructionAreaDelegate, E
     speedControlArea.alpha = 0
     speedControlArea.zPosition = 10
     
-    congratulationNode.delegate = self
-    congratulationNode.alpha = 0
-    congratulationNode.zPosition = 10
+    congratulationArea.parentMemory = self
+    congratulationArea.delegate = self
+    congratulationArea.alpha = 0
+    congratulationArea.zPosition = 10
     
     toolbarArea.undoRedoQueueDidChange()
     
@@ -110,9 +112,9 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, InstructionAreaDelegate, E
   }
   
   func fitToSize() {
-    gridNode.rect = CGRect(origin: CGPointZero, size: size)
+    gridArea.rect = CGRect(origin: CGPointZero, size: size)
     let gridRect = CGRect(centerX: 0.5 * size.width, centerY: 0.5 * size.height,
-      width: CGFloat(gridNode.grid.space.columns) * gridNode.wrapper.xScale, height: CGFloat(gridNode.grid.space.rows) * gridNode.wrapper.yScale)
+      width: CGFloat(gridArea.grid.space.columns) * gridArea.wrapper.xScale, height: CGFloat(gridArea.grid.space.rows) * gridArea.wrapper.yScale)
     let bottomGapRect = roundPix(CGRect(x: 0,y: 0,
       width: size.width, height: 0.5 * (size.height - gridRect.size.height)))
     let topGapRect = roundPix(CGRect(x: 0, y: gridRect.maxY,
@@ -126,8 +128,8 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, InstructionAreaDelegate, E
     thinkingCancelButton.position.x = bottomGapRect.center.x
     thinkingCancelButton.position.y = bottomGapRect.center.y + toolbarArea.swipeNode.position.y
     speedControlArea.rect = CGRect(center: thinkingCancelButton.position, size: bottomGapRect.size)
-    congratulationNode.position = bottomGapRect.center
-    congratulationNode.size = bottomGapRect.size
+    congratulationArea.position = bottomGapRect.center
+    congratulationArea.size = bottomGapRect.size
   }
   
   // MARK: - Game State Functions
@@ -136,7 +138,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, InstructionAreaDelegate, E
     if state == oldState {return}
     switch state {
     case .Editing:
-      tapeArea.disappearWithAnimate(true)
+      tapeArea.disappear(animate: true)
       thinkingCancelButton.disappearWithAnimate(true)
       speedControlArea.disappear(animate: true)
       instructionArea.appear(animate: true, delay: true)
@@ -144,17 +146,17 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, InstructionAreaDelegate, E
       testButton.reset()
       testButton.appearWithParent(self, animate: true)
       startBeltFlow()
-      gridNode.state = .Editing
+      gridArea.state = .Editing
     case .Thinking:
       instructionArea.disappear(animate: true)
       toolbarArea.disappear(animate: true)
       testButton.disappearWithAnimate(true)
       stopBeltFlow()
       gridTestDidPass = false
-      gridNode.state = .Thinking
-      engine.beginGridTest(gridNode.grid)
+      gridArea.state = .Thinking
+      engine.beginGridTest(gridArea.grid)
     case .Reporting:
-      gridNode.state = .Waiting
+      gridArea.state = .Waiting
       reportArea.appear(animate: true, delay: false)
     case .Testing:
       thinkingCancelButton.disappearWithAnimate(false)
@@ -162,7 +164,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, InstructionAreaDelegate, E
       reportArea.disappear(animate: true)
       var isPuller = false
       var isPusher = false
-      for cell in gridNode.grid.cells {
+      for cell in gridArea.grid.cells {
         switch cell.kind {
         case .PullerBR, .PullerRB, .PullerGY, .PullerYG: isPuller = true
         case .PusherB, .PusherR, .PusherG, .PusherY: isPusher = true
@@ -177,13 +179,13 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, InstructionAreaDelegate, E
       if isPusher {tapeArea.printer.alpha = 1}
       else {tapeArea.printer.alpha = 0}
       loadTape(0)
-      tapeArea.appearWithParent(self, animate: true)
+      tapeArea.appear(animate: false, delay: false)
     case .Congratulating:
-      tapeArea.disappearWithAnimate(true)
+      tapeArea.disappear(animate: true)
       speedControlArea.disappear(animate: true)
-      congratulationNode.appearWithParent(self, animate: true)
+      congratulationArea.appear(animate: true, delay: true)
       startBeltFlow()
-      gridNode.state = .Waiting
+      gridArea.state = .Waiting
     }
   }
   
@@ -205,7 +207,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, InstructionAreaDelegate, E
         while tickPercent >= 1 {
           tickPercent -= 1
           lastTestingState = testingState
-          let testResult = gridNode.grid.testCoord(robotCoord, lastCoord: lastRobotCoord, tape: &tape)
+          let testResult = gridArea.grid.testCoord(robotCoord, lastCoord: lastRobotCoord, tape: &tape)
           lastRobotCoord = robotCoord
           switch testResult {
           case .Accept:
@@ -280,7 +282,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, InstructionAreaDelegate, E
       }
     }
     if beltPercentSum >= 1 {beltPercentSum -= 1}
-    gridNode.update(dt, beltPercent: beltPercentSum)    
+    gridArea.update(dt, beltPercent: beltPercentSum)    
   }
   
   func startBeltFlow() {
@@ -328,13 +330,13 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, InstructionAreaDelegate, E
     } else {
       robotNode?.removeFromParent()
     }
-    robotNode = RobotNode(position: gridNode.grid.startCoord.centerPoint, color: color, broken: broken)
-    robotNode?.setScale(1/gridNode.wrapper.xScale)
+    robotNode = RobotNode(position: gridArea.grid.startCoord.centerPoint, color: color, broken: broken)
+    robotNode?.setScale(1/gridArea.wrapper.xScale)
     if animate {
       robotNode?.alpha = 0
       robotNode?.runAction(SKAction.fadeAlphaTo(1, duration: 0.5))
     }
-    gridNode.wrapper.addChild(robotNode!)
+    gridArea.wrapper.addChild(robotNode!)
   }
   
   func loadTape(i: Int) {
@@ -350,8 +352,8 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, InstructionAreaDelegate, E
     lastTapeLength = tape.length()
     testingState = .Entering
     lastTestingState = .Entering
-    robotCoord = gridNode.grid.startCoord + 1
-    lastRobotCoord = gridNode.grid.startCoord
+    robotCoord = gridArea.grid.startCoord + 1
+    lastRobotCoord = gridArea.grid.startCoord
     newRobotNodeWithColor(colorForTape(), broken: (tapeTestResult.correctOutput == nil), animate: true)
     robotNode?.loadNextGridCoord(lastRobotCoord)
     didAnimateRobotComplete = false
@@ -375,7 +377,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, InstructionAreaDelegate, E
     icon.position = CGPoint(CGFloat(coord.i) + 0.5, CGFloat(coord.j) + 0.5)
     icon.zPosition = 20
     icon.alpha = 1
-    let scaleMultiplier = 1 / gridNode.wrapper.xScale
+    let scaleMultiplier = 1 / gridArea.wrapper.xScale
     icon.setScale(0)
     icon.runAction(SKAction.sequence([
       SKAction.group([SKAction.fadeAlphaTo(1, duration: 0.5), SKAction.scaleTo(scaleMultiplier * 2, duration: 0.5).easeOut()]),
@@ -384,7 +386,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, InstructionAreaDelegate, E
       SKAction.group([SKAction.fadeAlphaTo(0, duration: 0.5), SKAction.scaleTo(scaleMultiplier * 4, duration: 0.5).easeIn()]),
       SKAction.removeFromParent()
       ]))
-    gridNode.wrapper.addChild(icon)
+    gridArea.wrapper.addChild(icon)
     */
     didAnimateRobotComplete = true
   }
@@ -439,12 +441,12 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, InstructionAreaDelegate, E
     state = .Reporting
   }
   
-  // MARK: - GridNodeDelegate Functions
+  // MARK: - GridAreaDelegate Functions
   
   func cellWasEdited() {}
   
   func editGroupWasCompleted() {
-    if levelData.saveGridEdit(gridNode.grid, levelKey: levelKey) {
+    if levelData.saveGridEdit(gridArea.grid, levelKey: levelKey) {
       toolbarArea.undoRedoQueueDidChange()
     }
   }
@@ -469,34 +471,34 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, InstructionAreaDelegate, E
   }
   
   var editMode: EditMode {
-    get {return gridNode.editMode}
-    set {gridNode.editMode = newValue}
+    get {return gridArea.editMode}
+    set {gridArea.editMode = newValue}
   }
   
   func undoEdit() {
-    gridNode.editTouch = nil
+    gridArea.editTouch = nil
     if let grid = levelData.undo() {
-      gridNode.grid = grid
-      gridNode.changeCellNodesToMatchCellsWithAnimate(true)
+      gridArea.grid = grid
+      gridArea.changeCellNodesToMatchCellsWithAnimate(true)
       toolbarArea.undoRedoQueueDidChange()
     }
   }
   
   func redoEdit() {
-    gridNode.editTouch = nil
+    gridArea.editTouch = nil
     if let grid = levelData.redo() {
-      gridNode.grid = grid
-      gridNode.changeCellNodesToMatchCellsWithAnimate(true)
+      gridArea.grid = grid
+      gridArea.changeCellNodesToMatchCellsWithAnimate(true)
       toolbarArea.undoRedoQueueDidChange()
     }
   }
   
   func cancelSelection() {
-    gridNode.cancelSelection()
+    gridArea.cancelSelection()
   }
   
   func confirmSelection() {
-    gridNode.confirmSelection()
+    gridArea.confirmSelection()
   }
   
   func undoQueueIsEmpty() -> Bool {
@@ -548,18 +550,18 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, InstructionAreaDelegate, E
   // MARK: - Touch Delegate Functions
   
   override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
-    gridNode.touchesBegan(touches, withEvent: event)
+    gridArea.touchesBegan(touches, withEvent: event)
   }
   
   override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
-    gridNode.touchesMoved(touches, withEvent: event)
+    gridArea.touchesMoved(touches, withEvent: event)
   }
   
   override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
-    gridNode.touchesEnded(touches, withEvent: event)
+    gridArea.touchesEnded(touches, withEvent: event)
   }
   
   override func touchesCancelled(touches: NSSet, withEvent event: UIEvent) {
-    gridNode.touchesCancelled(touches, withEvent: event)
+    gridArea.touchesCancelled(touches, withEvent: event)
   }
 }

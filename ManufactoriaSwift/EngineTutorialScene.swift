@@ -27,15 +27,15 @@ class EngineTutorialScene: GameScene {
     toolbarArea.swipeNode.rightArrowWrapper.removeFromParent()
     for button in toolbarArea.toolButtons {button.removeFromParent()}
     
-    for i in 0 ..< gridNode.grid.cells.count {gridNode.grid.cells[i] = Cell()}
-    gridNode.grid[GridCoord(0,0)] = Cell(kind: .Belt, direction: .North)
-    gridNode.grid[GridCoord(0,1)] = Cell(kind: .Belt, direction: .East)
-    gridNode.grid[GridCoord(1,0)] = Cell(kind: .PullerBR, direction: .North)
-    gridNode.grid[GridCoord(1,1)] = Cell(kind: .Belt, direction: .North)
-    gridNode.grid[GridCoord(1,2)] = Cell(kind: .Belt, direction: .North)
-    for i in 0 ..< gridNode.grid.cells.count {gridNode.cellNodes[i].changeCell(gridNode.grid.cells[i], animate: false)}
+    for i in 0 ..< gridArea.grid.cells.count {gridArea.grid.cells[i] = Cell()}
+    gridArea.grid[GridCoord(0,0)] = Cell(kind: .Belt, direction: .North)
+    gridArea.grid[GridCoord(0,1)] = Cell(kind: .Belt, direction: .East)
+    gridArea.grid[GridCoord(1,0)] = Cell(kind: .PullerBR, direction: .North)
+    gridArea.grid[GridCoord(1,1)] = Cell(kind: .Belt, direction: .North)
+    gridArea.grid[GridCoord(1,2)] = Cell(kind: .Belt, direction: .North)
+    for i in 0 ..< gridArea.grid.cells.count {gridArea.cellNodes[i].changeCell(gridArea.grid.cells[i], animate: false)}
 
-    gridNode.state = .Waiting
+    gridArea.state = .Waiting
   }
   
   override func fitToSize() {
@@ -50,16 +50,16 @@ class EngineTutorialScene: GameScene {
       case .Editing:
         switch tutorialState {
         case .Fail1:
-          gridNode.grid[GridCoord(0,1)] = Cell(kind: .PullerRB, direction: .North)
-          gridNode.grid[GridCoord(0,2)] = Cell(kind: .Belt, direction: .East)
-          gridNode.changeCellNodesToMatchCellsWithAnimate(true)
-          gridNode.state = .Waiting
+          gridArea.grid[GridCoord(0,1)] = Cell(kind: .PullerRB, direction: .North)
+          gridArea.grid[GridCoord(0,2)] = Cell(kind: .Belt, direction: .East)
+          gridArea.changeCellNodesToMatchCellsWithAnimate(true)
+          gridArea.state = .Waiting
           statusNode.wrapper.addChild(statusNode.leftArrowWrapper)
           statusNode.wrapper.addChild(statusNode.rightArrowWrapper)
           tutorialState = .Fail2
         case .Fail2:
-          for i in 0 ..< gridNode.grid.cells.count {gridNode.grid.cells[i] = Cell()}
-          gridNode.changeCellNodesToMatchCellsWithAnimate(true)
+          for i in 0 ..< gridArea.grid.cells.count {gridArea.grid.cells[i] = Cell()}
+          gridArea.changeCellNodesToMatchCellsWithAnimate(true)
           for button in toolbarArea.toolButtonGroups[0] {toolbarArea.swipeNode.pages[0].addChild(button)}
           toolbarArea.robotButton.position.y = firstRobotButtonY ?? 0
         case .Try:

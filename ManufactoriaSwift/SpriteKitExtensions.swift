@@ -43,12 +43,6 @@ extension UIColor {
 
 extension SKNode {
   
-  func addChildren(nodes: [SKNode]) {
-    for node in nodes {
-      addChild(node)
-    }
-  }
-
   func appearWithParent(newParent: SKNode, animate: Bool) {
     appearWithParent(newParent, animate: animate, delay: 0)
   }
