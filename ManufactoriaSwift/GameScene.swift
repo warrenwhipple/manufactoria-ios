@@ -85,6 +85,7 @@ class GameScene: ManufactoriaScene, GridAreaDelegate, InstructionAreaDelegate, E
     toolbarArea.zPosition = 10
     addChild(toolbarArea)
     
+    testButton.parentMemory = self
     testButton.isSticky = true
     testButton.touchUpInsideClosure = {[unowned self] in self.testButtonPressed()}
     testButton.zPosition = 11
@@ -94,6 +95,7 @@ class GameScene: ManufactoriaScene, GridAreaDelegate, InstructionAreaDelegate, E
     reportArea.delegate = self
     reportArea.zPosition = 100
     
+    thinkingCancelButton.parentMemory = self
     thinkingCancelButton.touchUpInsideClosure = {[unowned self] in self.cancelThinking()}
     
     speedControlArea.parentMemory = self
@@ -139,18 +141,18 @@ class GameScene: ManufactoriaScene, GridAreaDelegate, InstructionAreaDelegate, E
     switch state {
     case .Editing:
       tapeArea.disappear(animate: true)
-      thinkingCancelButton.disappearWithAnimate(true)
+      thinkingCancelButton.disappear(animate: true)
       speedControlArea.disappear(animate: true)
       instructionArea.appear(animate: true, delay: true)
       toolbarArea.appear(animate: true, delay: true)
       testButton.reset()
-      testButton.appearWithParent(self, animate: true)
+      testButton.appear(animate: true, delay: true)
       startBeltFlow()
       gridArea.state = .Editing
     case .Thinking:
       instructionArea.disappear(animate: true)
       toolbarArea.disappear(animate: true)
-      testButton.disappearWithAnimate(true)
+      testButton.disappear(animate: true)
       stopBeltFlow()
       gridTestDidPass = false
       gridArea.state = .Thinking
@@ -159,7 +161,7 @@ class GameScene: ManufactoriaScene, GridAreaDelegate, InstructionAreaDelegate, E
       gridArea.state = .Waiting
       reportArea.appear(animate: true, delay: false)
     case .Testing:
-      thinkingCancelButton.disappearWithAnimate(false)
+      thinkingCancelButton.disappear(animate: false)
       speedControlArea.appear(animate: false, delay: false)
       reportArea.disappear(animate: true)
       var isPuller = false
@@ -312,11 +314,11 @@ class GameScene: ManufactoriaScene, GridAreaDelegate, InstructionAreaDelegate, E
   }
   
   func showThinkingCancelButtonWithAnimate(animate: Bool) {
-    thinkingCancelButton.appearWithParent(self, animate: animate)
+    thinkingCancelButton.appear(animate: animate, delay: false)
   }
   
   func hideThinkingCancelButtonWithAnimate(animate: Bool) {
-    thinkingCancelButton.disappearWithAnimate(animate)
+    thinkingCancelButton.disappear(animate: animate)
   }
   
   func cancelThinking() {

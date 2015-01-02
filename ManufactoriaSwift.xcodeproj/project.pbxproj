@@ -34,6 +34,7 @@
 		2D98E8C31A420126005C7F3D /* FirstTutorialScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D98E8C21A420126005C7F3D /* FirstTutorialScene.swift */; };
 		2DAB2B331A2116D4005D50C7 /* ScrollNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DAB2B321A2116D4005D50C7 /* ScrollNode.swift */; };
 		2DACF0651A54848500AB41E7 /* Area.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DACF0641A54848500AB41E7 /* Area.swift */; };
+		2DACF0671A56325100AB41E7 /* Disappearable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DACF0661A56325100AB41E7 /* Disappearable.swift */; };
 		2DB8E3E91A3655B100898BD1 /* ReportArea.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB8E3E81A3655B100898BD1 /* ReportArea.swift */; };
 		2DB8E3ED1A379EA000898BD1 /* InstructionArea.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB8E3EC1A379EA000898BD1 /* InstructionArea.swift */; };
 		2DB8E3F31A38D72D00898BD1 /* ButtonSwapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB8E3F21A38D72D00898BD1 /* ButtonSwapper.swift */; };
@@ -101,6 +102,7 @@
 		2D98E8C21A420126005C7F3D /* FirstTutorialScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FirstTutorialScene.swift; sourceTree = "<group>"; };
 		2DAB2B321A2116D4005D50C7 /* ScrollNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrollNode.swift; sourceTree = "<group>"; };
 		2DACF0641A54848500AB41E7 /* Area.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Area.swift; sourceTree = "<group>"; };
+		2DACF0661A56325100AB41E7 /* Disappearable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Disappearable.swift; sourceTree = "<group>"; };
 		2DB8E3E81A3655B100898BD1 /* ReportArea.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReportArea.swift; sourceTree = "<group>"; };
 		2DB8E3EC1A379EA000898BD1 /* InstructionArea.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InstructionArea.swift; sourceTree = "<group>"; };
 		2DB8E3F21A38D72D00898BD1 /* ButtonSwapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ButtonSwapper.swift; sourceTree = "<group>"; };
@@ -176,6 +178,7 @@
 		2D32FE5F1A476833004381C9 /* Component Nodes */ = {
 			isa = PBXGroup;
 			children = (
+				2DACF0661A56325100AB41E7 /* Disappearable.swift */,
 				2D36614D19E6D46D0050F34E /* SmartLabel.swift */,
 				2D6B03421A2680DB002A6CAC /* Button.swift */,
 				2DB8E3F21A38D72D00898BD1 /* ButtonSwapper.swift */,
@@ -469,6 +472,7 @@
 				2DD23D6C196DB17C00838E96 /* TapeArea.swift in Sources */,
 				2D6B03431A2680DB002A6CAC /* Button.swift in Sources */,
 				2D8C19A3199696A90064B790 /* SwipeNode.swift in Sources */,
+				2DACF0671A56325100AB41E7 /* Disappearable.swift in Sources */,
 				2D32FE661A478D6E004381C9 /* SecondTutorialScene.swift in Sources */,
 				2D849F3619A39EB6008F3D69 /* CoreGraphicsExtensions.swift in Sources */,
 				2DD8C8A219B69AD9000D729E /* LevelData.swift in Sources */,

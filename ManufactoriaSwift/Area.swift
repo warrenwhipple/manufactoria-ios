@@ -8,9 +8,7 @@
 
 import SpriteKit
 
-private let unhideAction = SKAction.customActionWithDuration(0, actionBlock: {node, time in node.hidden = false})
-
-class Area: SKNode {
+class Area: DisappearableNode {
   
   var rect: CGRect {
     get {
@@ -31,52 +29,4 @@ class Area: SKNode {
   }
   
   func fitToSize() {}
-  
-  weak var parentMemory: SKNode?
-  
-  func appear(#animate: Bool, delay: Bool) {
-    if parent == nil {
-      parentMemory?.addChild(self)
-    }
-    if animate {
-      alpha = 0
-      let fadeInAction = SKAction.fadeAlphaTo(1, duration: Globals.appearTime)
-      if delay {
-        hidden = true
-        runAction(SKAction.sequence([
-          SKAction.waitForDuration(Globals.appearDelay),
-          unhideAction,
-          fadeInAction
-          ]), withKey: "appearDisappear")
-      } else {
-        hidden = false
-        runAction(fadeInAction, withKey: "appearDisappear")
-      }
-    } else {
-      alpha = 1
-      if delay {
-        hidden = true
-        runAction(SKAction.sequence([
-          SKAction.waitForDuration(Globals.appearDelay),
-          unhideAction
-          ]), withKey: "appearDisappear")
-      } else {
-        hidden = false
-        removeActionForKey("appearDisappear")
-      }
-    }
-  }
-  
-  func disappear(#animate: Bool) {
-    if parent == nil {return}
-    if animate {
-      runAction(SKAction.sequence([
-        SKAction.fadeAlphaTo(0, duration: Globals.disappearTime),
-        SKAction.removeFromParent()
-        ]), withKey: "appearDisappear")
-    } else {
-      removeFromParent()
-      removeActionForKey("appearDisappear")
-    }
-  }
 }

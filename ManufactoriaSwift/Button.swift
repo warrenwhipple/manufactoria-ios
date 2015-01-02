@@ -23,8 +23,7 @@ private let nodeOffFadeInAction = SKAction.fadeAlphaTo(1, duration: 0.1)
 private let disableFadeAction = SKAction.fadeAlphaTo(0.2, duration: 0.3)
 private let enableFadeAction = SKAction.fadeAlphaTo(1, duration: 0.3)
 
-class Button: SKSpriteNode {
-  required init(coder: NSCoder) {fatalError("NSCoding not supported")}
+class Button: DisappearableSpriteNode {
   var touchDownClosure, touchUpInsideClosure, touchCancelledClosure: (()->())?
   weak var dragThroughDelegate: DragThroughDelegate?
   var shouldDragThroughY = false
