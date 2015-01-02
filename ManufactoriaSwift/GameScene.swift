@@ -48,7 +48,6 @@ class GameScene: ManufactoriaScene, GridAreaDelegate, InstructionAreaDelegate, E
   var testSpeed: NSTimeInterval = 0
   var robotCoord = GridCoord(0, 0)
   var lastRobotCoord = GridCoord(0, 0)
-  var lastTapeLength: Int = 0
   var didAnimateRobotComplete = false
   
   // MARK: - Initialization
@@ -209,9 +208,10 @@ class GameScene: ManufactoriaScene, GridAreaDelegate, InstructionAreaDelegate, E
         while tickPercent >= 1 {
           tickPercent -= 1
           lastTestingState = testingState
-          let testResult = gridArea.grid.testCoord(robotCoord, lastCoord: lastRobotCoord, tape: &tape)
+          let tickTestResult = gridArea.grid.testCoord(robotCoord, lastCoord: lastRobotCoord, tapeColor: tape.firstColor())
           lastRobotCoord = robotCoord
-          switch testResult {
+          
+          switch tickTestResult.robotAction {
           case .Accept:
             tapeArea.state = .Exiting
             robotNode?.state = .Falling
@@ -225,22 +225,38 @@ class GameScene: ManufactoriaScene, GridAreaDelegate, InstructionAreaDelegate, E
           case .South: robotCoord.j--
           case .West: robotCoord.i--
           }
-          switch testResult {
+          
+          switch tickTestResult.robotAction {
           case .Accept, .Reject: break
           default: robotNode?.loadNextGridCoord(robotCoord)
           }
+          
           robotNode?.finishColorChange()
-          let tapeLength = tape.length()
-          if tapeLength > lastTapeLength && tapeLength > 0 {
-            tapeArea.writeColor(tape[-1].color())
-            robotNode?.loadNextColor(colorForTape())
-          } else if tapeLength < lastTapeLength {
-            tapeArea.deleteColor()
-            robotNode?.loadNextColor(colorForTape())
-          } else {
+          
+          switch tickTestResult.tapeAction {
+          case .Wait:
             tapeArea.state = .Waiting
+          case .Read:
+            tape = tape.from(1)
+            tapeArea.deleteColor()
+            robotNode?.loadNextColor(tape.firstColor())
+          case .WriteBlue:
+            tape.append("b" as Character)
+            tapeArea.writeColor(.Blue)
+            if tape.length() == 1 {robotNode?.loadNextColor(tape.firstColor())}
+          case .WriteRed:
+            tape.append("r" as Character)
+            tapeArea.writeColor(.Red)
+            if tape.length() == 1 {robotNode?.loadNextColor(tape.firstColor())}
+          case .WriteGreen:
+            tape.append("g" as Character)
+            tapeArea.writeColor(.Green)
+            if tape.length() == 1 {robotNode?.loadNextColor(tape.firstColor())}
+          case .WriteYellow:
+            tape.append("y" as Character)
+            tapeArea.writeColor(.Yellow)
+            if tape.length() == 1 {robotNode?.loadNextColor(tape.firstColor())}
           }
-          lastTapeLength = tapeLength
         }
       }
       
@@ -351,12 +367,11 @@ class GameScene: ManufactoriaScene, GridAreaDelegate, InstructionAreaDelegate, E
     tape = tapeTestResult.input
     tapeArea.loadTape(tape)
     tapeArea.state = .Entering
-    lastTapeLength = tape.length()
     testingState = .Entering
     lastTestingState = .Entering
     robotCoord = gridArea.grid.startCoord + 1
     lastRobotCoord = gridArea.grid.startCoord
-    newRobotNodeWithColor(colorForTape(), broken: (tapeTestResult.correctOutput == nil), animate: true)
+    newRobotNodeWithColor(tape.firstColor(), broken: (tapeTestResult.correctOutput == nil), animate: true)
     robotNode?.loadNextGridCoord(lastRobotCoord)
     didAnimateRobotComplete = false
   }
@@ -391,17 +406,6 @@ class GameScene: ManufactoriaScene, GridAreaDelegate, InstructionAreaDelegate, E
     gridArea.wrapper.addChild(icon)
     */
     didAnimateRobotComplete = true
-  }
-  
-  func colorForTape() -> Color? {
-    if tape.isEmpty {return nil}
-    switch tape[0] {
-    case "B", "b": return .Blue
-    case "R", "r": return .Red
-    case "G", "g": return .Green
-    case "Y", "y": return .Yellow
-    default: return nil
-    }
   }
   
   // MARK: - InstructionAreaDelegate Functions

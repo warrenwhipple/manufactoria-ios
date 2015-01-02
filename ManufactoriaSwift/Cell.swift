@@ -104,7 +104,7 @@ enum Direction {
     case .West: return .East
     }
   }
-  func tickTestResult() -> TickTestResult {
+  func tickRobotAction() -> TickTestResult.RobotAction {
     switch self {
     case .North: return .North
     case .East: return .East

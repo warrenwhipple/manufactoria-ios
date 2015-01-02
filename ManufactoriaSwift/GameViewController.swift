@@ -43,7 +43,7 @@ struct Globals {
   private(set) static var backgroundColor = UIColor.whiteColor()
   static let testCount =       1000
   static let loopTickCount =   10000
-  static let loopTapeLength =  500
+  static let loopTapeLength =  1000
   static let disappearTime: NSTimeInterval = 0.4
   static let appearDelay: NSTimeInterval = 0.6
   static let appearTime: NSTimeInterval = 0.2

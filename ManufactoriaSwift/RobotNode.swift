@@ -17,7 +17,7 @@ class RobotNode: SKNode {
   let darkRedColor = Globals.redColor.blend(UIColor.blackColor(), blendFactor: 0.2)
   let darkGreenColor = Globals.greenColor.blend(UIColor.blackColor(), blendFactor: 0.2)
   let darkYellowColor = Globals.yellowColor.blend(UIColor.blackColor(), blendFactor: 0.2)
-  let fallScaleNode = SKNode()
+  let scaleNode = SKNode()
   var currentColor: Color?
   var isChangingColor = false
   var lastLastPosition, lastPosition, nextPosition: CGPoint
@@ -33,18 +33,18 @@ class RobotNode: SKNode {
     self.position = position
     zPosition = 2
     lastColorSprite.alpha = 0
-    fallScaleNode.addChild(lastColorSprite)
+    scaleNode.addChild(lastColorSprite)
     if let color = color {
       currentColorSprite.color = darkColor(color)
     } else {
       currentColorSprite.color = Globals.strokeColor
     }
     currentColorSprite.zPosition = 0.25
-    fallScaleNode.addChild(currentColorSprite)
+    scaleNode.addChild(currentColorSprite)
     eyesSprite.anchorPoint.y = 0
     eyesSprite.zPosition = 0.5
-    fallScaleNode.addChild(eyesSprite)
-    addChild(fallScaleNode)
+    scaleNode.addChild(eyesSprite)
+    addChild(scaleNode)
   }
   
   func darkColor(color: Color) -> UIColor {
@@ -68,7 +68,9 @@ class RobotNode: SKNode {
       }
     }
     switch state {
+    //case .Entering: scaleNode.setScale(tickPercent)
     case .Moving:
+      scaleNode.setScale(1)
       if tickPercent < 0.5 {
         let ease = easeInOut(tickPercent + 0.5)
         let easeLeft = 1 - ease
@@ -93,10 +95,10 @@ class RobotNode: SKNode {
           y: lastPosition.y * easeLeft + nextPosition.y * ease
         )
         let fallEase = easeIn(tickPercent * 2)
-        fallScaleNode.setScale(1 - fallEase + 0.75 * fallEase)
+        scaleNode.setScale(1 - fallEase + 0.75 * fallEase)
       } else {
         position = nextPosition
-        fallScaleNode.setScale(0.75)
+        scaleNode.setScale(0.75)
       }
     }
   }

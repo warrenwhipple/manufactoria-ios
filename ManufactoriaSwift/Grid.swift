@@ -41,10 +41,6 @@ struct GridSpace: Equatable {
 }
 func == (left: GridSpace, right: GridSpace) -> Bool {return left.columns == right.columns && left.rows == right.rows}
 
-enum TickTestResult {
-  case North, East, South, West, Accept, Reject
-}
-
 struct Grid {
   private(set) var space: GridSpace
   private(set) var cells: [Cell]
@@ -138,100 +134,70 @@ struct Grid {
     return string
   }
   
-  func testCoord(coord: GridCoord, lastCoord: GridCoord, inout tape: String) -> TickTestResult {
-    if coord == startCoord {return .North}
-    if coord == endCoord {return .Accept}
-    if !space.contains(coord) {return TickTestResult.Reject}
+  func testCoord(coord: GridCoord, lastCoord: GridCoord, tapeColor: Color?) -> TickTestResult {
+    if coord == startCoord {return TickTestResult(robotAction: .North, tapeAction: .Wait)}
+    if coord == endCoord {return TickTestResult(robotAction: .Accept, tapeAction: .Wait)}
+    if !space.contains(coord) {return TickTestResult(robotAction: .Reject, tapeAction: .Wait)}
     
     let cell = self[coord]
     switch cell.kind {
-    case .Blank:
-      return TickTestResult.Reject
-    case .Belt:
-      return cell.direction.tickTestResult()
+    case .Blank: return TickTestResult(robotAction: .Reject, tapeAction: .Wait)
+    case .Belt: return TickTestResult(robotAction: cell.direction.tickRobotAction(), tapeAction: .Wait)
     case .Bridge:
       switch cell.direction {
       case .North, .South:
         if coord.i == lastCoord.i {
-          return cell.direction.tickTestResult()
+          return TickTestResult(robotAction: cell.direction.tickRobotAction(), tapeAction: .Wait)
         } else {
-          return cell.direction.cw().tickTestResult()
+          return TickTestResult(robotAction: cell.direction.cw().tickRobotAction(), tapeAction: .Wait)
         }
       case .East, .West:
         if coord.j == lastCoord.j {
-          return cell.direction.tickTestResult()
+          return TickTestResult(robotAction: cell.direction.tickRobotAction(), tapeAction: .Wait)
         } else {
-          return cell.direction.cw().tickTestResult()
+          return TickTestResult(robotAction: cell.direction.cw().tickRobotAction(), tapeAction: .Wait)
         }
       }
-    case .PusherB:
-      tape += "b"
-      return cell.direction.tickTestResult()
-    case .PusherR:
-      tape += "r"
-      return cell.direction.tickTestResult()
-    case .PusherG:
-      tape += "g"
-      return cell.direction.tickTestResult()
-    case .PusherY:
-      tape += "y"
-      return cell.direction.tickTestResult()
+    case .PusherB: return TickTestResult(robotAction: cell.direction.tickRobotAction(), tapeAction: .WriteBlue)
+    case .PusherR: return TickTestResult(robotAction: cell.direction.tickRobotAction(), tapeAction: .WriteRed)
+    case .PusherG: return TickTestResult(robotAction: cell.direction.tickRobotAction(), tapeAction: .WriteGreen)
+    case .PusherY: return TickTestResult(robotAction: cell.direction.tickRobotAction(), tapeAction: .WriteBlue)
     case .PullerBR:
-      if !tape.isEmpty {
-        let color = tape[0].color()
-        if color == Color.Blue {
-          //if consumeColorWhenReading {tape = tape.from(1)}
-          tape = tape.from(1)
-          return cell.direction.ccw().tickTestResult()
-        } else if color == Color.Red {
-          //if consumeColorWhenReading {tape = tape.from(1)}
-          tape = tape.from(1)
-          return cell.direction.cw().tickTestResult()
+      if let tapeColor = tapeColor {
+        switch tapeColor {
+        case .Blue: return TickTestResult(robotAction: cell.direction.ccw().tickRobotAction(), tapeAction: .Read)
+        case .Red: return TickTestResult(robotAction: cell.direction.cw().tickRobotAction(), tapeAction: .Read)
+        default: break
         }
       }
-      return cell.direction.tickTestResult()
+      return TickTestResult(robotAction: cell.direction.tickRobotAction(), tapeAction: .Wait)
     case .PullerRB:
-      if !tape.isEmpty {
-        let color = tape[0].color()
-        if color == Color.Red {
-          //if consumeColorWhenReading {tape = tape.from(1)}
-          tape = tape.from(1)
-          return cell.direction.ccw().tickTestResult()
-        } else if color == Color.Blue {
-          //if consumeColorWhenReading {tape = tape.from(1)}
-          tape = tape.from(1)
-          return cell.direction.cw().tickTestResult()
+      if let tapeColor = tapeColor {
+        switch tapeColor {
+        case .Red: return TickTestResult(robotAction: cell.direction.ccw().tickRobotAction(), tapeAction: .Read)
+        case .Blue: return TickTestResult(robotAction: cell.direction.cw().tickRobotAction(), tapeAction: .Read)
+        default: break
         }
       }
-      return cell.direction.tickTestResult()
+      return TickTestResult(robotAction: cell.direction.tickRobotAction(), tapeAction: .Wait)
     case .PullerGY:
-      if !tape.isEmpty {
-        let color = tape[0].color()
-        if color == Color.Green {
-          //if consumeColorWhenReading {tape = tape.from(1)}
-          tape = tape.from(1)
-          return cell.direction.ccw().tickTestResult()
-        } else if color == Color.Yellow {
-          //if consumeColorWhenReading {tape = tape.from(1)}
-          tape = tape.from(1)
-          return cell.direction.cw().tickTestResult()
+      if let tapeColor = tapeColor {
+        switch tapeColor {
+        case .Green: return TickTestResult(robotAction: cell.direction.ccw().tickRobotAction(), tapeAction: .Read)
+        case .Yellow: return TickTestResult(robotAction: cell.direction.cw().tickRobotAction(), tapeAction: .Read)
+        default: break
         }
       }
-      return cell.direction.tickTestResult()
+      return TickTestResult(robotAction: cell.direction.tickRobotAction(), tapeAction: .Wait)
     case .PullerYG:
-      if !tape.isEmpty {
-        let color = tape[0].color()
-        if color == Color.Yellow {
-          //if consumeColorWhenReading {tape = tape.from(1)}
-          tape = tape.from(1)
-          return cell.direction.ccw().tickTestResult()
-        } else if color == Color.Green {
-          //if consumeColorWhenReading {tape = tape.from(1)}
-          tape = tape.from(1)
-          return cell.direction.cw().tickTestResult()
+      if let tapeColor = tapeColor {
+        switch tapeColor {
+        case .Yellow: return TickTestResult(robotAction: cell.direction.ccw().tickRobotAction(), tapeAction: .Read)
+        case .Green: return TickTestResult(robotAction: cell.direction.cw().tickRobotAction(), tapeAction: .Read)
+        default: break
         }
       }
-      return cell.direction.tickTestResult()
+      return TickTestResult(robotAction: cell.direction.tickRobotAction(), tapeAction: .Wait)
     }
   }
 }

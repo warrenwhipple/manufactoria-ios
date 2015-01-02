@@ -35,6 +35,20 @@ struct LevelSetup {
       self.transformFunction = transformFunction
       self.cleanBinaryOutput = cleanBinaryOutput
   }
+  
+  func correctOutputForInput(input: String) -> String? {
+    if let acceptFunction = acceptFunction {
+      if acceptFunction(input) {
+        return "*"
+      } else {
+        return nil
+      }
+    } else if let transformFunction = transformFunction {
+      return transformFunction(input)
+    }
+    assertionFailure("Must have either acceptFunction or transformFucntion.")
+    return nil
+  }
 }
 
 // Helper functions for generating string inputs

@@ -77,7 +77,7 @@ extension String {
   }
   
   func length() -> Int {
-    return countElements(self)
+    return self.utf16Count
   }
   
   func split(atCharacter: Character) -> [String] {
@@ -93,6 +93,11 @@ extension String {
     }
     strings.append(string)
     return strings
+  }
+  
+  func firstColor() -> Color? {
+    if isEmpty {return nil}
+    return self[0].color()
   }
 }
 

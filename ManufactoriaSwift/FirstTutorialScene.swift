@@ -218,12 +218,11 @@ class FirstTutorialScene: GenericTutorialScene {
   
   func checkGridPassLoop() -> (Bool, Bool) {
     let grid = gridArea.grid
-    var tape = ""
     var lastCoord = grid.startCoord
     var coord = lastCoord + 1
     var steps = 0
     while (steps++ < 10) {
-      switch gridArea.grid.testCoord(coord, lastCoord: lastCoord, tape: &tape) {
+      switch gridArea.grid.testCoord(coord, lastCoord: lastCoord, tapeColor: nil).robotAction {
       case .Accept: return (true, false)
       case .Reject: return (false, false)
       case .North: coord.j++
