@@ -10,7 +10,7 @@ import SpriteKit
 
 class ReadSeqTutorialScene: TutorialScene {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  let demoTapeNode = TapeNode()
+  let demoTapeArea = TapeArea()
   let demoTestButton = Button(iconNamed: "robot")
   
   init(size: CGSize) {
@@ -84,7 +84,7 @@ class ReadSeqTutorialScene: TutorialScene {
         state = .Testing
       case .Testing:
         instructionArea.disappearWithAnimate(true)
-        tapeNode.disappearWithAnimate(false)
+        tapeArea.disappearWithAnimate(false)
         toolbarArea.disappearWithAnimate(true)
         speedControlArea.appearWithParent(self, animate: true)
         if tutorialState == .Demo {speedControlArea.disappearWithAnimate(false)}

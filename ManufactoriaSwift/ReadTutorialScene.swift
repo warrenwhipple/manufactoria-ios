@@ -83,7 +83,7 @@ class ReadTutorialScene: TutorialScene {
         state = .Testing
       case .Testing:
         instructionArea.disappearWithAnimate(true)
-        tapeNode.disappearWithAnimate(false)
+        tapeArea.disappearWithAnimate(false)
         toolbarArea.disappearWithAnimate(true)
         speedControlArea.appearWithParent(self, animate: true)
         if tutorialState == .Demo {speedControlArea.disappearWithAnimate(false)}

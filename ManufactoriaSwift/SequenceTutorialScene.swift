@@ -73,7 +73,7 @@ class SequenceTutorialScene: TutorialScene {
         }
       case .Thinking: break
       case .Testing:
-        statusNode.tapeNode.removeFromParent()
+        statusNode.tapeArea.removeFromParent()
         if tutorialState != .OpenEdit {speedControlArea.removeFromParent()}
       case .Congratulating: break
       }
@@ -310,7 +310,7 @@ class SequenceTutorialSceneOld: GameScene {
         statusNode.engineLabel.removeFromParent()
       case .Testing:
         statusNode.tapeLabel.removeFromParent()
-        statusNode.tapeNode.position.y = 0
+        statusNode.tapeArea.position.y = 0
       case .Congratulating: break
       }
     }

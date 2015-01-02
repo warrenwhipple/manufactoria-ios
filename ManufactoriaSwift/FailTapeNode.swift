@@ -9,7 +9,7 @@
 import Foundation
 
 //
-//  TapeNode.swift
+//  TapeArea.swift
 //  ManufactoriaSwift
 //
 //  Created by Warren Whipple on 7/9/14.

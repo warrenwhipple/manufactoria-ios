@@ -25,7 +25,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, InstructionAreaDelegate, E
   
   // MARK: View Objects
   let instructionArea: InstructionArea
-  let tapeNode = TapeNode()
+  let tapeArea = TapeArea()
   let gridNode: GridNode
   let toolbarArea: ToolbarArea
   let testButton = Button(iconNamed: "testButton")
@@ -118,19 +118,14 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, InstructionAreaDelegate, E
     let topGapRect = roundPix(CGRect(x: 0, y: gridRect.maxY,
       width: size.width, height: bottomGapRect.height))
     
-    instructionArea.position = topGapRect.center
-    instructionArea.size = topGapRect.size
-    tapeNode.position = topGapRect.center
-    tapeNode.width = topGapRect.width
-    toolbarArea.position = bottomGapRect.center
-    toolbarArea.size = topGapRect.size
+    instructionArea.rect = topGapRect
+    tapeArea.rect = topGapRect
+    toolbarArea.rect = bottomGapRect
     testButton.position = CGPoint(x: toolbarArea.position.x, y: toolbarArea.position.y + toolbarArea.undoCancelSwapper.position.y)
-    reportArea.position = size.center
-    reportArea.size = size
+    reportArea.rect = CGRect(origin: CGPointZero, size: size)
     thinkingCancelButton.position.x = bottomGapRect.center.x
     thinkingCancelButton.position.y = bottomGapRect.center.y + toolbarArea.swipeNode.position.y
-    speedControlArea.position = thinkingCancelButton.position
-    speedControlArea.size = bottomGapRect.size
+    speedControlArea.rect = CGRect(center: thinkingCancelButton.position, size: bottomGapRect.size)
     congratulationNode.position = bottomGapRect.center
     congratulationNode.size = bottomGapRect.size
   }
@@ -141,7 +136,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, InstructionAreaDelegate, E
     if state == oldState {return}
     switch state {
     case .Editing:
-      tapeNode.disappearWithAnimate(true)
+      tapeArea.disappearWithAnimate(true)
       thinkingCancelButton.disappearWithAnimate(true)
       speedControlArea.disappear(animate: true)
       instructionArea.appear(animate: true, delay: true)
@@ -175,16 +170,16 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, InstructionAreaDelegate, E
         }
         if isPusher && isPuller {break}
       }
-      tapeNode.scanner.alpha = isPuller ? 1 : 0
-      tapeNode.printer.alpha = isPusher ? 1 : 0
-      if isPuller {tapeNode.scanner.alpha = 1}
-      else {tapeNode.scanner.alpha = 0}
-      if isPusher {tapeNode.printer.alpha = 1}
-      else {tapeNode.printer.alpha = 0}
+      tapeArea.scanner.alpha = isPuller ? 1 : 0
+      tapeArea.printer.alpha = isPusher ? 1 : 0
+      if isPuller {tapeArea.scanner.alpha = 1}
+      else {tapeArea.scanner.alpha = 0}
+      if isPusher {tapeArea.printer.alpha = 1}
+      else {tapeArea.printer.alpha = 0}
       loadTape(0)
-      tapeNode.appearWithParent(self, animate: true)
+      tapeArea.appearWithParent(self, animate: true)
     case .Congratulating:
-      tapeNode.disappearWithAnimate(true)
+      tapeArea.disappearWithAnimate(true)
       speedControlArea.disappear(animate: true)
       congratulationNode.appearWithParent(self, animate: true)
       startBeltFlow()
@@ -202,7 +197,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, InstructionAreaDelegate, E
       
       if testingState == .Entering && tickPercent >= 1 {
         tickPercent -= 1
-        tapeNode.state = .Waiting
+        tapeArea.state = .Waiting
         testingState = .Testing
         robotNode?.loadNextGridCoord(robotCoord)
       }
@@ -214,11 +209,11 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, InstructionAreaDelegate, E
           lastRobotCoord = robotCoord
           switch testResult {
           case .Accept:
-            tapeNode.state = .Exiting
+            tapeArea.state = .Exiting
             robotNode?.state = .Falling
             testingState = .Exiting
           case .Reject:
-            tapeNode.state = .Exiting
+            tapeArea.state = .Exiting
             robotNode?.state = .Falling
             testingState = .Falling
           case .North: robotCoord.j++
@@ -233,13 +228,13 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, InstructionAreaDelegate, E
           robotNode?.finishColorChange()
           let tapeLength = tape.length()
           if tapeLength > lastTapeLength && tapeLength > 0 {
-            tapeNode.writeColor(tape[-1].color())
+            tapeArea.writeColor(tape[-1].color())
             robotNode?.loadNextColor(colorForTape())
           } else if tapeLength < lastTapeLength {
-            tapeNode.deleteColor()
+            tapeArea.deleteColor()
             robotNode?.loadNextColor(colorForTape())
           } else {
-            tapeNode.state = .Waiting
+            tapeArea.state = .Waiting
           }
           lastTapeLength = tapeLength
         }
@@ -261,7 +256,7 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, InstructionAreaDelegate, E
         }
       }
       
-      tapeNode.update(tickPercent)
+      tapeArea.update(tickPercent)
       robotNode?.update(tickPercent)
     }
     
@@ -350,8 +345,8 @@ class GameScene: ManufactoriaScene, GridNodeDelegate, InstructionAreaDelegate, E
     tickPercent = 0
     let tapeTestResult = tapeTestResults[i]
     tape = tapeTestResult.input
-    tapeNode.loadTape(tape)
-    tapeNode.state = .Entering
+    tapeArea.loadTape(tape)
+    tapeArea.state = .Entering
     lastTapeLength = tape.length()
     testingState = .Entering
     lastTestingState = .Entering
