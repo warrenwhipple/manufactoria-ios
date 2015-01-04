@@ -75,8 +75,8 @@ class GenericTutorialScene: GameScene {
     hookCellWasEdited?()
   }
   
-  override func loadTape(i: Int) {
-    super.loadTape(i)
+  func loadTape(i: Int) {
+  //  super.loadTape(i)
     if speedControlsShouldSimplify {
       speedControlArea.slowerButton.removeFromParent()
       if tapeTestResults[i].kind == TapeTestResult.Kind.Loop || speedControlShouldAllowCancel {
@@ -106,16 +106,15 @@ class GenericTutorialScene: GameScene {
   // MARK: - Tutorial Functions
   
   func startDemoTest() {
-    stopBeltFlow()
+    beltFlowController.stopFlow()
     instructionArea.disappearWithAnimate(true)
     gridArea.state = .Waiting
     tapeTestResults = [TapeTestResult(input: "", output: nil, correctOutput: nil, kind: .Demo)]
     state = .Testing
     if let buttonParent = demoTestButton.parent {
       let positionOnGridArea = buttonParent.convertPoint(demoTestButton.position, toNode: gridArea.wrapper)
-      if let robotNode = robotNode {
+      if let robotNode = testController.robotNode {
         robotNode.lastPosition = positionOnGridArea
-        robotNode.lastLastPosition = positionOnGridArea
         demoTestButton.position = CGPointZero
         demoTestButton.removeFromParent()
         robotNode.addChild(demoTestButton)

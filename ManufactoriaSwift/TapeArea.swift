@@ -147,6 +147,7 @@ class TapeArea: Area {
       addChild(dot)
       dots.append(dot)
     }
+    state = .Entering
     fitToSize()
   }
   

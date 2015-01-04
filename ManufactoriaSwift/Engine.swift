@@ -27,6 +27,7 @@ struct TapeTestResult {
   static func blankLoop() -> TapeTestResult {
     return TapeTestResult(input: "", output: nil, correctOutput: nil, kind: .Loop)
   }
+  var broken: Bool {return correctOutput == nil}
 }
 
 protocol EngineDelegate: class {

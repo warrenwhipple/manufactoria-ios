@@ -35,6 +35,8 @@
 		2DAB2B331A2116D4005D50C7 /* ScrollNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DAB2B321A2116D4005D50C7 /* ScrollNode.swift */; };
 		2DACF0651A54848500AB41E7 /* Area.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DACF0641A54848500AB41E7 /* Area.swift */; };
 		2DACF0671A56325100AB41E7 /* Disappearable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DACF0661A56325100AB41E7 /* Disappearable.swift */; };
+		2DACF07C1A599AC500AB41E7 /* TestController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DACF07B1A599AC500AB41E7 /* TestController.swift */; };
+		2DACF07E1A59B17600AB41E7 /* BeltFlowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DACF07D1A59B17600AB41E7 /* BeltFlowController.swift */; };
 		2DB8E3E91A3655B100898BD1 /* ReportArea.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB8E3E81A3655B100898BD1 /* ReportArea.swift */; };
 		2DB8E3ED1A379EA000898BD1 /* InstructionArea.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB8E3EC1A379EA000898BD1 /* InstructionArea.swift */; };
 		2DB8E3F31A38D72D00898BD1 /* ButtonSwapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB8E3F21A38D72D00898BD1 /* ButtonSwapper.swift */; };
@@ -103,6 +105,8 @@
 		2DAB2B321A2116D4005D50C7 /* ScrollNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrollNode.swift; sourceTree = "<group>"; };
 		2DACF0641A54848500AB41E7 /* Area.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Area.swift; sourceTree = "<group>"; };
 		2DACF0661A56325100AB41E7 /* Disappearable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Disappearable.swift; sourceTree = "<group>"; };
+		2DACF07B1A599AC500AB41E7 /* TestController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestController.swift; sourceTree = "<group>"; };
+		2DACF07D1A59B17600AB41E7 /* BeltFlowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BeltFlowController.swift; sourceTree = "<group>"; };
 		2DB8E3E81A3655B100898BD1 /* ReportArea.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReportArea.swift; sourceTree = "<group>"; };
 		2DB8E3EC1A379EA000898BD1 /* InstructionArea.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InstructionArea.swift; sourceTree = "<group>"; };
 		2DB8E3F21A38D72D00898BD1 /* ButtonSwapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ButtonSwapper.swift; sourceTree = "<group>"; };
@@ -280,6 +284,15 @@
 			name = Images;
 			sourceTree = "<group>";
 		};
+		2DACF07F1A59B19800AB41E7 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				2DACF07D1A59B17600AB41E7 /* BeltFlowController.swift */,
+				2DACF07B1A599AC500AB41E7 /* TestController.swift */,
+			);
+			name = Controllers;
+			sourceTree = "<group>";
+		};
 		2DC49122194F45B800053237 = {
 			isa = PBXGroup;
 			children = (
@@ -347,6 +360,7 @@
 			children = (
 				2DC49134194F45B800053237 /* GameScene.swift */,
 				2DBABC3F1A006E6400223A69 /* RobotNode.swift */,
+				2DACF07F1A59B19800AB41E7 /* Controllers */,
 				2D32FE621A47694B004381C9 /* Model */,
 				2D32FE631A4769EE004381C9 /* Areas */,
 				2D680EDA19D87E46000B6E36 /* Tutorial Scenes */,
@@ -474,6 +488,7 @@
 				2D8C19A3199696A90064B790 /* SwipeNode.swift in Sources */,
 				2DACF0671A56325100AB41E7 /* Disappearable.swift in Sources */,
 				2D32FE661A478D6E004381C9 /* SecondTutorialScene.swift in Sources */,
+				2DACF07C1A599AC500AB41E7 /* TestController.swift in Sources */,
 				2D849F3619A39EB6008F3D69 /* CoreGraphicsExtensions.swift in Sources */,
 				2DD8C8A219B69AD9000D729E /* LevelData.swift in Sources */,
 				2D7F922C195C61FA00F04F63 /* ToolbarArea.swift in Sources */,
@@ -490,6 +505,7 @@
 				2D98E8C31A420126005C7F3D /* FirstTutorialScene.swift in Sources */,
 				2DD23D71196F223E00838E96 /* MenuScene.swift in Sources */,
 				2D03B93A197EB89700715176 /* SwiftExtensions.swift in Sources */,
+				2DACF07E1A59B17600AB41E7 /* BeltFlowController.swift in Sources */,
 				2DC0168319CEF41D003D922A /* ManufactoriaScene.swift in Sources */,
 				2DACF0651A54848500AB41E7 /* Area.swift in Sources */,
 				2D4862D01A1BEC21000421E5 /* MenuLevelButton.swift in Sources */,

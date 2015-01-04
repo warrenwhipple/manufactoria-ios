@@ -10,9 +10,6 @@ import SpriteKit
 
 class GameScene: ManufactoriaScene, GridAreaDelegate, InstructionAreaDelegate, EngineDelegate, ToolbarAreaDelegate, ReportAreaDelegate, SpeedControlAreaDelegate, CongratulationAreaDelegate {
   
-  enum State {case Editing, Thinking, Reporting, Testing, Congratulating}
-  enum TestingState {case Entering, Testing, Exiting, Falling}
-  
   // MARK: Model Objects
   let levelData: LevelData
   let engine: Engine
@@ -33,22 +30,15 @@ class GameScene: ManufactoriaScene, GridAreaDelegate, InstructionAreaDelegate, E
   let speedControlArea = SpeedControlArea()
   let reportArea = ReportArea()
   let congratulationArea = CongratulationArea()
-  var robotNode: RobotNode?
+  
+  // MARK: Controller Objects
+  let beltFlowController: BeltFlowController
+  let testController: TestController
   
   // MARK: Variables
+  enum State {case Editing, Thinking, Reporting, Testing, Congratulating}
   var state: State = .Editing {didSet {didSetState(oldValue)}}
-  var currentTapeTestIndex = 0
-  var tickPercent: CGFloat = 0
-  var beltFlowPercent: CGFloat = 0
-  var beltFlowVelocity: CGFloat = 0.25
   var gridTestDidPass = false
-  
-  var testingState: TestingState = .Entering
-  var lastTestingState: TestingState = .Entering
-  var testSpeed: NSTimeInterval = 0
-  var robotCoord = GridCoord(0, 0)
-  var lastRobotCoord = GridCoord(0, 0)
-  var didAnimateRobotComplete = false
   
   // MARK: - Initialization
   
@@ -62,6 +52,8 @@ class GameScene: ManufactoriaScene, GridAreaDelegate, InstructionAreaDelegate, E
     instructionArea = InstructionArea(instructions: levelSetup.instructions)
     gridArea = GridArea(grid: levelData.currentGrid())
     toolbarArea = ToolbarArea(editModes: levelSetup.editModes)
+    beltFlowController = BeltFlowController(gridArea: gridArea)
+    testController = TestController(gridArea: gridArea, tapeArea: tapeArea)
     
     super.init(size: size)
     backgroundColor = Globals.backgroundColor
@@ -133,7 +125,7 @@ class GameScene: ManufactoriaScene, GridAreaDelegate, InstructionAreaDelegate, E
     congratulationArea.size = bottomGapRect.size
   }
   
-  // MARK: - Game State Functions
+  // MARK: - GameScene Functions
   
   func didSetState(oldState: State) {
     if state == oldState {return}
@@ -146,16 +138,16 @@ class GameScene: ManufactoriaScene, GridAreaDelegate, InstructionAreaDelegate, E
       toolbarArea.appear(animate: true, delay: true)
       testButton.reset()
       testButton.appear(animate: true, delay: true)
-      startBeltFlow()
       gridArea.state = .Editing
+      beltFlowController.startFlow()
     case .Thinking:
       instructionArea.disappear(animate: true)
       toolbarArea.disappear(animate: true)
       testButton.disappear(animate: true)
-      stopBeltFlow()
       gridTestDidPass = false
       gridArea.state = .Thinking
       engine.beginGridTest(gridArea.grid)
+      beltFlowController.stopFlow()
     case .Reporting:
       gridArea.state = .Waiting
       reportArea.appear(animate: true, delay: false)
@@ -163,170 +155,28 @@ class GameScene: ManufactoriaScene, GridAreaDelegate, InstructionAreaDelegate, E
       thinkingCancelButton.disappear(animate: false)
       speedControlArea.appear(animate: false, delay: false)
       reportArea.disappear(animate: true)
-      var isPuller = false
-      var isPusher = false
-      for cell in gridArea.grid.cells {
-        switch cell.kind {
-        case .PullerBR, .PullerRB, .PullerGY, .PullerYG: isPuller = true
-        case .PusherB, .PusherR, .PusherG, .PusherY: isPusher = true
-        default: break
-        }
-        if isPusher && isPuller {break}
-      }
-      tapeArea.scanner.alpha = isPuller ? 1 : 0
-      tapeArea.printer.alpha = isPusher ? 1 : 0
-      if isPuller {tapeArea.scanner.alpha = 1}
-      else {tapeArea.scanner.alpha = 0}
-      if isPusher {tapeArea.printer.alpha = 1}
-      else {tapeArea.printer.alpha = 0}
-      loadTape(0)
       tapeArea.appear(animate: false, delay: false)
+      testController.reset(tapeTestResultQueue: tapeTestResults)
     case .Congratulating:
       tapeArea.disappear(animate: true)
       speedControlArea.disappear(animate: true)
       congratulationArea.appear(animate: true, delay: true)
-      startBeltFlow()
       gridArea.state = .Waiting
+      beltFlowController.startFlow()
     }
   }
   
   override func updateDt(dt: NSTimeInterval) {
-    
-    // update test
+    var beltPercentSum = beltFlowController.update(dt)
     if state == .Testing {
-      tickPercent += CGFloat(dt * testSpeed)
-      
-      if skipAnimationComplete {loadNextTape()}
-      
-      if testingState == .Entering && tickPercent >= 1 {
-        tickPercent -= 1
-        tapeArea.state = .Waiting
-        testingState = .Testing
-        robotNode?.loadNextGridCoord(robotCoord)
-      }
-      if testingState == .Testing {
-        while tickPercent >= 1 {
-          tickPercent -= 1
-          lastTestingState = testingState
-          let tickTestResult = gridArea.grid.testCoord(robotCoord, lastCoord: lastRobotCoord, tapeColor: tape.firstColor())
-          lastRobotCoord = robotCoord
-          
-          switch tickTestResult.robotAction {
-          case .Accept:
-            tapeArea.state = .Exiting
-            robotNode?.state = .Falling
-            testingState = .Exiting
-          case .Reject:
-            tapeArea.state = .Exiting
-            robotNode?.state = .Falling
-            testingState = .Falling
-          case .North: robotCoord.j++
-          case .East: robotCoord.i++
-          case .South: robotCoord.j--
-          case .West: robotCoord.i--
-          }
-          
-          switch tickTestResult.robotAction {
-          case .Accept, .Reject: break
-          default: robotNode?.loadNextGridCoord(robotCoord)
-          }
-          
-          robotNode?.finishColorChange()
-          
-          switch tickTestResult.tapeAction {
-          case .Wait:
-            tapeArea.state = .Waiting
-          case .Read:
-            tape = tape.from(1)
-            tapeArea.deleteColor()
-            robotNode?.loadNextColor(tape.firstColor())
-          case .WriteBlue:
-            tape.append("b" as Character)
-            tapeArea.writeColor(.Blue)
-            if tape.length() == 1 {robotNode?.loadNextColor(tape.firstColor())}
-          case .WriteRed:
-            tape.append("r" as Character)
-            tapeArea.writeColor(.Red)
-            if tape.length() == 1 {robotNode?.loadNextColor(tape.firstColor())}
-          case .WriteGreen:
-            tape.append("g" as Character)
-            tapeArea.writeColor(.Green)
-            if tape.length() == 1 {robotNode?.loadNextColor(tape.firstColor())}
-          case .WriteYellow:
-            tape.append("y" as Character)
-            tapeArea.writeColor(.Yellow)
-            if tape.length() == 1 {robotNode?.loadNextColor(tape.firstColor())}
-          }
-        }
-      }
-      
-      if testingState == .Exiting {
-        if !didAnimateRobotComplete && tickPercent >= 0.5 {
-          animateRobotCompleteWithCoord(robotCoord, didPass: gridTestDidPass)
-        }
-        if tickPercent >= 1 {
-          loadNextTape()
-        }
-      } else if testingState == .Falling {
-        if !didAnimateRobotComplete && tickPercent >= 0.5 {
-          animateRobotCompleteWithCoord(robotCoord, didPass: gridTestDidPass)
-        }
-        if tickPercent >= 1 {
-          loadNextTape()
-        }
-      }
-      
-      tapeArea.update(tickPercent)
-      robotNode?.update(tickPercent)
-    }
-    
-    // update belts
-    beltFlowPercent += CGFloat(dt) * beltFlowVelocity
-    while beltFlowPercent >= 1 {beltFlowPercent -= 1}
-    var beltPercentSum = beltFlowPercent
-    if state == .Testing {
-      switch testingState {
-      case .Entering: break
-      case .Testing:
-        if tickPercent >= 0.5 {
-          beltPercentSum += easeInOut(tickPercent - 0.5)
-        } else if lastTestingState != .Entering {
-          beltPercentSum += easeInOut(tickPercent + 0.5)
-        }
-      case .Falling, .Exiting:
-        if tickPercent < 0.5 {
-          beltPercentSum += easeInOut(tickPercent + 0.5)
-        }
+      testController.update(dt)
+      beltPercentSum += testController.beltPercent
+      if testController.state == .Complete {
+        state = gridTestDidPass ? .Congratulating : .Editing
       }
     }
-    if beltPercentSum >= 1 {beltPercentSum -= 1}
-    gridArea.update(dt, beltPercent: beltPercentSum)    
-  }
-  
-  func startBeltFlow() {
-    runAction(SKAction.customActionWithDuration(1) {
-      [unowned self] node, t in
-      self.beltFlowVelocity = t * 0.25
-      }, withKey: "changeBeltSpeed")
-  }
-  
-  func stopBeltFlow() {
-    beltFlowVelocity = 0
-    if beltFlowPercent < 0.375 {beltFlowPercent += 0.5}
-    else if beltFlowPercent >= 0.875 {beltFlowPercent -= 0.5}
-    let p0 = beltFlowPercent
-    let t1 = (0.875 - beltFlowPercent) * 4
-    let t2 = t1 + 1
-    runAction(SKAction.customActionWithDuration(NSTimeInterval(t2)) {
-      [unowned self] node, t in
-      if t < t1 {
-        self.beltFlowPercent = p0 + t * 0.25
-      } else if t < t2 {
-        self.beltFlowPercent = 0.875 + easeOut(t - t1) * 0.125
-      } else {
-        self.beltFlowPercent = 0
-      }
-      }, withKey: "changeBeltSpeed")
+    while beltPercentSum >= 1 {beltPercentSum -= 1}
+    gridArea.update(dt, beltPercent: beltPercentSum)
   }
   
   func showThinkingCancelButtonWithAnimate(animate: Bool) {
@@ -340,72 +190,6 @@ class GameScene: ManufactoriaScene, GridAreaDelegate, InstructionAreaDelegate, E
   func cancelThinking() {
     engine.cancelGridTest()
     state = .Editing
-  }
-  
-  func newRobotNodeWithColor(color: Color?, broken: Bool, animate: Bool) {
-    if animate {
-      robotNode?.runAction(SKAction.sequence([SKAction.fadeAlphaTo(0, duration: 0.5), SKAction.removeFromParent()]))
-    } else {
-      robotNode?.removeFromParent()
-    }
-    robotNode = RobotNode(position: gridArea.grid.startCoord.centerPoint, color: color, broken: broken)
-    robotNode?.setScale(1/gridArea.wrapper.xScale)
-    if animate {
-      robotNode?.alpha = 0
-      robotNode?.runAction(SKAction.fadeAlphaTo(1, duration: 0.5))
-    }
-    gridArea.wrapper.addChild(robotNode!)
-  }
-  
-  func loadTape(i: Int) {
-    removeActionForKey("skip")
-    skipAnimationComplete = false
-    currentTapeTestIndex = i
-    testSpeed = 1
-    tickPercent = 0
-    let tapeTestResult = tapeTestResults[i]
-    tape = tapeTestResult.input
-    tapeArea.loadTape(tape)
-    tapeArea.state = .Entering
-    testingState = .Entering
-    lastTestingState = .Entering
-    robotCoord = gridArea.grid.startCoord + 1
-    lastRobotCoord = gridArea.grid.startCoord
-    newRobotNodeWithColor(tape.firstColor(), broken: (tapeTestResult.correctOutput == nil), animate: true)
-    robotNode?.loadNextGridCoord(lastRobotCoord)
-    didAnimateRobotComplete = false
-  }
-  
-  func loadNextTape() {
-    robotNode?.runAction(SKAction.sequence([SKAction.fadeAlphaTo(0, duration: 0.5), SKAction.removeFromParent()]))
-    robotNode = nil
-    if currentTapeTestIndex >= tapeTestResults.count - 1 {
-      state = gridTestDidPass ? .Congratulating : .Editing
-    } else {
-      loadTape(currentTapeTestIndex + 1)
-    }
-  }
-  
-  func animateRobotCompleteWithCoord(coord: GridCoord, didPass: Bool) {
-    /*
-    let icon = SKSpriteNode(didPass ? "confirmIconOn" : "cancelIconOn")
-    //icon.color = didPass ? Globals.blueColor : Globals.redColor
-    icon.color = Globals.highlightColor
-    icon.position = CGPoint(CGFloat(coord.i) + 0.5, CGFloat(coord.j) + 0.5)
-    icon.zPosition = 20
-    icon.alpha = 1
-    let scaleMultiplier = 1 / gridArea.wrapper.xScale
-    icon.setScale(0)
-    icon.runAction(SKAction.sequence([
-      SKAction.group([SKAction.fadeAlphaTo(1, duration: 0.5), SKAction.scaleTo(scaleMultiplier * 2, duration: 0.5).easeOut()]),
-      SKAction.waitForDuration(0.5),
-      //SKAction.scaleTo(scaleMultiplier * 0.875, duration: 0.5).ease(),
-      SKAction.group([SKAction.fadeAlphaTo(0, duration: 0.5), SKAction.scaleTo(scaleMultiplier * 4, duration: 0.5).easeIn()]),
-      SKAction.removeFromParent()
-      ]))
-    gridArea.wrapper.addChild(icon)
-    */
-    didAnimateRobotComplete = true
   }
   
   // MARK: - InstructionAreaDelegate Functions
@@ -523,35 +307,9 @@ class GameScene: ManufactoriaScene, GridAreaDelegate, InstructionAreaDelegate, E
 
   // MARK: - SpeedControlAreaDelegate Functions
   
-  func backButtonPressed() {
-    loadTape(currentTapeTestIndex)
-  }
-  
-  func slowerButtonPressed() {
-    testSpeed *= 0.5
-  }
-  
-  func fasterButtonPressed() {
-    testSpeed *= 2
-  }
-  
-  private var skipAnimationComplete = false
-  
-  func skipButtonPressed() {
-    let initialTestSpeed: NSTimeInterval = testSpeed
-    let increaseSpeed: NSTimeInterval = 60 - initialTestSpeed
-    let timeSpan: NSTimeInterval = 2
-    runAction(SKAction.sequence([
-      SKAction.customActionWithDuration(NSTimeInterval(timeSpan), actionBlock: {[unowned self] node, t in
-        self.testSpeed = initialTestSpeed + increaseSpeed * NSTimeInterval(t) / timeSpan}).easeOut(),
-      //SKAction.waitForDuration(0.5),
-      SKAction.runBlock({[unowned self] in self.skipAnimationComplete = true})
-      ]), withKey: "skip")
-    robotNode?.runAction(SKAction.sequence([
-      SKAction.waitForDuration(1.5),
-      SKAction.fadeAlphaTo(0, duration: 0.5)
-      ]))
-  }
+  func slowerButtonPressed() {testController.slower()}
+  func fasterButtonPressed() {testController.faster()}
+  func skipButtonPressed()   {testController.skip()}
 
   // MARK: - Touch Delegate Functions
   

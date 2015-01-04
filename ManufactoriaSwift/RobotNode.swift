@@ -9,8 +9,8 @@
 import SpriteKit
 
 class RobotNode: SKNode {
-  required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  
+  required init?(coder aDecoder: NSCoder) {fatalError("init(coder:) has not been implemented")}
+
   let currentColorSprite, lastColorSprite: SKSpriteNode
   let eyesSprite = SKSpriteNode(imageNamed: "robotEyes", color: Globals.backgroundColor)
   let darkBlueColor = Globals.blueColor.blend(UIColor.blackColor(), blendFactor: 0.2)
@@ -20,10 +20,9 @@ class RobotNode: SKNode {
   let scaleNode = SKNode()
   var currentColor: Color?
   var isChangingColor = false
-  var lastLastPosition, lastPosition, nextPosition: CGPoint
+  var lastPosition, nextPosition: CGPoint
   
   init(position: CGPoint, color: Color?, broken: Bool) {
-    lastLastPosition = position
     lastPosition = position
     nextPosition = position
     currentColor = color
@@ -46,7 +45,7 @@ class RobotNode: SKNode {
     scaleNode.addChild(eyesSprite)
     addChild(scaleNode)
   }
-  
+
   func darkColor(color: Color) -> UIColor {
       switch color {
       case .Blue: return darkBlueColor
@@ -56,63 +55,52 @@ class RobotNode: SKNode {
     }
   }
   
-  enum State {case Moving, Falling}
-  var state: State = .Moving
+  enum State {case Entering, Moving, Falling}
+  var state: State = .Entering
   
   func update(tickPercent: CGFloat) {
     if isChangingColor {
-      if tickPercent < 0.75 {
+      if tickPercent < 0.25 {
         currentColorSprite.alpha = 0
+        lastColorSprite.alpha = 1
+      } else if tickPercent < 0.5{
+        currentColorSprite.alpha = (tickPercent - 0.25) * 4
+        lastColorSprite.alpha = 1
       } else {
-        currentColorSprite.alpha = (tickPercent - 0.75) * 4
+        currentColorSprite.alpha = 1
+        lastColorSprite.alpha = 0
       }
     }
     switch state {
-    //case .Entering: scaleNode.setScale(tickPercent)
+    case .Entering:
+      scaleNode.setScale(tickPercent)
     case .Moving:
       scaleNode.setScale(1)
-      if tickPercent < 0.5 {
-        let ease = easeInOut(tickPercent + 0.5)
-        let easeLeft = 1 - ease
-        position = CGPoint(
-          x: lastLastPosition.x * easeLeft + lastPosition.x * ease,
-          y: lastLastPosition.y * easeLeft + lastPosition.y * ease
-        )
-      } else {
-        let ease = easeInOut(tickPercent - 0.5)
-        let easeLeft = 1 - ease
-        position = CGPoint(
-          x: lastPosition.x * easeLeft + nextPosition.x * ease,
-          y: lastPosition.y * easeLeft + nextPosition.y * ease
-        )
-      }
+      let ease = easeInOut(tickPercent)
+      let easeLeft = 1 - ease
+      position = CGPoint(
+        x: lastPosition.x * easeLeft + nextPosition.x * ease,
+        y: lastPosition.y * easeLeft + nextPosition.y * ease
+      )
     case .Falling:
       if tickPercent < 0.5 {
-        let ease = easeInOut(tickPercent + 0.5)
-        let easeLeft = 1 - ease
-        position = CGPoint(
-          x: lastPosition.x * easeLeft + nextPosition.x * ease,
-          y: lastPosition.y * easeLeft + nextPosition.y * ease
-        )
-        let fallEase = easeIn(tickPercent * 2)
-        scaleNode.setScale(1 - fallEase + 0.75 * fallEase)
+        scaleNode.setScale(1)
       } else {
-        position = nextPosition
-        scaleNode.setScale(0.75)
+        let fallEase = easeIn((tickPercent - 0.5) * 2)
+        scaleNode.setScale(1 - fallEase + 0.75 * fallEase)
       }
+      let ease = easeInOut(tickPercent)
+      let easeLeft = 1 - ease
+      position = CGPoint(
+        x: lastPosition.x * easeLeft + nextPosition.x * ease,
+        y: lastPosition.y * easeLeft + nextPosition.y * ease
+      )
     }
   }
   
   func loadNextPosition(newNextPosition: CGPoint) {
-    lastLastPosition = lastPosition
     lastPosition = nextPosition
     nextPosition = newNextPosition
-  }
-  
-  func loadNextGridCoord(nextGridCoord: GridCoord) {
-    lastLastPosition = lastPosition
-    lastPosition = nextPosition
-    nextPosition = CGPoint(x: CGFloat(nextGridCoord.i) + 0.5, y: CGFloat(nextGridCoord.j) + 0.5)
   }
   
   func finishColorChange() {
