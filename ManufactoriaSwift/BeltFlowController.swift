@@ -23,37 +23,42 @@ class BeltFlowController {
     return flowPercent
   }
   
-  func startFlow() {
-    if flowVelocity == 0.25 {
+  func startFlow(#animate: Bool) {
+    if !animate || flowVelocity == 0.25 {
       gridArea.removeActionForKey("startStopFlow")
-      return
+      flowVelocity = 0.25
+    } else {
+      gridArea.runAction(SKAction.customActionWithDuration(1) {
+        [unowned self] node, t in
+        self.flowVelocity = t * 0.25
+        }, withKey: "startStopFlow")
     }
-    gridArea.runAction(SKAction.customActionWithDuration(1) {
-      [unowned self] node, t in
-      self.flowVelocity = t * 0.25
-      }, withKey: "startStopFlow")
   }
   
-  func stopFlow() {
-    if flowVelocity == 0 {
+  func stopFlow(#animate: Bool) {
+    if !animate || flowVelocity == 0 {
       gridArea.removeActionForKey("startStopFlow")
-      return
-    }
-    flowVelocity = 0
-    if flowPercent < 0.375 {flowPercent += 0.5}
-    else if flowPercent >= 0.875 {flowPercent -= 0.5}
-    let p0 = flowPercent
-    let t1 = (0.875 - flowPercent) * 4
-    let t2 = t1 + 1
-    gridArea.runAction(SKAction.customActionWithDuration(NSTimeInterval(t2)) {
-      [unowned self] node, t in
-      if t < t1 {
-        self.flowPercent = p0 + t * 0.25
-      } else if t < t2 {
-        self.flowPercent = 0.875 + easeOut(t - t1) * 0.125
-      } else {
-        self.flowPercent = 0
+      flowVelocity = 0
+    } else {
+      flowVelocity = 0
+      if flowPercent < 0.375 {
+        flowPercent += 0.5
+      } else if flowPercent >= 0.875 {
+        flowPercent -= 0.5
       }
-      }, withKey: "startStopFlow")
+      let p0 = flowPercent
+      let t1 = (0.875 - flowPercent) * 4
+      let t2 = t1 + 1
+      gridArea.runAction(SKAction.customActionWithDuration(NSTimeInterval(t2)) {
+        [unowned self] node, t in
+        if t < t1 {
+          self.flowPercent = p0 + t * 0.25
+        } else if t < t2 {
+          self.flowPercent = 0.875 + easeOut(t - t1) * 0.125
+        } else {
+          self.flowPercent = 0
+        }
+        }, withKey: "startStopFlow")
+    }
   }
 }

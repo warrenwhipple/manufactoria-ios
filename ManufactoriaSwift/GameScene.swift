@@ -70,6 +70,8 @@ class GameScene: ManufactoriaScene, GridAreaDelegate, InstructionAreaDelegate, E
     instructionArea.zPosition = 10
     addChild(instructionArea)
     
+    tapeArea.parentMemory = self
+    
     toolbarArea.parentMemory = self
     toolbarArea.delegate = self
     gridArea.editMode = toolbarArea.buttonInFocus.editMode
@@ -139,7 +141,7 @@ class GameScene: ManufactoriaScene, GridAreaDelegate, InstructionAreaDelegate, E
       testButton.reset()
       testButton.appear(animate: true, delay: true)
       gridArea.state = .Editing
-      beltFlowController.startFlow()
+      beltFlowController.startFlow(animate: true)
     case .Thinking:
       instructionArea.disappear(animate: true)
       toolbarArea.disappear(animate: true)
@@ -147,7 +149,7 @@ class GameScene: ManufactoriaScene, GridAreaDelegate, InstructionAreaDelegate, E
       gridTestDidPass = false
       gridArea.state = .Thinking
       engine.beginGridTest(gridArea.grid)
-      beltFlowController.stopFlow()
+      beltFlowController.stopFlow(animate: true)
     case .Reporting:
       gridArea.state = .Waiting
       reportArea.appear(animate: true, delay: false)
@@ -157,12 +159,13 @@ class GameScene: ManufactoriaScene, GridAreaDelegate, InstructionAreaDelegate, E
       reportArea.disappear(animate: true)
       tapeArea.appear(animate: false, delay: false)
       testController.reset(tapeTestResultQueue: tapeTestResults)
+      beltFlowController.stopFlow(animate: false)
     case .Congratulating:
       tapeArea.disappear(animate: true)
       speedControlArea.disappear(animate: true)
       congratulationArea.appear(animate: true, delay: true)
       gridArea.state = .Waiting
-      beltFlowController.startFlow()
+      beltFlowController.startFlow(animate: true)
     }
   }
   

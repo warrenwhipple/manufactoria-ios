@@ -106,7 +106,7 @@ class GenericTutorialScene: GameScene {
   // MARK: - Tutorial Functions
   
   func startDemoTest() {
-    beltFlowController.stopFlow()
+    beltFlowController.stopFlow(animate: true)
     instructionArea.disappearWithAnimate(true)
     gridArea.state = .Waiting
     tapeTestResults = [TapeTestResult(input: "", output: nil, correctOutput: nil, kind: .Demo)]

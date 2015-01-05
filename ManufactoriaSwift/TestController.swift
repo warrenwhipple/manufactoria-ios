@@ -10,7 +10,7 @@ import SpriteKit
 
 class TestController {
   
-  enum State {case Entering, Testing, Exiting, Falling, Complete}
+  enum State {case Entering, Testing, Fallen, Exiting, Complete}
   private(set) var state: State = .Complete
   private(set) var beltPercent: CGFloat = 0
   private(set) var robotNode: RobotNode?
@@ -18,6 +18,7 @@ class TestController {
   private let gridArea: GridArea
   private let tapeArea: TapeArea
   private var tapeTestResultQueue: [TapeTestResult] = []
+  private var result: TapeTestResult = TapeTestResult.blankLoop()
   private var speed: NSTimeInterval = 1
   private var coord = GridCoord(0,0)
   private var lastCoord = GridCoord(0,0)
@@ -52,6 +53,7 @@ class TestController {
   private func loadNextTest() {
     gridArea.removeActionForKey("skipTest")
     skipping = false
+    skipAnimationComplete = false
     tickPercent = 0
     robotNode?.runAction(SKAction.sequence([
       SKAction.fadeAlphaTo(0, duration: Globals.disappearTime),
@@ -59,11 +61,12 @@ class TestController {
     robotNode = nil
     if tapeTestResultQueue.isEmpty {
       state = .Complete
+      result = TapeTestResult.blankLoop()
     } else {
       state = .Entering
       coord = gridArea.grid.startCoord
       lastCoord = coord
-      let result = tapeTestResultQueue.removeAtIndex(0)
+      result = tapeTestResultQueue.removeAtIndex(0)
       robotNode = RobotNode(position: coord.centerPoint, color: result.input.firstColor(), broken: result.broken)
       robotNode?.setScale(1/gridArea.wrapper.xScale)
       gridArea.wrapper.addChild(robotNode!)
@@ -106,77 +109,68 @@ class TestController {
       tickPercent -= 1
       state = .Testing
       tapeArea.state = .Waiting
+      coord.j++
       robotNode?.loadNextPosition(coord.centerPoint)
-      robotNode?.state = .Moving
+      if gridArea.grid.testCoordForFall(coord) {
+        robotNode?.state = .Falling
+      } else {
+        robotNode?.state = .Moving
+      }
     }
     
-    if state == .Testing {
-      while tickPercent >= 1 {
-        tickPercent -= 1
-        let tickTestResult = gridArea.grid.testCoord(coord, lastCoord: lastCoord, tapeColor: tape.firstColor())
-        lastCoord = coord
-        
-        switch tickTestResult.robotAction {
-        case .Accept:
-          state = .Exiting
-          tapeArea.state = .Exiting
-          robotNode?.state = .Falling
-        case .Reject:
-          state = .Falling
-          tapeArea.state = .Exiting
-          robotNode?.state = .Falling
-        case .North: coord.j++
-        case .East:  coord.i++
-        case .South: coord.j--
-        case .West:  coord.i--
-        }
-        
-        switch tickTestResult.robotAction {
-        case .Accept, .Reject: break
-        default: robotNode?.loadNextPosition(coord.centerPoint)
-        }
-        
-        robotNode?.finishColorChange()
-        
-        switch tickTestResult.tapeAction {
-        case .Wait:
-          tapeArea.state = .Waiting
-        case .Read:
-          tape = tape.from(1)
-          tapeArea.deleteColor()
-          robotNode?.loadNextColor(tape.firstColor())
-        case .WriteBlue:
-          tape.append("b" as Character)
-          tapeArea.writeColor(.Blue)
-          if tape.length() == 1 {robotNode?.loadNextColor(tape.firstColor())}
-        case .WriteRed:
-          tape.append("r" as Character)
-          tapeArea.writeColor(.Red)
-          if tape.length() == 1 {robotNode?.loadNextColor(tape.firstColor())}
-        case .WriteGreen:
-          tape.append("g" as Character)
-          tapeArea.writeColor(.Green)
-          if tape.length() == 1 {robotNode?.loadNextColor(tape.firstColor())}
-        case .WriteYellow:
-          tape.append("y" as Character)
-          tapeArea.writeColor(.Yellow)
-          if tape.length() == 1 {robotNode?.loadNextColor(tape.firstColor())}
-        }
+    while state == .Testing && tickPercent >= 1 {
+      tickPercent -= 1
+      let tickTestResult = gridArea.grid.testCoord(coord, lastCoord: lastCoord, tapeColor: tape.firstColor())
+      lastCoord = coord
+      switch tickTestResult.robotAction {
+      case .North: coord.j++
+      case .East:  coord.i++
+      case .South: coord.j--
+      case .West:  coord.i--
+      case .Accept:
+        state = .Exiting
+        tapeArea.state = .Exiting
+        robotNode?.state = (result.kind == .Pass) ? .ExitingPass : .ExitingFail
+      case .Reject:
+        state = .Fallen
+        tapeArea.state = .Exiting
+        robotNode?.state = (result.kind == .Pass) ? .FallenPass : .FallenFail
       }
-    } // if state == .Testing
+      robotNode?.loadNextPosition(coord.centerPoint)
+      robotNode?.finishColorChange()
+      switch tickTestResult.tapeAction {
+      case .Wait:
+        tapeArea.state = .Waiting
+      case .Read:
+        tape = tape.from(1)
+        tapeArea.deleteColor()
+        robotNode?.loadNextColor(tape.firstColor())
+      case .WriteBlue:
+        tape.append("b" as Character)
+        tapeArea.writeColor(.Blue)
+        if tape.length() == 1 {robotNode?.loadNextColor(tape.firstColor())}
+      case .WriteRed:
+        tape.append("r" as Character)
+        tapeArea.writeColor(.Red)
+        if tape.length() == 1 {robotNode?.loadNextColor(tape.firstColor())}
+      case .WriteGreen:
+        tape.append("g" as Character)
+        tapeArea.writeColor(.Green)
+        if tape.length() == 1 {robotNode?.loadNextColor(tape.firstColor())}
+      case .WriteYellow:
+        tape.append("y" as Character)
+        tapeArea.writeColor(.Yellow)
+        if tape.length() == 1 {robotNode?.loadNextColor(tape.firstColor())}
+      }
+      if state == .Testing && gridArea.grid.testCoordForFall(coord) {robotNode?.state = .Falling}
+    }
     
-    if tickPercent >= 1 && (state == .Exiting || state == .Falling) {
+    if skipAnimationComplete || ((state == .Fallen || state == .Exiting) && tickPercent >= 1) {
       loadNextTest()
     }
     
     robotNode?.update(tickPercent)
-    
-    if skipAnimationComplete {
-      skipAnimationComplete = false
-      loadNextTest()
-    }
-    
-    beltPercent = (state == .Entering) ? 0 : easeInOut(tickPercent)
-    
+    tapeArea.update(tickPercent)
+    beltPercent = (state == .Testing) ? easeInOut(tickPercent) : 0
   } // func update(dt)
 }

@@ -17,7 +17,7 @@ class RobotNode: SKNode {
   let darkRedColor = Globals.redColor.blend(UIColor.blackColor(), blendFactor: 0.2)
   let darkGreenColor = Globals.greenColor.blend(UIColor.blackColor(), blendFactor: 0.2)
   let darkYellowColor = Globals.yellowColor.blend(UIColor.blackColor(), blendFactor: 0.2)
-  let scaleNode = SKNode()
+  let wrapper = SKNode()
   var currentColor: Color?
   var isChangingColor = false
   var lastPosition, nextPosition: CGPoint
@@ -32,18 +32,18 @@ class RobotNode: SKNode {
     self.position = position
     zPosition = 2
     lastColorSprite.alpha = 0
-    scaleNode.addChild(lastColorSprite)
+    wrapper.addChild(lastColorSprite)
     if let color = color {
       currentColorSprite.color = darkColor(color)
     } else {
       currentColorSprite.color = Globals.strokeColor
     }
     currentColorSprite.zPosition = 0.25
-    scaleNode.addChild(currentColorSprite)
+    wrapper.addChild(currentColorSprite)
     eyesSprite.anchorPoint.y = 0
     eyesSprite.zPosition = 0.5
-    scaleNode.addChild(eyesSprite)
-    addChild(scaleNode)
+    wrapper.addChild(eyesSprite)
+    addChild(wrapper)
   }
 
   func darkColor(color: Color) -> UIColor {
@@ -55,7 +55,7 @@ class RobotNode: SKNode {
     }
   }
   
-  enum State {case Entering, Moving, Falling}
+  enum State {case Entering, Moving, Falling, FallenPass, FallenFail, ExitingPass, ExitingFail}
   var state: State = .Entering
   
   func update(tickPercent: CGFloat) {
@@ -71,30 +71,81 @@ class RobotNode: SKNode {
         lastColorSprite.alpha = 0
       }
     }
+    func easePosition() {
+      let ease = easeInOut(tickPercent)
+      let easeLeft = 1 - ease
+      position = CGPoint(
+        x: lastPosition.x * easeLeft + nextPosition.x * ease,
+        y: lastPosition.y * easeLeft + nextPosition.y * ease
+      )
+    }
     switch state {
     case .Entering:
-      scaleNode.setScale(tickPercent)
+      wrapper.setScale(0.5 + easeOut(tickPercent) * 0.5)
+      wrapper.alpha = tickPercent
+      if tickPercent < 0.5 {
+        position = CGPoint(
+          x: nextPosition.x,
+          y: nextPosition.y - easeOut(tickPercent * 2) * 0.25
+        )
+      } else {
+        position = CGPoint(
+          x: nextPosition.x,
+          y: nextPosition.y - 0.25 + easeInOut(tickPercent - 0.5) * 0.5
+        )
+      }
     case .Moving:
-      scaleNode.setScale(1)
-      let ease = easeInOut(tickPercent)
-      let easeLeft = 1 - ease
-      position = CGPoint(
-        x: lastPosition.x * easeLeft + nextPosition.x * ease,
-        y: lastPosition.y * easeLeft + nextPosition.y * ease
-      )
+      wrapper.setScale(1)
+      wrapper.alpha = 1
+      easePosition()
     case .Falling:
       if tickPercent < 0.5 {
-        scaleNode.setScale(1)
+        wrapper.setScale(1)
+        wrapper.alpha = 1
       } else {
         let fallEase = easeIn((tickPercent - 0.5) * 2)
-        scaleNode.setScale(1 - fallEase + 0.75 * fallEase)
+        wrapper.setScale(1 - fallEase + 0.75 * fallEase)
       }
-      let ease = easeInOut(tickPercent)
-      let easeLeft = 1 - ease
-      position = CGPoint(
-        x: lastPosition.x * easeLeft + nextPosition.x * ease,
-        y: lastPosition.y * easeLeft + nextPosition.y * ease
-      )
+      easePosition()
+    case .FallenPass:
+      wrapper.setScale(0.75)
+      if tickPercent < 0.5 {
+        wrapper.alpha = 1
+      } else {
+        wrapper.alpha = (1 - (tickPercent - 0.5) * 2)
+      }
+    case .FallenFail:
+      wrapper.setScale(0.75)
+      let shake = tickPercent * Globals.iconSpan * 0.1
+      wrapper.position = CGPoint(x: randCGFloat(shake) - shake/2, y: randCGFloat(shake) - shake/2)
+      if tickPercent < 0.5 {
+        wrapper.alpha = 1
+      } else {
+        wrapper.alpha = (1 - (tickPercent - 0.5) * 2)
+      }
+    case .ExitingPass:
+      wrapper.setScale(1 + easeIn(tickPercent))
+      wrapper.alpha = (1 - tickPercent)
+      if tickPercent < 0.5 {
+        position = CGPoint(
+          x: nextPosition.x,
+          y: nextPosition.y + easeInOut(tickPercent * 2) * 0.25
+        )
+      } else {
+        position = CGPoint(
+          x: nextPosition.x,
+          y: nextPosition.y + 0.25 - easeIn(tickPercent - 0.5) * 0.5
+        )
+      }
+    case .ExitingFail:
+      wrapper.setScale(1)
+      let shake = tickPercent * Globals.iconSpan * 0.1
+      wrapper.position = CGPoint(x: randCGFloat(shake) - shake/2, y: randCGFloat(shake) - shake/2)
+      if tickPercent < 0.5 {
+        wrapper.alpha = 1
+      } else {
+        wrapper.alpha = (1 - (tickPercent - 0.5) * 2)
+      }
     }
   }
   
