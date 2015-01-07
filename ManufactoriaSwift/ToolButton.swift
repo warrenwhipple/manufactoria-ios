@@ -29,8 +29,8 @@ class ToolButton: Button {
   }
   
   convenience init(iconNamed: String, editMode: EditMode) {
-    let iconOff = SKSpriteNode(imageNamed: iconNamed + "Off", color: Globals.strokeColor)
-    let iconOn = SKSpriteNode(imageNamed: iconNamed + "On", color: Globals.highlightColor)
+    let iconOff = SKSpriteNode(imageNamed: iconNamed + "Off", color: Globals.strokeColor, colorBlendFactor: 1)
+    let iconOn = SKSpriteNode(imageNamed: iconNamed + "On", color: Globals.highlightColor, colorBlendFactor: 1)
     self.init(nodeOff: iconOff, nodeOn: iconOn, editMode: editMode)
   }
   
@@ -118,10 +118,10 @@ private let nodeOffFadeInAction = SKAction.fadeAlphaTo(1, duration: 0.1)
 
 class BeltBridgeButton: ToolButton {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  let beltIconOff = SKSpriteNode(imageNamed: "beltIconOff", color: Globals.strokeColor)
-  let beltIconOn = SKSpriteNode(imageNamed: "beltIconOn", color: Globals.highlightColor)
-  let bridgeIconOff = SKSpriteNode(imageNamed: "beltIconOff", color: Globals.strokeColor)
-  let bridgeIconOn = SKSpriteNode(imageNamed: "beltIconOn", color: Globals.highlightColor)
+  let beltIconOff = SKSpriteNode(imageNamed: "beltIconOff", color: Globals.strokeColor, colorBlendFactor: 1)
+  let beltIconOn = SKSpriteNode(imageNamed: "beltIconOn", color: Globals.highlightColor, colorBlendFactor: 1)
+  let bridgeIconOff = SKSpriteNode(imageNamed: "beltIconOff", color: Globals.strokeColor, colorBlendFactor: 1)
+  let bridgeIconOn = SKSpriteNode(imageNamed: "beltIconOn", color: Globals.highlightColor, colorBlendFactor: 1)
   let spinNode = SKNode()
   
   init() {
@@ -167,11 +167,11 @@ class BeltBridgeButton: ToolButton {
 
 class PullerButton: ToolButton {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  let beltIcon = SKSpriteNode(imageNamed: "beltIconOff", color: Globals.strokeColor)
-  let leftIconOff = SKSpriteNode(imageNamed: "pullerHalfIconOff", colorBlendFactor: 1)
-  let rightIconOff = SKSpriteNode(imageNamed: "pullerHalfIconOff", colorBlendFactor: 1)
-  let leftIconOn = SKSpriteNode(imageNamed: "pullerHalfIconOn", colorBlendFactor: 1)
-  let rightIconOn = SKSpriteNode(imageNamed: "pullerHalfIconOn", colorBlendFactor: 1)
+  let beltIcon = SKSpriteNode(imageNamed: "beltIconOff", color: Globals.strokeColor, colorBlendFactor: 1)
+  let leftIconOff = SKSpriteNode(imageNamed: "pullerHalfIconOff", color: nil, colorBlendFactor: 1)
+  let rightIconOff = SKSpriteNode(imageNamed: "pullerHalfIconOff", color: nil, colorBlendFactor: 1)
+  let leftIconOn = SKSpriteNode(imageNamed: "pullerHalfIconOn", color: nil, colorBlendFactor: 1)
+  let rightIconOn = SKSpriteNode(imageNamed: "pullerHalfIconOn", color: nil, colorBlendFactor: 1)
   var spinNode = SKNode()
   
   init(kind: EditMode) {
@@ -238,8 +238,8 @@ class PusherButton: ToolButton {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   
   init(kind: EditMode) {
-    let iconOff = SKSpriteNode(imageNamed: "pusherIconOff", colorBlendFactor: 1)
-    let iconOn = SKSpriteNode(imageNamed: "pusherIconOn", colorBlendFactor: 1)
+    let iconOff = SKSpriteNode(imageNamed: "pusherIconOff", color: nil, colorBlendFactor: 1)
+    let iconOn = SKSpriteNode(imageNamed: "pusherIconOn", color: nil, colorBlendFactor: 1)
     super.init(nodeOff: iconOff, nodeOn: iconOn, editMode: kind)
     if let color = kind.cellKind()?.pusherColor()? {
       iconOff.color = color
@@ -250,14 +250,14 @@ class PusherButton: ToolButton {
 
 class SelectBoxMoveButton: ToolButton {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  let boxOverlayOff = SKSpriteNode(imageNamed: "selectBoxIconOverlay", color: Globals.strokeColor)
-  let boxOverlayOn = SKSpriteNode(imageNamed: "selectBoxIconOverlay", color: Globals.backgroundColor)
-  let moveOverlayOff = SKSpriteNode(imageNamed: "selectMoveIconOverlay", color: Globals.strokeColor)
-  let moveOverlayOn = SKSpriteNode(imageNamed: "selectMoveIconOverlay", color: Globals.backgroundColor)
+  let boxOverlayOff = SKSpriteNode(imageNamed: "selectBoxIconOverlay", color: Globals.strokeColor, colorBlendFactor: 1)
+  let boxOverlayOn = SKSpriteNode(imageNamed: "selectBoxIconOverlay", color: Globals.backgroundColor, colorBlendFactor: 1)
+  let moveOverlayOff = SKSpriteNode(imageNamed: "selectMoveIconOverlay", color: Globals.strokeColor, colorBlendFactor: 1)
+  let moveOverlayOn = SKSpriteNode(imageNamed: "selectMoveIconOverlay", color: Globals.backgroundColor, colorBlendFactor: 1)
   
   init() {
-    let iconOff = SKSpriteNode(imageNamed: "selectIconOff", color: Globals.strokeColor)
-    let iconOn = SKSpriteNode(imageNamed: "selectIconOn", color: Globals.highlightColor)
+    let iconOff = SKSpriteNode(imageNamed: "selectIconOff", color: Globals.strokeColor, colorBlendFactor: 1)
+    let iconOn = SKSpriteNode(imageNamed: "selectIconOn", color: Globals.highlightColor, colorBlendFactor: 1)
     super.init(nodeOff: iconOff, nodeOn: iconOn, editMode: .SelectBox)
     moveOverlayOff.setScale(0)
     moveOverlayOn.setScale(0)

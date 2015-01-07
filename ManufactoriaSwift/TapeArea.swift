@@ -9,30 +9,50 @@
 import SpriteKit
 
 class TapeArea: Area {
-  enum State {case OffScreen, Entering, Waiting, Writing, Deleting, Exiting}
-  
+  var wrapper = SKNode()
   var dots: [SKSpriteNode] = []
   var deletingDot: SKSpriteNode?
   let dotTexture = SKTexture(imageNamed: "dot")
   let dotSpacing: CGFloat
-  let scanner = SKSpriteNode(imageNamed: "scanner", color: Globals.strokeColor)
-  let printer = SKSpriteNode(imageNamed: "printer", color: Globals.strokeColor)
+  let scanner = SKSpriteNode(imageNamed: "scanner", color: Globals.strokeColor, colorBlendFactor: 1)
+  let printer = SKSpriteNode(imageNamed: "printer", color: Globals.strokeColor, colorBlendFactor: 1)
+  let paper = SKSpriteNode(color: Globals.backgroundColor, size: CGSizeZero)
+  let topEdge = SKNode()
+  let bottomEdge = SKNode()
   
   override init() {
     dotSpacing = dotTexture.size().width * 1.25
     super.init()
     scanner.zPosition = 1
-    addChild(scanner)
+    paper.addChild(scanner)
     printer.zPosition = 1
-    addChild(printer)
+    paper.addChild(printer)
+    
+    wrapper.addChild(paper)
+    wrapper.addChild(topEdge)
+    wrapper.addChild(bottomEdge)
+    addChild(wrapper)
   }
-  
-  var state: State = .OffScreen {didSet {if state != oldValue {updateAfterStateChange()}}}
   
   override func fitToSize() {
     updateAfterStateChange()
     update(0)
+    
+    paper.size = CGSize(width: size.width + 16, height: dotTexture.size().height * 2 - 2)
+    topEdge.position.y = paper.size.height / 2 - 0.5
+    bottomEdge.position.y = -topEdge.position.y
+    for edge in [topEdge, bottomEdge] as [SKNode] {
+      edge.removeAllChildren()
+      for i in 0 ... (Int(size.width) / 16) {
+        let dash = SKSpriteNode(color: Globals.strokeColor, size: CGSize(width: 8, height: 1))
+        dash.position.x = -size.width / 2 + 8 + 16 * CGFloat(i)
+        edge.addChild(dash)
+      }
+    }
   }
+  
+  enum State {case OffScreen, Entering, Waiting, Writing, Deleting, Exiting}
+  var state: State = .OffScreen {didSet {if state != oldValue {updateAfterStateChange()}}}
   
   func updateAfterStateChange() {
     switch state {
@@ -144,7 +164,7 @@ class TapeArea: Area {
       let dot = SKSpriteNode(texture: dotTexture)
       dot.color = character.color().uiColor()
       dot.colorBlendFactor = 1
-      addChild(dot)
+      paper.addChild(dot)
       dots.append(dot)
     }
     state = .Entering
@@ -167,7 +187,7 @@ class TapeArea: Area {
     dot.color = color.uiColor()
     dot.colorBlendFactor = 1
     dots.append(dot)
-    addChild(dot)
+    paper.addChild(dot)
     state = .Writing
   }
   

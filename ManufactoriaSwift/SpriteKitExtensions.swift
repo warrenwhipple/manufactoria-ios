@@ -109,14 +109,10 @@ extension SKNode {
 }
  
 extension SKSpriteNode {
-  convenience init(imageNamed: String, color: UIColor) {
+  convenience init(imageNamed: String, color: UIColor?, colorBlendFactor: CGFloat?) {
     self.init(texture: SKTexture(imageNamed: imageNamed))
-    self.color = color
-    colorBlendFactor = 1
-  }
-  convenience init(imageNamed: String, colorBlendFactor: CGFloat) {
-    self.init(texture: SKTexture(imageNamed: imageNamed))
-    self.colorBlendFactor = colorBlendFactor
+    if let color = color {self.color = color}
+    if let colorBlendFactor = colorBlendFactor {self.colorBlendFactor = colorBlendFactor}
   }
 }
 

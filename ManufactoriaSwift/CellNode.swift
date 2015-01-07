@@ -9,7 +9,7 @@
 import SpriteKit
 
 private var pointSize: CGFloat = 0
-private var sizeString: String!
+private var sizeString: String = "64"
 private var beltTexture, beltHalfTexture, pusherTexture, pullerHalfTexture, enterExitArrowTexture: SKTexture!
 
 class CellNode: SKNode {
@@ -407,17 +407,17 @@ class CellNode: SKNode {
     } else {
       sizeString = "29"
     }
-    beltTexture = SKTexture(imageNamed: "belt" + sizeString!)
+    beltTexture = SKTexture(imageNamed: "belt" + sizeString)
     beltHalfTexture = SKTexture(rect: CGRect(x: 0, y: 0, width: 1, height: 0.5), inTexture: beltTexture!)
-    pusherTexture = SKTexture(imageNamed: "pusher" + sizeString!)
-    pullerHalfTexture = SKTexture(imageNamed: "pullerHalf" + sizeString!)
-    enterExitArrowTexture = SKTexture(imageNamed: "enterExitArrow" + sizeString!)
+    pusherTexture = SKTexture(imageNamed: "pusher" + sizeString)
+    pullerHalfTexture = SKTexture(imageNamed: "pullerHalf" + sizeString)
+    enterExitArrowTexture = SKTexture(imageNamed: "enterExitArrow" + sizeString)
     return beltTexture ?? SKTexture()
   }
   
   class func unloadSharedTextures() {
     pointSize = 0
-    sizeString = nil
+    sizeString = "64"
     beltTexture = nil
     beltHalfTexture = nil
     pusherTexture = nil

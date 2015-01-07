@@ -51,9 +51,9 @@ class Button: DisappearableSpriteNode {
     let wrapperOff = SKNode()
     let wrapperOn = SKNode()
     
-    let buttonOff = SKSpriteNode(imageNamed: "buttonOff", color: Globals.strokeColor)
+    let buttonOff = SKSpriteNode(imageNamed: "buttonOff", color: Globals.strokeColor, colorBlendFactor: 1)
     buttonOff.centerRect = CGRect(centerX: 0.5, centerY: 0.5, width: 1 / buttonOff.size.width , height: 1)
-    let buttonOn = SKSpriteNode(imageNamed: "buttonOn", color: Globals.highlightColor)
+    let buttonOn = SKSpriteNode(imageNamed: "buttonOn", color: Globals.highlightColor, colorBlendFactor: 1)
     buttonOn.centerRect = buttonOff.centerRect
     
     let labelOff = SKLabelNode()
@@ -82,8 +82,8 @@ class Button: DisappearableSpriteNode {
   }
   
   convenience init(iconNamed: String) {
-    let iconOff = SKSpriteNode(imageNamed: iconNamed + "Off", color: Globals.strokeColor)
-    let iconOn = SKSpriteNode(imageNamed: iconNamed + "On", color: Globals.highlightColor)
+    let iconOff = SKSpriteNode(imageNamed: iconNamed + "Off", color: Globals.strokeColor, colorBlendFactor: 1)
+    let iconOn = SKSpriteNode(imageNamed: iconNamed + "On", color: Globals.highlightColor, colorBlendFactor: 1)
     self.init(nodeOff: iconOff, nodeOn: iconOn, touchSize: CGSize(square: Globals.touchSpan))
   }
   

@@ -21,8 +21,8 @@ class SwipeNode: SKSpriteNode, DragThroughDelegate {
   var pages: [SKNode]
   let leftArrowWrapper = SKNode()
   let rightArrowWrapper = SKNode()
-  let leftArrow = SKSpriteNode(imageNamed: "swipeArrow", color: Globals.strokeColor)
-  let rightArrow = SKSpriteNode(imageNamed: "swipeArrow", color: Globals.strokeColor)
+  let leftArrow = SKSpriteNode(imageNamed: "swipeArrow", color: Globals.strokeColor, colorBlendFactor: 1)
+  let rightArrow = SKSpriteNode(imageNamed: "swipeArrow", color: Globals.strokeColor, colorBlendFactor: 1)
   var touch: UITouch?
   var wrapperMinX: CGFloat = 0.0
   var arrowHint: SKSpriteNode?

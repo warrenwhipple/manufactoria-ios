@@ -70,7 +70,11 @@ class MenuLevelButton: Button {
   }
   
   func addArrowForDirection(direction: Direction) {
-    let arrow = SKSpriteNode(imageNamed: (IPAD ? "enterExitArrow46" : "enterExitArrow29"), color: Globals.strokeColor)
+    let arrow = SKSpriteNode(
+      imageNamed: (IPAD ? "enterExitArrow46" : "enterExitArrow29"),
+      color: Globals.strokeColor,
+      colorBlendFactor: 1
+    )
     arrow.zPosition = 3
     switch direction {
     case .North:
