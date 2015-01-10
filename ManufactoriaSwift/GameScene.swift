@@ -17,7 +17,7 @@ class GameScene: ManufactoriaScene, GridAreaDelegate, InstructionAreaDelegate, E
   // MARK: Model Structs
   let levelKey: String
   let levelSetup: LevelSetup
-  var tapeTestResults: [TapeTestResult] = []
+  var tapeTestResultQueue: [TapeTestResult] = []
   var tape: String = ""
   
   // MARK: View Objects
@@ -138,7 +138,6 @@ class GameScene: ManufactoriaScene, GridAreaDelegate, InstructionAreaDelegate, E
       speedControlArea.disappear(animate: true)
       instructionArea.appear(animate: true, delay: true)
       toolbarArea.appear(animate: true, delay: true)
-      testButton.reset()
       testButton.appear(animate: true, delay: true)
       gridArea.state = .Editing
       beltFlowController.startFlow(animate: true)
@@ -158,7 +157,7 @@ class GameScene: ManufactoriaScene, GridAreaDelegate, InstructionAreaDelegate, E
       speedControlArea.appear(animate: false, delay: false)
       reportArea.disappear(animate: true)
       tapeArea.appear(animate: false, delay: false)
-      testController.reset(tapeTestResultQueue: tapeTestResults)
+      testController.reset(tapeTestResultQueue: tapeTestResultQueue)
       beltFlowController.stopFlow(animate: false)
     case .Congratulating:
       tapeArea.disappear(animate: true)
@@ -208,10 +207,10 @@ class GameScene: ManufactoriaScene, GridAreaDelegate, InstructionAreaDelegate, E
   
   func gridTestPassed() {
     reportArea.preparePassMessage()
-    tapeTestResults = []
+    tapeTestResultQueue = []
     for exemplar in levelSetup.exemplars {
       let output = engine.correctOutputForInput(exemplar)
-      tapeTestResults.append(TapeTestResult(
+      tapeTestResultQueue.append(TapeTestResult(
         input: exemplar,
         output: output,
         correctOutput: output,
@@ -230,7 +229,7 @@ class GameScene: ManufactoriaScene, GridAreaDelegate, InstructionAreaDelegate, E
       reportArea.prepareFailMessage()
     }
     instructionArea.resetFailPageForTestResult(result)
-    tapeTestResults = [result]
+    tapeTestResultQueue = [result]
     state = .Reporting
   }
   

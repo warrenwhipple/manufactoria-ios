@@ -14,11 +14,11 @@ class TestController {
   private(set) var state: State = .Complete
   private(set) var beltPercent: CGFloat = 0
   private(set) var robot: RobotNode?
+  private(set) var result: TapeTestResult = TapeTestResult.blankLoop()
   
   private let gridArea: GridArea
   private let tapeArea: TapeArea
   private var tapeTestResultQueue: [TapeTestResult] = []
-  private var result: TapeTestResult = TapeTestResult.blankLoop()
   private var speed: NSTimeInterval = 1
   private var coord = GridCoord(0,0)
   private var lastCoord = GridCoord(0,0)

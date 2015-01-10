@@ -8,6 +8,8 @@
 
 import SpriteKit
 
+private let unhideAction = SKAction.customActionWithDuration(0, actionBlock: {node, time in node.hidden = false})
+
 class GenericTutorialScene: GameScene {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   var stageSetups: [(()->())?] = []
@@ -23,10 +25,23 @@ class GenericTutorialScene: GameScene {
   override init(size: CGSize, var levelKey: String) {
     super.init(size: size, levelKey: levelKey)
     gridArea.clearGridWithAnimate(false)
+    continueButton.parentMemory = self
+    demoTestButton.parentMemory = self
     continueButton.isSticky = true
     demoTestButton.isSticky = true
+    continueButton.zPosition = testButton.zPosition
+    demoTestButton.zPosition = testButton.zPosition
     continueButton.touchUpInsideClosure = {[unowned self] in self.continueButtonWasPressed()}
     demoTestButton.touchUpInsideClosure = {[unowned self] in self.demoTestButtonWasPressed()}
+    for button in speedControlArea.buttons {
+      button.parentMemory = speedControlArea
+    }
+  }
+  
+  override func fitToSize() {
+    super.fitToSize()
+    demoTestButton.position = testButton.position
+    continueButton.position = toolbarArea.rect.center
   }
   
   func nextTutorialStage() {
@@ -53,10 +68,27 @@ class GenericTutorialScene: GameScene {
   override func didSetState(oldState: State) {
     super.didSetState(oldState)
     if state == .Testing {
+      if speedControlsShouldSimplify {
+        speedControlArea.slowerButton.removeFromParent()
+        if testController.result.kind == TapeTestResult.Kind.Loop || speedControlShouldAllowCancel {
+          speedControlArea.fasterButton.removeFromParent()
+          speedControlArea.skipButton.position.x = 0
+          speedControlArea.skipButton.appear(animate: false, delay: false)
+        } else {
+          speedControlArea.skipButton.removeFromParent()
+          speedControlArea.fasterButton.position.x = 0
+          speedControlArea.fasterButton.appear(animate: false, delay: false)
+        }
+      } else {
+        speedControlArea.fitToSize()
+        speedControlArea.slowerButton.appear(animate: false, delay: false)
+        speedControlArea.skipButton.appear(animate: false, delay: false)
+        speedControlArea.fasterButton.appear(animate: false, delay: false)
+      }
       if speedControlsShouldHideUntilTouch && !speedControlShouldAllowCancel {
         speedControlArea.removeFromParent()
       } else {
-        speedControlArea.appearWithParent(self, animate: true, delay: Globals.appearDelay)
+        speedControlArea.appear(animate: true, delay: true)
       }
     }
     hookDidSetState?()
@@ -75,65 +107,86 @@ class GenericTutorialScene: GameScene {
     hookCellWasEdited?()
   }
   
-  func loadTape(i: Int) {
-  //  super.loadTape(i)
-    if speedControlsShouldSimplify {
-      speedControlArea.slowerButton.removeFromParent()
-      if tapeTestResults[i].kind == TapeTestResult.Kind.Loop || speedControlShouldAllowCancel {
-        speedControlArea.fasterButton.removeFromParent()
-        speedControlArea.skipButton.position.x = 0
-        speedControlArea.skipButton.appearWithParent(speedControlArea, animate: false)
-      } else {
-        speedControlArea.skipButton.removeFromParent()
-        speedControlArea.fasterButton.position.x = 0
-        speedControlArea.fasterButton.appearWithParent(speedControlArea, animate: false)
-      }
-    } else {
-      speedControlArea.fitToSize()
-      speedControlArea.slowerButton.appearWithParent(speedControlArea, animate: false)
-      speedControlArea.skipButton.appearWithParent(speedControlArea, animate: false)
-      speedControlArea.fasterButton.appearWithParent(speedControlArea, animate: false)
-    }
-  }
-  
   override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
     super.touchesBegan(touches, withEvent: event)
     if state == .Testing && speedControlArea.parent == nil {
-      speedControlArea.appearWithParent(self, animate: true)
+      speedControlArea.appear(animate: true, delay: false)
     }
   }
   
   // MARK: - Tutorial Functions
   
-  func startDemoTest() {
-    beltFlowController.stopFlow(animate: true)
-    instructionArea.disappearWithAnimate(true)
-    gridArea.state = .Waiting
-    tapeTestResults = [TapeTestResult(input: "", output: nil, correctOutput: nil, kind: .Demo)]
-    state = .Testing
-    if let buttonParent = demoTestButton.parent {
-      let positionOnGridArea = buttonParent.convertPoint(demoTestButton.position, toNode: gridArea.wrapper)
-      if let robot = testController.robot {
-        robot.lastPosition = positionOnGridArea
-        demoTestButton.position = CGPointZero
-        demoTestButton.removeFromParent()
-        robot.addChild(demoTestButton)
-        demoTestButton.disappearWithAnimate(true)
+  func appearNode(node: SKNode, parent: SKNode, animate: Bool, delay: Bool) {
+    if node.parent !== parent {
+      node.removeFromParent()
+    }
+    if node.parent == nil {
+      parent.addChild(node)
+    }
+    if animate {
+      node.alpha = 0
+      let fadeInAction = SKAction.fadeAlphaTo(1, duration: Globals.appearTime)
+      if delay {
+        node.hidden = true
+        node.runAction(SKAction.sequence([
+          SKAction.waitForDuration(Globals.appearDelay),
+          unhideAction,
+          fadeInAction
+          ]), withKey: "appearDisappear")
+      } else {
+        node.hidden = false
+        node.runAction(fadeInAction, withKey: "appearDisappear")
+      }
+    } else {
+      node.alpha = 1
+      if delay {
+        node.hidden = true
+        node.runAction(SKAction.sequence([
+          SKAction.waitForDuration(Globals.appearDelay),
+          unhideAction
+          ]), withKey: "appearDisappear")
+      } else {
+        node.hidden = false
+        node.removeActionForKey("appearDisappear")
       }
     }
   }
   
-  func labelIconButton(button: Button, text: String, animate: Bool, delay: NSTimeInterval) -> SKLabelNode {
+  func disappearNode(node: SKNode, animate: Bool) {
+    if node.parent == nil {return}
+    if animate {
+      node.runAction(SKAction.sequence([
+        SKAction.fadeAlphaTo(0, duration: Globals.disappearTime),
+        SKAction.removeFromParent()
+        ]), withKey: "appearDisappear")
+    } else {
+      node.removeFromParent()
+      node.removeActionForKey("appearDisappear")
+    }
+  }
+  
+  func startDemoTest() {
+    beltFlowController.stopFlow(animate: true)
+    instructionArea.disappear(animate: true)
+    gridArea.state = .Waiting
+    if tapeTestResultQueue.isEmpty {
+      tapeTestResultQueue = [TapeTestResult(input: "", output: nil, correctOutput: nil, kind: .Demo)]
+    }
+    demoTestButton.disappear(animate: true)
+    state = .Testing
+  }
+  
+  func labelIconButton(button: Button, text: String, animate: Bool, delay: Bool) -> SKLabelNode {
     let label = SKLabelNode()
     label.fontSmall()
     label.fontColor = Globals.strokeColor
     label.position.y = -Globals.iconSpan / 2 - Globals.smallEm * 3
     label.text = text
-    label.appearWithParent(button, animate: animate, delay: delay)
+    appearNode(label, parent: button, animate: animate, delay: delay)
     return label
   }
   
-  func labelGridCoord(coord: GridCoord, text: String, animate: Bool, delay: NSTimeInterval) -> SKLabelNode {
+  func labelGridCoord(coord: GridCoord, text: String, animate: Bool, delay: Bool) -> SKLabelNode {
     let label = SKLabelNode()
     label.fontSmall()
     label.fontColor = Globals.strokeColor
@@ -141,7 +194,7 @@ class GenericTutorialScene: GameScene {
     label.setScale(1 / gridArea.wrapper.xScale)
     label.position = coord.centerPoint
     label.text = text
-    label.appearWithParent(gridArea.wrapper, animate: animate, delay: delay)
+    appearNode(label, parent: gridArea.wrapper, animate: animate, delay: delay)
     return label
   }
   
@@ -166,9 +219,12 @@ class GenericTutorialScene: GameScene {
   func removeAndDisconnectAllToolbarButtons() {
     toolbarArea.undoCancelSwapper.removeFromParent()
     toolbarArea.redoConfirmSwapper.removeFromParent()
+    toolbarArea.undoCancelSwapper.parentMemory = toolbarArea
+    toolbarArea.redoConfirmSwapper.parentMemory = toolbarArea
     for button in toolbarArea.toolButtons {
       button.removeFromParent()
       button.dragThroughDelegate = nil
+      button.parentMemory = toolbarArea
     }
     toolbarArea.swipeNode.removeFromParent()
   }
@@ -183,16 +239,21 @@ class GenericTutorialScene: GameScene {
     button.isSticky = true
     button.touchUpInsideClosure = {
       [unowned self, unowned button] in
-      label.disappearWithAnimate(true)
-      button.disappearWithAnimate(true)
-      screenNode.disappearWithAnimate(true, delay: Globals.appearDelay)
+      self.disappearNode(label, animate: true)
+      self.disappearNode(button, animate: true)
+      self.disappearNode(screenNode, animate: true)
+      screenNode.runAction(SKAction.sequence([
+        SKAction.waitForDuration(Globals.appearDelay),
+        SKAction.fadeAlphaTo(0, duration: Globals.disappearTime),
+        SKAction.removeFromParent()
+        ]), withKey: "appearDisappear")
       if nextStageOnContinue {self.nextTutorialStage()}
     }
     label.position.y = 2 * Globals.mediumEm
     button.position.y = -(label.paragraphHeight() / 2) - Globals.mediumEm
     screenNode.addChild(label)
     screenNode.addChild(button)
-    screenNode.appearWithParent(self, animate: animate)
+    appearNode(screenNode, parent: self, animate: animate, delay: false)
     return screenNode
   }
   

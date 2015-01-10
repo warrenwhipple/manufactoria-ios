@@ -121,11 +121,11 @@ class Button: DisappearableSpriteNode {
     nodeOff?.alpha = 1
   }
   
-  override func appearWithParent(newParent: SKNode, animate: Bool, delay: NSTimeInterval) {
+  override func appear(#animate: Bool, delay: Bool) {
     if isSticky && stickyOnHasBeenActivated {reset()}
-    super.appearWithParent(newParent, animate: animate, delay: delay)
+    super.appear(animate: animate, delay: delay)
   }
-  
+    
   // MARK: - Enable Disable
   
   private(set) var isEnabled: Bool = true

@@ -53,22 +53,10 @@ class TapeArea: Area {
         edge.addChild(dash)
       }
     }
-    println()
-    println()
   }
   
   enum State {case Exited, Entering, Waiting, Writing, Deleting, Exiting}
-  private var state: State = .Waiting {didSet {
-    switch state {
-    case .Entering: print("entering ")
-    case .Waiting: print("waiting ")
-    case .Writing: print("writing ")
-    case .Deleting: print("deleting ")
-    case .Exiting: print("exiting ")
-    case .Exited: print("exited ")
-    }
-    }
-  }
+  private var state: State = .Waiting
   
   func update(#tickPercent: CGFloat) {
     switch state {

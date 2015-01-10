@@ -42,7 +42,7 @@ extension UIColor {
 }
 
 extension SKNode {
-  
+/*
   func appearWithParent(newParent: SKNode, animate: Bool) {
     appearWithParent(newParent, animate: animate, delay: 0)
   }
@@ -105,7 +105,7 @@ extension SKNode {
       }
     }
   }
-
+*/
 }
  
 extension SKSpriteNode {

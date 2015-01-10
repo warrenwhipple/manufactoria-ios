@@ -8,8 +8,7 @@
 
 import SpriteKit
 
-class ButtonSwapper: SKNode {
-  required init(coder: NSCoder) {fatalError("NSCoding not supported")}
+class ButtonSwapper: DisappearableNode {
   let buttons: [Button]
   let fadeNodes: [SKNode]
   let fadeOutAction = SKAction.fadeAlphaTo(0, duration: 0.2)

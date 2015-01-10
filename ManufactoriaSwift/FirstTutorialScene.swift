@@ -18,7 +18,7 @@ class FirstTutorialScene: GenericTutorialScene {
     
     displayFullScreenMessage("You have been assigned to\n\nROBOTICS TESTING\n\nThank you for your cooperation", animate: false, nextStageOnContinue: true)
     
-    changeInstructions("Accepted robots must be\ntransported to the exit", animate: false)
+    changeInstructions("Well functioning robots must\nbe transported to the exit", animate: false)
     
     removeAndDisconnectAllToolbarButtons()
     deleteButton = toolbarArea.toolButtons[0]
@@ -29,12 +29,12 @@ class FirstTutorialScene: GenericTutorialScene {
     testButton.removeFromParent()
     
     continueButton.position = toolbarArea.position
-    continueButton.appearWithParent(self, animate: false)
+    continueButton.appear(animate: false, delay: false)
     
-    entranceLabel = labelGridCoord(gridArea.grid.startCoord, text: "entrance", animate: true, delay: 0)
-    exitLabel = labelGridCoord(gridArea.grid.endCoord, text: "exit", animate: true, delay: 0)
-    beltLabel = labelIconButton(beltButton, text: "conveyor", animate: true, delay: 0)
-    deleteLabel = labelIconButton(deleteButton, text: "delete", animate: true, delay: 0)
+    entranceLabel = labelGridCoord(gridArea.grid.startCoord, text: "entrance", animate: true, delay: false)
+    exitLabel = labelGridCoord(gridArea.grid.endCoord, text: "exit", animate: true, delay: false)
+    beltLabel = labelIconButton(beltButton, text: "conveyor", animate: true, delay: false)
+    deleteLabel = labelIconButton(deleteButton, text: "delete", animate: true, delay: false)
     
     stageSetups = [
       
@@ -46,20 +46,16 @@ class FirstTutorialScene: GenericTutorialScene {
       // tap belt setup
       {[unowned self] in
         self.changeInstructions("Use the conveyor to connect\nthe entrance and exit", animate: true)
-        self.continueButton.disappearWithAnimate(true)
-        self.entranceLabel.disappearWithAnimate(true)
-        self.exitLabel.disappearWithAnimate(true)
+        self.continueButton.disappear(animate: true)
         self.beltButton.position = CGPointZero
-        self.beltButton.appearWithParent(self.toolbarArea, animate: true, delay: Globals.appearDelay)
+        self.beltButton.appear(animate: true, delay: true)
         self.repeatPulseWithParent(self.beltButton.nodeOff!, position: CGPointZero, delay: 5)
         self.hookDidSetEditMode = {if self.editMode == .Belt {self.nextTutorialStage()}}
       } as (()->())?,
       
       // draw belt setup
       {[unowned self] in
-        self.beltLabel.disappearWithAnimate(true)
-        self.entranceLabel.appearWithParent(self.gridArea.wrapper, animate: true)
-        self.exitLabel.appearWithParent(self.gridArea.wrapper, animate: true)
+        self.disappearNode(self.beltLabel, animate: true)
         self.repeatGridPulses()
         self.hookCellWasEdited = {if self.checkGridPassLoop().0 {self.nextTutorialStage()}}
       } as (()->())?,
@@ -67,11 +63,11 @@ class FirstTutorialScene: GenericTutorialScene {
       // tap test setup
       {[unowned self] in
         self.changeInstructions("Please accept the next robot", animate: true)
-        self.entranceLabel.disappearWithAnimate(true)
-        self.exitLabel.disappearWithAnimate(true)
+        self.disappearNode(self.entranceLabel, animate: true)
+        self.disappearNode(self.exitLabel, animate: true)
         self.gridArea.state = .Waiting
-        self.beltButton.disappearWithAnimate(true)
-        self.demoTestButton.appearWithParent(self.toolbarArea, animate: true, delay: Globals.appearDelay)
+        self.beltButton.disappear(animate: true)
+        self.demoTestButton.appear(animate: true, delay: true)
         self.repeatPulseWithParent(self.demoTestButton, position: CGPointZero, delay: 5)
         self.hookDemoTestButton = {
           self.stopRepeatPulse()
@@ -84,7 +80,8 @@ class FirstTutorialScene: GenericTutorialScene {
       {[unowned self] in
         self.changeInstructions("Thank you\n\nYour intellectual capacity score\nhas been upgraded to\n\nBARELY ADEQUATE", animate: false)
         self.gridArea.state = .Waiting
-        self.continueButton.appearWithParent(self, animate: true, delay: Globals.appearDelay)
+        self.testButton.disappear(animate:false)
+        self.continueButton.appear(animate: true, delay: true)
         self.hookContinueButton = {self.nextTutorialStage()}
       } as (()->())?,
 
@@ -92,30 +89,29 @@ class FirstTutorialScene: GenericTutorialScene {
       {[unowned self] in
         self.changeInstructions("Rejected robots may be discarded\nanywhere on the floor\n\nPlease reject the next robot", animate: true)
         self.gridArea.state = .Editing
-        self.continueButton.disappearWithAnimate(true)
+        self.continueButton.disappear(animate: true)
         let x: CGFloat = self.size.width / 6
-        let y: CGFloat = self.toolbarArea.undoCancelSwapper.position.y
-        self.demoTestButton.position = CGPoint(x: 0, y: y)
-        self.deleteButton.position = CGPoint(x: -x, y: -y)
-        self.beltButton.position = CGPoint(x: x, y: -y)
-        self.demoTestButton.appearWithParent(self.toolbarArea, animate: true, delay: Globals.appearDelay)
-        self.deleteButton.appearWithParent(self.toolbarArea, animate: true, delay: Globals.appearDelay)
-        self.beltButton.appearWithParent(self.toolbarArea, animate: true, delay: Globals.appearDelay)
-        self.hookDidSetEditMode = {if self.editMode == .Blank {self.deleteLabel.disappearWithAnimate(false)}}
+        let y: CGFloat = self.toolbarArea.swipeNode.position.y
+        self.deleteButton.position = CGPoint(x: -x, y: y)
+        self.beltButton.position = CGPoint(x: x, y: y)
+        self.demoTestButton.appear(animate: true, delay: true)
+        self.deleteButton.appear(animate: true, delay: true)
+        self.beltButton.appear(animate: true, delay: true)
+        self.hookDidSetEditMode = {if self.editMode == .Blank {self.disappearNode(self.deleteLabel, animate: false)}}
         self.hookDemoTestButton = {
           switch self.checkGridPassLoop() {
           case (true, false):
             self.speedControlShouldAllowCancel = false
             self.hookDidSetState = {if self.state == .Editing {
               self.demoTestButton.position = CGPoint(x: 0, y: y)
-              self.demoTestButton.appearWithParent(self.toolbarArea, animate: true, delay: Globals.appearDelay)
+              self.demoTestButton.appear(animate: true, delay: true)
               self.changeInstructions("To reject the robot\n drop it on the floor", animate: false)
               }}
           case (false, true):
             self.speedControlShouldAllowCancel = true
             self.hookDidSetState = {if self.state == .Editing {
               self.demoTestButton.position = CGPoint(x: 0, y: y)
-              self.demoTestButton.appearWithParent(self.toolbarArea, animate: true, delay: Globals.appearDelay)
+              self.demoTestButton.appear(animate: true, delay: true)
               self.changeInstructions("Infinite loops are prohibited\n\nTo reject the robot\n drop it on the floor", animate: false)
               }}
           default:
@@ -130,7 +126,7 @@ class FirstTutorialScene: GenericTutorialScene {
       {[unowned self] in
         self.changeInstructions("Your compliance is appreciated\n\nYour intellectual capacity score\nhas been upgraded to\n\nUNEXCEPTIONAL", animate: false)
         self.gridArea.state = .Waiting
-        self.continueButton.appearWithParent(self, animate: true, delay: Globals.appearDelay)
+        self.continueButton.appear(animate: true, delay: true)
         self.toolbarArea.removeFromParent()
         self.testButton.removeFromParent()
         self.hookContinueButton = {self.nextTutorialStage()}
@@ -151,27 +147,27 @@ class FirstTutorialScene: GenericTutorialScene {
         
         self.changeInstructions("Please accept the next robot", animate: true)
         self.gridArea.state = .Editing
-        self.continueButton.disappearWithAnimate(true)
+        self.continueButton.disappear(animate: true)
         let y: CGFloat = self.toolbarArea.undoCancelSwapper.position.y
         self.demoTestButton.position = CGPoint(x: 0, y: y)
-        self.demoTestButton.appearWithParent(self.toolbarArea, animate: false)
+        self.demoTestButton.appear(animate: false, delay: false)
         let demoTestButtonPosition = self.demoTestButton.position
-        self.toolbarArea.appearWithParent(self, animate: true, delay: Globals.appearDelay)
-        self.hookDidSetEditMode = {if self.editMode == .Blank {self.deleteLabel.disappearWithAnimate(false)}}
+        self.toolbarArea.appear(animate: true, delay: true)
+        self.hookDidSetEditMode = {if self.editMode == .Blank {self.disappearNode(self.deleteLabel, animate: false)}}
         self.hookDemoTestButton = {
           switch self.checkGridPassLoop() {
           case (false, false):
             self.speedControlShouldAllowCancel = false
             self.hookDidSetState = {if self.state == .Editing {
               self.demoTestButton.position = CGPoint(x: 0, y: y)
-              self.demoTestButton.appearWithParent(self.toolbarArea, animate: true, delay: Globals.appearDelay)
+              self.demoTestButton.appear(animate: true, delay: true)
               self.changeInstructions("To accept the robot\nsend it to the exit", animate: false)
               }}
           case (false, true):
             self.speedControlShouldAllowCancel = true
             self.hookDidSetState = {if self.state == .Editing {
               self.demoTestButton.position = CGPoint(x: 0, y: y)
-              self.demoTestButton.appearWithParent(self.toolbarArea, animate: true, delay: Globals.appearDelay)
+              self.demoTestButton.appear(animate: true, delay: true)
               self.changeInstructions("Infinite loops are prohibited\n\nTo accept the robot\nsend it to the exit", animate: false)
               }}
           default:
@@ -187,7 +183,7 @@ class FirstTutorialScene: GenericTutorialScene {
         GameProgressData.sharedInstance.completedLevelWithKey(self.levelKey)
         self.changeInstructions("Thank you for your obedience\n\nYour intellectual capacity score\nhas been upgraded to\n\nTOLERABLE", animate: false)
         self.gridArea.state = .Waiting
-        self.continueButton.appearWithParent(self, animate: true, delay: Globals.appearDelay)
+        self.continueButton.appear(animate: true, delay: true)
         self.toolbarArea.removeFromParent()
         self.testButton.removeFromParent()
         self.hookContinueButton = {self.transitionToGameSceneWithLevelKey("read")}
