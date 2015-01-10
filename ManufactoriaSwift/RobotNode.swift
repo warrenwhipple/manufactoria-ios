@@ -59,6 +59,21 @@ class RobotNode: SKNode {
   enum State {case Entering, Moving, Falling, FallenPass, FallenFail, ExitingPass, ExitingFail}
   var state: State = .Entering
   
+  func updateColorOnly(tickPercent: CGFloat) {
+    if isChangingColor {
+      if tickPercent < 0.25 {
+        currentColorSprite.alpha = 0
+        lastColorSprite.alpha = 1
+      } else if tickPercent < 0.5{
+        currentColorSprite.alpha = (tickPercent - 0.25) * 4
+        lastColorSprite.alpha = 1
+      } else {
+        currentColorSprite.alpha = 1
+        lastColorSprite.alpha = 0
+      }
+    }
+  }
+  
   func update(tickPercent: CGFloat) {
     if isChangingColor {
       if tickPercent < 0.25 {

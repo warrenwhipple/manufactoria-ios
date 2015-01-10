@@ -13,7 +13,7 @@ class TestController {
   enum State {case Entering, Testing, Fallen, Exiting, Complete}
   private(set) var state: State = .Complete
   private(set) var beltPercent: CGFloat = 0
-  private(set) var robotNode: RobotNode?
+  private(set) var robot: RobotNode?
   
   private let gridArea: GridArea
   private let tapeArea: TapeArea
@@ -43,10 +43,10 @@ class TestController {
     skipping = false
     skipAnimationCompleted = false
     tickPercent = 0
-    robotNode?.runAction(SKAction.sequence([
+    robot?.runAction(SKAction.sequence([
       SKAction.fadeAlphaTo(0, duration: Globals.disappearTime),
       SKAction.removeFromParent()]))
-    robotNode = nil
+    robot = nil
     if tapeTestResultQueue.isEmpty {
       state = .Complete
       result = TapeTestResult.blankLoop()
@@ -56,10 +56,10 @@ class TestController {
       coord = gridArea.grid.startCoord
       lastCoord = coord
       result = tapeTestResultQueue.removeAtIndex(0)
-      robotNode = RobotNode(position: coord.centerPoint, color: result.input.firstColor(), broken: result.broken)
-      robotNode?.zPosition = 2
-      robotNode?.setScale(1/gridArea.wrapper.xScale)
-      gridArea.wrapper.addChild(robotNode!)
+      robot = RobotNode(position: coord.centerPoint, color: result.input.firstColor(), broken: result.broken)
+      robot?.zPosition = 2
+      robot?.setScale(1/gridArea.wrapper.xScale)
+      gridArea.wrapper.addChild(robot!)
       tape = result.input
       tapeArea.loadTape(tape, robot: RobotNode(position: CGPointZero, color: result.input.firstColor(), broken: result.broken))
     }
@@ -77,7 +77,7 @@ class TestController {
         self.speed = initialSpeed + deltaSpeed * NSTimeInterval(t) / timeSpan}).easeOut(),
       SKAction.runBlock({[unowned self] in self.skipAnimationCompleted = true})
       ]), withKey: "skipTest")
-    robotNode?.runAction(SKAction.sequence([
+    robot?.runAction(SKAction.sequence([
       SKAction.waitForDuration(1.5),
       SKAction.fadeAlphaTo(0, duration: 0.5)
       ]))
@@ -100,11 +100,11 @@ class TestController {
       state = .Testing
       tapeArea.wait()
       coord.j++
-      robotNode?.loadNextPosition(coord.centerPoint)
+      robot?.loadNextPosition(coord.centerPoint)
       if gridArea.grid.testCoordForFall(coord) {
-        robotNode?.state = .Falling
+        robot?.state = .Falling
       } else {
-        robotNode?.state = .Moving
+        robot?.state = .Moving
       }
     }
     
@@ -119,48 +119,60 @@ class TestController {
       case .West:  coord.i--
       case .Accept:
         state = .Exiting
-        robotNode?.state = (result.kind == .Pass) ? .ExitingPass : .ExitingFail
+        robot?.state = (result.kind == .Pass) ? .ExitingPass : .ExitingFail
       case .Reject:
         state = .Fallen
-        robotNode?.state = (result.kind == .Pass) ? .FallenPass : .FallenFail
+        robot?.state = (result.kind == .Pass) ? .FallenPass : .FallenFail
       }
-      robotNode?.loadNextPosition(coord.centerPoint)
-      robotNode?.finishColorChange()
+      robot?.loadNextPosition(coord.centerPoint)
+      robot?.finishColorChange()
+      tapeArea.robot?.finishColorChange()
       switch tickTestResult.tapeAction {
       case .Wait:
         tapeArea.wait()
       case .Read:
         tape = tape.from(1)
         tapeArea.deleteColor()
-        robotNode?.loadNextColor(tape.firstColor())
+        robot?.loadNextColor(tape.firstColor())
+        tapeArea.robot?.loadNextColor(tape.firstColor())
       case .WriteBlue:
         tape.append("b" as Character)
         tapeArea.writeColor(.Blue)
-        if tape.length() == 1 {robotNode?.loadNextColor(tape.firstColor())}
+        checkWriteChangeColor()
       case .WriteRed:
         tape.append("r" as Character)
         tapeArea.writeColor(.Red)
-        if tape.length() == 1 {robotNode?.loadNextColor(tape.firstColor())}
+        checkWriteChangeColor()
       case .WriteGreen:
         tape.append("g" as Character)
         tapeArea.writeColor(.Green)
-        if tape.length() == 1 {robotNode?.loadNextColor(tape.firstColor())}
+        checkWriteChangeColor()
       case .WriteYellow:
         tape.append("y" as Character)
         tapeArea.writeColor(.Yellow)
-        if tape.length() == 1 {robotNode?.loadNextColor(tape.firstColor())}
+        checkWriteChangeColor()
       case .Exit:
         tapeArea.exit()
       }
-      if state == .Testing && gridArea.grid.testCoordForFall(coord) {robotNode?.state = .Falling}
+      if state == .Testing && gridArea.grid.testCoordForFall(coord) {robot?.state = .Falling}
     }
     
     if skipAnimationCompleted || ((state == .Fallen || state == .Exiting) && tickPercent >= 1) {
       loadNextTest()
     }
     
-    robotNode?.update(tickPercent)
+    robot?.update(tickPercent)
+    tapeArea.robot?.updateColorOnly(tickPercent)
     tapeArea.update(tickPercent: tickPercent)
     beltPercent = (state == .Testing) ? easeInOut(tickPercent) : 0
   } // func update(dt)
+  
+  private func checkWriteChangeColor() {
+    if tape.length() == 1 {
+      let firstColor = tape.firstColor()
+      robot?.loadNextColor(firstColor)
+      tapeArea.robot?.loadNextColor(firstColor)
+    }
+  }
+
 }

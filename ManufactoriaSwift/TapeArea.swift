@@ -31,7 +31,7 @@ class TapeArea: Area {
     bottomEdge.zPosition = 0.7
     paper.size.height = edgeY * 2 + 1
     paper.anchorPoint.x = 0
-    paper.alpha = 0.8
+    paper.alpha = 0.9
     paper.addChild(printer)
     wrapper.addChild(paper)
     wrapper.addChild(topEdge)
@@ -145,7 +145,7 @@ class TapeArea: Area {
     dots.append(dot)
     dot.color = color.uiColor()
     dot.colorBlendFactor = 1
-    dot.position.x = CGFloat(dots.count) * dotSpacing
+    dot.position.x = firstDotX + CGFloat(dots.count - 1) * dotSpacing
     paper.addChild(dot)
     printer.position.x = dot.position.x
     state = .Writing

@@ -161,7 +161,7 @@ struct Grid {
     case .PusherB: return TickTestResult(robotAction: cell.direction.tickRobotAction(), tapeAction: .WriteBlue)
     case .PusherR: return TickTestResult(robotAction: cell.direction.tickRobotAction(), tapeAction: .WriteRed)
     case .PusherG: return TickTestResult(robotAction: cell.direction.tickRobotAction(), tapeAction: .WriteGreen)
-    case .PusherY: return TickTestResult(robotAction: cell.direction.tickRobotAction(), tapeAction: .WriteBlue)
+    case .PusherY: return TickTestResult(robotAction: cell.direction.tickRobotAction(), tapeAction: .WriteYellow)
     case .PullerBR:
       if let tapeColor = tapeColor {
         switch tapeColor {

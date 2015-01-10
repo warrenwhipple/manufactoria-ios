@@ -113,11 +113,11 @@ class GenericTutorialScene: GameScene {
     state = .Testing
     if let buttonParent = demoTestButton.parent {
       let positionOnGridArea = buttonParent.convertPoint(demoTestButton.position, toNode: gridArea.wrapper)
-      if let robotNode = testController.robotNode {
-        robotNode.lastPosition = positionOnGridArea
+      if let robot = testController.robot {
+        robot.lastPosition = positionOnGridArea
         demoTestButton.position = CGPointZero
         demoTestButton.removeFromParent()
-        robotNode.addChild(demoTestButton)
+        robot.addChild(demoTestButton)
         demoTestButton.disappearWithAnimate(true)
       }
     }
