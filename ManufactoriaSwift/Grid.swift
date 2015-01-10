@@ -136,12 +136,12 @@ struct Grid {
   
   func testCoord(coord: GridCoord, lastCoord: GridCoord, tapeColor: Color?) -> TickTestResult {
     if coord == startCoord {return TickTestResult(robotAction: .North, tapeAction: .Wait)}
-    if coord == endCoord {return TickTestResult(robotAction: .Accept, tapeAction: .Wait)}
-    if !space.contains(coord) {return TickTestResult(robotAction: .Reject, tapeAction: .Wait)}
+    if coord == endCoord {return TickTestResult(robotAction: .Accept, tapeAction: .Exit)}
+    if !space.contains(coord) {return TickTestResult(robotAction: .Reject, tapeAction: .Exit)}
     
     let cell = self[coord]
     switch cell.kind {
-    case .Blank: return TickTestResult(robotAction: .Reject, tapeAction: .Wait)
+    case .Blank: return TickTestResult(robotAction: .Reject, tapeAction: .Exit)
     case .Belt: return TickTestResult(robotAction: cell.direction.tickRobotAction(), tapeAction: .Wait)
     case .Bridge:
       switch cell.direction {

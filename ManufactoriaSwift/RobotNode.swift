@@ -34,13 +34,12 @@ class RobotNode: SKNode {
     )
     super.init()
     self.position = position
-    zPosition = 2
     lastColorSprite.alpha = 0
     wrapper.addChild(lastColorSprite)
-    currentColorSprite.zPosition = 0.25
+    currentColorSprite.zPosition = 0.1
     currentColorSprite.color = darkColor(color)
     wrapper.addChild(currentColorSprite)
-    holesSprite.zPosition = 0.5
+    holesSprite.zPosition = 0.2
     wrapper.addChild(holesSprite)
     addChild(wrapper)
   }

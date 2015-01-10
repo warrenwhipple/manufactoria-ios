@@ -9,25 +9,30 @@
 import SpriteKit
 
 class TapeArea: Area {
-  var wrapper = SKNode()
-  var dots: [SKSpriteNode] = []
-  var deletingDot: SKSpriteNode?
-  let dotTexture = SKTexture(imageNamed: "dot")
-  let dotSpacing: CGFloat
-  let scanner = SKSpriteNode(imageNamed: "scanner", color: Globals.strokeColor, colorBlendFactor: 1)
+  private var wrapper = SKNode()
+  private var dots: [SKSpriteNode] = []
+  private var deletingDot: SKSpriteNode?
+  private let dotTexture = SKTexture(imageNamed: "dot")
+  private let dotSpacing, edgeY: CGFloat
+  private let paper = SKSpriteNode(color: Globals.backgroundColor, size: CGSizeZero)
+  private let topEdge = SKNode()
+  private let bottomEdge = SKNode()
+  private var firstDotX: CGFloat = 0
+  private(set) var robot: RobotNode?
   let printer = SKSpriteNode(imageNamed: "printer", color: Globals.strokeColor, colorBlendFactor: 1)
-  let paper = SKSpriteNode(color: Globals.backgroundColor, size: CGSizeZero)
-  let topEdge = SKNode()
-  let bottomEdge = SKNode()
   
   override init() {
     dotSpacing = dotTexture.size().width * 1.25
+    edgeY = dotTexture.size().height - 0.5
     super.init()
-    scanner.zPosition = 1
-    paper.addChild(scanner)
-    printer.zPosition = 1
+    printer.zPosition = 0.2
+    paper.zPosition = 0.5
+    topEdge.zPosition = 0.7
+    bottomEdge.zPosition = 0.7
+    paper.size.height = edgeY * 2 + 1
+    paper.anchorPoint.x = 0
+    paper.alpha = 0.8
     paper.addChild(printer)
-    
     wrapper.addChild(paper)
     wrapper.addChild(topEdge)
     wrapper.addChild(bottomEdge)
@@ -35,128 +40,77 @@ class TapeArea: Area {
   }
   
   override func fitToSize() {
-    updateAfterStateChange()
-    update(0)
-    
-    paper.size = CGSize(width: size.width + 16, height: dotTexture.size().height * 2 - 2)
-    topEdge.position.y = paper.size.height / 2 - 0.5
-    bottomEdge.position.y = -topEdge.position.y
+    paper.position.x = -size.width / 2
+    paper.size.width = size.width + dotSpacing
+    let dashSpacing: CGFloat = dotSpacing / 2
+    let dashSize = CGSize(width: dashSpacing / 2, height: 1)
     for edge in [topEdge, bottomEdge] as [SKNode] {
       edge.removeAllChildren()
-      for i in 0 ... (Int(size.width) / 16) {
-        let dash = SKSpriteNode(color: Globals.strokeColor, size: CGSize(width: 8, height: 1))
-        dash.position.x = -size.width / 2 + 8 + 16 * CGFloat(i)
+      edge.position.x = paper.position.x
+      for i in 0 ..< Int(ceil(paper.size.width / dashSpacing)) {
+        let dash = SKSpriteNode(color: Globals.strokeColor, size: dashSize)
+        dash.position.x = dashSpacing * (CGFloat(i) + 0.5)
         edge.addChild(dash)
       }
     }
+    println()
+    println()
   }
   
-  enum State {case OffScreen, Entering, Waiting, Writing, Deleting, Exiting}
-  var state: State = .OffScreen {didSet {if state != oldValue {updateAfterStateChange()}}}
-  
-  func updateAfterStateChange() {
+  enum State {case Exited, Entering, Waiting, Writing, Deleting, Exiting}
+  private var state: State = .Waiting {didSet {
     switch state {
-    case .OffScreen, .Entering:
-      deletingDot?.removeFromParent()
-      deletingDot = nil
-      let offsetX: CGFloat = -0.5 * CGFloat(dots.count + 1)
-      let tapeSpacing: CGFloat = min(dotSpacing, (size.width - dotSpacing) / CGFloat(dots.count + 1))
-      scanner.position.x = tapeSpacing * offsetX - size.width
-      var i = 1
-      for dot in dots {dot.position.x = tapeSpacing * (CGFloat(i++) + offsetX) - size.width}
-      printer.position.x = tapeSpacing * (CGFloat(i) + offsetX) - size.width
-      dots.last?.alpha = 1
-    case .Waiting, .Exiting:
-      deletingDot?.removeFromParent()
-      deletingDot = nil
-      let offsetX: CGFloat = -0.5 * CGFloat(dots.count + 1)
-      let tapeSpacing: CGFloat = min(dotSpacing, (size.width - dotSpacing) / CGFloat(dots.count + 1))
-      scanner.position.x = tapeSpacing * offsetX
-      var i = 1
-      for dot in dots {dot.position.x = tapeSpacing * (CGFloat(i++) + offsetX)}
-      printer.position.x = tapeSpacing * (CGFloat(i) + offsetX)
-      dots.last?.alpha = 1
-    case .Writing:
-      deletingDot?.removeFromParent()
-      deletingDot = nil
-    case .Deleting:
-      dots.last?.alpha = 1
+    case .Entering: print("entering ")
+    case .Waiting: print("waiting ")
+    case .Writing: print("writing ")
+    case .Deleting: print("deleting ")
+    case .Exiting: print("exiting ")
+    case .Exited: print("exited ")
+    }
     }
   }
   
-  func update(tickPercent: CGFloat) {
+  func update(#tickPercent: CGFloat) {
     switch state {
-    case .OffScreen, .Waiting: break
+    case .Exited, .Waiting: break
     case .Entering:
-      let easeOutTLeft: CGFloat = 1 - easeOut(tickPercent)
-      let offsetX: CGFloat = -0.5 * CGFloat(dots.count + 1)
-      let tapeSpacing: CGFloat = min(dotSpacing, (size.width - dotSpacing) / CGFloat(dots.count + 1))
-      scanner.position.x = tapeSpacing * offsetX + size.width * easeOutTLeft
-      var i = 1
-      for dot in dots {dot.position.x = tapeSpacing * (CGFloat(i++) + offsetX) + size.width * easeOutTLeft}
-      printer.position.x = tapeSpacing * (CGFloat(i) + offsetX) + size.width * easeOutTLeft
+      let easeT = easeOut(tickPercent)
+      paper.yScale = easeT
+      robot?.yScale = easeT * 2
+      topEdge.position.y = easeT * edgeY
+      bottomEdge.position.y = -easeT * edgeY
+    case .Exiting:
+      let easeTLeft = 1 - easeIn(tickPercent)
+      paper.yScale = easeTLeft
+      robot?.yScale = easeTLeft * 2
+      topEdge.position.y = easeTLeft * edgeY
+      bottomEdge.position.y = -easeTLeft * edgeY
     case .Writing:
+      let lastDot = dots.last
       if tickPercent < 0.5 {
-        let easeT: CGFloat = easeInOut(2 * tickPercent)
-        let offsetX: CGFloat = -0.5 * CGFloat(dots.count)
-        let tapeSpacing: CGFloat = min(dotSpacing, (size.width - dotSpacing) / CGFloat(dots.count))
-        var i = 1
-        for dot in dots {dot.position.x = tapeSpacing * (CGFloat(i++) + offsetX)}
-        dots.last?.alpha = easeT
-        scanner.position.x = tapeSpacing * offsetX
-        printer.position.x = tapeSpacing * (CGFloat(i - 1) + offsetX)
+        lastDot?.alpha = tickPercent * 2
       } else {
+        lastDot?.alpha = 1
         let easeT: CGFloat = easeInOut(2 * tickPercent - 1)
         let easeTLeft: CGFloat = 1 - easeT
-        let offsetX: CGFloat = -0.5 * (easeTLeft * CGFloat(dots.count) + easeT * CGFloat(dots.count + 1))
-        let tapeSpacingT0: CGFloat =  min(dotSpacing, (size.width - dotSpacing) / CGFloat(dots.count))
-        let tapeSpacingT1: CGFloat =  min(dotSpacing, (size.width - dotSpacing) / CGFloat(dots.count + 1))
-        let tapeSpacing: CGFloat = easeTLeft * tapeSpacingT0 + easeT * tapeSpacingT1
-        var i = 1
-        for dot in dots {dot.position.x = tapeSpacing * (CGFloat(i++) + offsetX)}
-        dots.last?.alpha = 1
-        scanner.position.x = tapeSpacing * offsetX
-        printer.position.x = tapeSpacing * ((easeTLeft * CGFloat(i - 1) + easeT * CGFloat(i)) + offsetX)
+        let lastDotX = lastDot?.position.x ?? 0
+        printer.position.x = lastDotX * easeTLeft + (lastDotX + dotSpacing) * easeT
       }
     case .Deleting:
-      if tickPercent < 0.5 {
-        let easeT: CGFloat = easeInOut(2 * tickPercent)
-        let easeTLeft: CGFloat = 1 - easeT
-        let offsetX: CGFloat = -0.5 * (easeTLeft * CGFloat(dots.count) + easeT * CGFloat(dots.count + 1))
-        let tapeSpacingT0: CGFloat =  min(dotSpacing, (size.width - dotSpacing) / CGFloat(dots.count + 2))
-        let tapeSpacingT1: CGFloat =  min(dotSpacing, (size.width - dotSpacing) / CGFloat(dots.count + 1))
-        let tapeSpacing: CGFloat =  easeTLeft * tapeSpacingT0 + easeT * tapeSpacingT1
-        var i = 1
-        for dot in dots {dot.position.x = tapeSpacing * (CGFloat(i++) + offsetX)}
-        deletingDot?.position.x = tapeSpacing * offsetX
-        scanner.position.x = tapeSpacing * (offsetX - 1) * easeTLeft + tapeSpacing * (offsetX) * easeT
-        printer.position.x = tapeSpacing * (CGFloat(i) + offsetX)
-        deletingDot?.setScale(1)
-        deletingDot?.alpha = 1
-      } else {
-        let easeT: CGFloat = easeInOut(2 * tickPercent - 1)
-        let offsetX: CGFloat = -0.5 * CGFloat(dots.count + 1)
-        let tapeSpacing: CGFloat = min(dotSpacing, (size.width - dotSpacing) / CGFloat(dots.count + 1))
-        var i = 1
-        for dot in dots {dot.position.x = tapeSpacing * (CGFloat(i++) + offsetX)}
-        deletingDot?.position.x = tapeSpacing * offsetX
-        scanner.position.x = tapeSpacing * (offsetX)
-        printer.position.x = tapeSpacing * (CGFloat(i) + offsetX)
-        deletingDot?.setScale(1 + easeT)
-        deletingDot?.alpha = (1 - easeT)
-      }
-    case .Exiting:
-      let easeInT: CGFloat = easeIn(tickPercent)
-      let offsetX: CGFloat = -0.5 * CGFloat(dots.count + 1)
-      let tapeSpacing: CGFloat = min(dotSpacing, (size.width - dotSpacing) / CGFloat(dots.count + 1))
-      scanner.position.x = tapeSpacing * offsetX - size.width * easeInT
-      var i = 1
-      for dot in dots {dot.position.x = tapeSpacing * (CGFloat(i++) + offsetX) - size.width * easeInT}
-      printer.position.x = tapeSpacing * (CGFloat(i) + offsetX) - size.width * easeInT
+      wrapper.position.x = -easeInOut(tickPercent) * dotSpacing
+      deletingDot?.setScale(1 + tickPercent)
+      deletingDot?.alpha = 1 - tickPercent
     }
   }
   
-  func loadTape(tape: String) {
+  func resetDotPositions() {
+    var i = 0
+    for dot in dots {dot.position.x = firstDotX + dotSpacing * CGFloat(i++)}
+    printer.position.x = firstDotX + dotSpacing * CGFloat(i++)
+    dots.last?.alpha = 1
+  }
+  
+  func loadTape(tape: String, robot: RobotNode) {
     unloadTape()
     var i = 0
     let dotCount = tape.length()
@@ -167,38 +121,70 @@ class TapeArea: Area {
       paper.addChild(dot)
       dots.append(dot)
     }
+    firstDotX = dotSpacing * 2
+    resetDotPositions()
+    self.robot = robot
+    robot.setScale(2)
+    robot.position = CGPoint(x: paper.position.x + firstDotX, y: 0)
+    addChild(robot)
     state = .Entering
-    fitToSize()
   }
   
   func unloadTape() {
-    deletingDot?.removeFromParent()
-    deletingDot = nil
+    completeTick()
     for dot in dots {dot.removeFromParent()}
     dots = []
-    state = .OffScreen
-    fitToSize()
+    robot?.removeFromParent()
+    robot = nil
+    state = .Exited
   }
   
   func writeColor(color: Color) {
-    deletingDot?.removeFromParent()
-    deletingDot = nil
+    completeTick()
     let dot = SKSpriteNode(texture: dotTexture)
+    dots.append(dot)
     dot.color = color.uiColor()
     dot.colorBlendFactor = 1
-    dots.append(dot)
+    dot.position.x = CGFloat(dots.count) * dotSpacing
     paper.addChild(dot)
+    printer.position.x = dot.position.x
     state = .Writing
   }
   
   func deleteColor() {
-    deletingDot?.removeFromParent()
-    deletingDot = nil
+    completeTick()
     if !dots.isEmpty {
-      deletingDot = dots.removeAtIndex(0)      
+      deletingDot = dots.removeAtIndex(0)
+      if let deletingDot = deletingDot {
+        deletingDot.removeFromParent()
+        deletingDot.zPosition = 0.6
+        deletingDot.position.x = paper.position.x + firstDotX
+        addChild(deletingDot)
+      }
       state = .Deleting
     } else {
       state = .Waiting
     }
-  }  
+  }
+  
+  func wait() {
+    completeTick()
+    state = .Waiting
+  }
+  
+  func exit() {
+    completeTick()
+    state = .Exiting
+  }
+  
+  private func completeTick() {
+    if state == .Deleting {
+      deletingDot?.removeFromParent()
+      deletingDot = nil
+      resetDotPositions()
+      wrapper.position.x = 0
+    } else {
+      update(tickPercent: 1)
+    }
+  }
 }

@@ -11,7 +11,7 @@ import Foundation
 struct TickTestResult {
   enum RobotAction {case North, East, South, West, Accept, Reject}
   let robotAction: RobotAction
-  enum TapeAction {case Wait, Read, WriteBlue, WriteRed, WriteGreen, WriteYellow}
+  enum TapeAction {case Wait, Read, WriteBlue, WriteRed, WriteGreen, WriteYellow, Exit}
   let tapeAction: TapeAction
 }
 
@@ -165,7 +165,7 @@ class Engine {
           tickCount++
           lastcoord = coord
           switch tickTestResult.tapeAction {
-          case .Wait: break
+          case .Wait, .Exit: break
           case .Read:
             switch tape.utf16Count {
             case 0: break
