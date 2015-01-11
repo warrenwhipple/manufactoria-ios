@@ -16,17 +16,11 @@ struct TickTestResult {
 }
 
 struct TapeTestResult {
-  enum Kind {case Pass, Fail, Loop, Demo}
+  enum Kind {case Pass, Fail, Loop}
   let input: String
   let output: String?
   let correctOutput: String?
   let kind: Kind
-  static func blankDemo() -> TapeTestResult {
-    return TapeTestResult(input: "", output: nil, correctOutput: nil, kind: .Demo)
-  }
-  static func blankLoop() -> TapeTestResult {
-    return TapeTestResult(input: "", output: nil, correctOutput: nil, kind: .Loop)
-  }
   var broken: Bool {return correctOutput == nil}
 }
 

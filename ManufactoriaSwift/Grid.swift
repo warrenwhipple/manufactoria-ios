@@ -203,6 +203,7 @@ struct Grid {
   
   func testCoordForFall(coord: GridCoord) -> Bool {
     if coord == endCoord {return false}
+    if coord == startCoord {return false}
     if !space.contains(coord) {return true}
     if self[coord].kind == CellKind.Blank {return true}
     return false

@@ -14,8 +14,7 @@ class TestController {
   private(set) var state: State = .Complete
   private(set) var beltPercent: CGFloat = 0
   private(set) var robot: RobotNode?
-  private(set) var result: TapeTestResult = TapeTestResult.blankLoop()
-  
+  private(set) var result: TapeTestResult = TapeTestResult(input: "", output: nil, correctOutput: nil, kind: .Loop)
   private let gridArea: GridArea
   private let tapeArea: TapeArea
   private var tapeTestResultQueue: [TapeTestResult] = []
@@ -49,7 +48,7 @@ class TestController {
     robot = nil
     if tapeTestResultQueue.isEmpty {
       state = .Complete
-      result = TapeTestResult.blankLoop()
+      result = TapeTestResult(input: "", output: nil, correctOutput: nil, kind: .Loop)
       tapeArea.unloadTape()
     } else {
       state = .Entering
@@ -120,9 +119,11 @@ class TestController {
       case .Accept:
         state = .Exiting
         robot?.state = (result.kind == .Pass) ? .ExitingPass : .ExitingFail
+        BlinkMessage.blink(message: "ACCEPTED", parent: gridArea)
       case .Reject:
         state = .Fallen
         robot?.state = (result.kind == .Pass) ? .FallenPass : .FallenFail
+        BlinkMessage.blink(message: "REJECTED", parent: gridArea)
       }
       robot?.loadNextPosition(coord.centerPoint)
       robot?.finishColorChange()

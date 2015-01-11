@@ -15,24 +15,21 @@ class GenericTutorialScene: GameScene {
   var stageSetups: [(()->())?] = []
   var currentStageIndex = -1
   var hookContinueButton, hookDemoTestButton, hookDidSetState, hookDidSetEditMode, hookCellWasEdited: (()->())?
-  var speedControlsShouldSimplify: Bool = true
-  var speedControlsShouldHideUntilTouch: Bool = true
+  var speedControlsShouldSimplify = true
+  var speedControlsShouldHideUntilTouch = true
   var speedControlShouldAllowCancel = false
-  
-  let demoTestButton = Button(iconNamed: "testButton")
+  var tapeAreaShouldStayHidden = false
   let continueButton = Button(text: "continue", fixedWidth: nil)
+  var testButtonMiddlePosition = CGPointZero
+  var testButtonTopPosition = CGPointZero
   
   override init(size: CGSize, var levelKey: String) {
     super.init(size: size, levelKey: levelKey)
     gridArea.clearGridWithAnimate(false)
     continueButton.parentMemory = self
-    demoTestButton.parentMemory = self
     continueButton.isSticky = true
-    demoTestButton.isSticky = true
     continueButton.zPosition = testButton.zPosition
-    demoTestButton.zPosition = testButton.zPosition
-    continueButton.touchUpInsideClosure = {[unowned self] in self.continueButtonWasPressed()}
-    demoTestButton.touchUpInsideClosure = {[unowned self] in self.demoTestButtonWasPressed()}
+    continueButton.touchUpInsideClosure = {[unowned self] in self.continueButtonPressed()}
     for button in speedControlArea.buttons {
       button.parentMemory = speedControlArea
     }
@@ -40,8 +37,9 @@ class GenericTutorialScene: GameScene {
   
   override func fitToSize() {
     super.fitToSize()
-    demoTestButton.position = testButton.position
-    continueButton.position = toolbarArea.rect.center
+    testButtonTopPosition = testButton.position
+    testButtonMiddlePosition = toolbarArea.rect.center
+    continueButton.position = testButtonMiddlePosition
   }
   
   func nextTutorialStage() {
@@ -57,17 +55,20 @@ class GenericTutorialScene: GameScene {
   
   // MARK: - Game Change Listeners
   
-  func continueButtonWasPressed() {
+  func continueButtonPressed() {
     hookContinueButton?()
   }
   
-  func demoTestButtonWasPressed() {
+  func demoTestButtonPressed() {
     hookDemoTestButton?()
   }
   
   override func didSetState(oldState: State) {
     super.didSetState(oldState)
     if state == .Testing {
+      if tapeAreaShouldStayHidden {
+        tapeArea.disappear(animate: false)
+      }
       if speedControlsShouldSimplify {
         speedControlArea.slowerButton.removeFromParent()
         if testController.result.kind == TapeTestResult.Kind.Loop || speedControlShouldAllowCancel {
@@ -165,14 +166,13 @@ class GenericTutorialScene: GameScene {
     }
   }
   
-  func startDemoTest() {
+  func startDemoTest(result: TapeTestResult) {
     beltFlowController.stopFlow(animate: true)
     instructionArea.disappear(animate: true)
     gridArea.state = .Waiting
-    if tapeTestResultQueue.isEmpty {
-      tapeTestResultQueue = [TapeTestResult(input: "", output: nil, correctOutput: nil, kind: .Demo)]
-    }
-    demoTestButton.disappear(animate: true)
+    toolbarArea.disappear(animate: true)
+    tapeTestResultQueue = [result]
+    testButton.disappear(animate: true)
     state = .Testing
   }
   

@@ -59,6 +59,7 @@
 		2DD23D731974730F00838E96 /* Engine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD23D721974730F00838E96 /* Engine.swift */; };
 		2DD4745019D0566B001E658E /* CongratulationArea.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD4744F19D0566B001E658E /* CongratulationArea.swift */; };
 		2DD8C8A219B69AD9000D729E /* LevelData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD8C8A119B69AD9000D729E /* LevelData.swift */; };
+		2DDB7F971A62C87A00F8CD17 /* BlinkMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDB7F961A62C87900F8CD17 /* BlinkMessage.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -134,6 +135,7 @@
 		2DD23D721974730F00838E96 /* Engine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Engine.swift; sourceTree = "<group>"; };
 		2DD4744F19D0566B001E658E /* CongratulationArea.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CongratulationArea.swift; sourceTree = "<group>"; };
 		2DD8C8A119B69AD9000D729E /* LevelData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LevelData.swift; sourceTree = "<group>"; };
+		2DDB7F961A62C87900F8CD17 /* BlinkMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlinkMessage.swift; sourceTree = "<group>"; };
 		2DF749FE19D627B800EBE94D /* SequenceTutorialScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SequenceTutorialScene.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 /* End PBXFileReference section */
 
@@ -360,6 +362,7 @@
 			children = (
 				2DC49134194F45B800053237 /* GameScene.swift */,
 				2DBABC3F1A006E6400223A69 /* RobotNode.swift */,
+				2DDB7F961A62C87900F8CD17 /* BlinkMessage.swift */,
 				2DACF07F1A59B19800AB41E7 /* Controllers */,
 				2D32FE621A47694B004381C9 /* Model */,
 				2D32FE631A4769EE004381C9 /* Areas */,
@@ -510,6 +513,7 @@
 				2DACF0651A54848500AB41E7 /* Area.swift in Sources */,
 				2D4862D01A1BEC21000421E5 /* MenuLevelButton.swift in Sources */,
 				2DB8E3ED1A379EA000898BD1 /* InstructionArea.swift in Sources */,
+				2DDB7F971A62C87A00F8CD17 /* BlinkMessage.swift in Sources */,
 				2D70F3E01A3E027B00B55549 /* GenericTutorialScene.swift in Sources */,
 				2D5E583F19A5265500F10DD3 /* ShimmerNode.swift in Sources */,
 				2DD23D731974730F00838E96 /* Engine.swift in Sources */,

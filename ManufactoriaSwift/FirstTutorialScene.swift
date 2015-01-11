@@ -10,11 +10,13 @@ import SpriteKit
 
 class FirstTutorialScene: GenericTutorialScene {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
-  var entranceLabel, exitLabel, beltLabel, deleteLabel: SKLabelNode!
+  var entranceLabel, exitLabel, testLabel, beltLabel, deleteLabel: SKLabelNode!
   var deleteButton, beltButton: ToolButton!
   
   init(size: CGSize) {
     super.init(size: size, levelKey: "move")
+    
+    tapeAreaShouldStayHidden = true
     
     displayFullScreenMessage("You have been assigned to\n\nROBOTICS TESTING\n\nThank you for your cooperation", animate: false, nextStageOnContinue: true)
     
@@ -33,8 +35,11 @@ class FirstTutorialScene: GenericTutorialScene {
     
     entranceLabel = labelGridCoord(gridArea.grid.startCoord, text: "entrance", animate: true, delay: false)
     exitLabel = labelGridCoord(gridArea.grid.endCoord, text: "exit", animate: true, delay: false)
+    testLabel = labelIconButton(testButton, text: "test", animate: true, delay: false)
     beltLabel = labelIconButton(beltButton, text: "conveyor", animate: true, delay: false)
     deleteLabel = labelIconButton(deleteButton, text: "delete", animate: true, delay: false)
+    
+    testButton.touchUpInsideClosure = {[unowned self] in self.demoTestButtonPressed()}
     
     stageSetups = [
       
@@ -55,30 +60,32 @@ class FirstTutorialScene: GenericTutorialScene {
       
       // draw belt setup
       {[unowned self] in
-        self.disappearNode(self.beltLabel, animate: true)
         self.repeatGridPulses()
         self.hookCellWasEdited = {if self.checkGridPassLoop().0 {self.nextTutorialStage()}}
       } as (()->())?,
       
       // tap test setup
       {[unowned self] in
-        self.changeInstructions("Please accept the next robot", animate: true)
+        self.changeInstructions("Begin the test", animate: true)
+        self.disappearNode(self.beltLabel, animate: true)
         self.disappearNode(self.entranceLabel, animate: true)
         self.disappearNode(self.exitLabel, animate: true)
         self.gridArea.state = .Waiting
         self.beltButton.disappear(animate: true)
-        self.demoTestButton.appear(animate: true, delay: true)
-        self.repeatPulseWithParent(self.demoTestButton, position: CGPointZero, delay: 5)
+        self.testButton.position = self.testButtonMiddlePosition
+        self.testButton.appear(animate: true, delay: true)
+        self.repeatPulseWithParent(self.testButton, position: CGPointZero, delay: 5)
         self.hookDemoTestButton = {
           self.stopRepeatPulse()
-          self.startDemoTest()
+          self.startDemoTest(TapeTestResult(input: "", output: "", correctOutput: "*", kind: .Pass))
+          self.disappearNode(self.testLabel, animate: true)
         }
         self.hookDidSetState = {if self.state == .Editing {self.nextTutorialStage()}}
       } as (()->())?,
       
       // congrats 1 setup
       {[unowned self] in
-        self.changeInstructions("Thank you\n\nYour intellectual capacity score\nhas been upgraded to\n\nBARELY ADEQUATE", animate: false)
+        self.changeInstructions("Thank you\n\nYour cognitive capacity score\nhas been upgraded to\n\nBARELY ADEQUATE", animate: false)
         self.gridArea.state = .Waiting
         self.testButton.disappear(animate:false)
         self.continueButton.appear(animate: true, delay: true)
@@ -87,38 +94,38 @@ class FirstTutorialScene: GenericTutorialScene {
 
       // reject robot setup
       {[unowned self] in
-        self.changeInstructions("Rejected robots may be discarded\nanywhere on the floor\n\nPlease reject the next robot", animate: true)
+        self.changeInstructions("Malfunctioning robots may be discarded\nanywhere on the floor\n\nPlease discard the next robot", animate: true)
         self.gridArea.state = .Editing
         self.continueButton.disappear(animate: true)
         let x: CGFloat = self.size.width / 6
         let y: CGFloat = self.toolbarArea.swipeNode.position.y
         self.deleteButton.position = CGPoint(x: -x, y: y)
         self.beltButton.position = CGPoint(x: x, y: y)
-        self.demoTestButton.appear(animate: true, delay: true)
+        self.testButton.position = self.testButtonTopPosition
+        self.testButton.appear(animate: true, delay: true)
         self.deleteButton.appear(animate: true, delay: true)
         self.beltButton.appear(animate: true, delay: true)
-        self.hookDidSetEditMode = {if self.editMode == .Blank {self.disappearNode(self.deleteLabel, animate: false)}}
         self.hookDemoTestButton = {
           switch self.checkGridPassLoop() {
           case (true, false):
             self.speedControlShouldAllowCancel = false
             self.hookDidSetState = {if self.state == .Editing {
-              self.demoTestButton.position = CGPoint(x: 0, y: y)
-              self.demoTestButton.appear(animate: true, delay: true)
-              self.changeInstructions("To reject the robot\n drop it on the floor", animate: false)
+              self.testButton.appear(animate: true, delay: true)
+              self.changeInstructions("Please drop the robot\non the floor", animate: false)
               }}
+            self.startDemoTest(TapeTestResult(input: "", output: "", correctOutput: nil, kind: .Fail))
           case (false, true):
             self.speedControlShouldAllowCancel = true
             self.hookDidSetState = {if self.state == .Editing {
-              self.demoTestButton.position = CGPoint(x: 0, y: y)
-              self.demoTestButton.appear(animate: true, delay: true)
-              self.changeInstructions("Infinite loops are prohibited\n\nTo reject the robot\n drop it on the floor", animate: false)
+              self.testButton.appear(animate: true, delay: true)
+              self.changeInstructions("Infinite loops are prohibited\n\nPlease drop the robot\non the floor", animate: false)
               }}
+            self.startDemoTest(TapeTestResult(input: "", output: nil, correctOutput: nil, kind: .Loop))
           default:
             self.speedControlShouldAllowCancel = false
             self.hookDidSetState = {if self.state == .Editing {self.nextTutorialStage()}}
+            self.startDemoTest(TapeTestResult(input: "", output: nil, correctOutput: nil, kind: .Pass))
           }
-          self.startDemoTest()
         }
         } as (()->())?,
       
@@ -144,14 +151,11 @@ class FirstTutorialScene: GenericTutorialScene {
         lockNode.alpha = 0
         lockNode.runAction(SKAction.fadeAlphaTo(0.5, duration: 1))
         cellNode.addChild(lockNode)
-        
         self.changeInstructions("Please accept the next robot", animate: true)
         self.gridArea.state = .Editing
         self.continueButton.disappear(animate: true)
-        let y: CGFloat = self.toolbarArea.undoCancelSwapper.position.y
-        self.demoTestButton.position = CGPoint(x: 0, y: y)
-        self.demoTestButton.appear(animate: false, delay: false)
-        let demoTestButtonPosition = self.demoTestButton.position
+        self.testButton.appear(animate: false, delay: false)
+        self.disappearNode(self.deleteLabel, animate: false)
         self.toolbarArea.appear(animate: true, delay: true)
         self.hookDidSetEditMode = {if self.editMode == .Blank {self.disappearNode(self.deleteLabel, animate: false)}}
         self.hookDemoTestButton = {
@@ -159,22 +163,22 @@ class FirstTutorialScene: GenericTutorialScene {
           case (false, false):
             self.speedControlShouldAllowCancel = false
             self.hookDidSetState = {if self.state == .Editing {
-              self.demoTestButton.position = CGPoint(x: 0, y: y)
-              self.demoTestButton.appear(animate: true, delay: true)
+              self.testButton.appear(animate: true, delay: true)
               self.changeInstructions("To accept the robot\nsend it to the exit", animate: false)
               }}
+            self.startDemoTest(TapeTestResult(input: "", output: nil, correctOutput: "*", kind: .Fail))
           case (false, true):
             self.speedControlShouldAllowCancel = true
             self.hookDidSetState = {if self.state == .Editing {
-              self.demoTestButton.position = CGPoint(x: 0, y: y)
-              self.demoTestButton.appear(animate: true, delay: true)
+              self.testButton.appear(animate: true, delay: true)
               self.changeInstructions("Infinite loops are prohibited\n\nTo accept the robot\nsend it to the exit", animate: false)
               }}
+            self.startDemoTest(TapeTestResult(input: "", output: nil, correctOutput: "*", kind: .Loop))
           default:
             self.speedControlShouldAllowCancel = false
             self.hookDidSetState = {if self.state == .Editing {self.nextTutorialStage()}}
+            self.startDemoTest(TapeTestResult(input: "", output: "", correctOutput: "*", kind: .Pass))
           }
-          self.startDemoTest()
         }
         } as (()->())?,
       
