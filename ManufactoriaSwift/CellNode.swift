@@ -19,7 +19,7 @@ class CellNode: SKNode {
   var puller, dyingPuller: SKNode?
   let glowNode, thinkNode: SKSpriteNode
   let pivot = SKNode()
-  let enterExitArrow: SKSpriteNode?
+  let enterExitArrow: SKSpriteNode? = nil
   let shimmerNode: ShimmerNode
   var cell = Cell(kind: .Blank, direction: Direction.North)
   var isSelected: Bool = false {didSet {if isSelected && !oldValue {isActivateGlowing = true}}}

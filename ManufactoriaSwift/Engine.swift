@@ -26,7 +26,7 @@ struct TapeTestResult {
 
 protocol EngineDelegate: class {
   func gridTestPassed()
-  func gridTestFailedWithResult(TapeTestResult)
+  func gridTestFailedWithResult(_: TapeTestResult)
 }
 
 class Engine {
@@ -161,7 +161,7 @@ class Engine {
           switch tickTestResult.tapeAction {
           case .Wait, .Exit: break
           case .Read:
-            switch tape.utf16Count {
+            switch count(tape.utf16) {
             case 0: break
             case 1:
               tape = ""
@@ -234,7 +234,7 @@ class Engine {
               return
             }
           } // switch tickTestResult.robotAction
-          if tickCount >= loopTickCount || (tickCount % 100 == 0 && tape.utf16Count >= loopTapeLength) {
+          if tickCount >= loopTickCount || (tickCount % 100 == 0 && tape.utf16.count >= loopTapeLength) {
             // tape test FAIL: too long assume loop
               delegate.dispatchMainThreadGridTestFailedWithResult(TapeTestResult(
                 input: input,

@@ -13,7 +13,7 @@ private let unhideAction = SKAction.customActionWithDuration(0, actionBlock: {no
 class DisappearableNode: SKNode {
   weak var parentMemory: SKNode?
   
-  func appear(#animate: Bool, delay: Bool) {
+  func appear(animate animate: Bool, delay: Bool) {
     if parent == nil {
       parentMemory?.addChild(self)
     }
@@ -46,7 +46,7 @@ class DisappearableNode: SKNode {
     }
   }
   
-  func disappear(#animate: Bool) {
+  func disappear(animate animate: Bool) {
     if parent == nil {return}
     if animate {
       runAction(SKAction.sequence([
@@ -63,7 +63,7 @@ class DisappearableNode: SKNode {
 class DisappearableSpriteNode: SKSpriteNode {
   weak var parentMemory: SKNode?
   
-  func appear(#animate: Bool, delay: Bool) {
+  func appear(animate animate: Bool, delay: Bool) {
     if parent == nil {
       parentMemory?.addChild(self)
     }
@@ -96,7 +96,7 @@ class DisappearableSpriteNode: SKSpriteNode {
     }
   }
   
-  func disappear(#animate: Bool) {
+  func disappear(animate animate: Bool) {
     if parent == nil {return}
     if animate {
       runAction(SKAction.sequence([

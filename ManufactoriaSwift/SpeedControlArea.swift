@@ -15,6 +15,8 @@ protocol SpeedControlAreaDelegate: class {
 }
 
 class SpeedControlArea: Area {
+  required init?(coder aDecoder: NSCoder) {fatalError("init(coder:) has not been implemented")}
+  
   weak var delegate: SpeedControlAreaDelegate!
   let slowerButton = Button(iconNamed: "speedIcon")
   let skipButton = Button(iconNamed: "cancelIcon")
@@ -24,7 +26,7 @@ class SpeedControlArea: Area {
   override init() {
     buttons = [slowerButton, skipButton, fasterButton]
     super.init()
-    for child in slowerButton.children {(child as SKNode).xScale = -1}
+    for child in slowerButton.children {(child as! SKNode).xScale = -1}
     skipButton.isSticky = true
     slowerButton.touchDownClosure = {[unowned self] in self.delegate.slowerButtonPressed()}
     skipButton.touchDownClosure = {[unowned self] in self.delegate.skipButtonPressed()}

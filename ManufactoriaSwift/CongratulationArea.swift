@@ -13,6 +13,8 @@ protocol CongratulationAreaDelegate: class {
 }
 
 class CongratulationArea: Area {
+  required init?(coder aDecoder: NSCoder) {fatalError("init(coder:) has not been implemented")}
+  
   weak var delegate: CongratulationAreaDelegate!
   let menuButton = Button(text: "continue", fixedWidth: nil)
 

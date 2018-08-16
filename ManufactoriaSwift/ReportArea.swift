@@ -22,6 +22,8 @@ protocol ReportAreaDelegate: class {
 }
 
 class ReportArea: Area {
+  required init?(coder aDecoder: NSCoder) {fatalError("init(coder:) has not been implemented")}
+  
   weak var delegate: ReportAreaDelegate?
   let backgroundSprite = SKSpriteNode(color: Globals.highlightColor, size: CGSizeZero)
   let label = SmartLabel()
@@ -53,7 +55,7 @@ class ReportArea: Area {
   
   // MARK: - Touch Functions
   
-  override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
+  override func touchesEnded(touches: Set<NSObject>, withEvent event: UIEvent) {
     delegate?.reportAreaWasTapped()
   }
 }

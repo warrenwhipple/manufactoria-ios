@@ -9,8 +9,8 @@
 import SpriteKit
 
 protocol ToolButtonDelegate: class {
-  func toolButtonTouchBegan(ToolButton)
-  func toolButtonActivated(ToolButton)
+  func toolButtonTouchBegan(_: ToolButton)
+  func toolButtonActivated(_: ToolButton)
 }
 
 class ToolButton: Button {
@@ -62,19 +62,19 @@ class ToolButton: Button {
   
   // MARK: Touch Delegate Methods
   
-  override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
+  override func touchesMoved(touches: Set<NSObject>, withEvent event: UIEvent) {
     if let touch = touch {
-      if touches.containsObject(touch) {
+      if touches.contains(touch) {
         if touchIsDraggingThrough {
           dragThroughDelegate?.dragThroughTouchMoved(touch)
         } else if dragThroughDelegate?.userInteractionEnabled ?? false {
-          if !frame.contains(touch.locationInNode(parent)) || (abs(shouldDragThroughY ? touch.locationInView(touch.view).y - touchBeganPoint.y : touch.locationInView(touch.view).x - touchBeganPoint.x) >= 30) {
+          if !frame.contains(touch.locationInNode(parent!)) || (abs(shouldDragThroughY ? touch.locationInView(touch.view).y - touchBeganPoint.y : touch.locationInView(touch.view).x - touchBeganPoint.x) >= 30) {
             isOn = isInFocus // ToolButton difference
             touchIsDraggingThrough = true
             dragThroughDelegate?.dragThroughTouchBegan(touch)
             touchCancelledClosure?()
           }
-        } else if !frame.contains(touch.locationInNode(parent)) {
+        } else if !frame.contains(touch.locationInNode(parent!)) {
           self.touch = nil
           isOn = isInFocus // ToolButton difference
           touchCancelledClosure?()
@@ -83,9 +83,9 @@ class ToolButton: Button {
     }
   }
   
-  override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
+  override func touchesEnded(touches: Set<NSObject>, withEvent event: UIEvent) {
     if let touch = touch {
-      if touches.containsObject(touch) {
+      if touches.contains(touch) {
         if touchIsDraggingThrough {
           dragThroughDelegate?.dragThroughTouchEnded(touch)
           touchIsDraggingThrough = false
@@ -98,9 +98,9 @@ class ToolButton: Button {
     }
   }
   
-  override func touchesCancelled(touches: NSSet, withEvent event: UIEvent) {
+  override func touchesCancelled(touches: Set<NSObject>, withEvent event: UIEvent) {
     if let touch = touch {
-      if touches.containsObject(touch) {
+      if touches.contains(touch) {
         if touchIsDraggingThrough {
           dragThroughDelegate?.dragThroughTouchCancelled(touch)
           touchIsDraggingThrough = false
@@ -241,7 +241,7 @@ class PusherButton: ToolButton {
     let iconOff = SKSpriteNode(imageNamed: "pusherIconOff", color: nil, colorBlendFactor: 1)
     let iconOn = SKSpriteNode(imageNamed: "pusherIconOn", color: nil, colorBlendFactor: 1)
     super.init(nodeOff: iconOff, nodeOn: iconOn, editMode: kind)
-    if let color = kind.cellKind()?.pusherColor()? {
+    if let color = kind.cellKind()?.pusherColor() {
       iconOff.color = color
       iconOn.color = color
     }

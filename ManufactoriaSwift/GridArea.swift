@@ -50,6 +50,8 @@ protocol GridAreaDelegate: class {
 }
 
 class GridArea: Area {
+  required init?(coder aDecoder: NSCoder) {fatalError("init(coder:) has not been implemented")}
+
   enum State {case Editing, EditingLocked, Thinking, Waiting}
   weak var delegate: GridAreaDelegate!
   var grid: Grid
@@ -81,7 +83,7 @@ class GridArea: Area {
   init(grid: Grid) {
     self.grid = grid
     var tempCellNodes: [CellNode] = []
-    for i in 0..<(grid.space.columns * grid.space.rows) {
+    for _ in 0..<(grid.space.columns * grid.space.rows) {
       let cellNode = CellNode()
       cellNode.shimmerNode.startMidShimmer()
       wrapper.addChild(cellNode)
@@ -342,14 +344,14 @@ class GridArea: Area {
   
   // MARK: Touch Delegate Methods
   
-  override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
+  override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
     if state == .Thinking {
       delegate.showThinkingCancelButtonWithAnimate(true)
       return
     }
     if state != .Editing {return}
     if editTouch != nil {return}
-    editTouch = touches.anyObject() as? UITouch
+    editTouch = touches.first
     if editTouch == nil {return}
     touchDidLeaveFirstCell = false
     
@@ -417,9 +419,9 @@ class GridArea: Area {
     }
   }
   
-  override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
+  override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
     if editTouch == nil {return}
-    if !touches.containsObject(editTouch!) {return}
+    if !touches.contains(editTouch!) {return}
     
     if editMode == .Move {
       liftedGridNode?.position = editTouch!.locationInNode(wrapper) + moveTouchOffset
@@ -545,9 +547,9 @@ class GridArea: Area {
     editCoord = touchCoord
   }
   
-  override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
+  override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
     if editTouch == nil {return}
-    if !touches.containsObject(editTouch!) {return}
+    if !touches.contains(editTouch!) {return}
     
     if editMode == .Move {
       if editTouch!.timestamp - moveTouchBeganTimeStamp < 0.5 {
@@ -568,7 +570,7 @@ class GridArea: Area {
       var someCellIsSelected = false
       for cellNode in cellNodes {
         if cellNode.isSelected {
-          if grid.cells[i].kind == .Blank {
+          if grid.cells[i].kind == CellKind.Blank {
             cellNode.isSelected = false
           } else {
             someCellIsSelected = true
@@ -607,8 +609,7 @@ class GridArea: Area {
     editTouch = nil
     delegate.editGroupWasCompleted()
   }
-  
-  override func touchesCancelled(touches: NSSet, withEvent event: UIEvent) {
-    touchesEnded(touches, withEvent: event)
+  override func touchesCancelled(touches: Set<UITouch>?, withEvent event: UIEvent?) {
+    touchesEnded(touches!, withEvent: event)
   }
 }

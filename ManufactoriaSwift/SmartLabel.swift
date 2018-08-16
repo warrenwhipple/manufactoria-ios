@@ -121,14 +121,14 @@ class SmartLabel: SKNode {
       for (n, node) in enumerate(row) {
         node.position.y = -CGFloat(r) * lineHeight * em + yShift
         if node is SKLabelNode {
-          let node = node as SKLabelNode
+          let node = node as! SKLabelNode
           if n != 0 {xShift += em * (!node.text.isEmpty && node.text[0] == " " ? 0.5 : 0.125)}
           node.position.x = xShift
           xShift += node.frame.width
           lastWasDot = false
           lastWasSpace = !node.text.isEmpty && node.text[-1] == " "
         } else if node is SKSpriteNode {
-          let node = node as SKSpriteNode
+          let node = node as! SKSpriteNode
           xShift += em * (lastWasDot ? 0.25 : (lastWasSpace ? 0.5 : 0.125))
           node.position.x = xShift
           xShift += em

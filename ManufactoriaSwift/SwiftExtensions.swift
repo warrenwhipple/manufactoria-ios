@@ -9,7 +9,7 @@
 import Foundation
 
 extension Array {
-  func shuffled() -> [T] {
+  func shuffled() -> [Element] {
     var list = self
     for i in 0..<list.count {
       let j = Int(arc4random_uniform(UInt32(list.count - i))) + i
@@ -39,7 +39,7 @@ extension Dictionary {
 }
 
 func findIdentical<T: AnyObject>(array: [T], value: T) -> Int? {
-  for (index, element) in enumerate(array) {if element === value {return index}}
+  for (index, element) in array.enumerate() {if element === value {return index}}
   return nil
 }
 
@@ -77,7 +77,7 @@ extension String {
   }
   
   func length() -> Int {
-    return self.utf16Count
+    return count(self.utf16)
   }
   
   func split(atCharacter: Character) -> [String] {

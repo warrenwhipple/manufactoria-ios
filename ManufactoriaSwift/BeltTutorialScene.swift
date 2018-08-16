@@ -1,48 +1,46 @@
 //
-//  MoveTutorialScene.swift
+//  BeltTutorialScene.swift
 //  ManufactoriaSwift
 //
 //  Created by Warren Whipple on 8/15/14.
 //  Copyright (c) 2014 Warren Whipple. All rights reserved.
 //
 
+/*
 import SpriteKit
 
-class MoveTutorialScene: TutorialScene {
+class BeltTutorialScene: TutorialScene {
   required init(coder: NSCoder) {fatalError("NSCoding not supported")}
   var gridPulseAction: SKAction!
   
   init(size: CGSize) {
-    super.init(size: size, levelKey: "move")
+    super.init(size: size, levelKey: "all")
     
-    instructionArea.instructionsLabel.text = "This is a manufactory floor plan."
+    statusNode.instructionsLabel.text = "This is a manufactory floor plan."
     let connectLabel = SmartLabel()
-    connectLabel.text = "Please connect the\nentrance and exit."
-    instructionArea.addPageToRight(connectLabel)
-    startPulseWithParent(instructionArea.rightArrow)
+    connectLabel.text = "Connect the entrance and exit."
+    statusNode.addPageToRight(connectLabel)
+    startSwipePulse()
     
-    toolbarArea.robotButton.removeFromParent()
-    startPulseWithParent(toolbarArea.robotButton)
-    toolbarArea.undoCancelSwapper.removeFromParent()
-    toolbarArea.redoConfirmSwapper.removeFromParent()
-    for button in toolbarArea.toolButtons {button.removeFromParent()}
+    toolbarNode.userInteractionEnabled = false
+    toolbarNode.robotButton.removeFromParent()
+    toolbarNode.undoCancelSwapper.removeFromParent()
+    toolbarNode.redoConfirmSwapper.removeFromParent()
+    for button in toolbarNode.toolButtons {button.removeFromParent()}
     
-    speedControlArea.slowerButton.removeFromParent()
-    speedControlArea.skipButton.removeFromParent()
+    congratulationsMenu.menuButton.touchUpInsideClosure = {[unowned self] in self.transitionToGameSceneWithLevelKey("sort")}
     
-    congratulationArea.menuButton.touchUpInsideClosure = {[unowned self] in self.transitionToGameSceneWithLevelKey("read")}
-    
-    gridArea.animateThinking = false
-    gridArea.state = .EditingLocked
+    gridNode.animateThinking = false
+    gridNode.state = .EditingLocked
     
     editGroupWasCompleted()
-    for i in 0 ..< gridArea.grid.cells.count {
-      gridArea.grid.cells[i] = Cell()
+    for i in 0 ..< gridNode.grid.cells.count {
+      gridNode.grid.cells[i] = Cell()
     }
-    gridArea.changeCellNodesToMatchCellsWithAnimate(false)
+    gridNode.changeCellNodesToMatchCellsWithAnimate(false)
     editGroupWasCompleted()
     
-    gridArea.lockCoords([
+    gridNode.lockCoords([
       GridCoord(0,0),
       GridCoord(0,1),
       GridCoord(0,2),
@@ -51,9 +49,9 @@ class MoveTutorialScene: TutorialScene {
       GridCoord(2,2)
       ])
     
-    let cellNode1 = gridArea[GridCoord(1,0)]
-    let cellNode2 = gridArea[GridCoord(1,1)]
-    let cellNode3 = gridArea[GridCoord(1,2)]
+    let cellNode1 = gridNode[GridCoord(1,0)]
+    let cellNode2 = gridNode[GridCoord(1,1)]
+    let cellNode3 = gridNode[GridCoord(1,2)]
     let cell = Cell(kind: .Belt, direction: .North)
     gridPulseAction = SKAction.repeatActionForever(SKAction.sequence([
       SKAction.waitForDuration(2),
@@ -69,8 +67,8 @@ class MoveTutorialScene: TutorialScene {
   
   override func fitToSize() {
     super.fitToSize()
-    toolbarArea.robotButton.position.y = 0
-    speedControlArea.fasterButton.position.x = 0
+    toolbarNode.robotButton.position.y = 0
+    speedControlNode.fasterButton.position.x = 0
   }
   
   override var state: State {
@@ -79,11 +77,11 @@ class MoveTutorialScene: TutorialScene {
       case .Editing: break
       case .Thinking:
         removeActionForKey("pulse")
-      case .Reporting:
-        reportArea.disappearWithAnimate(false)
-        state = .Testing
+        statusNode.engineLabel.removeFromParent()
       case .Testing:
-        speedControlArea.removeFromParent()
+        statusNode.tapeLabel.removeFromParent()
+        statusNode.tapeNode.removeFromParent()
+        speedControlNode.removeFromParent()
       case .Congratulating: break
       }
     }
@@ -95,19 +93,26 @@ class MoveTutorialScene: TutorialScene {
   func nextTutorialState() {
     switch tutorialState {
     case .FloorPlan:
-      killPulseWithParent(instructionArea.rightArrow)
+      stopSwipePulse()
       runAction(gridPulseAction, withKey: "gridPulse")
-      gridArea.state = .Editing
+      gridNode.state = .Editing
       tutorialState = .Connect
     case .Connect:
       let robotLabel = SmartLabel()
       robotLabel.text = "Tap the robot\nto begin the test."
-      instructionArea.addPageToRight(robotLabel)
-      instructionArea.snapToIndex(3, initialVelocityX: 0)
-      gridArea.state = .EditingLocked
+      statusNode.addPageToRight(robotLabel)
+      statusNode.snapToIndex(3, initialVelocityX: 0)
+      gridNode.state = .EditingLocked
       removeActionForKey("gridPulse")
-      toolbarArea.robotButton.alpha = 0
-      toolbarArea.robotButton.appearWithParent(toolbarArea, animate: false)
+      toolbarNode.robotButton.alpha = 0
+      toolbarNode.robotButton.runAction(SKAction.sequence([
+        SKAction.waitForDuration(1),
+        SKAction.fadeAlphaTo(1, duration: 0.5)
+        ]), withKey: "fade")
+      if toolbarNode.robotButton.parent == nil {
+        toolbarNode.addChild(toolbarNode.robotButton)
+      }
+      toolbarNode.robotButton.startPulseGlowWithInterval(2)
       tutorialState = .Robot
     case .Robot: break
     }
@@ -124,18 +129,20 @@ class MoveTutorialScene: TutorialScene {
     super.cellWasEdited()
     if tutorialState == .Connect {
       let cell = Cell(kind: .Belt, direction: .North)
-      if gridArea.grid[GridCoord(1,0)] == cell && gridArea.grid[GridCoord(1,1)] == cell && gridArea.grid[GridCoord(1,2)] == cell {
+      if gridNode.grid[GridCoord(1,0)] == cell && gridNode.grid[GridCoord(1,1)] == cell && gridNode.grid[GridCoord(1,2)] == cell {
         nextTutorialState()
       }
     }
   }
   
-  override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
+  override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
     super.touchesBegan(touches, withEvent: event)
     if tutorialState == .FloorPlan {
-      instructionArea.snapToIndex(2, initialVelocityX: 0)
-    } else if state == .Testing && speedControlArea.parent == nil {
-      speedControlArea.appearWithParent(self, animate: true)
+      statusNode.snapToIndex(2, initialVelocityX: 0)
+    } else if state == .Testing {
+      fasterButtonPressed()
     }
   }
 }
+
+*/

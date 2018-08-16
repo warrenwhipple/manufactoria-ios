@@ -77,7 +77,7 @@ class FirstTutorialScene: GenericTutorialScene {
         self.repeatPulseWithParent(self.testButton, position: CGPointZero, delay: 5)
         self.hookDemoTestButton = {
           self.stopRepeatPulse()
-          self.startDemoTest(TapeTestResult(input: "", output: "", correctOutput: "*", kind: .Pass))
+          self.startDemoTest([TapeTestResult(input: "", output: "", correctOutput: "*", kind: .Pass)])
           self.disappearNode(self.testLabel, animate: true)
         }
         self.hookDidSetState = {if self.state == .Editing {self.nextTutorialStage()}}
@@ -113,25 +113,25 @@ class FirstTutorialScene: GenericTutorialScene {
               self.testButton.appear(animate: true, delay: true)
               self.changeInstructions("Please drop the robot\non the floor", animate: false)
               }}
-            self.startDemoTest(TapeTestResult(input: "", output: "", correctOutput: nil, kind: .Fail))
+            self.startDemoTest([TapeTestResult(input: "", output: "", correctOutput: nil, kind: .Fail)])
           case (false, true):
             self.speedControlShouldAllowCancel = true
             self.hookDidSetState = {if self.state == .Editing {
               self.testButton.appear(animate: true, delay: true)
               self.changeInstructions("Infinite loops are prohibited\n\nPlease drop the robot\non the floor", animate: false)
               }}
-            self.startDemoTest(TapeTestResult(input: "", output: nil, correctOutput: nil, kind: .Loop))
+            self.startDemoTest([TapeTestResult(input: "", output: nil, correctOutput: nil, kind: .Loop)])
           default:
             self.speedControlShouldAllowCancel = false
             self.hookDidSetState = {if self.state == .Editing {self.nextTutorialStage()}}
-            self.startDemoTest(TapeTestResult(input: "", output: nil, correctOutput: nil, kind: .Pass))
+            self.startDemoTest([TapeTestResult(input: "", output: nil, correctOutput: nil, kind: .Pass)])
           }
         }
         } as (()->())?,
       
       // congrats 2 setup
       {[unowned self] in
-        self.changeInstructions("Your compliance is appreciated\n\nYour intellectual capacity score\nhas been upgraded to\n\nUNEXCEPTIONAL", animate: false)
+        self.changeInstructions("Thank you\n\nYour intellectual capacity score\nhas been upgraded to\n\nUNEXCEPTIONAL", animate: false)
         self.gridArea.state = .Waiting
         self.continueButton.appear(animate: true, delay: true)
         self.toolbarArea.removeFromParent()
@@ -166,18 +166,18 @@ class FirstTutorialScene: GenericTutorialScene {
               self.testButton.appear(animate: true, delay: true)
               self.changeInstructions("To accept the robot\nsend it to the exit", animate: false)
               }}
-            self.startDemoTest(TapeTestResult(input: "", output: nil, correctOutput: "*", kind: .Fail))
+            self.startDemoTest([TapeTestResult(input: "", output: nil, correctOutput: "*", kind: .Fail)])
           case (false, true):
             self.speedControlShouldAllowCancel = true
             self.hookDidSetState = {if self.state == .Editing {
               self.testButton.appear(animate: true, delay: true)
               self.changeInstructions("Infinite loops are prohibited\n\nTo accept the robot\nsend it to the exit", animate: false)
               }}
-            self.startDemoTest(TapeTestResult(input: "", output: nil, correctOutput: "*", kind: .Loop))
+            self.startDemoTest([TapeTestResult(input: "", output: nil, correctOutput: "*", kind: .Loop)])
           default:
             self.speedControlShouldAllowCancel = false
             self.hookDidSetState = {if self.state == .Editing {self.nextTutorialStage()}}
-            self.startDemoTest(TapeTestResult(input: "", output: "", correctOutput: "*", kind: .Pass))
+            self.startDemoTest([TapeTestResult(input: "", output: "", correctOutput: "*", kind: .Pass)])
           }
         }
         } as (()->())?,
@@ -185,7 +185,7 @@ class FirstTutorialScene: GenericTutorialScene {
       // congrats 3 setup
       {[unowned self] in
         GameProgressData.sharedInstance.completedLevelWithKey(self.levelKey)
-        self.changeInstructions("Thank you for your obedience\n\nYour intellectual capacity score\nhas been upgraded to\n\nTOLERABLE", animate: false)
+        self.changeInstructions("Thank you\n\nYour intellectual capacity score\nhas been upgraded to\n\nTOLERABLE", animate: false)
         self.gridArea.state = .Waiting
         self.continueButton.appear(animate: true, delay: true)
         self.toolbarArea.removeFromParent()

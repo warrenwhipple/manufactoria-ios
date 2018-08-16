@@ -16,7 +16,7 @@ class ShimmerNode: SKSpriteNode {
   var shimmerDurationMax: NSTimeInterval = 4 {didSet {if shimmerDurationMax < 0 {shimmerDurationMax = 0}}}
   var isShimmering: Bool {return actionForKey("shimmer") != nil}
 
-  convenience override init() {self.init(texture: nil, color: Globals.strokeColor, size: CGSizeZero)}
+  convenience init() {self.init(texture: nil, color: Globals.strokeColor, size: CGSizeZero)}
   convenience init(size: CGSize) {self.init(texture: nil, color: Globals.strokeColor, size: size)}
   
   override init(texture: SKTexture!, color: UIColor!, size: CGSize) {

@@ -20,6 +20,8 @@ protocol ToolbarAreaDelegate: class {
 }
 
 class ToolbarArea: Area, ToolButtonDelegate, SwipeNodeDelegate {
+  required init?(coder aDecoder: NSCoder) {fatalError("init(coder:) has not been implemented")}
+
   enum State {case Drawing, Selecting, Disabled}
   
   weak var delegate: ToolbarAreaDelegate!
@@ -88,7 +90,7 @@ class ToolbarArea: Area, ToolButtonDelegate, SwipeNodeDelegate {
     
     super.init()
     
-    for node in redoButton.children {(node as SKNode).xScale = -1}
+    for node in redoButton.children {(node as! SKNode).xScale = -1}
     undoButton.touchUpInsideClosure = {[unowned self] in self.delegate.undoEdit()}
     redoButton.touchUpInsideClosure = {[unowned self] in self.delegate.redoEdit()}
     cancelButton.touchUpInsideClosure = {[unowned self] in self.delegate.cancelSelection()}

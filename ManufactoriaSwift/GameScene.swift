@@ -315,19 +315,19 @@ class GameScene: ManufactoriaScene, GridAreaDelegate, InstructionAreaDelegate, E
 
   // MARK: - Touch Delegate Functions
   
-  override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
+  override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
     gridArea.touchesBegan(touches, withEvent: event)
   }
   
-  override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
+  override func touchesMoved(touches: Set<NSObject>, withEvent event: UIEvent) {
     gridArea.touchesMoved(touches, withEvent: event)
   }
   
-  override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
+  override func touchesEnded(touches: Set<NSObject>, withEvent event: UIEvent) {
     gridArea.touchesEnded(touches, withEvent: event)
   }
   
-  override func touchesCancelled(touches: NSSet, withEvent event: UIEvent) {
+  override func touchesCancelled(touches: Set<NSObject>, withEvent event: UIEvent) {
     gridArea.touchesCancelled(touches, withEvent: event)
   }
 }

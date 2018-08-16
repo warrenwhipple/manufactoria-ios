@@ -16,12 +16,6 @@
 		2D4729CD19BB91110072E52D /* LiftedGridNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4729CC19BB91110072E52D /* LiftedGridNode.swift */; };
 		2D4729CF19BC92650072E52D /* ToolButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4729CE19BC92650072E52D /* ToolButton.swift */; };
 		2D4862D01A1BEC21000421E5 /* MenuLevelButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4862CF1A1BEC21000421E5 /* MenuLevelButton.swift */; };
-		2D4A92DB1A01CB1E00BE3C4C /* belt@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2D4A92D51A01CB1E00BE3C4C /* belt@2x.png */; };
-		2D4A92DC1A01CB1E00BE3C4C /* belt29@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2D4A92D61A01CB1E00BE3C4C /* belt29@2x.png */; };
-		2D4A92DD1A01CB1E00BE3C4C /* belt36@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2D4A92D71A01CB1E00BE3C4C /* belt36@2x.png */; };
-		2D4A92DE1A01CB1E00BE3C4C /* belt46@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2D4A92D81A01CB1E00BE3C4C /* belt46@2x.png */; };
-		2D4A92DF1A01CB1E00BE3C4C /* belt64@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2D4A92D91A01CB1E00BE3C4C /* belt64@2x.png */; };
-		2D4A92E01A01CB1E00BE3C4C /* gameScene.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 2D4A92DA1A01CB1E00BE3C4C /* gameScene.atlas */; };
 		2D5C7319199FE80600D53D0D /* SpeedControlArea.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5C7318199FE80600D53D0D /* SpeedControlArea.swift */; };
 		2D5E583F19A5265500F10DD3 /* ShimmerNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5E583E19A5265500F10DD3 /* ShimmerNode.swift */; };
 		2D60F5C7198041BD0032860B /* TitleScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D60F5C6198041BD0032860B /* TitleScene.swift */; };
@@ -53,6 +47,12 @@
 		2DC4915F194F671F00053237 /* Cell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC4915E194F671F00053237 /* Cell.swift */; };
 		2DCA18A51985849B00DF3118 /* SpriteKitExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCA18A41985849B00DF3118 /* SpriteKitExtensions.swift */; };
 		2DCA18A71985AA0200DF3118 /* QuestionScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCA18A61985AA0200DF3118 /* QuestionScene.swift */; };
+		2DCC57021AEACEA300CC7142 /* belt@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2DCC56FC1AEACEA300CC7142 /* belt@2x.png */; };
+		2DCC57031AEACEA300CC7142 /* belt29@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2DCC56FD1AEACEA300CC7142 /* belt29@2x.png */; };
+		2DCC57041AEACEA300CC7142 /* belt36@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2DCC56FE1AEACEA300CC7142 /* belt36@2x.png */; };
+		2DCC57051AEACEA300CC7142 /* belt46@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2DCC56FF1AEACEA300CC7142 /* belt46@2x.png */; };
+		2DCC57061AEACEA300CC7142 /* belt64@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2DCC57001AEACEA300CC7142 /* belt64@2x.png */; };
+		2DCC57071AEACEA300CC7142 /* gameScene.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 2DCC57011AEACEA300CC7142 /* gameScene.atlas */; };
 		2DD23D6C196DB17C00838E96 /* TapeArea.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD23D6B196DB17C00838E96 /* TapeArea.swift */; };
 		2DD23D6E196F0BF900838E96 /* LevelLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD23D6D196F0BF900838E96 /* LevelLibrary.swift */; };
 		2DD23D71196F223E00838E96 /* MenuScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD23D70196F223E00838E96 /* MenuScene.swift */; };
@@ -74,9 +74,9 @@
 
 /* Begin PBXFileReference section */
 		2D03B939197EB89700715176 /* SwiftExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftExtensions.swift; sourceTree = "<group>"; };
-		2D15929919514B4900A96BCC /* GridArea.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridArea.swift; sourceTree = "<group>"; };
+		2D15929919514B4900A96BCC /* GridArea.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = GridArea.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		2D15929B19514B5400A96BCC /* CellNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CellNode.swift; sourceTree = "<group>"; };
-		2D2D26AA199E610D00EC4A45 /* MoveTutorialScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoveTutorialScene.swift; sourceTree = "<group>"; };
+		2D2D26AA199E610D00EC4A45 /* MoveTutorialScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = MoveTutorialScene.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		2D32FE651A478D6E004381C9 /* SecondTutorialScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SecondTutorialScene.swift; sourceTree = "<group>"; };
 		2D336E8819534044008E55A9 /* MathFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MathFunctions.swift; sourceTree = "<group>"; };
 		2D36614D19E6D46D0050F34E /* SmartLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SmartLabel.swift; sourceTree = "<group>"; };
@@ -84,26 +84,20 @@
 		2D4729CC19BB91110072E52D /* LiftedGridNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LiftedGridNode.swift; sourceTree = "<group>"; };
 		2D4729CE19BC92650072E52D /* ToolButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToolButton.swift; sourceTree = "<group>"; };
 		2D4862CF1A1BEC21000421E5 /* MenuLevelButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = MenuLevelButton.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
-		2D4A92D51A01CB1E00BE3C4C /* belt@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "belt@2x.png"; path = "../../../Manufactoria Assets/gameScene/belt@2x.png"; sourceTree = "<group>"; };
-		2D4A92D61A01CB1E00BE3C4C /* belt29@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "belt29@2x.png"; path = "../../../Manufactoria Assets/gameScene/belt29@2x.png"; sourceTree = "<group>"; };
-		2D4A92D71A01CB1E00BE3C4C /* belt36@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "belt36@2x.png"; path = "../../../Manufactoria Assets/gameScene/belt36@2x.png"; sourceTree = "<group>"; };
-		2D4A92D81A01CB1E00BE3C4C /* belt46@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "belt46@2x.png"; path = "../../../Manufactoria Assets/gameScene/belt46@2x.png"; sourceTree = "<group>"; };
-		2D4A92D91A01CB1E00BE3C4C /* belt64@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "belt64@2x.png"; path = "../../../Manufactoria Assets/gameScene/belt64@2x.png"; sourceTree = "<group>"; };
-		2D4A92DA1A01CB1E00BE3C4C /* gameScene.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; name = gameScene.atlas; path = "../../../Manufactoria Assets/gameScene/gameScene.atlas"; sourceTree = "<group>"; };
-		2D54B24719CF27BB00DF68C5 /* ReadTutorialScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReadTutorialScene.swift; sourceTree = "<group>"; };
+		2D54B24719CF27BB00DF68C5 /* ReadTutorialScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ReadTutorialScene.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		2D5C7318199FE80600D53D0D /* SpeedControlArea.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpeedControlArea.swift; sourceTree = "<group>"; };
 		2D5E583E19A5265500F10DD3 /* ShimmerNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShimmerNode.swift; sourceTree = "<group>"; };
 		2D60F5C6198041BD0032860B /* TitleScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = TitleScene.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		2D60F5C8198156250032860B /* GameProgressData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = GameProgressData.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		2D6867F819EF2D8E000F4427 /* EngineTutorialScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EngineTutorialScene.swift; sourceTree = "<group>"; };
-		2D6B03421A2680DB002A6CAC /* Button.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
-		2D70F3DD1A3DE7C100B55549 /* ReadSeqTutorialScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReadSeqTutorialScene.swift; sourceTree = "<group>"; };
-		2D70F3DF1A3E027B00B55549 /* GenericTutorialScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GenericTutorialScene.swift; sourceTree = "<group>"; };
+		2D6B03421A2680DB002A6CAC /* Button.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Button.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		2D70F3DD1A3DE7C100B55549 /* ReadSeqTutorialScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ReadSeqTutorialScene.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		2D70F3DF1A3E027B00B55549 /* GenericTutorialScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = GenericTutorialScene.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		2D7F922B195C61FA00F04F63 /* ToolbarArea.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToolbarArea.swift; sourceTree = "<group>"; };
 		2D849F3519A39EB6008F3D69 /* CoreGraphicsExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreGraphicsExtensions.swift; sourceTree = "<group>"; };
-		2D8C19A2199696A90064B790 /* SwipeNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwipeNode.swift; sourceTree = "<group>"; };
+		2D8C19A2199696A90064B790 /* SwipeNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SwipeNode.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		2D98E8C21A420126005C7F3D /* FirstTutorialScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FirstTutorialScene.swift; sourceTree = "<group>"; };
-		2DAB2B321A2116D4005D50C7 /* ScrollNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrollNode.swift; sourceTree = "<group>"; };
+		2DAB2B321A2116D4005D50C7 /* ScrollNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ScrollNode.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		2DACF0641A54848500AB41E7 /* Area.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Area.swift; sourceTree = "<group>"; };
 		2DACF0661A56325100AB41E7 /* Disappearable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Disappearable.swift; sourceTree = "<group>"; };
 		2DACF07B1A599AC500AB41E7 /* TestController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestController.swift; sourceTree = "<group>"; };
@@ -129,9 +123,15 @@
 		2DC4915E194F671F00053237 /* Cell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cell.swift; sourceTree = "<group>"; };
 		2DCA18A41985849B00DF3118 /* SpriteKitExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpriteKitExtensions.swift; sourceTree = "<group>"; };
 		2DCA18A61985AA0200DF3118 /* QuestionScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = QuestionScene.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		2DCC56FC1AEACEA300CC7142 /* belt@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "belt@2x.png"; path = "../../../Coding Misc/Manufactoria/gameScene/belt@2x.png"; sourceTree = "<group>"; };
+		2DCC56FD1AEACEA300CC7142 /* belt29@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "belt29@2x.png"; path = "../../../Coding Misc/Manufactoria/gameScene/belt29@2x.png"; sourceTree = "<group>"; };
+		2DCC56FE1AEACEA300CC7142 /* belt36@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "belt36@2x.png"; path = "../../../Coding Misc/Manufactoria/gameScene/belt36@2x.png"; sourceTree = "<group>"; };
+		2DCC56FF1AEACEA300CC7142 /* belt46@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "belt46@2x.png"; path = "../../../Coding Misc/Manufactoria/gameScene/belt46@2x.png"; sourceTree = "<group>"; };
+		2DCC57001AEACEA300CC7142 /* belt64@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "belt64@2x.png"; path = "../../../Coding Misc/Manufactoria/gameScene/belt64@2x.png"; sourceTree = "<group>"; };
+		2DCC57011AEACEA300CC7142 /* gameScene.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; name = gameScene.atlas; path = "../../../Coding Misc/Manufactoria/gameScene/gameScene.atlas"; sourceTree = "<group>"; };
 		2DD23D6B196DB17C00838E96 /* TapeArea.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = TapeArea.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		2DD23D6D196F0BF900838E96 /* LevelLibrary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LevelLibrary.swift; sourceTree = "<group>"; };
-		2DD23D70196F223E00838E96 /* MenuScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuScene.swift; sourceTree = "<group>"; };
+		2DD23D70196F223E00838E96 /* MenuScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = MenuScene.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		2DD23D721974730F00838E96 /* Engine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Engine.swift; sourceTree = "<group>"; };
 		2DD4744F19D0566B001E658E /* CongratulationArea.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CongratulationArea.swift; sourceTree = "<group>"; };
 		2DD8C8A119B69AD9000D729E /* LevelData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LevelData.swift; sourceTree = "<group>"; };
@@ -276,12 +276,12 @@
 		2D9A097A195643680007F6A4 /* Images */ = {
 			isa = PBXGroup;
 			children = (
-				2D4A92D51A01CB1E00BE3C4C /* belt@2x.png */,
-				2D4A92D61A01CB1E00BE3C4C /* belt29@2x.png */,
-				2D4A92D71A01CB1E00BE3C4C /* belt36@2x.png */,
-				2D4A92D81A01CB1E00BE3C4C /* belt46@2x.png */,
-				2D4A92D91A01CB1E00BE3C4C /* belt64@2x.png */,
-				2D4A92DA1A01CB1E00BE3C4C /* gameScene.atlas */,
+				2DCC56FC1AEACEA300CC7142 /* belt@2x.png */,
+				2DCC56FD1AEACEA300CC7142 /* belt29@2x.png */,
+				2DCC56FE1AEACEA300CC7142 /* belt36@2x.png */,
+				2DCC56FF1AEACEA300CC7142 /* belt46@2x.png */,
+				2DCC57001AEACEA300CC7142 /* belt64@2x.png */,
+				2DCC57011AEACEA300CC7142 /* gameScene.atlas */,
 			);
 			name = Images;
 			sourceTree = "<group>";
@@ -415,7 +415,8 @@
 		2DC49123194F45B800053237 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0610;
+				LastSwiftUpdateCheck = 0720;
+				LastUpgradeCheck = 0720;
 				ORGANIZATIONNAME = "Warren Whipple";
 				TargetAttributes = {
 					2DC4912A194F45B800053237 = {
@@ -453,14 +454,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				2DC4913C194F45B800053237 /* Images.xcassets in Resources */,
-				2D4A92DC1A01CB1E00BE3C4C /* belt29@2x.png in Resources */,
-				2D4A92DE1A01CB1E00BE3C4C /* belt46@2x.png in Resources */,
-				2D4A92DF1A01CB1E00BE3C4C /* belt64@2x.png in Resources */,
+				2DCC57031AEACEA300CC7142 /* belt29@2x.png in Resources */,
+				2DCC57051AEACEA300CC7142 /* belt46@2x.png in Resources */,
+				2DCC57061AEACEA300CC7142 /* belt64@2x.png in Resources */,
 				2DC0167D19CDC32E003D922A /* Media.xcassets in Resources */,
 				2DC4913A194F45B800053237 /* Main.storyboard in Resources */,
-				2D4A92E01A01CB1E00BE3C4C /* gameScene.atlas in Resources */,
-				2D4A92DD1A01CB1E00BE3C4C /* belt36@2x.png in Resources */,
-				2D4A92DB1A01CB1E00BE3C4C /* belt@2x.png in Resources */,
+				2DCC57071AEACEA300CC7142 /* gameScene.atlas in Resources */,
+				2DCC57041AEACEA300CC7142 /* belt36@2x.png in Resources */,
+				2DCC57021AEACEA300CC7142 /* belt@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -574,6 +575,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -644,6 +646,7 @@
 				INFOPLIST_FILE = ManufactoriaSwift/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.warrenwhipple.${PRODUCT_NAME: rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 			};
@@ -659,6 +662,7 @@
 				INFOPLIST_FILE = ManufactoriaSwift/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.warrenwhipple.${PRODUCT_NAME: rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 			};
@@ -679,6 +683,7 @@
 				INFOPLIST_FILE = ManufactoriaSwiftTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				METAL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.warrenwhipple.${PRODUCT_NAME: rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";
 			};
@@ -695,6 +700,7 @@
 				INFOPLIST_FILE = ManufactoriaSwiftTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				METAL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.warrenwhipple.${PRODUCT_NAME: rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";
 			};

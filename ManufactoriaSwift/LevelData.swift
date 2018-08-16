@@ -92,9 +92,9 @@ class LevelData: NSObject, NSCoding {
       aDecoder.decodeIntegerForKey("columns"),
       aDecoder.decodeIntegerForKey("rows")
     )
-    currentGridString = aDecoder.decodeObjectForKey("gridString") as String
-    undoStrings = aDecoder.decodeObjectForKey("undoStrings") as [String]
-    redoStrings = aDecoder.decodeObjectForKey("redoStrings") as [String]
+    currentGridString = aDecoder.decodeObjectForKey("gridString") as! String
+    undoStrings = aDecoder.decodeObjectForKey("undoStrings") as! [String]
+    redoStrings = aDecoder.decodeObjectForKey("redoStrings") as! [String]
   }
   
   func encodeWithCoder(aCoder: NSCoder)  {

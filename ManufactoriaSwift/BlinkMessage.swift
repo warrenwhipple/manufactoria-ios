@@ -32,7 +32,7 @@ class BlinkMessage: SKLabelNode {
       ]), withKey: "blink")
   }
 
-  class func blink(#message: String, parent: SKNode) -> BlinkMessage {
+  class func blink(message: String, parent: SKNode) -> BlinkMessage {
     let blinkMessage = BlinkMessage(message: message)
     blinkMessage.zPosition = 100
     parent.addChild(blinkMessage)

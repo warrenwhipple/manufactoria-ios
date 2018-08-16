@@ -14,6 +14,8 @@ protocol InstructionAreaDelegate: class {
 }
 
 class InstructionArea: Area, SwipeNodeDelegate {
+  required init?(coder aDecoder: NSCoder) {fatalError("init(coder:) has not been implemented")}
+  
   weak var delegate: InstructionAreaDelegate?
   
   let swipeNode: SwipeNode
@@ -70,11 +72,12 @@ class InstructionArea: Area, SwipeNodeDelegate {
         failLabel.text = inputDescription() + "should be accepted"
       } else if result.output == nil {
         failLabel.text = inputDescription() + "should not be dropped"
+      } else {
+        let tapeIn = result.input == "" ? "blank" : "#" + result.input
+        let shouldOut = result.correctOutput == "" ? "blank" : "#" + (result.correctOutput ?? "reject")
+        let notOut = result.output == "" ? "blank" : "#" + (result.output ?? "reject")
+        failLabel.text = "Input: " + tapeIn + "\nShould Output: " + shouldOut + "\nNot: " + notOut
       }
-      let tapeIn = result.input == "" ? "blank" : "#" + result.input
-      let shouldOut = result.correctOutput == "" ? "blank" : "#" + (result.correctOutput ?? "reject")
-      let notOut = result.output == "" ? "blank" : "#" + (result.output ?? "reject")
-      failLabel.text = "Input: " + tapeIn + "\nShould: " + shouldOut + "\nNot: " + notOut
     default: return
     }
     if failPage.parent == nil {

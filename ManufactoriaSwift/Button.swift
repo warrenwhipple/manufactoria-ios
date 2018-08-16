@@ -24,6 +24,8 @@ private let disableFadeAction = SKAction.fadeAlphaTo(0.2, duration: 0.3)
 private let enableFadeAction = SKAction.fadeAlphaTo(1, duration: 0.3)
 
 class Button: DisappearableSpriteNode {
+  required init?(coder aDecoder: NSCoder) {fatalError("init(coder:) has not been implemented")}
+  
   var touchDownClosure, touchUpInsideClosure, touchCancelledClosure: (()->())?
   weak var dragThroughDelegate: DragThroughDelegate?
   var shouldDragThroughY = false
@@ -121,7 +123,7 @@ class Button: DisappearableSpriteNode {
     nodeOff?.alpha = 1
   }
   
-  override func appear(#animate: Bool, delay: Bool) {
+  override func appear(animate animate: Bool, delay: Bool) {
     if isSticky && stickyOnHasBeenActivated {reset()}
     super.appear(animate: animate, delay: delay)
   }
@@ -155,33 +157,32 @@ class Button: DisappearableSpriteNode {
       self.touch = nil
     }
   }
-  
-  override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
+  override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
     if let touch = touch {
       if touchIsDraggingThrough {
         dragThroughDelegate?.dragThroughTouchCancelled(touch)
       }
     }
-    touch = touches.anyObject() as? UITouch
+    touch = touches.first
     isOn = true
     touchIsDraggingThrough = false
     if let touch = touch {touchBeganPoint = touch.locationInView(touch.view)}
     touchDownClosure?()
   }
   
-  override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
+  override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
     if let touch = touch {
-      if touches.containsObject(touch) {
+      if touches.contains(touch) {
         if touchIsDraggingThrough {
           dragThroughDelegate?.dragThroughTouchMoved(touch)
         } else if dragThroughDelegate?.userInteractionEnabled ?? false {
-          if !frame.contains(touch.locationInNode(parent)) || (abs(shouldDragThroughY ? touch.locationInView(touch.view).y - touchBeganPoint.y : touch.locationInView(touch.view).x - touchBeganPoint.x) >= 30) {
+          if !frame.contains(touch.locationInNode(parent!)) || (abs(shouldDragThroughY ? touch.locationInView(touch.view).y - touchBeganPoint.y : touch.locationInView(touch.view).x - touchBeganPoint.x) >= 30) {
                 isOn = false
                 touchIsDraggingThrough = true
                 dragThroughDelegate?.dragThroughTouchBegan(touch)
                 touchCancelledClosure?()
           }
-        } else if !frame.contains(touch.locationInNode(parent)) {
+        } else if !frame.contains(touch.locationInNode(parent!)) {
           self.touch = nil
           isOn = false
           touchCancelledClosure?()
@@ -190,9 +191,9 @@ class Button: DisappearableSpriteNode {
     }
   }
   
-  override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
+  override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent) {
     if let touch = touch {
-      if touches.containsObject(touch) {
+      if touches.contains(touch) {
         if touchIsDraggingThrough {
           dragThroughDelegate?.dragThroughTouchEnded(touch)
           touchIsDraggingThrough = false
@@ -206,9 +207,9 @@ class Button: DisappearableSpriteNode {
     }
   }
   
-  override func touchesCancelled(touches: NSSet, withEvent event: UIEvent) {
+  override func touchesCancelled(touches: Set<NSObject>, withEvent event: UIEvent) {
     if let touch = touch {
-      if touches.containsObject(touch) {
+      if touches.contains(touch) {
         if touchIsDraggingThrough {
           dragThroughDelegate?.dragThroughTouchCancelled(touch)
           touchIsDraggingThrough = false

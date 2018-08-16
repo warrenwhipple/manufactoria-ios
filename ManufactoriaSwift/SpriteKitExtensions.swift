@@ -8,18 +8,18 @@
 
 import SpriteKit
 
-func distributeNodesX(nodes: [SKNode?], #childWidth: CGFloat, #parentWidth: CGFloat, roundPix roundPixBool: Bool) {
+func distributeNodesX(nodes: [SKNode?], childWidth: CGFloat, #parentWidth: CGFloat, roundPix roundPixBool: Bool) {
   let spacing: CGFloat = (parentWidth - CGFloat(nodes.count) * childWidth) / CGFloat(nodes.count + 1) + childWidth
   let offset: CGFloat = -0.5 * CGFloat(nodes.count - 1) * spacing
-  for (i, node) in enumerate(nodes) {
+  for (i, node) in nodes.enumerate() {
     node?.position.x = roundPixBool ? roundPix(offset + CGFloat(i) * spacing) : (offset + CGFloat(i) * spacing)
   }
 }
 
-func distributeNodesY(nodes: [SKNode?], #childHeight: CGFloat, #parentHeight: CGFloat, roundPix roundPixBool: Bool) {
+func distributeNodesY(nodes: [SKNode?], childHeight: CGFloat, #parentHeight: CGFloat, roundPix roundPixBool: Bool) {
   let spacing: CGFloat = (parentHeight - CGFloat(nodes.count) * childHeight) / CGFloat(nodes.count + 1) + childHeight
   let offset: CGFloat = 0.5 * CGFloat(nodes.count - 1) * spacing
-  for (i, node) in enumerate(nodes) {
+  for (i, node) in nodes.enumerate() {
     node?.position.y = roundPixBool ? roundPix(offset - CGFloat(i) * spacing) : (offset - CGFloat(i) * spacing)
   }
 }

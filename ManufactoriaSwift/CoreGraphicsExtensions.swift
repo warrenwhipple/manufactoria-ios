@@ -25,7 +25,7 @@ func roundPix(r: CGRect) -> CGRect {
   return CGRect(center: roundPix(center), size: CGSize(width: round(size.width), height: round(size.height)))
 }
 
-func distributionForChildren(#count: Int, #childSize: CGFloat, #parentSize: CGFloat) -> [CGFloat] {
+func distributionForChildren(count count: Int, childSize: CGFloat, parentSize: CGFloat) -> [CGFloat] {
   let spacing = (parentSize - CGFloat(count) * childSize) / CGFloat(count + 1) + childSize
   let offset = -0.5 * CGFloat(count - 1) * spacing
   var centers: [CGFloat] = []
@@ -66,7 +66,7 @@ extension CGRect {
   }
 }
 
-func CGPointDistSq(#p1: CGPoint, #p2: CGPoint) -> CGFloat {
+func CGPointDistSq(p1 p1: CGPoint, p2: CGPoint) -> CGFloat {
   let dx = p1.x - p2.x
   let dy = p1.y - p2.y
   return dx * dx + dy * dy

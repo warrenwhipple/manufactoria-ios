@@ -26,6 +26,9 @@ class MenuLevelButton: Button {
       spriteOn = SKSpriteNode()
       labelOn = SKLabelNode()
       spriteOn?.addChild(labelOn!)
+    } else {
+      spriteOn = nil
+      labelOn = nil
     }
     super.init(nodeOff: SKNode(), nodeOn: spriteOn ?? SKNode(), touchSize: CGSizeZero)
     shouldDragThroughY = true

@@ -71,7 +71,7 @@ class GameViewController: UIViewController {
     Globals.largeEx = testLabel.frame.height
     
     super.viewDidLoad()
-    let skView = view as SKView
+    let skView = view as! SKView
     skView.showsFPS = false
     skView.showsNodeCount = false
     skView.ignoresSiblingOrder = false
@@ -87,7 +87,6 @@ class GameViewController: UIViewController {
   override func shouldAutorotate() -> Bool {
     return true
   }
-  
   override func supportedInterfaceOrientations() -> Int {
     if UIDevice.currentDevice().userInterfaceIdiom == .Phone {
       return Int(UIInterfaceOrientationMask.AllButUpsideDown.rawValue)

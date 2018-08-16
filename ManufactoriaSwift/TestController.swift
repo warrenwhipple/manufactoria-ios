@@ -25,6 +25,7 @@ class TestController {
   private var skipping = false
   private var skipAnimationCompleted = false
   private var tape: String = ""
+  var shouldBlinkAcceptReject = true
   
   init(gridArea: GridArea, tapeArea: TapeArea) {
     self.gridArea = gridArea
@@ -119,11 +120,11 @@ class TestController {
       case .Accept:
         state = .Exiting
         robot?.state = (result.kind == .Pass) ? .ExitingPass : .ExitingFail
-        BlinkMessage.blink(message: "ACCEPTED", parent: gridArea)
+        if shouldBlinkAcceptReject {BlinkMessage.blink(message: "ACCEPTED", parent: gridArea)}
       case .Reject:
         state = .Fallen
         robot?.state = (result.kind == .Pass) ? .FallenPass : .FallenFail
-        BlinkMessage.blink(message: "REJECTED", parent: gridArea)
+        if shouldBlinkAcceptReject {BlinkMessage.blink(message: "REJECTED", parent: gridArea)}
       }
       robot?.loadNextPosition(coord.centerPoint)
       robot?.finishColorChange()

@@ -108,7 +108,7 @@ class GenericTutorialScene: GameScene {
     hookCellWasEdited?()
   }
   
-  override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
+  override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
     super.touchesBegan(touches, withEvent: event)
     if state == .Testing && speedControlArea.parent == nil {
       speedControlArea.appear(animate: true, delay: false)
@@ -166,12 +166,12 @@ class GenericTutorialScene: GameScene {
     }
   }
   
-  func startDemoTest(result: TapeTestResult) {
+  func startDemoTest(resultQueue: [TapeTestResult]) {
     beltFlowController.stopFlow(animate: true)
     instructionArea.disappear(animate: true)
     gridArea.state = .Waiting
     toolbarArea.disappear(animate: true)
-    tapeTestResultQueue = [result]
+    tapeTestResultQueue = resultQueue
     testButton.disappear(animate: true)
     state = .Testing
   }

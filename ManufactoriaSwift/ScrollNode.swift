@@ -76,28 +76,28 @@ class ScrollNode: SKNode, DragThroughDelegate {
   
   // MARK: - Touch Delegate Methods
   
-  override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
+  override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
     if touch != nil {
       touchCancelled()
     }
-    touch = touches.anyObject() as? UITouch
+    touch = touches.first as? UITouch
     touchBegan()
   }
   
-  override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
-    if touch != nil && touches.containsObject(touch!) {
+  override func touchesMoved(touches: Set<NSObject>, withEvent event: UIEvent) {
+    if touch != nil && touches.contains(touch!) {
       touchMoved()
     }
   }
   
-  override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
-    if touch != nil && touches.containsObject(touch!) {
+  override func touchesEnded(touches: Set<NSObject>, withEvent event: UIEvent) {
+    if touch != nil && touches.contains(touch!) {
       touchEnded()
     }
   }
   
-  override func touchesCancelled(touches: NSSet, withEvent event: UIEvent) {
-    if touch != nil && touches.containsObject(touch!) {
+  override func touchesCancelled(touches: Set<NSObject>, withEvent event: UIEvent) {
+    if touch != nil && touches.contains(touch!) {
       touchCancelled()
     }
   }

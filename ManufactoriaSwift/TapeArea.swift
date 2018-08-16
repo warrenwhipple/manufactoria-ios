@@ -9,6 +9,8 @@
 import SpriteKit
 
 class TapeArea: Area {
+  required init?(coder aDecoder: NSCoder) {fatalError("init(coder:) has not been implemented")}
+  
   private var wrapper = SKNode()
   private var dots: [SKSpriteNode] = []
   private var deletingDot: SKSpriteNode?
